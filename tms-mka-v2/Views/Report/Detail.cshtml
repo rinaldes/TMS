@@ -1,0 +1,267 @@
+﻿@using tms_mka_v2.Models;
+@model tms_mka_v2.Models.RevisiTanggal
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    string currentController = (string)ViewContext.RouteData.Values["controller"];
+    string currentAction = ViewBag.postData == null ? (string)ViewContext.RouteData.Values["action"] : ViewBag.postData;
+    string backLink = Url.Action("Index","ListOrder");
+    ViewBag.Title = "Report Order";
+}
+<div class="portlet light">
+    <div class="portlet-title">
+        <div class="caption">
+            <span class="caption-subject font-dark sbold uppercase">@ViewBag.Title</span>
+        </div>
+    </div>
+    <div class="portlet-body form">
+        @using (@Html.BeginForm(currentAction, currentController, FormMethod.Post, new { @class = "form-horizontal form-label-left input_mask", @id = "formsubmit" }))
+        {
+            @Html.ValidationSummary(true)
+            @Html.HiddenFor(model => model.Id)
+            @Html.HiddenFor(model => model.IdSalesOrder)
+            <div class="portlet light">
+                <div class="portlet-title">
+                    <div class="caption font-green-sharp">
+                        <span class="caption-subject"> Basic Info</span>
+                    </div>
+                    <div class="tools">
+                        <a href="" class="collapse"> </a>
+                    </div>
+                </div>
+                <div class="portlet-body">
+                    @if (Model.ModelOncall != null)
+                    {
+                        @Html.Partial("SalesOrderOncall/_PartialFormReadOnly", Model.ModelOncall)
+                    }
+                    else if (Model.ModelPickup != null)
+                    {
+                        @Html.Partial("SalesOrderPickup/_PartialFormReadOnly", Model.ModelPickup)
+                    }
+                    else if (Model.ModelKonsolidasi != null)
+                    {
+                        @Html.Partial("SalesOrderProsesKonsolidasi/_PartialFormReadOnly", Model.ModelKonsolidasi)
+                    }
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<div class="portlet light ">
+    <div class="portlet-title">
+        <div class="caption">
+            <span class="caption-subject font-dark sbold uppercase">History</span>
+        </div>
+    </div>
+    <div class="portlet-body form">
+        <div class="portlet box blue ">
+            <div class="portlet-title">
+                <div class="caption">
+                    Hide Colomn :
+                </div>
+                <div class="tools">
+                    <a href="" class="expand"> </a>
+                </div>
+            </div>
+            <div class="portlet-body form" style="display: none;">
+                <form role="form">
+                    <div class="form-body">
+                        <div id="content-col" class="md-checkbox-inline" style="margin-left:10px"></div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div id="grid"></div>
+    </div>
+</div>
+@* --- # endregion main theme # --- *@
+
+@* --- # region section script # --- *@
+@section scripts
+{
+    <script id="rute" type="text/x-kendo-template">
+        # if(RuteRevised) { #
+        <label style="color:red">#=Rute#</label>
+        # } else { #
+        <label>#=Rute#</label>
+        # } #
+    </script>
+    <script id="jns-truck" type="text/x-kendo-template">
+        # if(IsBatalTruk) { #
+        <label style="color:red">#=StrJenisTruck#</label>
+        # } else { #
+        <label>#=StrJenisTruck#</label>
+        # } #
+    </script>
+    <script id="jenisOrder-template" type="text/x-kendo-template">
+        # if(TypeSo == "Konsolidasi") { #
+        <a class="k-button-icon k-grid-edit" href="\\#" data-toggle="modal" data-target="\\#ModalDetailKonsoldasi" onclick="RefreshDetail(#:IdChild#)">Konsolidasi</a>
+        # } else { #
+        #: TypeSo #
+        # } #
+    </script>
+    <script id="action-template" type="text/x-kendo-template">
+        # if(JenisOrder != "Kontrak") { #
+        <input class="combobox" />
+        # } else { #
+        <input class="combobox-kontrak" />
+        # } #
+    </script>
+    <script id="dok-template" type="text/x-kendo-template">
+    </script>
+    <script type="text/javascript">
+    function FilterStatus(element) {
+        element.kendoDropDownList({
+            //dataTextField: "text",
+            //dataValueField: "value",
+            dataSource: ["On call", "Kontrak", "Konsolidasi", "Pickup", "Batal"],
+            optionLabel: "--Select Value--",
+        });
+    }
+
+    // --- # region action warning message # ---
+    $(document).ready(function () {
+        @if (TempData["errorMsgListOrder"] != null)
+            {
+                <text>
+        swal({
+            title: "Error",
+            type: 'error',
+            text: '@TempData["errorMsgListOrder"]',
+            showCloseButton: true,
+        })
+        </text>
+            }
+    })
+    // --- # endregion action warning message # ---
+
+    // --- # region grid # ---
+    $(document).ready(function () {
+
+        currController = '@currentController';
+        currAction = '@currentAction';
+
+        var ds = new kendo.data.DataSource({
+            transport: {
+                read: {
+                    url: '/Report/BindingHistoryDetail?idSO=@Model.IdSalesOrder',
+                    dataType: "json"
+                },
+            },
+            schema: {
+                model: {
+                    fields: {
+                        "StatusFlow": { type: "string" },
+                        "FlowDate": { type: "date" },
+                        "SavedAt": { type: "datetime" },
+                        "ProcessedAt": { type: "datetime" },
+                        "PIC": { type: "string" },
+                    }
+                }
+            },
+            pageSize: 10,
+            pageable: true,
+            sortable: true,
+        });
+
+        gridIndex = $("#grid").kendoGrid({
+            dataSource: ds, filterable: kendoGridFilterable, sortable: true, reorderable: true, resizable: true, scrollable: true, pageable: true, groupable: true,
+            columns: [
+                {
+                    field: "StatusFlow",
+                    title: "Status Flow",
+                    width: "120px"
+                },
+                {
+                    field: "FlowDate",
+                    title: "Flow Date",
+                    template: "#= kendo.toString(kendo.parseDate(FlowDate, 'yyyy-MM-dd'), 'dd/MM/yyyy') #",
+                    width: "120px"
+                },
+                {
+                    field: "SavedAt",
+                    title: "Saved At",
+                    width: "100px",
+                    template: "#= kendo.toString(kendo.parseDate(SavedAt, 'yyyy-MM-dd'), 'dd/MM/yyyy HH:mm:ss') != '01/01/0001 07:00:00' ? kendo.toString(kendo.parseDate(SavedAt, 'yyyy-MM-dd'), 'dd/MM/yyyy HH:mm:ss') : ''#",
+                },
+                {
+                    field: "ProcessedAt",
+                    title: "Processed At",
+                    width: "100px",
+                    template: "#= kendo.toString(kendo.parseDate(ProcessedAt, 'yyyy-MM-dd'), 'dd/MM/yyyy HH:mm:ss') != '01/01/0001 07:00:00' ? kendo.toString(kendo.parseDate(ProcessedAt, 'yyyy-MM-dd'), 'dd/MM/yyyy HH:mm:ss') : ''#",
+                    filterable: false
+                },
+                {
+                    field: "PIC",
+                    title: "PIC",
+                    width: "200px"
+                },
+            ],
+            dataBound: function (e) {
+                var data = gridIndex.dataSource.data();
+                var order_action = [];
+                $.each(data, function (i, row) {
+                    $('tr[data-uid="' + row.uid + '"]').find(".combobox").kendoDropDownList({
+                        optionLabel: "Select Action",
+                        dataTextField: "text",
+                        dataValueField: "value",
+                        dataSource: order_action,
+                        change: function dropDownChange() {
+                        }
+                    })
+
+                    $('tr[data-uid="' + row.uid + '"]').find(".combobox-kontrak").kendoDropDownList({
+                        optionLabel: "Select Action",
+                        dataTextField: "text",
+                        dataValueField: "value",
+                        dataSource: [
+                            { text: "Batal Truk", value: "Batal Truk" },
+                        ],
+                        change: function dropDownChange() {
+                            if (this.value() == "Batal Truk")window.location.href = "@Url.Action("EditKontrak", "BatalTruk")" + "?id=" + data[i].Id + "&idsokontrak=" + data[i].IdSoKontrak;
+                        }
+                    })
+                });
+            },
+        }).data("kendoGrid");
+        GetColomnData(gridIndex);
+    });
+
+    function RefreshDetail(Id) {
+        var dsDetail = new kendo.data.DataSource({
+            transport: {
+                read: {
+                    url: '@Url.Action("FindDetailSo", "SalesOrderProsesKonsolidasi")?id=' + Id,
+                    dataType: "json"
+                },
+            },
+            schema: {
+                total: "total",
+                data: "data",
+                model: {
+                    fields: {
+                        "NamaCustomer": { type: "string" }, "StrProduct": { type: "string" }, "Rute": { type: "string" }, "Tonase": { type: "number" , defaultValue: 0},
+                        "karton": { type: "number" , defaultValue: 0}, "Pallet": { type: "number" , defaultValue: 0}, "Container": { type: "number" , defaultValue: 0},
+                        "m3": { type: "number" , defaultValue: 0},
+                    }
+                }
+            },
+            aggregate: [
+                {field: "Tonase", aggregate: "sum"}, {field: "karton", aggregate: "sum" }, { field: "Pallet", aggregate: "sum" }, { field: "Container", aggregate: "sum" }, { field: "m3", aggregate: "sum" }],
+            pageSize: 10, pageable: true, sortable: true,
+        });
+
+        $("#GridDetailKonsoldasi").kendoGrid({
+            dataSource: dsDetail, filterable: kendoGridFilterable, sortable: true, reorderable: true, resizable: true, pageable: true,
+            columns: [
+            { field: "NamaCustomer", title: "Customer" }, { field: "StrProduct", title: "Jenis Barang" }, { field: "Rute", title: "Tujuan" },
+            { field: "Tonase", title: "Tonase", template: "#= Tonase != null ? Tonase : 0 #", footerTemplate: "Total : #=sum#" },
+            { field: "karton", title: "Karton", template: "#= karton != null ? karton    : 0 #", footerTemplate: "Total : #=sum#" },
+            { field: "Pallet", title: "Pallet", template: "#= Pallet != null ? Pallet : 0 #", footerTemplate: "Total : #=sum#" },
+            { field: "Container", title: "Container", template: "#= Container != null ? Container : 0 #", footerTemplate: "Total : #=sum#" },
+            { field: "m3", title: "m3", template: "#= m3 != null ? m3 : 0 #", footerTemplate: "Total : #=sum#" }
+            ],
+        });
+    } // --- # endregion grid # ---
+</script>
+}

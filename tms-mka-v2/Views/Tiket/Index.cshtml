@@ -1,0 +1,201 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "Tiket List";
+    string currentController = "Tiket";
+    string currentAction = "Index";
+}
+<div class="portlet light ">
+    <div class="portlet-title">
+        <div class="caption">
+            <span class="caption-subject font-dark sbold uppercase">@ViewBag.Title</span>
+        </div>
+        <div class="actions">
+            <a class="btn btn-sm green dropdown-toggle" href="@Url.Action("Add", "Tiket")">
+                <i class="fa fa-plus"></i>Add
+            </a>
+        </div>
+    </div>
+    <div class="portlet-body form">
+        <div class="portlet box blue ">
+            <div class="portlet-title">
+                <div class="caption">
+                    Hide Column :
+                </div>
+                <div class="tools">
+                    <a href="" class="expand"> </a>
+                </div>
+            </div>
+            <div class="portlet-body form" style="display: none;">
+                <form role="form">
+                    <div class="form-body">
+                        <div id="content-col" class="md-checkbox-inline" style="margin-left:10px"></div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div id="grid"></div>
+    </div>
+</div>
+
+@section scripts
+{
+    <script type="text/javascript">
+        function deleteItem(e) {
+            e.preventDefault();
+            var data = this.dataItem(getDataRowGrid(e));
+            goToDeletePage('@Url.Action("Delete")' + "?id=" + data.Id, this.dataSource);
+        }
+        function editItem(e) {
+            e.preventDefault();
+            var data = this.dataItem(getDataRowGrid(e));
+            window.location.href = "@Url.Action("Edit")" + "?id=" + data.Id;
+        }
+
+        $(document).ready(function () {
+            currController = '@currentController';
+            currAction = '@currentAction';
+            var ds = new kendo.data.DataSource({
+                transport: {
+                    read: {
+                        url: '@Url.Action("Binding")',
+                        dataType: "json"
+                    },
+                    parameterMap: function (options, operation) {
+                        if (operation !== "read" && options != '') {
+                            return kendo.stringify(options);
+                        }
+                        else if (operation == "read") {
+                            if (options.filter) {
+                                filter = options.filter.filters;
+                                for (var i in filter) {
+                                    if (filter[i].field == "NamaCustomer") {
+                                        filter[i].field = "Customer.CustomerNama";
+                                    }
+                                    if (filter[i].field == "KodeCustomer") {
+                                        filter[i].field = "Customer.CustomerCode";
+                                    }
+                                }
+                            }
+
+                            if (options.sort) {
+                                sort = options.sort;
+                                for (var i in sort) {
+                                    if (sort[i].field == "NamaCustomer") {
+                                        sort[i].field = "Customer.CustomerNama";
+                                    }
+                                    if (sort[i].field == "KodeCustomer") {
+                                        sort[i].field = "Customer.CustomerCode";
+                                    }
+                                }
+                            }
+                            return options;
+                        }
+                    }
+                },
+                schema: {
+                    total: "total",
+                    data: "data",
+                    model: {
+                        fields: {
+                            "Id": { type: "number" },
+                            "NoTiket": { type: "string" },
+                            "Subject": { type: "string" },
+                            "KodeCustomer": { type: "string" },
+                            "NamaCustomer": { type: "string" },
+                            "TanggalLapor": { type: "date" },
+                            "LastUpdate": { type: "date" },
+                            "Durasi": { type: "string" },
+                            "Tipe": { type: "string" },
+                            "Prioritas": { type: "string" },
+                            "Status": { type: "string" }
+                        }
+                    }
+                },
+                pageSize: 10,
+                pageable: true,
+                serverFiltering: true,
+                serverPaging: true,
+                serverSorting: true,
+                sortable: true,
+                //sort: { field: "SubmittedDate", dir: "desc" }
+            });
+
+            gridIndex = $("#grid").kendoGrid({
+                dataSource: ds,
+                filterable: kendoGridFilterable,
+                sortable: true,
+                reorderable: true,
+                resizable: true,
+                pageable: true,
+                groupable: true,
+                //height: "615",
+                columns: [
+                    {
+                        command: [
+                            {
+                                name: "edit",
+                                text: "edit",
+                                click: editItem,
+                                imageClass: "glyphicon glyphicon-edit",
+                                template: '<a class="k-button-icon #=className#" #=attr# href="\\#"><span class="#=imageClass#"></span></a>'
+                            },
+                            {
+                                name: "delete",
+                                text: "delete",
+                                click: deleteItem,
+                                imageClass: "glyphicon glyphicon-remove",
+                                template: '<a class="k-button-icon #=className#" #=attr# href="\\#"><span class="#=iconClass# #=imageClass#"></span></a>'
+                            }
+                        ],
+                        width: "60px"
+                    },
+                    {
+                        field: "NoTiket",
+                        title: "No Tiket",
+                    },
+                    {
+                        field: "Subject",
+                        title: "Subject",
+                    },
+                    {
+                        field: "KodeCustomer",
+                        title: "Pelapor",
+                    },
+                    {
+                        field: "NamaCustomer",
+                        title: "Nama Customer",
+                    },
+                    {
+                        field: "KodeDriver",
+                        title: "Kode Driver",
+                    },
+                    {
+                        field: "TanggalLapor",
+                        title: "Tanggal Lapor", template: "#= TanggalLapor != null ? kendo.toString(kendo.parseDate(TanggalLapor, 'yyyy-MM-dd'), 'dd/MM/yyyy') : ''#",
+                    },
+                    {
+                        field: "LastUpdate",
+                        title: "Last Update", template: "#= LastUpdate != null ? kendo.toString(kendo.parseDate(LastUpdate, 'yyyy-MM-dd'), 'dd/MM/yyyy') : ''#",
+                    },
+                    {
+                        field: "Durasi",
+                        title: "Durasi",
+                    },
+                    {
+                        field: "Tipe",
+                        title: "Tipe",
+                    },
+                    {
+                        field: "Prioritas",
+                        title: "Prioritas",
+                    },
+                    {
+                        field: "Status",
+                        title: "Status",
+                    }
+                ],
+            }).data("kendoGrid");
+            GetColomnData(gridIndex);
+        })
+    </script>
+}

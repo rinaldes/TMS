@@ -1,0 +1,1412 @@
+﻿@using tms_mka_v2.Models;
+@model tms_mka_v2.Models.Klaim
+@{
+    ViewBag.Title = "Form";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    string currentController = (string)ViewContext.RouteData.Values["controller"];
+    string currentAction = (string)ViewContext.RouteData.Values["action"];
+    string backLink = Url.Action("Index");
+    if (currentAction == "Add")
+    {
+        ViewBag.Title = "Tambah Klaim";
+    }
+    else
+    {
+        ViewBag.Title = ViewBag.name + " | Edit";
+    }
+}
+@if (User.HasMenuAccess("Klaim"))
+{
+<div class="portlet light">
+    <div class="portlet-title">
+        <div class="caption">
+            <span class="caption-subject font-dark sbold uppercase">@ViewBag.Title</span>
+        </div>
+    </div>
+    <div class="portlet-body form">
+        @using (@Html.BeginForm(currentAction, currentController, FormMethod.Post, new { @class = "form-horizontal", @id = "formsubmit" }))
+        {
+            @Html.ValidationSummary(true)
+            @Html.HiddenFor(model => model.Id)
+            @Html.HiddenFor(model => model.SOKlaimId)
+            @Html.HiddenFor(model => model.SOKlaimKontrakId)
+            <div class="row">
+                <div class="portlet light">
+                    <div class="portlet-title">
+                        <div class="caption font-green-sharp">
+                            <span class="caption-subject"> Data Sales Order</span>
+                        </div>
+                        <div class="tools">
+                            <a href="" class="collapse"> </a>
+                        </div>
+                    </div>
+                    <div class="portlet-body">
+                        <div class="row">
+                            @if (Model.Id == 0)
+                            {
+                                <button type="button" class="btn btn-success" data-toggle="modal" data-target="#modalGridSales">Browse Sales Order</button>
+                                <button type="button" class="btn btn-success" data-toggle="modal" data-target="#modalGridSalesKontrak">Browse Sales Order Kontrak</button>
+                            }
+                            @Html.ValidationMessageFor(model => model.SOKlaimId)
+                            <div class="form-group">
+                                <div class="col-md-12">
+                                    <div id="PartialSo"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="portlet light">
+                    <div class="portlet-title">
+                        <div class="caption font-green-sharp">
+                            <span class="caption-subject"> Data Klaim</span>
+                        </div>
+                        <div class="tools">
+                            <a href="" class="collapse"> </a>
+                        </div>
+                    </div>
+                    <div class="portlet-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.NoKlaim, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                                    <div class="col-md-9 col-sm-9 col-xs-12">
+                                        @Html.TextBoxFor(model => model.NoKlaim, new { @class = "form-control input-sm", @readonly = "true" })
+                                    </div>
+                                </div>
+                                @Html.HiddenFor(model => model.Driver1Id)
+                                <div class="form-group">
+                                    <label class="control-label col-md-3">ID Driver</label>
+                                    <div class="col-md-9">
+                                        <div class="input-group input-group-sm">
+                                            @Html.TextBoxFor(model => model.KodeDriver1, new { @class = "form-control input-sm", @readonly = true })
+                                            <span class="input-group-btn">
+                                                <button type="button" class="btn btn-success" data-toggle="modal" data-target="#ModalMasterDriver" onclick="caller = 1;">Browse</button>
+                                            </span>
+                                        </div>
+                                        @Html.ValidationMessageFor(model => model.Driver1Id)
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-md-3">Nama Driver</label>
+                                    <div class="col-md-9">
+                                        @Html.TextBoxFor(model => model.NamaDriver1, new { @class = "form-control input-sm", @readonly = true })
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.TanggalPengajuan, new { @class = "control-label col-md-3" })
+                                    <div class="col-md-9 col-sm-9 col-xs-12">
+                                        @Html.TextBoxFor(model => model.TanggalPengajuan, new { @class = "form-control-datepicker" })
+                                        @Html.ValidationMessageFor(model => model.TanggalPengajuan)
+                                    </div>
+                                </div>
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.NoPol, new { @class = "control-label col-md-3" })
+                                        <div class="col-md-9">
+                                            <div class="input-group input-group-sm">
+                                                @Html.HiddenFor(model => model.IdDataTruck)
+                                                @Html.TextBoxFor(model => model.NoPol, new { @class = "form-control", @readonly = "true" })
+                                                <span class="input-group-btn">
+                                                    <button type="button" class="btn btn-success" data-toggle="modal" data-target="#ModalMasterVehicleNo" onclick="caller = 2;">Browse</button>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.JnsTruck, new { @class = "control-label col-md-3" })
+                                        <div class="col-md-9">
+                                            @Html.TextBoxFor(model => model.JnsTruck, new { @class = "form-control input-sm", @readonly = "true" })
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.JenisPendingin, new { @class = "control-label col-md-3" })
+                                        <div class="col-md-9">
+                                            @Html.TextBoxFor(model => model.JenisPendingin, new { @class = "form-control input-sm", @readonly = "true" })
+                                        </div>
+                                    </div>
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.StatusClaim, new { @class = "control-label col-md-3" })
+                                    <div class="col-md-9">
+                                        @Html.TextBoxFor(model => model.StatusClaim, new { @class = "form-control input-sm" })
+                                        @Html.ValidationMessageFor(model => model.StatusClaim)
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.SumberInformasi, new { @class = "control-label col-md-3" })
+                                    <div class="col-md-9">
+                                        @Html.TextBoxFor(model => model.SumberInformasi, new { @class = "form-control input-sm" })
+                                        @Html.ValidationMessageFor(model => model.SumberInformasi)
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.ClaimType, new { @class = "control-label col-md-3" })
+                                    <div class="col-md-9">
+                                        @Html.TextBoxFor(model => model.ClaimType, new { @class = "form-control input-sm" })
+                                        @Html.ValidationMessageFor(model => model.ClaimType)
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.LaporanKejadian, new { @class = "control-label col-md-3" })
+                                    <div class="col-md-9">
+                                        @Html.TextAreaFor(model => model.LaporanKejadian, new { @class = "form-control input-sm" })
+                                        @Html.ValidationMessageFor(model => model.LaporanKejadian)
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.HasilPemeriksaan, new { @class = "control-label col-md-3" })
+                                    <div class="col-md-9">
+                                        @Html.TextAreaFor(model => model.HasilPemeriksaan, new { @class = "form-control input-sm" })
+                                        @Html.ValidationMessageFor(model => model.HasilPemeriksaan)
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.Penyelesaian, new { @class = "control-label col-md-3" })
+                                    <div class="col-md-9">
+                                        @Html.TextAreaFor(model => model.Penyelesaian, new { @class = "form-control input-sm" })
+                                        @Html.ValidationMessageFor(model => model.Penyelesaian)
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.NoBAP, new { @class = "control-label col-md-3" })
+                                    <div class="col-md-9">
+                                        <div class="input-group input-group-sm">
+                                            @Html.HiddenFor(model => model.IdBap)
+                                            @Html.TextBoxFor(model => model.NoBAP, new { @class = "form-control input-sm", @readonly = true })
+                                            <span class="input-group-btn">
+                                                <button type="button" class="btn btn-success" data-toggle="modal" data-target="#ModalBap">Browse</button>
+                                            </span>
+                                        </div>
+                                        @Html.ValidationMessageFor(model => model.NoBAP)
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.Kesalahan, new { @class = "control-label col-md-3" })
+                                    <div class="col-md-4">
+                                        <div class="col-md-6">
+                                            <label class="radio-inline">@Html.RadioButtonFor(model => model.Kesalahan, "Driver") Driver</label>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="radio-inline">@Html.RadioButtonFor(model => model.Kesalahan, "PihakLain") Pihak Lain</label>
+                                        </div>
+                                        @Html.ValidationMessageFor(model => model.Kesalahan)
+                                    </div>
+                                    <div class="col-md-5">
+                                        @{
+                                            if (Model.Kesalahan == "Driver")
+                                            {
+                                                @Html.TextBoxFor(model => model.KesalahanLain, new { @class = "form-control input-sm" })
+                                            }
+                                            else
+                                            {
+                                                @Html.TextBoxFor(model => model.KesalahanLain, new { @class = "form-control input-sm", @readonly = true })
+                                            }
+                                        }
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.IsClaim, new { @class = "control-label col-md-3" })
+                                    <label class="radio-inline">@Html.CheckBoxFor(model => model.IsClaim) Disetujui</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="portlet light">
+                    <div class="portlet-title">
+                        <div class="caption font-green-sharp">
+                            <span class="caption-subject">Klaim Detail</span>
+                        </div>
+                        <div class="tools">
+                            <a href="" class="collapse"> </a>
+                        </div>
+                    </div>
+                    <div class="portlet-body">
+                        <div class="row">
+                            <div class="col-md-12" style="margin-bottom:20px">
+                                <div id="GridProduct"></div>
+                                @Html.HiddenFor(model => model.strProduk)
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.TotalPengajuanClaim, new { @class = "control-label col-md-4" })
+                                    <div class="col-md-8">
+                                        @Html.TextBoxFor(model => model.TotalPengajuanClaim, new { @class = "form-control-numeric-idr" })
+                                        @Html.ValidationMessageFor(model => model.TotalPengajuanClaim)
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.NilaiDisetujui, new { @class = "control-label col-md-4" })
+                                    <div class="col-md-8">
+                                        @Html.TextBoxFor(model => model.NilaiDisetujui, new { @class = "form-control-numeric-idr", @onchange = "calculateKlaim()" })
+                                        @Html.ValidationMessageFor(model => model.NilaiDisetujui)
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-md-4">@Html.CheckBoxFor(model => model.AsuransiFlag) Asuransi <span></span></label>
+                                    <div class="col-md-8">
+                                        @Html.TextBoxFor(model => model.Asuransi, new { @class = "form-control-numeric-idr", @onchange = "calculateKlaim()" })
+                                        @Html.ValidationMessageFor(model => model.Asuransi)
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.BebanClaim, new { @class = "control-label col-md-4" })
+                                    <div class="col-md-8">
+                                        @Html.TextBoxFor(model => model.BebanClaim, new { @class = "form-control-numeric-idr", @onchange = "calculateKlaim()" })
+                                        @Html.ValidationMessageFor(model => model.BebanClaim)
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.BebanClaimDriverPercentage, new { @class = "control-label col-md-4" })
+                                    <div class="col-md-8">
+                                        @Html.TextBoxFor(model => model.BebanClaimDriver, new { @class = "form-control-numeric-idr", @onchange = "calculateKlaim()" })
+                                        @Html.ValidationMessageFor(model => model.BebanClaimDriver)
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.BebanClaimKantorPercentage, new { @class = "control-label col-md-4" })
+                                    <div class="col-md-8">
+                                        @Html.TextBoxFor(model => model.BebanClaimKantor, new { @class = "form-control-numeric-idr", @onchange = "calculateKlaim()" })
+                                        @Html.ValidationMessageFor(model => model.BebanClaimDriver)
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.Keterangan, new { @class = "control-label col-md-4" })
+                                    <div class="col-md-8">
+                                        @Html.TextAreaFor(model => model.Keterangan, new { @class = "form-control input-sm" })
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="portlet light">
+                    <div class="portlet-title">
+                        <div class="caption font-green-sharp">
+                            <span class="caption-subject">Attachment</span>
+                        </div>
+                        <div class="tools">
+                            <a href="" class="collapse"> </a>
+                        </div>
+                    </div>
+                    <div class="portlet-body">
+                        <div class="row">
+                            <div class="col-md-12" style="margin-bottom:20px">
+                                <div id="GridDokumen"></div>
+                                @Html.HiddenFor(model => model.StrAtt)
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="form-group">
+                    <div class="col-md-12">
+                        <button type="button" name="btnsave" value="save" class="btn btn-success" onclick="notifSave($('#formsubmit'),$(this).val());">Submit</button>
+                        <a href="@backLink" class="btn btn-link">Cancel</a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+    <div id="ModalMasterVehicleNo" class="modal fade bs-modal-full" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-full">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="GridMasterVehicleNo"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+<div id="modalGridSales" class="modal fade bs-modal-lg" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg" style="width:1340px">
+        <div id="modalForm" class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                <h4 class="modal-title">List Sales Order</h4>
+            </div>
+            <div class="modal-body">
+                <div id="GridSales"></div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="modalGridSalesKontrak" class="modal fade bs-modal-lg" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg" style="width:1340px">
+        <div id="modalForm" class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                <h4 class="modal-title">List Sales Order Kontrak</h4>
+            </div>
+            <div class="modal-body">
+                <div id="GridSalesKontrak"></div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="ModalBap" class="modal fade bs-modal-lg" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg" style="width:1340px">
+        <div id="modalForm" class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                <h4 class="modal-title">List BAP</h4>
+            </div>
+            <div class="modal-body">
+                <div id="GridBap"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn green" data-dismiss="modal" id="btnSelect">Submit</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@*Modal Customer*@
+<div id="ModalMasterDriver" class="modal fade bs-modal-full" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-full">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+            </div>
+            <div class="modal-body">
+                <div id="GridMasterDriver"></div>
+            </div>
+        </div>
+    </div>
+</div>
+@section scripts{
+    <script type="text/javascript">
+    var gridSo, gridBap, gridProduct, gridAtt;
+    function SelectVehicleNo(e) {
+        e.preventDefault();
+        var data = this.dataItem(getDataRowGrid(e));
+        $('#IdDataTruck').val(data.Id);
+        $('#NoPol').val(data.VehicleNo);
+        $('#JnsTruck').val(data.strJenisTruck);
+        $('#JenisPendingin').val(data.jenisPendingin);
+        $('#ModalMasterVehicleNo').modal('hide');
+    }
+
+    var dsVehicleNo = new kendo.data.DataSource({
+        transport: {
+            read: {
+                url: '@Url.Action("Binding", "DataTruck")',
+                dataType: "json"
+            },
+        },
+        schema: {
+            total: "total",
+            data: "data",
+            model: {
+                fields: {
+                    "Id": { type: "number" },
+                    "NoTruck": { type: "string" },
+                    "VehicleNo": { type: "string" },
+                    "strJenisTruck": { type: "string" },
+                    "jenisPendingin": { type: "string" },
+                    "Keterangan": { type: "string" },
+                }
+            }
+        },
+        pageSize: 10,
+        pageable: true,
+        serverFiltering: true,
+        serverPaging: true,
+        serverSorting: true,
+        sortable: true,
+        //sort: { field: "SubmittedDate", dir: "desc" }
+    })
+    gridVehicleNo = $("#GridMasterVehicleNo").kendoGrid({
+        dataSource: dsVehicleNo,
+        filterable: kendoGridFilterable,
+        sortable: true,
+        reorderable: true,
+        resizable: true,
+        pageable: true,
+        columns: [
+            {
+                command: [
+                 {
+                     name: "select",
+                     text: "Select",
+                     click: SelectVehicleNo,
+                     imageClass: "glyphicon glyphicon-ok",
+                     template: '<a class="k-button-icon #=className#" #=attr# href="\\#"><span class="#=iconClass# #=imageClass#"></span></a>'
+                 }
+                ],
+                width: "50px"
+            },
+            {
+                field: "NoTruck",
+                title: "No Truk"
+            },
+            {
+                field: "VehicleNo",
+                title: "No Vehicle"
+            },
+            {
+                field: "strJenisTruck",
+                title: "Jenis Truk"
+            },
+            {
+                field: "jenisPendingin",
+                title: "Jenis Pendingin"
+            },
+            {
+                field: "Keterangan",
+                title: "Keterangan"
+            },
+
+        ],
+    }).data("kendoGrid");
+
+
+    var dsMasterDriver = new kendo.data.DataSource({
+        transport: {read: {url: '/Driver/BindingDetailSo', dataType: "json"}},
+        schema: {
+            total: "total", data: "data",
+            model: {
+                fields: {
+                    "Id": {type: "number"}, "Status": {type: "string"}, "StatusSo" : {type: "string"},
+                    "KodeDriver": { type: "string" }, "KodeDriverOld": { type: "string" }, "NamaDriver": { type: "string" },
+                    "NamaPangilan": {type: "string"}, "DokumenPending": {type: "string"}, "TglBerlakuSim": {type: "string"},
+                    "Training": { type: "string" },
+                }
+            }
+        },
+        pageSize: 5, pageable: true, sortable: true,
+    });
+    var gridMasterDriver = $("#GridMasterDriver").kendoGrid({
+        dataSource: dsMasterDriver, filterable: kendoGridFilterable, sortable: true, reorderable: true, resizable: true,
+        pageable: true, groupable: true, columns: [
+            {
+                command: [
+                    {
+                        name: "select", text: "Select", click: SelectDriver, imageClass: "glyphicon glyphicon-ok",
+                        template: '<a class="k-button-icon #=className#" #=attr# href="\\#"><span class="#=iconClass# #=imageClass#"></span></a>'
+                    }
+                ],
+                width: "50px"
+            },
+            { field: "StatusSo", title: "Status Order" }, { field: "KodeDriver", title: "Kode Driver" },
+            { field: "KodeDriverOld", title: "Kode Driver Lama" },
+            { field: "NamaDriver", title: "Nama Driver", template: "<a href='\\#' data-toggle='modal' data-target='\\#ModalHistoryJalan' onclick='GetHistoryJalan(#:Id#)'> #= NamaDriver # </a>" },
+            { field: "NamaPangilan", title: "Nama Panggilan" }, { field: "DokumenPending", title: "Dokumen Pending" },
+            { field: "TglBerlakuSim", title: "Sim Expired", template: "#= TglBerlakuSim != null ? kendo.toString(kendo.parseDate(TglBerlakuSim, 'yyyy-MM-dd'), 'dd/MM/yyyy') : ''#" },
+            { field: "Training", title: "Training" },
+                {
+                    field: "VehicleNo",
+                    title: "No Vehicle"
+                },
+                {
+                    field: "strJenisTruck",
+                    title: "Jenis Truk"
+                },
+                {
+                    field: "JenisPendingin",
+                    title: "Jenis Pendingin"
+                }
+        ],
+    }).data("kendoGrid");
+    var dsProduct = new kendo.data.DataSource({
+        transport: {read: {url: '@Url.Action("BindingCbo", "Product")', dataType: "json"}}, schema: {model: {fields: {Id: { type: "number" }, NamaProduk: { type: "string" }}}},
+    });
+    var dsSo = new kendo.data.DataSource({
+        transport: {
+            read: {url: '@Url.Action("BindingSalesOrder")', dataType: "json"},
+            parameterMap: function (options, operation) {
+                if (operation !== "read" && options != '')
+                    return kendo.stringify(options);
+                else if (operation == "read") {
+                    if (options.filter) {
+                        filter = options.filter.filters;
+                        for (var i in filter) {
+                            if (filter[i].field == "TanggalKejadian")
+                                filter[i].field = "TanggalKejadian";
+                            if (filter[i].field == "NoBAP")
+                                filter[i].field = "NoBAP";
+                            if (filter[i].field == "NamaDriver1")
+                                filter[i].field = "Driver1.NamaDriver";
+                            if (filter[i].field == "NamaDriver2")
+                                filter[i].field = "Driver2.NamaDriver";
+                            if (filter[i].field == "VehicleNo")
+                                filter[i].field = "DataTruck.VehicleNo";
+                            if (filter[i].field == "TanggalMuat") {
+                                filter[i].field = "OrderTanggalMuat";
+                                Date.prototype.yyyymmdd = function () {
+                                    var mm = this.getMonth() + 1; // getMonth() is zero-based
+                                    var dd = this.getDate();
+                                    return [this.getFullYear(), (mm > 9 ? '' : '0') + mm, (dd > 9 ? '' : '0') + dd].join('-');
+                                };
+                                filter[i].value = filter[i].value.yyyymmdd()
+                            }
+                            if (filter[i].field == "StrKategori") {
+                                filter[i].field = "LookUpKategori.Nama";
+                            }
+                            if (filter[i].field == "NamaCustomer") {
+                                filter[i].field = "Customer.CustomerNama";
+                            }
+                            if (filter[i].field == "Driver1") {
+                                filter[i].field = "Driver.NamaDriver";
+                            }
+                        }
+                    }
+
+                    if (options.sort) {
+                        sort = options.sort;
+                        for (var i in sort) {
+                            if (sort[i].field == "TanggalKejadian") {
+                                sort[i].field = "TanggalKejadian";
+                            }
+                            if (sort[i].field == "NoBAP") {
+                                sort[i].field = "NoBAP";
+                            }
+                            if (sort[i].field == "NamaDriver1") {
+                                sort[i].field = "Driver1.NamaDriver";
+                            }
+                            if (sort[i].field == "NamaDriver2") {
+                                sort[i].field = "Driver2.NamaDriver";
+                            }
+                            if (sort[i].field == "VehicleNo") {
+                                sort[i].field = "DataTruck.VehicleNo";
+                            }
+                            if (sort[i].field == "StrKategori") {
+                                sort[i].field = "LookUpKategori.Nama";
+                            }
+                        }
+                    }
+                    return options;
+                }
+            }
+        },
+        schema: {
+            total: "total",
+            data: "data",
+            model: {
+                fields: {
+                    "Id": { type: "number" },
+                    "IdSoKontrak": { type: "number" },
+                    "DN": { type: "string" },
+                    "JenisOrder": { type: "string" },
+                    "SONumber": { type: "string" },
+                    "TanggalMuat": { type: "date" },
+                    "NamaCustomer": { type: "string" },
+                    "StrProduct": { type: "string" },
+                    "Suhu": { type: "number" },
+                    "Rute": { type: "string" },
+                    "StrMultidrop": { type: "string" },
+                    "StrJenisTruck": { type: "string" },
+                    "StatusFlow": { type: "string" },
+                    "FlowDate": { type: "date" },
+                    "StatusBatal": { type: "string" }, "StatusDokumen": { type: "string" }, "PenanganKhusus": { type: "string" }, "VehicleNo": { type: "string" },
+                    "Driver1": { type: "string" }, "DateRevised": { type: "boolean" }
+                }
+            }
+        },
+        pageSize: 10, pageable: true, sortable: true, serverFiltering: true, serverPaging: true, serverSorting: true
+    });
+
+    var dsSoKontrak = new kendo.data.DataSource({
+        transport: {
+            read: {url: '/BAP/BindingSalesOrderKontrak', dataType: "json"},
+            parameterMap: function (options, operation) {
+                if (operation !== "read" && options != '')
+                    return kendo.stringify(options);
+                else if (operation == "read") {
+                    if (options.filter) {
+                        filter = options.filter.filters;
+                        for (var i in filter) {
+                            if (filter[i].field == "SONumber")
+                                filter[i].field = "NoSo";
+                            if (filter[i].field == "TanggalKejadian")
+                                filter[i].field = "TanggalKejadian";
+                            if (filter[i].field == "NoBAP")
+                                filter[i].field = "NoBAP";
+                            if (filter[i].field == "VehicleNo")
+                                filter[i].field = "DataTruck.VehicleNo";
+                            if (filter[i].field == "TanggalMuat") {
+                                filter[i].field = "MuatDate";
+                                Date.prototype.yyyymmdd = function () {
+                                    var mm = this.getMonth() + 1; // getMonth() is zero-based
+                                    var dd = this.getDate();
+                                    return [this.getFullYear(), (mm > 9 ? '' : '0') + mm, (dd > 9 ? '' : '0') + dd].join('-');
+                                };
+                                filter[i].value = filter[i].value.yyyymmdd()
+                            }
+                            if (filter[i].field == "StrKategori")
+                                filter[i].field = "LookUpKategori.Nama";
+                            if (filter[i].field == "NamaCustomer")
+                                filter[i].field = "SalesOrderKontrak.Customer.CustomerNama";
+                            if (filter[i].field == "Driver1") {
+                                filter[i].field = "Driver1.NamaDriver";
+                            }
+                        }
+                    }
+
+                    if (options.sort) {
+                        sort = options.sort;
+                        for (var i in sort) {
+                            if (sort[i].field == "TanggalKejadian") {
+                                sort[i].field = "TanggalKejadian";
+                            }
+                            if (sort[i].field == "NoBAP") {
+                                sort[i].field = "NoBAP";
+                            }
+                            if (sort[i].field == "NamaDriver1") {
+                                sort[i].field = "Driver1.NamaDriver";
+                            }
+                            if (sort[i].field == "NamaDriver2") {
+                                sort[i].field = "Driver2.NamaDriver";
+                            }
+                            if (sort[i].field == "VehicleNo") {
+                                sort[i].field = "DataTruck.VehicleNo";
+                            }
+                            if (sort[i].field == "StrKategori") {
+                                sort[i].field = "LookUpKategori.Nama";
+                            }
+                        }
+                    }
+                    return options;
+                }
+            }
+        },
+        schema: {
+            total: "total",
+            data: "data",
+            model: {
+                fields: {
+                    "Id": { type: "number" },
+                    "IdSoKontrak": { type: "number" },
+                    "DN": { type: "string" },
+                    "JenisOrder": { type: "string" },
+                    "SONumber": { type: "string" },
+                    "TanggalMuat": { type: "date" },
+                    "NamaCustomer": { type: "string" },
+                    "StrProduct": { type: "string" },
+                    "Suhu": { type: "number" },
+                    "Rute": { type: "string" },
+                    "StrMultidrop": { type: "string" },
+                    "StrJenisTruck": { type: "string" },
+                    "StatusFlow": { type: "string" },
+                    "FlowDate": { type: "date" },
+                    "StatusBatal": { type: "string" },
+                    "StatusDokumen": { type: "string" },
+                    "PenanganKhusus": { type: "string" },
+                    "VehicleNo": { type: "string" },
+                    "Driver1": { type: "string" },
+                    "DateRevised": { type: "boolean" }
+                }
+            }
+        },
+        pageSize: 10, pageable: true, sortable: true, serverFiltering: true, serverPaging: true, serverSorting: true, sort: { field: "MuatDate", dir: "desc" }
+    });
+
+
+    var dsBap = new kendo.data.DataSource({
+        transport: {
+            read: {
+                url: '@Url.Action("BindingBAPForKlaim", "BAP")',
+                dataType: "json"
+            },
+            parameterMap: function (options, operation) {
+                if (operation !== "read" && options != '') {
+                    return kendo.stringify(options);
+                }
+                else if (operation == "read") {
+                    if (options.filter) {
+                        filter = options.filter.filters;
+                        for (var i in filter) {
+                            if (filter[i].field == "TanggalKejadian") {
+                                filter[i].field = "TanggalKejadian";
+                            }
+                            if (filter[i].field == "NoBAP") {
+                                filter[i].field = "NoBAP";
+                            }
+                            if (filter[i].field == "NamaDriver1") {
+                                filter[i].field = "Driver1.NamaDriver";
+                            }
+                            if (filter[i].field == "NamaDriver2") {
+                                filter[i].field = "Driver2.NamaDriver";
+                            }
+                            if (filter[i].field == "VehicleNo") {
+                                filter[i].field = "DataTruck.VehicleNo";
+                            }
+                            if (filter[i].field == "StrKategori") {
+                                filter[i].field = "LookUpKategori.Nama";
+                            }
+                        }
+                    }
+
+                    if (options.sort) {
+                        sort = options.sort;
+                        for (var i in sort) {
+                            if (sort[i].field == "TanggalKejadian") {
+                                sort[i].field = "TanggalKejadian";
+                            }
+                            if (sort[i].field == "NoBAP") {
+                                sort[i].field = "NoBAP";
+                            }
+                            if (sort[i].field == "NamaDriver1") {
+                                sort[i].field = "Driver1.NamaDriver";
+                            }
+                            if (sort[i].field == "NamaDriver2") {
+                                sort[i].field = "Driver2.NamaDriver";
+                            }
+                            if (sort[i].field == "VehicleNo") {
+                                sort[i].field = "DataTruck.VehicleNo";
+                            }
+                            if (sort[i].field == "StrKategori") {
+                                sort[i].field = "LookUpKategori.Nama";
+                            }
+                        }
+                    }
+                    return options;
+                }
+            }
+        },
+        schema: {
+            total: "total",
+            data: "data",
+            model: {
+                fields: {
+                    "Id": { type: "number" },
+                    "TanggalKejadian": { type: "date" },
+                    "NoBAP": { type: "string" },
+                    "NamaDriver1": { type: "string" },
+                    "NamaDriver2": { type: "string" },
+                    "VehicleNo": { type: "string" },
+                    "StrKategori": { type: "string" },
+                    "Status": { type: "string" },
+                }
+            }
+        },
+        pageSize: 10,
+        pageable: true,
+        sortable: true,
+    });
+    var dsGridProduct = [], dsGridAtt = [];
+    var checkedBap = {};
+    var checkedIdBap = {};
+    @{
+            if (Model.NoBAP != null)
+            {
+                string[] BapArr = Model.NoBAP.Split(new string[] { " , " }, StringSplitOptions.None);
+                foreach (string item in BapArr)
+                {
+                    <text>
+    checkedBap['@item'] = true;
+    </text>
+                }
+            }
+
+            if (Model.IdBap != null)
+            {
+                string[] IdBapArr = Model.IdBap.Split(new string[] { "," }, StringSplitOptions.None);
+                foreach (string item in IdBapArr)
+                {
+                <text>
+    checkedIdBap['@item'] = true;
+    </text>
+                }
+            }
+        }
+
+    @foreach (var item in Model.ListProduct)
+    	{
+            <text>
+    dsGridProduct.push({
+        IdProduct : @item.IdProduct,
+        NamaBarang : '@item.NamaBarang',
+        JenisBarang : '@item.JenisBarang',
+        Jumlah : @item.Jumlah,
+        NilaiKlaim : @item.NilaiKlaim,
+        Keterangan : '@item.Keterangan'
+    });
+    </text>
+	    }
+
+    @foreach (var item in Model.ListAtt)
+        {
+            <text>
+    dsGridAtt.push({
+        IdKlaim : @item.IdKlaim,
+        url : '@item.url',
+        filename : '@item.filename',
+        realfname : '@item.realfname',
+    });
+    </text>
+        }
+
+    function SelectDriver(e) {
+        e.preventDefault();
+        var data = this.dataItem(getDataRowGrid(e));
+        $('#Driver1Id').val(data.Id);
+        $('#KodeDriver1').val(data.KodeDriver);
+        $('#NamaDriver1').val(data.NamaDriver);
+        $('#IdDataTruck').val(data.IdDataTruck);
+        $('#NoPol').val(data.VehicleNo);
+        $('#JnsTruck').val(data.strJenisTruck);
+        $('#JenisPendingin').val(data.JenisPendingin);
+        $('#ModalMasterDriver').modal('hide');
+    }
+
+    function generateSoData(idSo, IdSoKontrak) {
+        $("#SOKlaimId").val(idSo);
+        $("#SOKlaimKontrakId").val(IdSoKontrak);
+    }
+
+    function SelectSo(e) {
+        e.preventDefault();
+        var data = this.dataItem(getDataRowGrid(e));
+        $.ajax({
+            url: 'GetPartialSo?idSo=' + data.Id + '&IdSoKontrak=' + data.IdSoKontrak,
+            contentType: 'application/html; charset=utf-8',
+            type: 'GET',
+            dataType: 'html'
+        }).success(function (res) {
+            generateSoData(data.Id, data.IdSoKontrak);
+            $('#PartialSo').html(res);
+            $('#KodeDriver1').val(data.Driver1.split(' - ')[0]);
+            $('#NamaDriver1').val(data.Driver1.split(' - ')[1]);
+            $('#NoPol').val(data.VehicleNo);
+            $('#JnsTruck').val(data.StrJenisTruck);
+            $('#JenisPendingin').val(data.JenisPendingin);
+        })
+
+        $('#modalGridSales').modal('hide');
+    }
+
+    function SelectSoKontrak(e) {
+        e.preventDefault();
+        var data = this.dataItem(getDataRowGrid(e));
+        $.ajax({
+            url: '/BAP/GetPartialSoKontrak?idSo=' + data.Id + '&IdSoKontrak=' + data.IdSoKontrak,
+            contentType: 'application/html; charset=utf-8',
+            type: 'GET',
+            dataType: 'html'
+        }).success(function (res) {
+            generateSoData(data.Id, data.IdSoKontrak);
+            $('#PartialSo').html(res);
+            $('#KodeDriver1').val(data.Driver1.split(' - ')[0]);
+            $('#NamaDriver1').val(data.Driver1.split(' - ')[1]);
+            $('#NoPol').val(data.VehicleNo);
+            $('#JnsTruck').val(data.StrJenisTruck);
+            $('#JenisPendingin').val(data.JenisPendingin);
+        })
+
+        $('#modalGridSalesKontrak').modal('hide');
+    }
+
+    function SelectBap(e) {
+        var checked = this.checked,
+        row = $(this).closest("tr"),
+        grid = $("#GridBap").data("kendoGrid"),
+        dataItem = grid.dataItem(row);
+
+        checkedBap[dataItem.NoBAP] = checked;
+        checkedIdBap[dataItem.Id] = checked;
+        if (checked) {
+            //-select the row
+            row.addClass("k-state-selected");
+        } else {
+            //-remove selection
+            row.removeClass("k-state-selected");
+        }
+    }
+
+    function onDataBound(e) {
+        var view = this.dataSource.view();
+        for (var i = 0; i < view.length; i++) {
+            if (checkedBap[view[i].NoBAP]) {
+                this.tbody.find("tr[data-uid='" + view[i].uid + "']")
+                .addClass("k-state-selected")
+                .find(".checkbox")
+                .attr("checked", "checked");
+            }
+        }
+    }
+
+    function ReadOnlyEditorTxt(container, options) {
+        $('<input class="k-input k-textbox" name="' + options.field + '" data-value-field="Value" data-bind="value:' + options.field + '"/>')
+                        .appendTo(container)
+                        .attr("readonly", "readonly");
+    }
+
+    function NamaBarangEditor(container, options) {
+        $('<input required  data-comboreq-msg="Nama Barang harus diisi." data-required-msg="Nama Barang harus diisi." data-text-field="NamaProduk" data-value-field="NamaProduk" data-bind="value:' + options.field + '" name="' + options.field + '"/>')
+                .appendTo(container)
+                .kendoComboBox({
+                    dataSource: dsProduct,
+                    dataTextField: "NamaProduk",
+                    dataValueField: "Id",
+                    filter: "contains",
+                    suggest: true,
+                    change: function () {
+                        var model = gridProduct.dataItem(this.element.closest("tr"));
+                        var val = this.value();
+                        $.ajax({
+                            url: '@Url.Action("FindByName", "Product")?name=' + val,
+                            type: 'GET',
+                            dataType: 'Json',
+                            cache: false,
+                            success: function (obj) {
+                                if (obj != null) {
+                                    console.log(obj)
+                                    model.set("IdProduct", obj.Id);
+                                    model.set("NamaBarang", obj.NamaProduk);
+                                    model.set("JenisBarang", obj.Kategori);
+                                }
+                                else {
+                                    model.set("IdProduct", "");
+                                    model.set("NamaBarang", "");
+                                    model.set("JenisBarang", "");
+                                }
+                            }
+                        })
+                    },
+                });
+        $("<span class='k-invalid-msg' data-for='" + options.field + "'></span>").appendTo(container);
+    }
+
+    $('input:radio[name="Kesalahan"]').change(function (e) {
+        if (this.value == "Driver") {
+            $("#KesalahanLain").prop('readonly', 'readonly');
+        } else if (this.value == "PihakLain") {
+            $("#KesalahanLain").prop('readonly', '');
+        }
+    });
+
+    $('input:checkbox[name="AsuransiFlag"]').change(function (e) {
+        if ($(this).is(":checked")) {
+            $("#Asuransi").data('kendoNumericTextBox').enable(true);
+        }
+        else {
+            $("#Asuransi").data('kendoNumericTextBox').enable(false);
+            $("#Asuransi").data('kendoNumericTextBox').value(0);
+        }
+    });
+    //attachment
+    var kendoUploadButton;
+    var filesAtt;
+    function FileTemplate(container, options) {
+        if (container.url != null) {
+            var extFile = container.url.split('.').pop();
+            var ExtensionImage = ["jpg", "jpeg", "pdf"];
+            if ($.inArray((extFile).toLowerCase(), ExtensionImage) !== -1) {
+                return '<a href="' + container.url.replace("~/", "") + '" target="blank_"> ' + container.realfname.replace(container.realfname.substr(0, 36), '') + ' </a>';
+            }
+        }
+    }
+
+    function onSelectImage(e) {
+        var flagExtension = 0;
+        var allowedExtension = [".jpg", ".jpeg", ".pdf"];
+        $.each(e.files, function (index, value) {
+            if ($.inArray((value.extension).toLowerCase(), allowedExtension) === -1) {
+                flagExtension = 1;
+            }
+        });
+        if (flagExtension == 1) {
+            alert("File yang diperbolehkan hanya berupa jpg/jpeg, pdf");
+            e.preventDefault();
+        }
+        kendoUploadButton = null;
+        setTimeout(function () {
+            //kendoUploadButton = $(".k-upload-selected");
+            //kendoUploadButton.hide();
+        }, 1);
+    }
+
+    function getlistFile(options) {
+        filesAtt = []
+        if (options.model.realfname != "" && options.model.realfname != null) {
+            filesAtt.push({ name: options.model.realfname })
+        }
+        return filesAtt;
+    }
+
+    function fileUploadEditor(container, options) {
+        $('<input type="file" name="files" id="files"/>')
+           .appendTo(container)
+           .kendoUpload({
+               multiple: false,
+               async: {
+                   saveUrl: "/FileManagement/Upload?Dir=~/Uploads",
+                   removeUrl: "/FileManagement/Delete?Dir=~/Uploads&temp=true",
+                   autoUpload: true
+               },
+               files: getlistFile(options),
+               select: onSelectImage,
+               success: function (e) {
+                   if (e.operation == "upload") {
+                       $(".k-filename:contains('" + e.files[0].name + "')").text('').append('<a href="' + e.response.imagelink + '" target="_blank">' + e.response.fileName.replace(e.response.fileName.substr(0, 36), '') + '</a>');
+                       e.files[0].name = e.response.fileName;
+                       options.model.set("realfname", e.response.fileName);
+                       options.model.set("url", e.response.imagelink);
+                   } else if (e.operation == "remove") {
+                       options.model.set("realfname", "");
+                       options.model.set("url", "");
+                   }
+               },
+           });
+        $("<span class='k-invalid-msg' data-for='Url'></span>").appendTo(container);
+        var filename = $("#files").data("kendoUpload").wrapper.find(".k-filename")
+        for (var i = 0; i < filename.length; i++) {
+            $(filename[i]).html("<a href='/Uploads/" + filesAtt[i].name + "' target='_blank'>" + filesAtt[i].name.replace(filesAtt[i].name.substr(0, 36), '') + "</a>")
+        }
+    }
+
+    function deleteAtt(e) {
+        e.preventDefault();
+        var data = this.dataItem(getDataRowGrid(e));
+        goToDeletePage("/Klaim/DeleteAttachment?custid=" + $("#Id").val() + "&id=" + data.id, this.dataSource);
+    }
+
+    $(document).ready(function () {
+        gridSo = $("#GridSales").kendoGrid({
+            dataSource: dsSo, filterable: kendoGridFilterable, sortable: true, reorderable: true, resizable: true, scrollable: true, pageable: true, groupable: true,
+            columns: [
+                {
+                    command: [
+                        {
+                            name: "select", text: "Select", click: SelectSo, imageClass: "glyphicon glyphicon-ok",
+                            template: '<a class="k-button-icon #=className#" #=attr# href="\\#"><span class="#=iconClass# #=imageClass#"></span></a>'
+                        }
+                    ],
+                    width: "50px"
+                },
+                { field: "JenisOrder", title: "Jenis Order", width: "100px" }, { field: "DN", title: "DN", width: "120px" },
+                { field: "SONumber", title: "No SO", width: "120px" },
+                {
+                    field: "TanggalMuat", title: "Tgl Muat", width: "100px",
+                    template: "#= TanggalMuat != null ? kendo.toString(kendo.parseDate(TanggalMuat, 'yyyy-MM-dd'), 'dd/MM/yyyy') : ''#" 
+                },
+                {
+                    field: "JamMuat", title: "Jam Muat", width: "100px",
+                    template: "#= JamMuat != null ? kendo.toString(new Date(1, 1, 1, JamMuat.Hours, JamMuat.Minutes), 'hh : mm') : ''#", filterable: false 
+                },
+                { field: "NamaCustomer", title: "Customer", width: "200px" }, { field: "StrProduct", title: "Jenis Barang", width: "150px" },
+                { field: "Suhu", title: "Target Suhu", width: "100px" }, { field: "Rute", title: "Rute", width: "150px" },
+                { field: "StrMultidrop", title: "Multidrop", width: "150px" },
+                { field: "StrJenisTruck", title: "Jenis Truck", width: "100px" },
+                { field: "JenisPendingin", title: "Jenis Pendingin", width: "100px" },
+                { field: "StatusBatal", title: "Status Batal", width: "150px" },
+                { field: "StatusDokumen", title: "Status Dokumen", width: "150px" },
+                { field: "PenanganKhusus", title: "Penangan Khusus", width: "300px" },
+                { width: "150px", field: "VehicleNo", title: "Vehicle No", },
+                { width: "150px", field: "Driver1", title: "Driver", },
+            ]
+        }).data("kendoGrid");
+        gridSoKontrak = $("#GridSalesKontrak").kendoGrid({
+            dataSource: dsSoKontrak, filterable: kendoGridFilterable, sortable: true, reorderable: true, resizable: true, scrollable: true, pageable: true, groupable: true, sort: { field: "MuatDate", dir: "desc" },
+            columns: [
+                {
+                    command: [
+                        {
+                            name: "select", text: "Select", click: SelectSoKontrak, imageClass: "glyphicon glyphicon-ok",
+                            template: '<a class="k-button-icon #=className#" #=attr# href="\\#"><span class="#=iconClass# #=imageClass#"></span></a>'
+                        }
+                    ],
+                    width: "50px"
+                },
+                { field: "JenisOrder", title: "Jenis Order", width: "100px" }, { field: "DN", title: "DN", width: "120px" },
+                { field: "SONumber", title: "No SO", width: "120px" },
+                {
+                    field: "TanggalMuat", title: "Tgl Muat", width: "100px",
+                    template: "#= TanggalMuat != null ? kendo.toString(kendo.parseDate(TanggalMuat, 'yyyy-MM-dd'), 'dd/MM/yyyy') : ''#" 
+                },
+                {
+                    field: "JamMuat", title: "Jam Muat", width: "100px",
+                    template: "#= JamMuat != null ? kendo.toString(new Date(1, 1, 1, JamMuat.Hours, JamMuat.Minutes), 'hh : mm') : ''#", filterable: false 
+                },
+                { field: "NamaCustomer", title: "Customer", width: "200px" }, { field: "StrProduct", title: "Jenis Barang", width: "150px" },
+                { field: "Suhu", title: "Target Suhu", width: "100px" }, { field: "Rute", title: "Rute", width: "150px" },
+                { field: "StrMultidrop", title: "Multidrop", width: "150px" },
+                { field: "StrJenisTruck", title: "Jenis Truck", width: "100px" },
+                { field: "JenisPendingin", title: "Jenis Pendingin", width: "100px" },
+                { field: "StatusBatal", title: "Status Batal", width: "150px" },
+                { field: "StatusDokumen", title: "Status Dokumen", width: "150px" },
+                { field: "PenanganKhusus", title: "Penangan Khusus", width: "300px" },
+                { width: "150px", field: "VehicleNo", title: "Vehicle No", },
+                { width: "150px", field: "Driver1", title: "Driver", },
+            ]
+        }).data("kendoGrid");
+
+        var dsStatus = new kendo.data.DataSource({
+            transport: {
+                read: {
+                    url: '@Url.Action("GetStatusKlaim")',
+                    dataType: "json"
+                },
+            },
+        });
+
+        var dsSumber = new kendo.data.DataSource({
+            transport: {
+                read: {
+                    url: '@Url.Action("GetSumberKlaim")',
+                        dataType: "json"
+                    },
+                },
+            });
+
+        var dsClaimType = new kendo.data.DataSource({
+            transport: {
+                read: {
+                    url: '@Url.Action("GetClaimType")',
+                    dataType: "json"
+                },
+            },
+        });
+            InitLookUp($("#StatusClaim"), dsStatus);
+            InitLookUp($("#SumberInformasi"), dsSumber);
+            InitLookUp($("#ClaimType"), dsClaimType);
+
+            gridBap = $("#GridBap").kendoGrid({
+                dataSource: dsBap,
+                filterable: kendoGridFilterable,
+                sortable: true,
+                reorderable: true,
+                resizable: true,
+                pageable: true,
+                groupable: true,
+                dataBound: onDataBound,
+                columns: [
+                    {
+                        template: "<input type='checkbox' class='checkbox' />",
+                        width: "50px"
+                    },
+                    {
+                        field: "TanggalKejadian", title: "Tanggal Kejadian", template: "#= kendo.toString(kendo.parseDate(TanggalKejadian, 'yyyy-MM-dd'), 'dd/MM/yyyy') #",
+                        groupHeaderTemplate: "Tanggal Masuk : #= TanggalKejadian != null ? kendo.toString(kendo.parseDate(TanggalKejadian, 'yyyy-MM-dd'), 'dd/MM/yyyy') : '' #"
+                    },
+                    {
+                        field: "JamKejadian", title: "Jam Kejadian", template: "#= JamKejadian != null ? kendo.toString(new Date(1, 1, 1, JamKejadian.Hours, JamKejadian.Minutes), 'hh : mm') : ''#",
+                        filterable: false
+                    },
+                    { field: "NoBAP", title: "No BAP" },
+                    { field: "NamaDriver1", title: "Driver 1" },
+                    { field: "NamaDriver2", title: "Driver 2" },
+                    { field: "VehicleNo", title: "Vehicle No" },
+                    { field: "StrKategori", title: "Kategori" },
+                    { field: "Status", title: "Status" },
+                ],
+            }).data("kendoGrid");
+            //bind click event to the checkbox
+            gridBap.table.on("click", ".checkbox", SelectBap);
+            $("#btnSelect").bind("click", function () {
+                var checked = [];
+                var checkedId = [];
+                for (var i in checkedBap) {
+                    if (checkedBap[i]) {
+                        checked.push(i);
+                    }
+                }
+                for (var i in checkedIdBap) {
+                    if (checkedIdBap[i]) {
+                        checkedId.push(i);
+                    }
+                }
+                $('#NoBAP').val(checked.join(' , '));
+                $('#IdBAP').val(checkedId.join(','));
+            });
+
+            gridProduct = $("#GridProduct").kendoGrid({
+                dataSource: {
+                    data: dsGridProduct,
+                    schema: {
+                        model: {
+                            id: "Id",
+                            fields: {
+                                IdProduct: { type: "number" },
+                                NamaBarang: {
+                                    type: "string",
+                                    validation: {
+                                        required: { message: "Nama Barang harus diisi." },
+                                        comboreq: function (input) {
+                                            if ($(input).data("kendoComboBox")) {
+                                                if ($(input).data("kendoComboBox").selectedIndex == -1) {
+                                                    return false;
+                                                }
+                                            }
+
+                                            return true;
+                                        },
+                                    }
+                                },
+                                JenisBarang: { type: "string" },
+                                Jumlah: {
+                                    type: "number",
+                                    validation: {
+                                        required: { message: "Jumlah harus diisi." }
+                                    }
+                                },
+                                NilaiKlaim: {
+                                    type: "number",
+                                    validation: {
+                                        required: { message: "Nilai Klaim harus diisi." }
+                                    }
+                                },
+                                Keterangan: { type: "string" }
+                            }
+                        }
+                    },
+                },
+                scrollable: false,
+                editable: { mode: "inline", confirmation: "Anda yakin menghapus data?" },
+                toolbar: [{ name: "create", text: "Tambah" }],
+                columns: [
+                    {
+                        command: [
+                            {
+                                name: "edit",
+                                text: "Edit",
+                                imageClass: "glyphicon glyphicon-edit",
+                                template: '<a class="k-button-icon #=className#" #=attr# title="edit" href="\\#"><span class="#=imageClass#"></span></a>'
+                            },
+                            {
+                                name: "destroy",
+                                text: "Hapus",
+                                imageClass: "glyphicon glyphicon-remove",
+                                template: '<a class="k-button-icon #=className#" #=attr# href="\\#" title="#=text#"><span class="#=imageClass#"></span></a>'
+                            }
+                        ],
+                        width: 90
+                    },
+                    { field: "NamaBarang", title: "Nama Barang", editor: NamaBarangEditor },
+                    { field: "JenisBarang", title: "Jenis Barang", editor: ReadOnlyEditorTxt },
+                    { field: "Jumlah", title: "Jumlah", template: '#: Jumlah == null ? 0 : kendo.format("{0:n}", Jumlah)#' },
+                    { field: "NilaiKlaim", title: "Nilai Klaim", template: 'Rp #: NilaiKlaim == null ? 0 : kendo.format("{0:n}", NilaiKlaim)#' },
+                    { field: "Keterangan", title: "Keterangan" }
+                ],
+                edit: function (e) {
+                    var detailCell = e.container.find("td:first");
+                    detailCell.html('');
+                    var commandCell = e.container.find("td:nth-child(1)");
+                    commandCell.html('<a class="k-button-icon k-grid-update form-inline" href="\\#" title="Simpan"><span class="glyphicon glyphicon-floppy-saved"></span></a> <a class="k-button-icon k-grid-cancel form-inline" href="\\#" title="Batal"><span class="glyphicon glyphicon-remove"></span></a>');
+                    var commandGroupCell = e.container.find("td:nth-child(0)");
+                    commandGroupCell.html('');
+                },
+            }).data("kendoGrid");
+
+            if ('@Model.SOKlaimId' != '0' && '@Model.SOKlaimId' != '') {
+            $.ajax({
+                url: 'GetPartialSo?idSo=' + '@Model.SOKlaimId' + '&IdSoKontrak=' + '@Model.SOKlaimKontrakId',
+                contentType: 'application/html; charset=utf-8',
+                type: 'GET',
+                dataType: 'html'
+            }).success(function (res) {
+                generateSoData('@Model.SOKlaimId', '@Model.SOKlaimKontrakId');
+                $('#PartialSo').html(res);
+            })
+        }
+
+        if ('@Model.Kesalahan' == "Driver") {
+            $("#KesalahanLain").prop('readonly', 'readonly');
+        } else if ('@Model.Kesalahan' == "PihakLain") {
+            $("#KesalahanLain").prop('readonly', '');
+        }
+
+        //cek asuransi
+        if ($("#AsuransiFlag").is(':checked')) {
+            $("#Asuransi").data('kendoNumericTextBox').enable(true);
+        } else {
+            $("#Asuransi").data('kendoNumericTextBox').value(0);
+            $("#Asuransi").data('kendoNumericTextBox').enable(false);
+        }
+        gridAtt = $("#GridDokumen").kendoGrid({
+            batch: true,
+            dataSource: {
+                data: dsGridAtt,
+                schema: {
+                    model: {
+                        id: "Id",
+                        fields: {
+                            "Id": { type: "number" , defaultValue: 0},
+                            "IdKlaim": { defaultValue: $("#Id").val(), type: "number" },
+                            "url": {
+                                type: "string",
+                                validation: {
+                                    required: { message: "File harus diisi." },
+                                }
+                            },
+                            "filename": {
+                                type: "string",
+                                validation: {
+                                    required: { message: "Nama harus diisi." },
+                                }
+                            },
+                            "realfname": { type: "string" }
+                        }
+                    },
+                },
+                pageSize: 10,
+            },
+            editable: { mode: "inline", confirmation: "Anda yakin menghapus data?" },
+            scrollable: false,
+            toolbar: [{ name: "create", text: "Tambah" }],
+            columns: [
+                {
+                    command: [
+                        {
+                            name: "edit",
+                            text: "Edit",
+                            imageClass: "glyphicon glyphicon-edit",
+                            template: '<a class="k-button-icon #=className#" #=attr# title="edit" href="\\#"><span class="#=imageClass#"></span></a>'
+                        },
+                        {
+                            name: "destroy",
+                            text: "Hapus",
+                            imageClass: "glyphicon glyphicon-remove",
+                            template: '<a class="k-button-icon #=className#" #=attr# href="\\#" title="#=text#"><span class="#=imageClass#"></span></a>'
+                        }
+                    ],
+                    width: 100
+                },
+                { field: "IdKlaim", hidden: true, },
+                { field: "filename", title: "Nama" },
+                { field: "realfname", hidden: true },
+                { field: "url", title: "File", template: FileTemplate, editor: fileUploadEditor }
+            ],
+            edit: function (e) {
+                var detailCell = e.container.find("td:first");
+                detailCell.html('');
+                var commandCell = e.container.find("td:nth-child(1)");
+                commandCell.html('<a class="k-button-icon k-grid-update form-inline" href="\\#" title="Simpan"><span class="glyphicon glyphicon-floppy-saved"></span></a> <a class="k-button-icon k-grid-cancel form-inline" href="\\#" title="Batal"><span class="glyphicon glyphicon-remove"></span></a>');
+                var commandGroupCell = e.container.find("td:nth-child(0)");
+                commandGroupCell.html('');
+            },
+        }).data("kendoGrid");
+    });
+
+    $('#formsubmit').submit(function (e) {
+        gridProduct.saveRow();
+        var data = gridProduct.dataSource.data();
+        $('#strProduk').val(JSON.stringify(data));
+        gridAtt.saveRow();
+        var dataAtt = gridAtt.dataSource.data();
+        $('#StrAtt').val(JSON.stringify(dataAtt));
+    })
+
+    function calculateKlaim(){
+        //            $('#BebanClaim').data("kendoNumericTextBox").value($('#NilaiDisetujui').data("kendoNumericTextBox").value() - $('#Asuransi').data("kendoNumericTextBox").value())
+        //            $('#BebanClaimDriver').data("kendoNumericTextBox").value($('#BebanClaimDriverPercentage').data("kendoNumericTextBox").value()/100.0*$('#BebanClaim').data("kendoNumericTextBox").value())
+        //         $('#BebanClaimKantor').data("kendoNumericTextBox").value($('#BebanClaimKantorPercentage').data("kendoNumericTextBox").value()/100.0*$('#BebanClaim').data("kendoNumericTextBox").value())
+    }
+    </script>
+}
+}
+else{
+    ViewBag.Title = "AccessDenied";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    <h1>Maaf, anda tidak memiliki hak akses yang cukup untuk mengakses halaman ini</h1>
+}

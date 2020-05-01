@@ -1,0 +1,25 @@
+﻿@using tms_mka_v2.Models;
+@using System.Web.Mvc.Html;
+
+@model tms_mka_v2.Models.SalesOrderPickup
+
+<div class="portlet light">
+    <div class="portlet-title">
+        <div class="caption font-green-sharp">
+            <span class="caption-subject"> Comment</span>
+        </div>
+        <div class="tools">
+            <a href="" class="collapse"> </a>
+        </div>
+    </div>
+    <div class="portlet-body">
+        <div class="form-group">
+            @Html.LabelFor(model => model.CommentUser, new { @class = "control-label col-md-1 col-sm-3 col-xs-12" })
+            <div class="col-md-11 col-sm-9 col-xs-12">
+                @Html.TextAreaFor(model => model.CommentUser, new { @class = "form-control input-sm" })
+                @Html.ValidationMessageFor(model => model.CommentUser)
+            </div>
+        </div>
+        <div id="GridComment"></div>
+    </div>
+</div>

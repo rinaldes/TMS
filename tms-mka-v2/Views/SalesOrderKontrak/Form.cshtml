@@ -1,0 +1,530 @@
+﻿@using tms_mka_v2.Models;
+
+@model tms_mka_v2.Models.SalesOrderKontrak
+@{
+    ViewBag.Title = "Form";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    string currentController = (string)ViewContext.RouteData.Values["controller"];
+    string currentAction = (string)ViewContext.RouteData.Values["action"];
+    string backLink = Url.Action("Index");
+    if (currentAction == "Add")
+    {
+        ViewBag.Title = "Tambah Sales Order Kontrak";
+    }
+    else
+    {
+        ViewBag.Title = ViewBag.name + " | Edit";
+    }
+}
+<style>
+    .fc-event {
+        border: 1px solid #3a87ad;
+        background-color: #0026ff;
+        height: 60px !important;
+    }
+    .fc-sun { 
+        color:red;  
+        background-color:#ffa9a9;
+    }
+</style>
+<script src="~/Content/metronic/assets/global/scripts/date.js" type="text/javascript"></script>
+<div class="portlet light">
+    <div class="portlet-title">
+        <div class="caption">
+            <span class="caption-subject font-dark sbold uppercase">@ViewBag.Title</span>
+        </div>
+    </div>
+    <div class="portlet-body form">
+        @using (@Html.BeginForm(currentAction, currentController, FormMethod.Post, new { @class = "form-horizontal", @id = "formsubmit" }))
+        {
+        @Html.ValidationSummary(true)
+        @Html.HiddenFor(model => model.SalesOrderId)
+        @Html.HiddenFor(model => model.SalesOrderKontrakId)
+        @Html.HiddenFor(model => model.Status)
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.SONumber, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                    <div class="col-md-9 col-sm-9 col-xs-12">
+                        @Html.TextBoxFor(model => model.SONumber, new { @class = "form-control input-sm", @readonly = "true" })
+                    </div>
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(model => model.KodeCustomer, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                    <div class="col-md-9 col-sm-9 col-xs-12">
+                        <div class="input-group input-group-sm">
+                            @Html.HiddenFor(model => model.CustomerId)
+                            @Html.TextBoxFor(model => model.KodeCustomer, new { @class = "form-control", @readonly = "true" })
+                            <span class="input-group-btn">
+                                <button type="button" class="btn btn-success" data-toggle="modal" data-target="#modalGridCust">Browse</button>
+                            </span>
+
+                        </div>
+                        @Html.ValidationMessageFor(model => model.KodeCustomer)
+                    </div>
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(model => model.KodeNama, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                    <div class="col-md-9 col-sm-9 col-xs-12">
+                        @Html.TextBoxFor(model => model.KodeNama, new { @class = "form-control input-sm", @readonly = "true" })
+                    </div>
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(model => model.NamaCustomer, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                    <div class="col-md-9 col-sm-9 col-xs-12">
+                        @Html.TextBoxFor(model => model.NamaCustomer, new { @class = "form-control input-sm", @readonly = "true" })
+                    </div>
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(model => model.StatusKredit, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                    <div class="col-md-9 col-sm-9 col-xs-12">
+                        @Html.TextBoxFor(model => model.StatusKredit, new { @class = "form-control input-sm", @readonly = "true" })
+                    </div>
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(model => model.ProductId, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                    <div class="col-md-9 col-sm-9 col-xs-12">
+                        @Html.TextBoxFor(model => model.ProductId, new { @class = "form-control input-sm" })
+                        @*@Html.ValidationMessageFor(model => model.ProductId)*@
+                    </div>
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Suhu, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                    <div class="col-md-9 col-sm-9 col-xs-12">
+                        @Html.TextBoxFor(model => model.Suhu, new { @class = "form-control-numeric-suhu", @readonly = "true" })
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.PeriodStr, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                    <div class="col-md-4 col-sm-9 col-xs-12">
+                        @Html.TextBoxFor(model => model.PeriodStr, new { @class = "form-control input-sm" })
+                        @Html.ValidationMessageFor(model => model.PeriodStr)
+                    </div>
+                    @Html.LabelFor(model => model.PeriodEnd, new { @class = "control-label col-md-1 col-sm-3 col-xs-12" })
+                    <div class="col-md-4 col-sm-9 col-xs-12">
+                        @Html.TextBoxFor(model => model.PeriodEnd, new { @class = "form-control input-sm" })
+                        @Html.ValidationMessageFor(model => model.PeriodEnd)
+                    </div>
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(model => model.JamMuat, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                    <div class="col-md-9 col-sm-9 col-xs-12">
+                        <div class="input-group input-group-sm">
+                            @Html.TextBoxFor(model => model.JamMuat, new { @class = "form-control input-sm timepicker timepicker-24" })
+                            <span class="input-group-btn">
+                                <button class="btn btn-sm default" type="button">
+                                    <i class="fa fa-clock-o"></i>
+                                </button>
+                            </span>
+                        </div>
+                        @Html.ValidationMessageFor(model => model.JamMuat)
+                    </div>
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(model => model.JenisTruckId, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                    <div class="col-md-9 col-sm-9 col-xs-12">
+                        @Html.TextBoxFor(model => model.JenisTruckId, new { @class = "form-control input-sm" })
+                        @Html.ValidationMessageFor(model => model.JenisTruckId)
+                    </div>
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(model => model.JumlahTruck, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                    <div class="col-md-9 col-sm-9 col-xs-12">
+                        @Html.TextBoxFor(model => model.JumlahTruck, new { @class = "form-control-numeric" })
+                        @Html.ValidationMessageFor(model => model.JumlahTruck)
+                    </div>
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Rit, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                    <div class="col-md-9 col-sm-9 col-xs-12">
+                        @Html.TextBoxFor(model => model.Rit, new { @class = "form-control-numeric-rit" })
+                        @Html.ValidationMessageFor(model => model.Rit)
+                    </div>
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Keterangan, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                    <div class="col-md-9 col-sm-9 col-xs-12">
+                        @Html.TextAreaFor(model => model.Keterangan, new { @class = "form-control input-sm" })
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="portlet light">
+                <div class="portlet-title">
+                    <div class="caption font-green-sharp">
+                        <span class="caption-subject"> Tanggal Muat</span>
+                    </div>
+                    <div class="tools">
+                        <a href="" class="collapse"> </a>
+                    </div>
+                </div>
+                <div class="portlet-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <div id="calendars"></div>
+                                @Html.HiddenFor(model => model.JsonDateMuat)
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                @Html.Label("Jumlah Hari", new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                                <div class="col-md-9 col-sm-9 col-xs-12">
+                                    @Html.TextBoxFor(model => model.JumHari, new { @class = "form-control input-sm", @readonly = "true" })
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                @Html.Label("Hari Kerja", new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                                <div class="col-md-9 col-sm-9 col-xs-12">
+                                    @Html.TextBoxFor(model => model.Kerja, new { @class = "form-control input-sm"})
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                @Html.Label("Jumlah Libur", new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                                <div class="col-md-9 col-sm-9 col-xs-12">
+                                    @Html.TextBoxFor(model => model.libur, new { @class = "form-control input-sm"})
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="form-group">
+                <div class="col-md-12">
+                    <button type="button" name="btnsave" value="save" class="btn btn-success" onclick="notifSave($('#formsubmit'),$(this).val());">Submit</button>
+                    <button type="submit" name="btnsave" value="draft" class="btn btn-success">Save As Draft</button>
+                    <a href="@backLink" class="btn btn-link">Cancel</a>
+                </div>
+            </div>
+        </div>
+        }
+    </div>
+</div>
+<div id="modalGridCust" class="modal fade bs-modal-lg" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div id="modalForm" class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                <h4 class="modal-title">List Customer</h4>
+            </div>
+            <div class="modal-body">
+                <div id="GridCust"></div>
+            </div>
+        </div>
+    </div>
+</div>
+@section scripts{
+    <script type="text/javascript">
+        var dsCust;
+        var gridCust;
+        var dsProduct, cboproduct;
+        var date_selected = [], event_soure = [];
+        var calendarKontrak;
+
+        @if (ViewBag.errorMsg != null)
+    {
+        <text>
+        swal({
+            title: "Error",
+            type: 'error',
+            text: '@ViewBag.errorMsg',
+            showCloseButton: true,
+        })
+        </text>
+    }
+
+
+
+        @if (Model.JsonDateMuat != null && Model.JsonDateMuat != "")
+        {
+            foreach (var item in Model.JsonDateMuat.Split('|'))
+            {
+                <text>
+        date_selected.push('@DateTime.Parse(item).ToShortDateString()');
+        event_soure.push({ title: '', start: '@DateTime.Parse(item).Year' + '-' + '@DateTime.Parse(item).Month.ToString("00")' + '-' + '@DateTime.Parse(item).Day.ToString("00")', allDay: true });
+        </text>
+            }
+        }
+
+        function SelectCust(e) {
+            e.preventDefault();
+            var data = this.dataItem(getDataRowGrid(e));
+            $('#CustomerId').val(data.Id);
+            $('#modalGridCust').modal('hide');
+            callAjax(data.Id, false);
+        }
+
+        function callAjax(id, overide) {
+            $.ajax({
+                url: '@Url.Action("GetDataForSO", "Customer")',
+                type: 'POST',
+                dataType: 'Json',
+                data: {
+                    id: id,
+                },
+                cache: false,
+                success: function (res) {
+                    $('#KodeCustomer').val(res.Kode);
+                    $('#KodeNama').val(res.KodeNama);
+                    $('#NamaCustomer').val(res.Nama);
+                    dsProduct = new kendo.data.DataSource({
+                        transport: {
+                            read: {
+                                url: '@Url.Action("BindingProduct", "Customer")?idCust=' + id,
+                                dataType: "json"
+                            },
+                        },
+                        schema: {
+                            data: "data",
+                            model: {
+                                fields: {
+                                    idProduk: { type: "number" },
+                                    NamaProduct: { type: "string" },
+                                }
+                            }
+                        },
+                    });
+                    cboproduct.text('');
+                    cboproduct.value();
+                    cboproduct.setDataSource(dsProduct);
+                    $('#Suhu').data("kendoNumericTextBox").value('');
+                    if (overide == true)
+                    {
+                        cboproduct.value(@Model.ProductId);
+                        $.ajax({
+                            url: '@Url.Action("getTreatmentProduct", "Customer")',
+                            type: 'POST',
+                            dataType: 'Json',
+                            data: {
+                                id: cboproduct.text(),
+                                idCust: $("#CustomerId").val()
+                            },
+                            cache: false,
+                            success: function (res) {
+                                $('#Suhu').data("kendoNumericTextBox").value(res.suhu);
+                            }
+                        })
+                    }
+                }
+            })
+        }
+
+        function onProductChange(e) {
+            if (this.text() != '') {
+                $.ajax({
+                    url: '@Url.Action("getTreatmentProduct", "Customer")',
+                    type: 'POST',
+                    dataType: 'Json',
+                    data: {
+                        id: this.value(),
+                        idCust: $("#CustomerId").val()
+                    },
+                    cache: false,
+                    success: function (res) {
+                        $('#Suhu').data("kendoNumericTextBox").value(res.suhu);
+                    }
+                })
+            }
+            else {
+                $('#Suhu').data("kendoNumericTextBox").value('');
+            }
+        }
+
+        $(document).ready(function () {
+
+            @if (Model.existingMuatDate != null && Model.existingMuatDate != "")
+        {
+            <text>
+            swal("Tanggal muat untuk customer tersebut sudah ada",'@Model.existingMuatDate',"error");
+            </text>
+        }
+
+            CreateDateRange($('#PeriodStr'),$('#PeriodEnd'));
+
+            $("#PeriodStr").data('kendoDatePicker').bind("change", function (e) {
+                calendarKontrak.fullCalendar( 'gotoDate', this.value() );
+                var data = calendarKontrak.fullCalendar('clientEvents');
+                for (var i = 0 ; i < data.length ; i++)
+                {
+                    calendarKontrak.fullCalendar('removeEvents',data[i]._id);
+                }
+
+                date_selected = [];
+                event_soure = [];
+                $("#JumHari").val(0);
+                $("#Kerja").val(0);
+                $("#libur").val(0);
+                $('#JsonDateMuat').val('');
+            });
+
+            $("#PeriodEnd").data('kendoDatePicker').bind("change", function (e) {
+                var data = calendarKontrak.fullCalendar('clientEvents');
+                for (var i = 0 ; i < data.length ; i++)
+                {
+                    calendarKontrak.fullCalendar('removeEvents',data[i]._id);
+                }
+                date_selected = [];
+                event_soure = [];
+                $("#JumHari").val(0);
+                $("#Kerja").val(0);
+                $("#libur").val(0);
+                $('#JsonDateMuat').val('');
+            });
+
+            $("#JenisTruckId").kendoComboBox({
+                dataSource: {
+                    transport: {
+                        read: {
+                            url: '@Url.Action("GetJnsTruck","JenisTruck")',
+                            dataType: "json"
+                        },
+                    },
+                },
+                dataTextField: "StrJenisTruck",
+                dataValueField: "Id",
+                filter: "contains",
+                suggest: true,
+            });
+
+            cboproduct = $("#ProductId").kendoComboBox({
+                dataTextField: "NamaProduct",
+                dataValueField: "idProduk",
+                filter: "contains",
+                suggest: true,
+                change: onProductChange
+            }).data("kendoComboBox");
+
+            dsCust = new kendo.data.DataSource({
+                transport: {
+                    read: {
+                        url: '/Customer/Binding/',
+                        dataType: "json"
+                    },
+                },
+                schema: {
+                    total: "total",
+                    data: "data",
+                    model: {
+                        fields: {
+                            "Id": { type: "number" },
+                            "CustomerCode": { type: "string" },
+                            "CustomerCodeOld": { type: "string" },
+                            "CustomerNama": { type: "string" },
+                            "WajibPO": { type: "boolean" },
+                            "WajibGPS": { type: "boolean" },
+                            "SpecialTreatment": { type: "string" }
+                        }
+                    }
+                },
+                pageSize: 10,
+                pageable: true,
+                serverFiltering: true,
+                serverPaging: true,
+                serverSorting: true,
+                sortable: true,
+            });
+
+            gridCust = $("#GridCust").kendoGrid({
+                dataSource: dsCust,
+                filterable: kendoGridFilterable,
+                sortable: true,
+                reorderable: true,
+                resizable: true,
+                pageable: true,
+                columns: [
+                    {
+                        command: [
+                            {
+                                name: "select",
+                                text: "Select",
+                                click: SelectCust,
+                                imageClass: "glyphicon glyphicon-ok",
+                                template: '<a class="k-button-icon #=className#" #=attr# href="\\#"><span class="#=iconClass# #=imageClass#"></span></a>'
+                            }
+                        ],
+                        width: "50px"
+                    },
+                    { field: "CustomerCode", title: "Kode Customer" },
+                    { field: "CustomerCodeOld", title: "Kode Nama" },
+                    { field: "CustomerNama", title: "Nama Customer" },
+                    { field: "WajibPO", title: "Wajib PO", template: "#: WajibPO ? 'Ya' : 'Tidak' #" },
+                    { field: "WajibGPS", title: "Wajib GPS", template: "#: WajibGPS ? 'Ya' : 'Tidak' #" },
+                    { field: "SpecialTreatment", title: "Prioritas" },
+                ],
+            }).data("kendoGrid");
+
+            calendarKontrak = $('#calendars').fullCalendar({
+                header: {
+                    right: 'prev || next'
+                },
+                dayClick: function (date, allDay, jsEvent, view) {
+                    // ambil date value
+                    var data = date.format('DD/MM/YYYY');
+                    var dayname = date.format('dddd');
+                    // ambil index dalam array
+                    var index = $.inArray(data, date_selected);
+                    //cek apakah sudah ada event pada hari bersangkutan
+                    var date2 = new Date(date.year(), date.month(), date.date() + 1);
+                    var todaysEvents = $('#calendars').fullCalendar('clientEvents', function (event) {
+                        return event.start >= date && event.start < date2;
+                    });
+                    // cek array
+                    if (index === -1) {
+                        var periodeStart = new Date(getDateFromFormat($('#PeriodStr').val(), "dd/MM/yyyy"));
+                        var periodeEnd = new Date(getDateFromFormat($('#PeriodEnd').val(), "dd/MM/yyyy"));
+                        var currentDate = new Date(getDateFromFormat(data, "dd/MM/yyyy"));
+                        if (currentDate >= periodeStart && currentDate <= periodeEnd) {
+                            date_selected.push(data);
+                            $('#calendars').fullCalendar('renderEvent', { start: date, allDay: true }, true);
+                            $("#JumHari").val(parseInt($("#JumHari").val()) + 1);
+                        }
+                    } else if (index !== -1) {
+                        date_selected.splice(index, 1);
+                        $('#calendars').fullCalendar('removeEvents', todaysEvents[0]._id);
+                        $("#JumHari").val(parseInt($("#JumHari").val()) - 1);
+                    }
+                    //paksakeun
+                    $('#JsonDateMuat').val(date_selected.join('|'));
+                },
+                eventClick: function (calEvent, jsEvent, view) {
+                    //hapus array
+                    console.log(calEvent)
+                    var data = calEvent.start.format('DD/MM/YYYY');
+                    var dayname = calEvent.start.format('dddd');
+                    var index = $.inArray(data, date_selected);
+                    date_selected.splice(index, 1);
+                    $('#JsonDateMuat').val(date_selected.join('|'));
+                    //hapus event
+                    $('#calendars').fullCalendar('removeEvents', calEvent._id);
+                    $("#JumHari").val(parseInt($("#JumHari").val()) - 1);
+                },
+            });
+            $('#calendars').fullCalendar('addEventSource', event_soure)
+
+            @if(Model.PeriodStr.HasValue)
+        {
+            <text>
+            $('#calendars').fullCalendar( 'gotoDate', $("#PeriodStr").data('kendoDatePicker').value() );
+            </text>
+        }
+
+            //kondisi edit
+            @if (Model.CustomerId != 0 && Model.CustomerId != null)
+            {
+                <text>
+            callAjax(@Model.CustomerId, true);
+            </text>
+            }
+
+            $('#formsubmit').submit(function (e) {
+
+            })
+        })
+    </script>
+}

@@ -1,0 +1,352 @@
+﻿<div class="page-header">
+    <!-- BEGIN HEADER TOP -->
+    <div class="page-header-top">
+        <div class="container">
+            <!-- BEGIN LOGO -->
+            <div class="page-logo">
+                <a href="index.html">
+                    <img src="~/Content/img/logoMKA1.png" alt="logo" class="logo-default">
+                </a>
+            </div>
+            <!-- END LOGO -->
+            <!-- BEGIN RESPONSIVE MENU TOGGLER -->
+            <a href="javascript:;" class="menu-toggler"></a>
+            <!-- END RESPONSIVE MENU TOGGLER -->
+            <!-- BEGIN TOP NAVIGATION MENU -->
+            <div class="top-menu">
+                <ul class="nav navbar-nav pull-right">
+                    <!-- BEGIN USER LOGIN DROPDOWN -->
+                    <li class="dropdown dropdown-user dropdown-dark">
+                        <a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" data-close-others="true">
+                            <img alt="" class="img-circle" style="width:50px" src="@User.path_foto">
+                            <span class="username username-hide-mobile">
+                                @User.firstname @User.lastname
+                            </span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-default">
+                            <li>
+                                <a href="page_user_profile_1.html">
+                                    <i class="icon-user"></i> My Profile
+                                </a>
+                            </li>
+                            <li>
+                                <a href="app_calendar.html">
+                                    <i class="icon-calendar"></i> My Calendar
+                                </a>
+                            </li>
+                            <li>
+                                <a href="app_inbox.html">
+                                    <i class="icon-envelope-open"></i> My Inbox
+                                    <span class="badge badge-danger"> 3 </span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="app_todo_2.html">
+                                    <i class="icon-rocket"></i> My Tasks
+                                    <span class="badge badge-success"> 7 </span>
+                                </a>
+                            </li>
+                            <li class="divider"> </li>
+                            <li>
+                                <a href="page_user_lock_1.html">
+                                    <i class="icon-lock"></i> Lock Screen
+                                </a>
+                            </li>
+                            <li>
+                                <a href="page_user_login_1.html">
+                                    <i class="icon-key"></i> Log Out
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    <!-- END USER LOGIN DROPDOWN -->
+                </ul>
+            </div>
+            <!-- END TOP NAVIGATION MENU -->
+        </div>
+    </div>
+    <!-- END HEADER TOP -->
+    <!-- BEGIN HEADER MENU -->
+    <div class="page-header-menu">
+        <div class="container">
+            <!-- END HEADER SEARCH BOX -->
+            <!-- BEGIN MEGA MENU -->
+            <!-- DOC: Apply "hor-menu-light" class after the "hor-menu" class below to have a horizontal menu with white background -->
+            <!-- DOC: Remove data-hover="dropdown" and data-close-others="true" attributes below to disable the dropdown opening on mouse hover -->
+            <div class="hor-menu  ">
+                <ul class="nav navbar-nav">
+                    <li class="menu-dropdown mega-menu-dropdown  ">
+                        <a href="javascript:;">
+                            Master Data
+                            <span class="arrow"></span>
+                        </a>
+                        <ul class="dropdown-menu" style="min-width: 400px">
+                            <li>
+                                <div class="mega-menu-content">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <ul class="mega-menu-submenu">
+                                                <li>
+                                                    <a href="@Url.Action("Index","Customer")" target="_blank"> Customer </a>
+                                                </li>
+                                                <li>
+                                                    <a href="@Url.Action("Index","Product")" target="_blank"> Master Produk </a>
+                                                </li>
+                                                <li>
+                                                    <a href="@Url.Action("Index","JenisTruck")" target="_blank"> Jenis Truk </a>
+                                                </li>
+                                                <li>
+                                                    <a href="@Url.Action("Index", "VendorGps")" target="_blank"> Vendor GPS </a>
+                                                </li>
+                                                <li class="dropdown-submenu">
+                                                    <a href="javascript:;"> Unit </a>
+                                                    <ul class="dropdown-menu">
+                                                        <li>
+                                                            <a href="@Url.Action("Index","DataTruck")" target="_blank"> Data Truk </a>
+                                                        </li>
+                                                        <li>
+                                                            <a href="@Url.Action("Index","DataPendingin")" target="_blank"> Data Pendingin </a>
+                                                        </li>
+                                                        <li>
+                                                            <a href="@Url.Action("Index","DataBox")" target="_blank"> Data Box </a>
+                                                        </li>
+                                                        <li>
+                                                            <a href="@Url.Action("Index","DataGPS")" target="_blank"> Data GPS </a>
+                                                        </li>
+                                                        <li>
+                                                            <a href="@Url.Action("Index","UnitList")" target="_blank"> Unit List </a>
+                                                        </li>
+                                                    </ul>
+                                                </li>
+                                                <li>
+                                                    <a href="@Url.Action("Index","Rekening")" target="_blank"> Rekening </a>
+                                                </li>
+                                                <li>
+                                                    <a href="@Url.Action("Index","LookUpCode")" target="_blank"> Lookup Codes </a>
+                                                </li>
+                                                <li class="dropdown-submenu">
+                                                    <a href="javascript:;"> Borongan </a>
+                                                    <ul class="dropdown-menu">
+                                                        <li>
+                                                            <a href="@Url.Action("Index","MasterSolar")" target="_blank"> Master Solar </a>
+                                                        </li>
+                                                        <li>
+                                                            <a href="@Url.Action("Index","FaktorBorongan")" target="_blank"> Faktor Borongan </a>
+                                                        </li>
+                                                        <li>
+                                                            <a href="@Url.Action("Index","DataBorongan")" target="_blank"> Data Boronogan </a>
+                                                        </li>
+                                                    </ul>
+                                                </li>
+                                                <li>
+                                                    <a href="@Url.Action("index","area")" target="_blank">Master Area</a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <ul class="mega-menu-submenu">
+                                                <li>
+                                                    <a href="@Url.Action("Index","JnsTol")" target="_blank"> Tol </a>
+                                                </li>
+                                                <li>
+                                                    <a href="@Url.Action("Index","RuteTol")" target="_blank"> Rute Tol </a>
+                                                </li>
+                                                <li>
+                                                    <a href="@Url.Action("Index","Rute")" target="_blank"> Rute </a>
+                                                </li>
+                                                <li>
+                                                    <a href="@Url.Action("Index","Masterpool")" target="_blank"> Master Pool </a>
+                                                </li>
+                                                <li>
+                                                    <a href="@Url.Action("index","atm")" target="_blank">ATM</a>
+                                                </li>
+                                                <li>
+                                                    <a href="@Url.Action("Index","Location")" target="_blank"> Location </a>
+                                                </li>
+                                                <li>
+                                                    <a href="@Url.Action("Index","Multidrop")" target="_blank"> Multidrop </a>
+                                                </li>
+                                                <li>
+                                                    <a href="@Url.Action("Index","Mekanik")" target="_blank"> Data Mekanik </a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="menu-dropdown mega-menu-dropdown  ">
+                        <a href="javascript:;">
+                            Driver Management
+                            <span class="arrow"></span>
+                        </a>
+                        <ul class="dropdown-menu pull-left">
+                            <li aria-haspopup="true">
+                                <a href="@Url.Action("Index","PenetapanDriver")" target="_blank"> Driver Batangan </a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="menu-dropdown mega-menu-dropdown  ">
+                        <a href="javascript:;">
+                            Marketing
+                            <span class="arrow"></span>
+                        </a>
+                        <ul class="dropdown-menu pull-left">
+                            <li aria-haspopup="true">
+                                <a href="@Url.Action("Index","DaftarHargaOnCall")" target="_blank">Daftar Harga On Call</a>
+                            </li>
+                            <li aria-haspopup="true">
+                                <a href="@Url.Action("Index","DaftarHargaKontrak")" target="_blank">Daftar Harga Kontrak</a>
+                            </li>
+                            <li aria-haspopup="true">
+                                <a href="@Url.Action("Index","DaftarHargaKonsolidasi")" target="_blank">Daftar Harga Konsolidasi</a>
+                            </li>
+                            <li aria-haspopup="true">
+                                <a href="@Url.Action("Index","SalesOrderOncall")" target="_blank">Sales Order On Call</a>
+                            </li>
+                            <li aria-haspopup="true">
+                                <a href="@Url.Action("Index","SalesOrderKontrak")" target="_blank">Sales Order Kontrak</a>
+                            </li>
+                            <li class="dropdown-submenu">
+                                <a href="javascript:;"> Sales Order Konsolidasi </a>
+                                <ul class="dropdown-menu">
+                                    <li>
+                                        <a href="@Url.Action("Index","SalesOrderPickup")" target="_blank">Pickup Order</a>
+                                    </li>
+                                    <li>
+                                        <a href="@Url.Action("Index", "SalesOrderKonsolidasi")" target="_blank">Daftar Barang</a>
+                                    </li>
+                                    <li>
+                                        <a href="@Url.Action("Index", "SalesOrderProsesKonsolidasi")" target="_blank">Proses Sales Order Konsolidasi</a>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li aria-haspopup="true">
+                                <a href="@Url.Action("Index","ListOrder")" target="_blank">List Order</a>
+                            </li>
+                        </ul>                        
+                    </li>
+                    <li class="menu-dropdown mega-menu-dropdown  ">
+                        <a href="javascript:;">
+                            Operasional
+                            <span class="arrow"></span>
+                        </a>
+                        <ul class="dropdown-menu pull-left">
+                            <li aria-haspopup="true">
+                                <a href="@Url.Action("Index","Monitoring")" target="_blank">Monitoring</a>
+                            </li>
+                            <li aria-haspopup="true">
+                                <a href="@Url.Action("Index","PlanningOncall")" target="_blank">Planning Oncall</a>
+                            </li>
+                            <li aria-haspopup="true">
+                                <a href="@Url.Action("Index","PlanningKontrak")" target="_blank">Planning Kontrak</a>
+                            </li>
+                            <li class="dropdown-submenu">
+                                <a href="javascript:;"> Konfirmasi Planning </a>
+                                <ul class="dropdown-menu">
+                                    <li>
+                                        <a href="@Url.Action("Index","KonfirmasiOncall")" target="_blank"> Konfirmasi Planning Oncall </a>
+                                    </li>
+                                    <li>
+                                        <a href="@Url.Action("Index","KonfirmasiKontrak")" target="_blank"> Konfirmasi Planning Kontrak </a>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li aria-haspopup="true">
+                                <a href="@Url.Action("Index","AdminUangJalan")" target="_blank">Admin Uang Jalan</a>
+                            </li>
+                            <li class="dropdown-submenu">
+                                <a href="javascript:;"> Settlement </a>
+                                <ul class="dropdown-menu">
+                                    <li>
+                                        <a href="@Url.Action("Index","SettlementReg")" target="_blank"> Settlement Regular </a>
+                                    </li>
+                                    <li>
+                                        <a href="@Url.Action("Index","SettlementBatal")" target="_blank"> Settlement Batal </a>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="menu-dropdown mega-menu-dropdown  ">
+                        <a href="javascript:;">
+                            HR
+                            <span class="arrow"></span>
+                        </a>
+                        <ul class="dropdown-menu pull-left">
+                            <li aria-haspopup="true">
+                                <a href="@Url.Action("Index","Driver")" target="_blank"> Data Driver </a>
+                            </li>
+                            <li class="dropdown-submenu">
+                                <a href="javascript:;"> Training </a>
+                                @*<ul class="dropdown-menu">
+                                    <li>
+                                        <a href="@Url.Action("Index","TrainingSetting")" target="_blank"> Training Setting </a>
+                                    </li>
+                                </ul>*@
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="menu-dropdown mega-menu-dropdown  ">
+                        <a href="javascript:;">
+                            GA
+                            <span class="arrow"></span>
+                        </a>
+                        <ul class="dropdown-menu pull-left">
+                            <li aria-haspopup="true">
+                                <a href="@Url.Action("Index","BAP")" target="_blank"> BAP </a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="menu-dropdown mega-menu-dropdown  ">
+                        <a href="javascript:;">
+                            Finance
+                            <span class="arrow"></span>
+                        </a>
+                        <ul class="dropdown-menu pull-left">
+                            <li class="dropdown-submenu">
+                                <a href="javascript:;"> Kasir </a>
+                                <ul class="dropdown-menu">
+                                    <li>
+                                        <a href="@Url.Action("IndexTf","Kasir")" target="_blank"> Kasir Transfer </a>
+                                    </li>
+                                    <li>
+                                        <a href="@Url.Action("IndexKas","Kasir")" target="_blank"> Kasir Cash </a>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="menu-dropdown mega-menu-dropdown  ">
+                        <a href="javascript:;">
+                            Workshop
+                            <span class="arrow"></span>
+                        </a>
+                        <ul class="dropdown-menu pull-left">
+                            <li aria-haspopup="true">
+                                <a href="@Url.Action("Index","Workshop")" target="_blank"> Perbaikan Kendaraan </a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="menu-dropdown mega-menu-dropdown  ">
+                        <a href="javascript:;">
+                            Setting
+                            <span class="arrow"></span>
+                        </a>
+                        <ul class="dropdown-menu pull-left">
+                            <li aria-haspopup="true">
+                                <a href="@Url.Action("Index", "GeneralSetting")" target="_blank">General Setting</a>
+                            </li>
+                            <li aria-haspopup="true">
+                                <a href="@Url.Action("Index", "Auditrail")" target="_blank">Audittrail</a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+            <!-- END MEGA MENU -->
+        </div>
+    </div>
+    <!-- END HEADER MENU -->
+</div>

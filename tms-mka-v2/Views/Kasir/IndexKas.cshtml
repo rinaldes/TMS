@@ -1,0 +1,349 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "Kasir Kas";
+    string currentController = (string)ViewContext.RouteData.Values["controller"];
+    string currentAction = "Index";
+}
+<div class="portlet light ">
+    <div class="portlet-title">
+        <div class="caption">
+            <span class="caption-subject font-dark sbold uppercase">@ViewBag.Title</span>
+        </div>
+    </div>
+    <div class="portlet-body form">
+        <div class="portlet box blue ">
+            <div class="portlet-title">
+                <div class="caption">
+                    Hide Colomn :
+                </div>
+                <div class="tools">
+                    <a href="" class="expand"> </a>
+                </div>
+            </div>
+            <div class="portlet-body form" style="display: none;">
+                <form role="form">
+                    <div class="form-body">
+                        <div id="content-col" class="md-checkbox-inline" style="margin-left:10px"></div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div id="grid"></div>
+    </div>
+</div>
+@*Modal Detail Konsoldasi*@
+<div id="ModalDetailKonsoldasi" class="modal fade bs-modal-full" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-full">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+            </div>
+            <div class="modal-body">
+                <div id="GridDetailKonsoldasi"></div>
+            </div>
+        </div>
+    </div>
+</div>
+@section scripts
+{
+    <script id="command-template" type="text/x-kendo-template">
+        # if(JenisOrder == "Kontrak") { #
+        # if(Status == "Belum") { #
+        <a class="k-button-icon k-grid-edit" href="\\#" title="Edit" onclick='editItemKontrak(#=IdSalesOrder#, "#=ListIdSo#")'><span class="glyphicon glyphicon-edit"></span></a>
+        # } else { #
+        <a class="k-button-icon k-grid-edit" href="\\#" title="Edit" onclick='editItemKontrak(#=IdSalesOrder#, "#=ListIdSo#")'><span class="glyphicon glyphicon-edit"></span></a>
+        <a class="k-button-icon k-grid-edit" href="\\#" title="View" onclick="viewItemKontrak(#=IdSalesOrder#, '#=ListIdSo#')"><span class="glyphicon glyphicon-eye-open"></span></a>
+        # } #
+        # } else { #
+        # if(Status == "Belum") { #
+        <a class="k-button-icon k-grid-edit" href="\\#" title="Edit" onclick="editItem(#=IdSalesOrder#, #=IdRemoval#, #=IdSettlement#)"><span class="glyphicon glyphicon-edit"></span></a>
+        # } else { #
+        <a class="k-button-icon k-grid-edit" href="\\#" title="Edit" onclick="editItem(#=IdSalesOrder#, #=IdRemoval#, #=IdSettlement#)"><span class="glyphicon glyphicon-edit"></span></a>
+        <a class="k-button-icon k-grid-edit" href="\\#" title="View" onclick="viewItem(#=IdSalesOrder#, #=IdRemoval#)"><span class="glyphicon glyphicon-eye-open"></span></a>
+        # } #
+        # } #
+    </script>
+    <script type="text/javascript">
+        function FilterStatus(element) {
+            element.kendoDropDownList({
+                //dataTextField: "text",
+                //dataValueField: "value",
+                dataSource: ["Sudah", "Belum", "Batal"],
+                optionLabel: "--Select Value--",
+            });
+        }
+
+        function printItem(id, idRemoval, listso, rel) {
+            terbilang = update(rel);
+            if(idRemoval != null)
+                window.location.href = "@Url.Action("PrintKasRemoval")" + "?id=" + idRemoval + "&Terbilang=" + terbilang;
+            else
+                window.location.href = "@Url.Action("PrintKas")" + "?id=" + id + "&listSo=" + listso + "&Terbilang=" + terbilang;
+        }
+
+        function editItem(id, idRemoval, idSettlement) {
+            if(idRemoval != null)
+                window.location.href = "@Url.Action("EditKasRemoval")" + "?id=" + idRemoval;
+            else if (idSettlement != null)
+                window.location.href = "@Url.Action("EditKasSettlement")" + "?id=" + idSettlement;
+            else
+                window.location.href = "@Url.Action("EditKas")" + "?id=" + id;
+        }
+
+        function viewItem(id, idRemoval) {
+            if(idRemoval != null)
+                window.location.href = "@Url.Action("ViewKasRemoval")" + "?id=" + idRemoval;
+            else
+                window.location.href = "@Url.Action("ViewKas")" + "?id=" + id;
+        }
+        function viewItemKontrak(id, listso) {
+            window.location.href = "@Url.Action("ViewKasKontrak")" + "?id=" + id + "&listSo=" + listso;
+        }
+        function editItemKontrak(id, listso) {
+            window.location.href = "@Url.Action("EditKasKontrak")" + "?id=" + id + "&listSo=" + listso;
+        }
+
+        function update(numString){
+            var bigNumArry = new Array('', ' RIBU', ' JUTA', ' MILYAR', ' TRILIUN', ' QUADRALIUN', ' QUINTIILIUN');
+
+            var output = '';
+            var finlOutPut = new Array();
+
+            if (numString == '0') {
+                console.log('Zero');
+                return;
+            }
+
+            if (numString == 0) {
+                console.log('messeg tell to enter numbers');
+                return;
+            }
+
+            var i = numString.length;
+            i = i - 1;
+
+            //cut the number to grups of three digits and add them to the Arry
+            while (numString.length > 3) {
+                var triDig = new Array(3);
+                triDig[2] = numString.charAt(numString.length - 1);
+                triDig[1] = numString.charAt(numString.length - 2);
+                triDig[0] = numString.charAt(numString.length - 3);
+
+                var varToAdd = triDig[0] + triDig[1] + triDig[2];
+                finlOutPut.push(varToAdd);
+                i--;
+                numString = numString.substring(0, numString.length - 3);
+            }
+            finlOutPut.push(numString);
+            finlOutPut.reverse();
+
+            //conver each grup of three digits to english word
+            //if all digits are zero the triConvert
+            //function return the string "dontAddBigSufix"
+            for (j = 0; j < finlOutPut.length; j++) {
+                finlOutPut[j] = triConvert(parseInt(finlOutPut[j]));
+            }
+
+            var bigScalCntr = 0; //this int mark the million billion trillion... Arry
+
+            for (b = finlOutPut.length - 1; b >= 0; b--) {
+                if (finlOutPut[b] != "dontAddBigSufix") {
+                    finlOutPut[b] = finlOutPut[b] + bigNumArry[bigScalCntr] + ' RP';
+                    bigScalCntr++;
+                }
+                else {
+                    //replace the string at finlOP[b] from "dontAddBigSufix" to empty String.
+                    finlOutPut[b] = ' ';
+                    bigScalCntr++; //advance the counter  
+                }
+            }
+
+                //convert The output Arry to , more printable string 
+                for(n = 0; n<finlOutPut.length; n++){
+                    output +=finlOutPut[n];
+                }
+            return output.replace('SE ', 'SE');//print the output
+        }
+
+    //simple function to convert from numbers to words from 1 to 999
+    function triConvert(num){
+        var ones = new Array('', ' SE', ' DUA', ' TIGA', ' EMPAT', ' LIMA', ' ENAM', ' TUJUH', ' DELAPAN', ' SEMBILAN', ' SEPULUH', ' SEBELAS', ' DUA BELAS', ' TIGA BELAS', ' EMPAT BELAS', ' LIMA BELAS', ' ENAM BELAS', ' TUJUH BELAS', ' DELAPAN BELAS', ' SEMBILAN BELAS');
+        var tens = new Array('', '', ' DUA PULUH', ' TIGA PULUH', ' EMPAT PULUH', ' LIMA PULUH', ' ENAM PULUH', ' TUJUH PULUH', ' DELAPAN PULUH', ' SEMBILAN PULUH');
+        var hundred = ' RATUS';
+        var output = '';
+        var numString = num.toString();
+
+        if (num == 0) {
+            return 'dontAddBigSufix';
+        }
+        //the case of 10, 11, 12 ,13, .... 19 
+        if (num < 20) {
+            output = ones[num];
+            return output;
+        }
+
+        //100 and more
+        if (numString.length == 3) {
+            output = ones[parseInt(numString.charAt(0))] + hundred;
+            output += tens[parseInt(numString.charAt(1))];
+            output += ones[parseInt(numString.charAt(2))];
+            return output;
+        }
+
+        output += tens[parseInt(numString.charAt(0))];
+        output += ones[parseInt(numString.charAt(1))];
+
+        return output;
+    }
+
+
+        $(document).ready(function () {
+            currController = '@currentController';
+            currAction = '@currentAction';
+
+            var ds = new kendo.data.DataSource({
+                transport: {
+                    read: {
+                        url: '@Url.Action("BindingKas")',
+                        dataType: "json"
+                    },
+                },
+                schema: {
+                    total: "total",
+                    data: "data",
+                    model: {
+                        fields: {
+                            "Id": { type: "number" },
+                            "Status": { type: "string" },
+                            "IdSalesOrder": { type: "number" },
+                            "IdRemoval": { type: "number" },
+                            "DnNo": { type: "string" },
+                            "SoNo": { type: "string" },
+                            "IdChild": { type: "number" },
+                            "IdDriver": { type: "string" },
+                            "KodeDriverOld": { type: "string" },
+                            "Driver": { type: "string" },
+                            "VehicleNo": { type: "string" },
+                            "KodeNama": { type: "string" },
+                            "Customer": { type: "string" },
+                            "TanggalJalan": { type: "date" },
+                            "Keterangan": { type: "number" },
+                            "Jumlah": { type: "number" },
+                            "Tanggal": { type: "date" },
+                            "Realisasi": { type: "number" },
+                            "Penerima": { type: "string" },
+                            "Waktu": { type: "date" },
+                            "JenisOrder" : { type: "string" },
+                            "ListIdSo" : { type: "string" }
+                        }
+                    }
+                },
+                pageSize: 10,
+                pageable: true,
+                sortable: true,
+            });
+
+            gridIndex = $("#grid").kendoGrid({
+                dataSource: ds,
+                filterable: kendoGridFilterable,
+                sortable: true,
+                reorderable: true,
+                resizable: true,
+                pageable: true,
+                groupable: true,
+                columns: [
+                    {
+                        template: kendo.template($("#command-template").html()),
+                        width: 60
+                    },
+                    {
+                        field: "Status",
+                        title: "Status",
+                        filterable: {
+                            ui: FilterStatus,
+                            operators: {
+                                string: {
+                                    eq: "Sama Dengan",
+                                }
+                            },
+                            extra: false,
+                        }
+                    },
+                    {
+                        field: "DnNo",
+                        title: "DN No"
+                    },
+                    {
+                        field: "SoNo",
+                        title: "SO No"
+                    },
+                    {
+                        field: "IdDriver",
+                        title: "Id Driver"
+                    },
+                    {
+                        field: "KodeDriverOld",
+                        title: "Kode Driver"
+                    },
+                    {
+                        field: "Driver"
+                    },
+                    {
+                        field: "VehicleNo",
+                        title: "Vehicle No"
+                    },
+                    {
+                        field: "KodeNama",
+                        title: "Kode Nama",
+                    },
+                    {
+                        field: "Customer"
+                    },
+                    {
+                        field: "TanggalJalan",
+                        title: "Tanggal Jalan",
+                        template: "#= TanggalJalan != null ? kendo.toString(kendo.parseDate(TanggalJalan, 'yyyy-MM-dd'), 'dd/MM/yyyy') : ''#",
+                    },
+                    {
+                        field: "Keterangan"
+                    },
+                    {
+                        field: "Jumlah",
+                        title: "Jumlah",
+                        template: 'Rp #: Jumlah == null ? kendo.format("{0:n}", 0) : kendo.format("{0:n}", Jumlah)#',
+                    },
+                    {
+                        field: "Tanggal",
+                        title: "Tanggal",
+                        template: "#= Tanggal != null ? kendo.toString(kendo.parseDate(Tanggal, 'yyyy-MM-dd'), 'dd/MM/yyyy') : ''#",
+                    },
+                    {
+                        field: "Realisasi",
+                        title: "Realisasi",
+                        template: 'Rp #: Realisasi == null ? kendo.format("{0:n}", 0) : kendo.format("{0:n}", Realisasi)#',
+                    },
+                    {
+                        field: "Penerima",
+                    },
+                    {
+                        field: "Waktu",
+                        title: "Waktu",
+                        template: "#= Waktu != null ? kendo.toString(kendo.parseDate(Waktu, 'yyyy-MM-dd'), 'dd/MM/yyyy') : ''#",
+                    },
+                    {
+                        field: "JadwalTransfer"
+                    },
+                ],
+            }).data("kendoGrid");
+
+            @foreach (tms_mka_v2.Context.UserReference item in (List<tms_mka_v2.Context.UserReference>)ViewBag.listKolom)
+            {
+                <text>
+            listKolom.push('@item.Coloumn');
+            </text>
+            }
+
+            GetColomnData(gridIndex);
+        })
+</script>
+}

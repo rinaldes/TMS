@@ -1,0 +1,55 @@
+﻿@using tms_mka_v2.Models;
+@model tms_mka_v2.Models.SalesOrderPickup
+<div class="portlet light">
+    <div class="portlet-title">
+        <div class="caption font-green-sharp">
+            <span class="caption-subject">Revisi Tanggal</span>
+        </div>
+        <div class="tools">
+            <a href="" class="collapse"> </a>
+        </div>
+    </div>
+    <div class="portlet-body">
+        <div class="form-group">
+            <div class="col-md-4">
+                <div class="row">
+                    <label class="control-label col-md-5">Tanggal Pickup Awal</label>
+                    <div class="col-md-5">
+                        <input id="TanggalPickupAwal" name="TanggalPickupAwal" value="@Model.TanggalPickup" class="form-control-datepicker" readonly="readonly" />
+                    </div>
+                </div><br />
+                <div class="row">
+                    @Html.LabelFor(model => model.TanggalPickUpBaru, new { @class = "control-label col-md-5" })
+                    <div class="col-md-5">
+                        @Html.TextBoxFor(model => model.TanggalPickUpBaru, new { @class = "form-control form-control-datepicker input-sm" })
+                        @Html.ValidationMessageFor(model => model.TanggalPickUpBaru)
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="row">
+                    <label class="control-label col-md-4">Jam Pickup Awal</label>
+                    <div class="col-md-3">
+                        <input id="JamPickupAwal" name="JamPickupAwal" value="@Model.JamPickup" class="form-control input-sm timepicker timepicker-24" readonly="readonly" />
+                    </div>
+                </div><br />
+                <div class="row">
+                    <label class="control-label col-md-4">Jam Pickup Baru</label>
+                    <div class="col-md-3">
+                        <input id="JamPickupBaru" name="JamPickupBaru" class="form-control input-sm timepicker timepicker-24" />
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="row">
+                    @Html.LabelFor(model => model.KeteranganRevisi, new { @class = "control-label col-md-5" })
+                    <div class="col-md-7">
+                        @Html.TextAreaFor(model => model.KeteranganRevisi, new { @class = "form-control input-sm" })
+                        @Html.ValidationMessageFor(model => model.KeteranganRevisi)
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

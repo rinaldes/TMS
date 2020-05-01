@@ -1,0 +1,141 @@
+﻿@model tms_mka_v2.Models.Customer
+
+@{
+    string currentController = (string)ViewContext.RouteData.Values["controller"];
+    string currentAction = (string)ViewContext.RouteData.Values["action"];
+    ViewBag.SubTitle = "Customer PIC";
+}
+
+
+<div class="row ">
+    <div class="col-md-6">
+        <div class="btn-group">
+            <div class="caption">
+                <h2>@ViewBag.SubTitle</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="btn-group pull-right">
+            <span class="btn green" id="btnPic" title="Customer PIC" data-toggle="modal" data-target="#modalFormPic" onclick="ShowPicPopup()">Add New PIC</span>
+        </div>
+    </div>
+</div>
+<br />
+@using (Html.BeginForm("UpdateCustPic", currentController))
+{
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(model => model.Id)
+    <table class="table table-striped table-hover table-bordered" id="table-custpic">
+        <tr>
+            <th>No</th>
+            <th>
+                @Html.DisplayName("Nama")
+            </th>
+            <th>
+                @Html.DisplayName("Departemen")
+            </th>
+            <th>
+                @Html.DisplayName("Jabatan")
+            </th>
+            <th>
+                @Html.DisplayName("Email")
+            </th>
+            <th>
+                @Html.DisplayName("Hp")
+            </th>
+            <th>Action</th>
+        </tr>
+        @{int i = 0;}
+
+        @foreach (tms_mka_v2.Context.CustomerPic item in (List<tms_mka_v2.Context.CustomerPic>)Model.ListPic)
+        {
+            i++;
+        <tr>
+            @Html.Hidden("PicId", (Int32)item.Id)
+            <td style="display:none">
+                <input value='@item.Id;@item.Name;@item.LookUpCodesDept.Nama;@item.LookUpCodesJabatan.Nama;@item.EmailAdd;@item.Mobile;@item.DepartemenId;@item.JabatanId' name='listPic' />
+            </td>
+            <td class="no_pic">@i</td>
+            <td>
+                @item.Name
+            </td>
+            <td>
+                @item.LookUpCodesDept.Nama
+            </td>
+            <td>
+                @item.LookUpCodesJabatan.Nama
+            </td>
+            <td>
+                @item.EmailAdd
+            </td>
+            <td>
+                @item.Mobile
+            </td>
+            <td>
+                <a href='#' data-toggle='modal' data-target="#modalFormPic" onclick='EditPicRow($(this))'>Edit</a> | <a href='#' onclick='RemovePicRow($(this));'>Delete</a>
+            </td>
+        </tr>
+        }
+
+    </table>
+    <div class="form-group updatebutton">
+        <div class="col-md-4">
+            <input type="submit" name="updatePic" value="Update" class="btn btn-default" />
+            <input type="submit" name="updatePic" value="Update and Next" class="btn btn-default" />
+        </div>
+    </div>
+}
+<div id="modalFormPic" class="modal fade bs-modal-lg" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                <h4 class="modal-title">Customer PIC</h4>
+            </div>
+            <div class="modal-body">
+                <form id="formPic" class="form-horizontal">
+                    @Html.Hidden("CustomerPicId")
+                    @Html.Hidden("Condition")
+                    <div class="form-group">
+                        @Html.Label("Nama", new { @class = "control-label col-md-3" })
+                        <div class="col-md-7">
+                            <input id="Name" name="Name" class="k-textbox" required validationmessage="Nama harus diisi" />
+                            <span class="k-invalid-msg" data-for="Name"></span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        @Html.Label("Departemen", new { @class = "control-label col-md-3" })
+                        <div class="col-md-7">
+                            <input id="DepartemenId" name="DepartemenId" required validationmessage="Departemen harus diisi" />
+                            <span class="k-invalid-msg" data-for="DepartemenId"></span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        @Html.Label("Jabatan", new { @class = "control-label col-md-3" })
+                        <div class="col-md-7">
+                            <input id="JabatanId" name="JabatanId" required validationmessage="Jabatan harus diisi" />
+                            <span class="k-invalid-msg" data-for="JabatanId"></span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        @Html.Label("Email", new { @class = "control-label col-md-3" })
+                        <div class="col-md-7">
+                            <input type="email" id="EmailAdd" name="EmailAdd" class="k-textbox" required validationmessage="Email harus diisi" data-email-msg="Format email tidak valid" />
+                            <span class="k-invalid-msg" data-for="Email"></span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        @Html.Label("Handphone", new { @class = "control-label col-md-3" })
+                        <div class="col-md-7">
+                            <input type="tel" id="MobilePic" name="MobilePic" class="k-textbox" required validationmessage="Mobile harus diisi" data-email-msg="format" />
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn green" onclick="SavePic($('#Condition').val());">Submit</button>
+            </div>
+        </div>
+    </div>
+</div>

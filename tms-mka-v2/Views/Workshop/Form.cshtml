@@ -1,0 +1,361 @@
+﻿@using tms_mka_v2.Models;
+
+@model tms_mka_v2.Models.Workshop
+@{
+    ViewBag.Title = "Form";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    string currentController = (string)ViewContext.RouteData.Values["controller"];
+    string currentAction = (string)ViewContext.RouteData.Values["action"];
+    string backLink = Url.Action("Index");
+    if (currentAction == "Add")
+    {
+        ViewBag.Title = "Form";
+    }
+    else
+    {
+        ViewBag.Title = "PPK";
+    }
+}
+<div class="portlet light">
+    <div class="portlet-title">
+        <div class="caption">
+            <span class="caption-subject font-dark sbold uppercase judulnya">Pre-PPK</span>
+        </div>
+    </div>
+    <div class="portlet-body form">
+        @using (@Html.BeginForm(currentAction, currentController, FormMethod.Post, new { @class = "form-horizontal form-label-left input_mask", @id = "formsubmit" }))
+        {
+            @Html.HiddenFor(model => model.id)
+            @Html.ValidationSummary(true)
+            @Html.HiddenFor(model => model.Status)
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.NoPPK, new { @class = "control-label col-md-2 col-sm-3 col-xs-12" })
+                        <div class="col-md-6 col-sm-9 col-xs-12">
+                            @Html.TextBoxFor(model => model.NoPPK, new { @class = "form-control input-sm", @disabled = "true" })
+                        </div>
+                    </div>
+                    <div class="form-group tglPre">
+                        @Html.LabelFor(model => model.TglPre, new { @class = "control-label col-md-2 col-sm-3 col-xs-12" })
+                        <div class="col-md-3 col-sm-3 col-xs-3">
+                            @Html.TextBoxFor(model => model.TglPre, new { @class = "form-control-datepicker input-sm" })
+                            @Html.ValidationMessageFor(model => model.TglPre)
+                        </div>
+                        <div class="col-md-3 col-sm-3 col-xs-3">
+                            <div class="input-group input-group-sm">
+                                @Html.TextBoxFor(model => model.JamPre, new { @class = "form-control input-sm timepicker timepicker-24" })
+                                <span class="input-group-btn">
+                                    <button class="btn btn-sm default" type="button">
+                                        <i class="fa fa-clock-o"></i>
+                                    </button>
+                                </span>
+                            </div>
+                            @Html.ValidationMessageFor(model => model.JamPre)
+                        </div>
+                    </div>
+    <div class="form-group tglPPK hidden">
+        @Html.LabelFor(model => model.TglPPK, new { @class = "control-label col-md-2 col-sm-3 col-xs-12" })
+        <div class="col-md-3 col-sm-3 col-xs-3">
+            @Html.TextBoxFor(model => model.TglPPK, new { @class = "form-control-datepicker input-sm" })
+            @Html.ValidationMessageFor(model => model.TglPPK)
+        </div>
+        <div class="col-md-3 col-sm-3 col-xs-3">
+            <div class="input-group input-group-sm">
+                @Html.TextBoxFor(model => model.JamPPK, new { @class = "form-control input-sm timepicker timepicker-24" })
+                <span class="input-group-btn">
+                    <button class="btn btn-sm default" type="button">
+                        <i class="fa fa-clock-o"></i>
+                    </button>
+                </span>
+            </div>
+            @Html.ValidationMessageFor(model => model.JamPPK)
+        </div>
+    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.IdVehicle, new { @class = "control-label col-md-2 col-sm-3 col-xs-12" })
+                        <div class="col-md-6 col-sm-9 col-xs-12">
+                            <div class="input-group input-group-sm">
+                                @Html.HiddenFor(model => model.IdVehicle)
+                                @Html.TextBoxFor(model => model.VehicleNo, new { @class = "form-control input-sm", @ReadOnly = "true" })
+                                <span class="input-group-btn">
+                                    <button type="button" class="btn btn-success" data-toggle="modal" data-target="#modalGridDriver">Browse</button>
+                                </span>
+                                @Html.ValidationMessageFor(model => model.IdVehicle)
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.IdPrioritas, new { @class = "control-label col-md-2 col-sm-3 col-xs-12" })
+                        <div class="col-md-6 col-sm-9 col-xs-12">
+                            @Html.TextBoxFor(model => model.IdPrioritas, new { @class = "form-control input-sm"})
+                            @Html.ValidationMessageFor(model => model.IdPrioritas)
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.KetPrioritas, new { @class = "control-label col-md-2 col-sm-3 col-xs-12" })
+                        <div class="col-md-6 col-sm-9 col-xs-12">
+                            @Html.TextBoxFor(model => model.KetPrioritas, new { @class = "form-control input-sm"})
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.IsPool, new { @class = "control-label col-md-2 col-sm-3 col-xs-12" })
+                        <div class="col-md-3 col-sm-9 col-xs-12">
+                            @Html.RadioButtonFor(model => model.IsPool, true, new { @class = "input-sm col-md-1" })
+                            @Html.Label("Sudah", new { @class = "control-label col-md-10" })
+                        </div>
+                        <div class="col-md-3 col-sm-9 col-xs-12">
+                            @Html.RadioButtonFor(model => model.IsPool, false, new { @class = "input-sm col-md-1" })
+                            @Html.Label("Belum", new { @class = "control-label col-md-10" })
+                        </div>
+                    </div>
+                    <div class="form-group jenis_perbaikan">
+                        <h4>Jenis Perbaikan</h4>
+                        <div class="col-md-2 col-sm-9 col-xs-12">
+                            @Html.CheckBoxFor(model => model.IsTruck, new { @class = "input-sm col-md-1 chkbx" })
+                            @Html.Label("Truck", new { @class = "control-label col-md-10" })
+                        </div>
+                        <div class="col-md-6 col-sm-9 col-xs-12">
+                            @if(Model.IsTruck == true){
+                                <text>
+                                    @Html.TextAreaFor(model => model.KetTruck, new { @class = "form-control input-sm" })
+                                </text>
+                            }
+                            else{
+                                <text>
+                                    @Html.TextAreaFor(model => model.KetTruck, new { @class = "form-control input-sm hide" })
+                                </text>
+                            }
+                        </div>
+                        <label class="col-md-4"><br><br><br></label>
+                        <div class="col-md-2 col-sm-9 col-xs-12">
+                            @Html.CheckBoxFor(model => model.IsAc, new { @class = "input-sm col-md-1 chkbx" })
+                            @Html.Label("AC", new { @class = "control-label col-md-10" })
+                        </div>
+                        <div class="col-md-6 col-sm-9 col-xs-12">
+                            @if(Model.IsAc == true){
+                                <text>
+                                    @Html.TextAreaFor(model => model.KetAc, new { @class = "form-control input-sm" })
+                                </text>
+                            }
+                            else{
+                                <text>
+                                    @Html.TextAreaFor(model => model.KetAc, new { @class = "form-control input-sm hide" })
+                                </text>
+                            }
+                        </div>
+                        <label class="col-md-4"><br><br><br></label>
+                        <div class="col-md-2 col-sm-9 col-xs-12">
+                            @Html.CheckBoxFor(model => model.IsBan, new { @class = "input-sm col-md-1 chkbx" })
+                            @Html.Label("Ban", new { @class = "control-label col-md-10" })
+                        </div>
+                        <div class="col-md-6 col-sm-9 col-xs-12">
+                            @if(Model.IsBan == true){
+                                <text>
+                                    @Html.TextAreaFor(model => model.KetBan, new { @class = "form-control input-sm" })
+                                </text>
+                            }
+                            else{
+                                <text>
+                                    @Html.TextAreaFor(model => model.KetBan, new { @class = "form-control input-sm hide" })
+                                </text>
+                            }
+                        </div>
+                        <label class="col-md-4"><br><br><br></label>
+                        <div class="col-md-2 col-sm-9 col-xs-12">
+                            @Html.CheckBoxFor(model => model.IsBox, new { @class = "input-sm col-md-1 chkbx" })
+                            @Html.Label("Box", new { @class = "control-label col-md-10" })
+                        </div>
+                        <div class="col-md-6 col-sm-9 col-xs-12">
+                            @if(Model.IsBox == true){
+                                <text>
+                                    @Html.TextAreaFor(model => model.KetBox, new { @class = "form-control input-sm" })
+                                </text>
+                            }
+                            else{
+                                <text>
+                                    @Html.TextAreaFor(model => model.KetBox, new { @class = "form-control input-sm hide" })
+                                </text>
+                            }
+                        </div>
+                        <label class="col-md-4"><br><br><br></label>
+                        <div class="col-md-2 col-sm-9 col-xs-12">
+                            @Html.CheckBoxFor(model => model.IsGps, new { @class = "input-sm col-md-1 chkbx" })
+                            @Html.Label("GPS", new { @class = "control-label col-md-10" })
+                        </div>
+                        <div class="col-md-6 col-sm-9 col-xs-12">
+                            @if(Model.IsGps == true){
+                                <text>
+                                    @Html.TextAreaFor(model => model.KetGps, new { @class = "form-control input-sm" })
+                                </text>
+                            }
+                            else{
+                                <text>
+                                    @Html.TextAreaFor(model => model.KetGps, new { @class = "form-control input-sm hide" })
+                                </text>
+                            }
+                        </div>
+                        <label class="col-md-4"><br><br><br></label>
+                    </div>
+
+            <div class="ln_solid"></div>
+            <div class="form-group">
+                <div class="col-md-9 col-sm-9 col-xs-12 col-md-offset-2">
+                    @if(Model.Status == "PPK"){
+                        <label class="btn btn-info tombol_ppk_in" onclick="tadi_diklik('PPK-IN')">SUBMIT</label>
+                    }
+                    <button type="submit" class="keklik btn btn-primary hide">Submit</button>
+                    <label class="btn btn-success" onclick="tadi_diklik('Pre-PPK')">Save</label>
+                    <a href="@backLink" class="btn btn-link">Cancel</a>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<div id="modalGridDriver" class="modal fade bs-modal-lg" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div id="modalForm" class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                <h4 class="modal-title">List Vehicle</h4>
+            </div>
+            <div class="modal-body">
+                <div id="GridDriver"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts{
+    <script type="text/javascript">
+
+        function SelectDriver(e) {
+            e.preventDefault();
+            var data = this.dataItem(getDataRowGrid(e));
+            $('#IdVehicle').val(data.Id);
+            $('#VehicleNo').val(data.VehicleNo);
+            $('#modalGridDriver').modal('hide');
+        }
+        function tadi_diklik(yang_mana) {
+            $('#Status').val(yang_mana)
+            $(".judulnya").html("PPK")
+            if (yang_mana == "PPK") {
+                $(".tombol_ppk").addClass("hide")
+                $(".tombol_ppk_in").removeClass("hide")
+                $(".keklik").removeClass("hide")
+            }
+            else {
+              setTimeout(function () {
+                    $(".keklik").click();
+                }, 1);
+            }
+        }
+
+        $(document).ready(function () {
+            $(".jenis_perbaikan").on("change", "input.chkbx", function (e) {
+                if ($(this).is(':checked')) {
+                    $(this).parent().next().children().removeClass("hide");
+                }
+                else {
+                    $(this).parent().next().children().addClass("hide");
+                }
+            });
+            $("input[type=radio][name=IsPool]").change(function () {
+                var NoPPK = $("#NoPPK").val()
+                if (this.value == true || this.value == "True") {
+                    $("#Status").val("PPK")
+                    $(".judulnya").html("PPK")
+                    $(".tglPre").addClass("hidden")
+                    $(".tglPPK").removeClass("hidden")
+                }
+                else {
+                    $(".judulnya").html("Pre-PPK")
+                    $("#Status").val("Pre-PPK")
+                    $(".tglPPK").addClass("hidden")
+                    $(".tglPre").removeClass("hidden")
+                }
+            });
+            dsPrioritas = new kendo.data.DataSource({
+                transport: {
+                    read: {
+                        url: '@Url.Action("GetSPKPrioritas")',
+                        dataType: "json"
+                    },
+                },
+            });
+            $("#IdPrioritas").kendoComboBox({
+                dataTextField: "Nama",
+                dataValueField: "Id",
+                dataSource: dsPrioritas
+            });
+            //Driver
+            var dsDriver = new kendo.data.DataSource({
+                transport: {
+                    read: {
+                        url: '@Url.Action("Binding", "DataTruck")',
+                        dataType: "json"
+                    },
+                },
+                schema: {
+                    total: "total",
+                    data: "data",
+                    model: {
+                        fields: {
+                            "Id": { type: "number" },
+                            "NoTruck": { type: "string" },
+                            "VehicleNo": { type: "string" },
+                            "strJenisTruck": { type: "string" },
+                            "Keterangan": { type: "string" },
+                        }
+                    }
+                },
+                pageSize: 10,
+                pageable: true,
+                serverFiltering: true,
+                serverPaging: true,
+                serverSorting: true,
+                sortable: true,
+                //sort: { field: "SubmittedDate", dir: "desc" }
+            })
+
+            gridDriver = $("#GridDriver").kendoGrid({
+                dataSource: dsDriver,
+                filterable: kendoGridFilterable,
+                sortable: true,
+                reorderable: true,
+                resizable: true,
+                pageable: true,
+                columns: [
+                    {
+                        command: [
+                         {
+                             name: "select",
+                             text: "Select",
+                             click: SelectDriver,
+                             imageClass: "glyphicon glyphicon-ok",
+                             template: '<a class="k-button-icon #=className#" #=attr# href="\\#"><span class="#=iconClass# #=imageClass#"></span></a>'
+                         }
+                        ],
+                        width: "50px"
+                    },
+                    {
+                        field: "NoTruck",
+                        title: "No Truk"
+                    },
+                    {
+                        field: "VehicleNo",
+                        title: "No Vehicle"
+                    },
+                    {
+                        field: "strJenisTruck",
+                        title: "Jenis Truk"
+                    },
+                    {
+                        field: "Keterangan",
+                        title: "Keterangan"
+                    },
+
+                ],
+            }).data("kendoGrid");
+        });
+</script>
+}

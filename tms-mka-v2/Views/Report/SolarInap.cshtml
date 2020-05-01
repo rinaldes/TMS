@@ -1,0 +1,361 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "SolarInap";
+}
+@if (User.HasMenuAccess("Solar Inap"))
+{
+<div class="portlet light ">
+    <div class="portlet-title">
+        <div class="caption">
+            <span class="caption-subject font-dark sbold uppercase">Report Solar Inap</span>
+        </div>
+        <div class="actions">
+            <a class="btn btn-sm green dropdown-toggle" href="/Report/ExportSolarInap" id="export">
+                <i class="fa fa-upload"></i>Export
+            </a>
+        </div>
+    </div>
+    <div class="portlet-body form">
+        <div class="portlet box blue ">
+            <div class="portlet-title">
+                <div class="caption">
+                    Hide Column :
+                </div>
+                <div class="tools">
+                    <a href="" class="expand"> </a>
+                </div>
+            </div>
+            <div class="portlet-body form" style="display: none;">
+                <form role="form">
+                    <div class="form-body">
+                        <div id="content-col" class="md-checkbox-inline" style="margin-left:10px"></div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div id="grid"></div>
+    </div>
+</div>
+@section scripts
+{
+    <script id="command-template" type="text/x-kendo-template">
+        <a class="k-button-icon k-grid-edit" href="\\#" title="View" onclick="DetailSolarInap(#=Id#)"><span class="glyphicon glyphicon-eye-open"></span></a>
+        # if(StepKe != 4) { #
+            <a class="k-button-icon k-grid-edit" href="\\#" title="Batal Inap" onclick="batalInap(#=Id#)"><span class="glyphicon glyphicon-remove"></span></a>
+        # } #
+    </script>
+    <script type="text/javascript">
+    var kendoUploadButtonExim;
+
+    function deleteItem(e) {
+        e.preventDefault();
+        var data = this.dataItem(getDataRowGrid(e));
+        goToDeletePage('@Url.Action("Delete")' + "?id=" + data.Id, this.dataSource);
+    }
+
+    function editItem(id) {
+        window.location.href = "@Url.Action("Edit")" + "?id=" + id;
+    }
+
+    function DetailSolarInap(id) {
+        window.location.href = "@Url.Action("DetailSolarInap")" + "?id=" + id;
+    }
+
+    function pengembalianUang(id){
+        window.location.href = "@Url.Action("pengembalianUang")" + "?id=" + id;
+    }
+
+    function batalInap(id) {
+        window.location.href = "/SolarInap/batalInap?id=" + id;
+    }
+
+    function kasirCash(id) {
+        window.location.href = "@Url.Action("kasirCash")" + "?id=" + id;
+    }
+
+    function kasirTransfer(id) {
+        window.location.href = "@Url.Action("kasirTransfer")" + "?id=" + id;
+    }
+
+    $(document).ready(function () {
+        var user_types = [];
+        @if (User.HasMenuAccess("Kasir")){
+                <text>
+        user_types.push("Kasir")
+        </text>
+            }
+        @if (User.HasMenuAccess("Admin")){
+                <text>
+        user_types.push("Admin")
+        </text>
+            }
+        @if (User.HasMenuAccess("Marketing")){
+                <text>
+        user_types.push("Marketing")
+        </text>
+            }
+        @if (User.HasMenuAccess("DM")){
+                <text>
+        user_types.push("DM")
+        </text>
+            }
+        var ds = new kendo.data.DataSource({
+            transport: {
+                read: {
+                    url: '@Url.Action("BindingSolarInap")',
+                    dataType: "json"
+                },
+                parameterMap: function (options, operation) {
+                    if (operation !== "read" && options != '') {
+                        return kendo.stringify(options);
+                    }
+                    else if (operation == "read") {
+                        if (options.filter) {
+                            filter = options.filter.filters;
+                            for (var i in filter) {
+                                if (filter[i].field == "VehicleNo") {
+                                    filter[i].field = "SO.SalesOrderOncall.DataTruck.VehicleNo";
+                                }
+                                if (filter[i].field == "JenisTruk") {
+                                    filter[i].field = "SO.SalesOrderOncall.JenisTrucks.StrJenisTruck";
+                                }
+                                if (filter[i].field == "KodeDriver") {
+                                    filter[i].field = "SO.Driver.KodeDriver";
+                                }
+                                if (filter[i].field == "NamaDriver") {
+                                    filter[i].field = "SO.Driver.NamaDriver";
+                                }
+                                if (filter[i].field == "Panggilan") {
+                                    filter[i].field = "SO.Driver.NamaPangilan";
+                                }
+                                if (filter[i].field == "NoSO") {
+                                    filter[i].field = "SO.SONumber";
+                                }
+                                if (filter[i].field == "KodeNama") {
+                                    filter[i].field = "SO.SalesOrderOncall.Customer.CustomerCodeOld";
+                                }
+                                if (filter[i].field == "Customer") {
+                                    filter[i].field = "SO.SalesOrderOncall.Customer.CustomerNama";
+                                }
+                                if (filter[i].field == "TanggalBerangkat"){
+                                    filter[i].field = "SO.SalesOrderOncall.TanggalMuat";
+                                    Date.prototype.yyyymmdd = function() {
+                                        var mm = this.getMonth() + 1; // getMonth() is zero-based
+                                        var dd = this.getDate();
+                                        return [this.getFullYear(),
+                                                (mm>9 ? '' : '0') + mm,
+                                                (dd>9 ? '' : '0') + dd
+                                        ].join('-');
+                                    };
+                                    filter[i].value = filter[i].value.yyyymmdd()
+                                }
+                                if (filter[i].field == "TanggalDari"){
+                                    Date.prototype.yyyymmdd = function() {
+                                        var mm = this.getMonth() + 1; // getMonth() is zero-based
+                                        var dd = this.getDate();
+                                        return [this.getFullYear(),
+                                                (mm>9 ? '' : '0') + mm,
+                                                (dd>9 ? '' : '0') + dd
+                                        ].join('-');
+                                    };
+                                    filter[i].value = filter[i].value.yyyymmdd()
+                                }
+                            }
+                        }
+
+                        if (options.sort) {
+                            sort = options.sort;
+                            for (var i in sort) {
+                                if (sort[i].field == "VehicleNo") {
+                                    sort[i].field = "DataTruk.VehicleNo";
+                                }
+                                if (sort[i].field == "NamaBank") {
+                                    sort[i].field = "LookupCodeBank.Nama";
+                                }
+                                if (sort[i].field == "KodeDriver") {
+                                    sort[i].field = "Driver.KodeDriver";
+                                }
+                                if (sort[i].field == "NamaDriver") {
+                                    sort[i].field = "Driver.NamaDriver";
+                                }
+                                if (sort[i].field == "Panggilan") {
+                                    sort[i].field = "Driver.NamaPangilan";
+                                }
+                            }
+                        }
+                        $('#export').attr('href', "/Report/ExportSolarInap?" + jQuery.param(options).replace('take=10', 'take=100000000'))
+                        return options;
+                    }
+                }
+            },
+            schema: {
+                total: "total",
+                data: "data",
+                model: {
+                    fields: {
+                        "Id": { type: "number" },
+                        "NoSO": { type: "string" },
+                        "VehicleNo": { type: "string" },
+                        "KodeDriver": { type: "string" },
+                        "NamaDriver": { type: "string" },
+                        "JenisTruk": { type: "string" },
+                        "KodeNama": { type: "string" },
+                        "Customer": { type: "string" },
+                        "TanggalBerangkat": { type: "date" },
+                        "TanggalTiba": { type: "date" },
+                        "TanggalDari": { type: "date" },
+                        "TanggalHingga": { type: "string" },
+                        "KeteranganOperation": { type: "string" },
+                        "StatusTagihan": { type: "string" },
+                        "Cash": { type: "number" },
+                        "Nominal": { type: "number" },
+                        "TglCash": { type: "string" },
+                        "Transfer": { type: "number" },
+                        "TglTransfer": { type: "string" }
+                    }
+                }
+            },
+            pageSize: 10,
+            pageable: true,
+            sortable: true,
+            serverFiltering: true,
+            serverPaging: true,
+            serverSorting: true,
+            sort: { field: "TanggalTiba", dir: "desc" }
+        });
+        gridIndex = $("#grid").kendoGrid({
+            dataSource: ds,
+            filterable: kendoGridFilterable,
+            sortable: true,
+            reorderable: true,
+            resizable: true,
+            pageable: true,
+            groupable: true,
+            serverFiltering: true,
+            serverPaging: true,
+            serverSorting: true,
+            columns: [
+                {
+                    template: kendo.template($("#command-template").html()),
+                    width: 60
+                },
+                {
+                    field: "Status",
+                    title: "Status",
+                    width: "125px"
+                },
+                {
+                    field: "StatusTagihan",
+                    title: "Status Tagihan",
+                    width: "125px"
+                },
+                {
+                    field: "Nominal",
+                    title: "Nominal",
+                    template: 'Rp #: Nominal == null ? 0 : kendo.format("{0:n}", Nominal)#',
+                    width: "125px"
+                },
+                {
+                    field: "NoSO",
+                    title: "No SO",
+                    width: "125px"
+                },
+                {
+                    field: "VehicleNo",
+                    title: "Vehicle No",
+                    width: "125px"
+                },
+                {
+                    field: "KodeDriver",
+                    title: "Id Driver",
+                    width: "125px"
+                },
+                {
+                    field: "NamaDriver",
+                    title: "Driver",
+                    width: "125px"
+                },
+                {
+                    field: "JenisTruk",
+                    title: "Jenis Truk",
+                    width: "125px"
+                },
+                {
+                    field: "KodeNama",
+                    title: "Kode Nama",
+                    width: "125px"
+                },
+                {
+                    field: "Customer",
+                    title: "Customer",
+                    width: "125px"
+                },
+                {
+                    field: "TanggalBerangkat",
+                    title: "Tanggal Berangkat",
+                    width: "100px",
+                    template: "#= TanggalBerangkat != null ? kendo.toString(kendo.parseDate(TanggalBerangkat, 'yyyy-MM-dd'), 'dd/MM/yyyy') : ''#"
+                },
+                {
+                    field: "TanggalTiba",
+                    title: "Tanggal Tiba",
+                    width: "125px",
+                    template: "#= TanggalTiba != null ? kendo.toString(kendo.parseDate(TanggalTiba, 'yyyy-MM-dd'), 'dd/MM/yyyy') : ''#"
+                },
+                {
+                    field: "JamTiba",
+                    title: "Jam Tiba",
+                    width: "125px",
+                    template: "#= JamTiba != null ? kendo.toString(new Date(1, 1, 1, JamTiba.Hours, JamTiba.Minutes), 'hh : mm') : ''#",
+                },
+                {
+                    field: "TanggalDari",
+                    title: "Tanggal Inap",
+                    width: "125px",
+                    template: "#= TanggalDari != null ? kendo.toString(kendo.parseDate(TanggalDari, 'yyyy-MM-dd'), 'dd/MM/yyyy') : ''#"
+                },
+                {
+                    field: "KeteranganOperation",
+                    title: "Keterangan",
+                    width: "125px"
+                },
+                {
+                    field: "KeteranganAdmin",
+                    title: "Keterangan Admin",
+                    width: "125px"
+                },
+                {
+                    field: "Cash",
+                    title: "Cash",
+                    template: 'Rp #: Cash == null ? 0 : kendo.format("{0:n}", Cash)#',
+                    width: "125px"
+                },
+                {
+                    field: "TglCash",
+                    title: "Tanggal Cash",
+                    width: "125px"
+                },
+                {
+                    field: "Transfer",
+                    title: "Transfer",
+                    template: 'Rp #: Transfer == null ? 0 : kendo.format("{0:n}", Transfer)#',
+                    width: "125px"
+                },
+                {
+                    field: "TglTransfer",
+                    title: "Tanggal Transfer",
+                    width: "125px"
+                }
+            ],
+        }).data("kendoGrid");
+
+        GetColomnData(gridIndex);
+    })
+    </script>
+}
+}
+else{
+    ViewBag.Title = "AccessDenied";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    <h1>Maaf, anda tidak memiliki hak akses yang cukup untuk mengakses halaman ini</h1>
+}

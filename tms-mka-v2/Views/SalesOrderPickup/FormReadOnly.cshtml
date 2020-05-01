@@ -1,0 +1,104 @@
+﻿@using tms_mka_v2.Models;
+@model tms_mka_v2.Models.SalesOrderPickup
+@{
+    ViewBag.Title = "Form";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    string currentController = (string)ViewContext.RouteData.Values["controller"];
+    string currentAction = (string)ViewContext.RouteData.Values["action"];
+    string backLink = Url.Action("Index");
+    if (currentAction == "Add")
+    {
+        ViewBag.Title = "Tambah Sales Order Pickup";
+    }
+    else
+    {
+        ViewBag.Title = ViewBag.name + " | Edit";
+    }
+}
+
+<div class="portlet light">
+    <div class="portlet-title">
+        <div class="caption">
+            <span class="caption-subject font-dark sbold uppercase">@ViewBag.Title</span>
+        </div>
+    </div>
+    <div class="portlet-body form">
+        <div class="form-horizontal">
+            @Html.ValidationSummary(true)
+            @Html.HiddenFor(model => model.SalesOrderId)
+            @Html.HiddenFor(model => model.SalesOrderPickupId)
+            <div class="portlet light">
+                <div class="portlet-title">
+                    <div class="caption font-green-sharp">
+                        <span class="caption-subject"> Basic Info</span>
+                    </div>
+                    <div class="tools">
+                        <a href="" class="collapse"> </a>
+                    </div>
+                </div>
+                <div class="portlet-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="control-label col-md-3"> Delivery No</label>
+                                <label class="control-label col-md-9">: @Model.SONumber</label>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-3"> Tanggal Order</label>
+                                <label class="control-label col-md-9">: @Model.TanggalOrder.Value.ToShortDateString()  @Model.JamOrder.ToString()</label>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-3"> Kode Customer</label>
+                                <label class="control-label col-md-9">: @Model.KodeCustomer</label>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-3"> Nama Customer</label>
+                                <label class="control-label col-md-9">: @Model.NamaCustomer</label>
+                            </div>
+                           <div class="form-group">
+                                <label class="control-label col-md-3"> Status Kredit</label>
+                                <label class="control-label col-md-9">: @Model.StatusKredit</label>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-3"> Jenis Barang</label>
+                                <label class="control-label col-md-9">: @Model.StrProduct</label>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-3"> Target Suhu</label>
+                                <label class="control-label col-md-9">: @Model.Suhu <sup>o</sup>C</label>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-3"> Jenis Truk</label>
+                                <label class="control-label col-md-9">: @Model.StrJenisTruck</label>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="control-label col-md-3"> Tanggal Pickup</label>
+                                <label class="control-label col-md-9">: @Model.TanggalPickup.Value.ToShortDateString()  @Model.JamPickup.ToString()</label>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-3"> Rute</label>
+                                <label class="control-label col-md-9">: @Model.Rute</label>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-3"> Penanganan Khusus</label>
+                                <label class="control-label col-md-9">: @Model.PenanganKhusus</label>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-3"> Keterangan</label>
+                                <label class="control-label col-md-9">: @Model.Keterangan</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <a href="@Url.Action("Index","ListOrder")">Back to list</a>
+        </div>
+    </div>
+</div>
+
+
+
+
+

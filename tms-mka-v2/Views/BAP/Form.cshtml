@@ -1,0 +1,919 @@
+﻿@using tms_mka_v2.Models;
+@model tms_mka_v2.Models.BAP
+@{
+    ViewBag.Title = "Form";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    string currentController = (string)ViewContext.RouteData.Values["controller"];
+    string currentAction = (string)ViewContext.RouteData.Values["action"];
+    string backLink = Url.Action("Index");
+    if (currentAction == "Add")
+    {
+        ViewBag.Title = "Tambah BAP";
+    }
+    else
+    {
+        ViewBag.Title = ViewBag.name + " | Edit";
+    }
+}
+@if (User.HasMenuAccess("BAP"))
+{
+<div class="portlet light">
+    <div class="portlet-title">
+        <div class="caption">
+            <span class="caption-subject font-dark sbold uppercase">@ViewBag.Title</span>
+        </div>
+    </div>
+    <div class="portlet-body form">
+        @using (@Html.BeginForm(currentAction, currentController, FormMethod.Post, new { @class = "form-horizontal", @id = "formsubmit" }))
+        {
+            @Html.ValidationSummary(true)
+            @Html.HiddenFor(model => model.Id)
+            @Html.HiddenFor(model => model.SOBapId)
+            @Html.HiddenFor(model => model.SOBapKontrakId)
+            @Html.HiddenFor(model => model.NoBAP)
+            <div class="row">
+                <div class="portlet light">
+                    <div class="portlet-title">
+                        <div class="caption font-green-sharp">
+                            <span class="caption-subject"> Data Sales Order</span>
+                        </div>
+                        <div class="tools">
+                            <a href="" class="collapse"> </a>
+                        </div>
+                    </div>
+                    <div class="portlet-body">
+                        <div class="row">
+                            @if (Model.Id == 0)
+                            {
+                                <button type="button" class="btn btn-success" data-toggle="modal" data-target="#modalGridSales">Browse Sales Order</button>
+                                <button type="button" class="btn btn-success" data-toggle="modal" data-target="#modalGridSalesKontrak">Browse Sales Order Kontrak</button>
+                            }
+                            @Html.ValidationMessageFor(model => model.SOBapId)
+                            @Html.ValidationMessageFor(model => model.NoBAP)
+                            <div class="form-group">
+                                <div class="col-md-12">
+                                    <div id="PartialSo"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="portlet light">
+                    <div class="portlet-title">
+                        <div class="caption font-green-sharp">
+                            <span class="caption-subject"> Data Driver &amp; Truk</span>
+                        </div>
+                        <div class="tools">
+                            <a href="" class="collapse"> </a>
+                        </div>
+                    </div>
+                    <div class="portlet-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.KodeDriver1, new { @class = "control-label col-md-3" })
+                                    <div class="col-md-9">
+                                        <div class="input-group input-group-sm">
+                                            @Html.HiddenFor(model => model.Driver1Id)
+                                            @Html.TextBoxFor(model => model.KodeDriver1, new { @class = "form-control input-sm", @readonly = true })
+                                            <span class="input-group-btn">
+                                                <button type="button" class="btn btn-success" data-toggle="modal" data-target="#ModalMasterDriver" onclick="caller = 1;">Browse</button>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.NamaDriver1, new { @class = "control-label col-md-3" })
+                                    <div class="col-md-9">
+                                        @Html.TextBoxFor(model => model.NamaDriver1, new { @class = "form-control input-sm", @readonly = "true" })
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.KodeDriver2, new { @class = "control-label col-md-3" })
+                                    <div class="col-md-9">
+                                        <div class="input-group input-group-sm">
+                                            @Html.HiddenFor(model => model.Driver2Id)
+                                            @Html.TextBoxFor(model => model.KodeDriver2, new { @class = "form-control", @readonly = "true" })
+                                            <span class="input-group-btn">
+                                                <button type="button" class="btn btn-success" data-toggle="modal" data-target="#ModalMasterDriver" onclick="caller = 2;">Browse</button>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.NamaDriver2, new { @class = "control-label col-md-3" })
+                                    <div class="col-md-9">
+                                        @Html.TextBoxFor(model => model.NamaDriver2, new { @class = "form-control input-sm", @readonly = "true" })
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.VehicleNo, new { @class = "control-label col-md-3" })
+                                    <div class="col-md-9">
+                                        <div class="input-group input-group-sm">
+                                            @Html.HiddenFor(model => model.IdDataTruck)
+                                            @Html.TextBoxFor(model => model.VehicleNo, new { @class = "form-control", @readonly = "true" })
+                                            <span class="input-group-btn">
+                                                <button type="button" class="btn btn-success" data-toggle="modal" data-target="#ModalMasterVehicleNo" onclick="caller = 2;">Browse</button>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.JenisTruk, new { @class = "control-label col-md-3" })
+                                    <div class="col-md-9">
+                                        @Html.TextBoxFor(model => model.JenisTruk, new { @class = "form-control input-sm", @readonly = "true" })
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.JenisPendingin, new { @class = "control-label col-md-3" })
+                                    <div class="col-md-9">
+                                        @Html.TextBoxFor(model => model.JenisPendingin, new { @class = "form-control input-sm", @readonly = "true" })
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="portlet light">
+                    <div class="portlet-title">
+                        <div class="caption font-green-sharp">
+                            <span class="caption-subject"> Data Kejadian</span>
+                        </div>
+                        <div class="tools">
+                            <a href="" class="collapse"> </a>
+                        </div>
+                    </div>
+                    <div class="portlet-body">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.StatusBap, new { @class = "control-label col-md-3" })
+                                    <div class="col-md-3">
+                                        @Html.TextBoxFor(model => model.StatusBap, new { @class = "form-control input-sm" })
+                                        @Html.ValidationMessageFor(model => model.StatusBap)
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.TanggalKejadian, new { @class = "control-label col-md-3" })
+                                    <div class="col-md-2 col-sm-6 col-xs-12">
+                                        @Html.TextBoxFor(model => model.TanggalKejadian, new { @class = "form-control-datepicker" })
+                                    </div>
+                                    <div class="col-md-1 col-sm-6 col-xs-12">
+                                        <div class="input-group input-group-sm">
+                                            @Html.TextBoxFor(model => model.JamKejadian, new { @class = "form-control input-sm timepicker timepicker-24" })
+                                            <span class="input-group-btn">
+                                                <a class="btn btn-sm default">
+                                                    <i class="fa fa-clock-o"></i>
+                                                </a>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.KategoriId, new { @class = "control-label col-md-3" })
+                                    <div class="col-md-3">
+                                        @Html.TextBoxFor(model => model.KategoriId, new { @class = "form-control input-sm" })
+                                        @Html.ValidationMessageFor(model => model.KategoriId)
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.LaporanKejadian, new { @class = "control-label col-md-3" })
+                                    <div class="col-md-9">
+                                        @Html.TextAreaFor(model => model.LaporanKejadian, new { @class = "form-control input-sm" })
+                                        @Html.ValidationMessageFor(model => model.LaporanKejadian)
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.DilaporkanOleh, new { @class = "control-label col-md-3" })
+                                    <div class="col-md-4">
+                                        @Html.TextBoxFor(model => model.DilaporkanOleh, new { @class = "form-control input-sm" })
+                                        @Html.ValidationMessageFor(model => model.DilaporkanOleh)
+                                    </div>
+                                    @Html.LabelFor(model => model.Departemen1Id, new { @class = "control-label col-md-2" })
+                                    <div class="col-md-3">
+                                        @Html.TextBoxFor(model => model.Departemen1Id, new { @class = "form-control input-sm" })
+                                        @Html.ValidationMessageFor(model => model.Departemen1Id)
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.HasilPemeriksaan, new { @class = "control-label col-md-3" })
+                                    <div class="col-md-9">
+                                        @Html.TextAreaFor(model => model.HasilPemeriksaan, new { @class = "form-control input-sm" })
+                                        @Html.ValidationMessageFor(model => model.HasilPemeriksaan)
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.Penyelesaian, new { @class = "control-label col-md-3" })
+                                    <div class="col-md-9">
+                                        @Html.TextAreaFor(model => model.Penyelesaian, new { @class = "form-control input-sm" })
+                                        @Html.ValidationMessageFor(model => model.Penyelesaian)
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.DiperiksaOleh, new { @class = "control-label col-md-3" })
+                                    <div class="col-md-4">
+                                        @Html.TextBoxFor(model => model.DiperiksaOleh, new { @class = "form-control input-sm" })
+                                        @Html.ValidationMessageFor(model => model.DiperiksaOleh)
+                                    </div>
+                                    @Html.LabelFor(model => model.Departemen2Id, new { @class = "control-label col-md-2" })
+                                    <div class="col-md-3">
+                                        @Html.TextBoxFor(model => model.Departemen2Id, new { @class = "form-control input-sm" })
+                                        @Html.ValidationMessageFor(model => model.Departemen2Id)
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.File, new { @class = "control-label col-md-3" })
+                                    <div class="col-md-9">
+                                        @Html.HiddenFor(model => model.File, new { @class = "form-control input-sm" })
+                                        <input type="file" id="filesDoc" name="files" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="portlet light">
+                    <div class="portlet-title">
+                        <div class="caption font-green-sharp">
+                            <span class="caption-subject">Attachment</span>
+                        </div>
+                        <div class="tools">
+                            <a href="" class="collapse"> </a>
+                        </div>
+                    </div>
+                    <div class="portlet-body">
+                        <div class="row">
+                            <div class="col-md-12" style="margin-bottom:20px">
+                                <div id="GridDokumen"></div>
+                                @Html.HiddenFor(model => model.StrAtt)
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="form-group">
+                    <div class="col-md-12">
+                        <button type="button" name="btnsave" value="save" class="btn btn-success" onclick="notifSave($('#formsubmit'),$(this).val());">Submit</button>
+                        <a href="@backLink" class="btn btn-link">Cancel</a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<div id="modalGridSales" class="modal fade bs-modal-lg" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg" style="width:1340px">
+        <div id="modalForm" class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                <h4 class="modal-title">List Sales Order</h4>
+            </div>
+            <div class="modal-body">
+                <div id="GridSales"></div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="modalGridSalesKontrak" class="modal fade bs-modal-lg" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg" style="width:1340px">
+        <div id="modalForm" class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                <h4 class="modal-title">List Sales Order Kontrak</h4>
+            </div>
+            <div class="modal-body">
+                <div id="GridSalesKontrak"></div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="ModalMasterDriver" class="modal fade bs-modal-full" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-full">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+            </div>
+            <div class="modal-body">
+                <div id="GridMasterDriver"></div>
+            </div>
+        </div>
+    </div>
+</div>
+    <div id="ModalMasterVehicleNo" class="modal fade bs-modal-full" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-full">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="GridMasterVehicleNo"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    @section scripts{
+    <script type="text/javascript">
+    var dsGridAtt = [];
+    //attachment
+    var kendoUploadButton;
+    var filesAtt;
+    function FileTemplate(container, options) {
+        if (container.url != null) {
+            var extFile = container.url.split('.').pop();
+            var ExtensionImage = ["jpg", "jpeg", "pdf"];
+            if ($.inArray((extFile).toLowerCase(), ExtensionImage) !== -1) {
+                return '<a href="' + container.url.replace("~/", "") + '" target="blank_"> ' + container.realfname.replace(container.realfname.substr(0, 36), '') + ' </a>';
+            }
+        }
+    }
+
+    function fileUploadEditor(container, options) {
+        $('<input type="file" name="files" id="files"/>')
+           .appendTo(container)
+           .kendoUpload({
+               multiple: false,
+               async: {
+                   saveUrl: "/FileManagement/Upload?Dir=~/Uploads",
+                   removeUrl: "/FileManagement/Delete?Dir=~/Uploads&temp=true",
+                   autoUpload: true
+               },
+               files: getlistFile(options),
+               select: onSelectImage,
+               success: function (e) {
+                   if (e.operation == "upload") {
+                       $(".k-filename:contains('" + e.files[0].name + "')").text('').append('<a href="' + e.response.imagelink + '" target="_blank">' + e.response.fileName.replace(e.response.fileName.substr(0, 36), '') + '</a>');
+                       e.files[0].name = e.response.fileName;
+                       options.model.set("realfname", e.response.fileName);
+                       options.model.set("url", e.response.imagelink);
+                   } else if (e.operation == "remove") {
+                       options.model.set("realfname", "");
+                       options.model.set("url", "");
+                   }
+               },
+           });
+        $("<span class='k-invalid-msg' data-for='Url'></span>").appendTo(container);
+        var filename = $("#files").data("kendoUpload").wrapper.find(".k-filename")
+        for (var i = 0; i < filename.length; i++) {
+            $(filename[i]).html("<a href='/Uploads/" + filesAtt[i].name + "' target='_blank'>" + filesAtt[i].name.replace(filesAtt[i].name.substr(0, 36), '') + "</a>")
+        }
+    }
+
+    @foreach (var item in Model.ListAtt)
+        {
+            <text>
+    dsGridAtt.push({
+        IdBAP : @item.IdBAP,
+        url : '@item.url',
+        filename : '@item.filename',
+        realfname : '@item.realfname',
+    });
+    </text>
+        }
+    function SelectVehicleNo(e) {
+        e.preventDefault();
+        var data = this.dataItem(getDataRowGrid(e));
+        $('#IdDataTruck').val(data.Id);
+        $('#VehicleNo').val(data.VehicleNo);
+        $('#JenisTruk').val(data.strJenisTruck);
+        $('#JenisPendingin').val(data.jenisPendingin);
+        $('#ModalMasterVehicleNo').modal('hide');
+    }
+    function SelectDriver(e) {
+        e.preventDefault();
+        var data = this.dataItem(getDataRowGrid(e));
+        if (caller == 1) {
+            $('#Driver1Id').val(data.Id);
+            $('#KodeDriver1').val(data.KodeDriver);
+            $('#NamaDriver1').val(data.NamaDriver);
+            $('#IdDataTruck').val(data.IdDataTruck);
+            $('#VehicleNo').val(data.VehicleNo);
+            $('#JenisTruk').val(data.strJenisTruck);
+            $('#JenisPendingin').val(data.JenisPendingin);
+        }
+        if (caller == 2) {
+            $('#Driver2Id').val(data.Id);
+            $('#KodeDriver2').val(data.KodeDriver);
+            $('#NamaDriver2').val(data.NamaDriver);
+        }
+        $('#ModalMasterDriver').modal('hide');
+    }
+
+    //Driver
+    var dsVehicleNo = new kendo.data.DataSource({
+        transport: {
+            read: {
+                url: '@Url.Action("Binding", "DataTruck")',
+                dataType: "json"
+            },
+        },
+        schema: {
+            total: "total",
+            data: "data",
+            model: {
+                fields: {
+                    "Id": { type: "number" },
+                    "NoTruck": { type: "string" },
+                    "VehicleNo": { type: "string" },
+                    "strJenisTruck": { type: "string" },
+                    "jenisPendingin": { type: "string" },
+                    "Keterangan": { type: "string" },
+                }
+            }
+        },
+        pageSize: 10,
+        pageable: true,
+        serverFiltering: true,
+        serverPaging: true,
+        serverSorting: true,
+        sortable: true,
+        //sort: { field: "SubmittedDate", dir: "desc" }
+    })
+
+    gridAtt = $("#GridDokumen").kendoGrid({
+        batch: true,
+        dataSource: {
+            data: dsGridAtt,
+            schema: {
+                model: {
+                    id: "Id",
+                    fields: {
+                        "Id": { type: "number", defaultValue: 0 },
+                        "IdKlaim": { defaultValue: $("#Id").val(), type: "number" },
+                        "url": {
+                            type: "string",
+                            validation: {
+                                required: { message: "File harus diisi." },
+                            }
+                        },
+                        "filename": {
+                            type: "string",
+                            validation: {
+                                required: { message: "Nama harus diisi." },
+                            }
+                        },
+                        "realfname": { type: "string" }
+                    }
+                },
+            },
+            pageSize: 10,
+        },
+        editable: { mode: "inline", confirmation: "Anda yakin menghapus data?" },
+        scrollable: false,
+        toolbar: [{ name: "create", text: "Tambah" }],
+        columns: [
+            {
+                command: [
+                    {
+                        name: "edit",
+                        text: "Edit",
+                        imageClass: "glyphicon glyphicon-edit",
+                        template: '<a class="k-button-icon #=className#" #=attr# title="edit" href="\\#"><span class="#=imageClass#"></span></a>'
+                    },
+                    {
+                        name: "destroy",
+                        text: "Hapus",
+                        imageClass: "glyphicon glyphicon-remove",
+                        template: '<a class="k-button-icon #=className#" #=attr# href="\\#" title="#=text#"><span class="#=imageClass#"></span></a>'
+                    }
+                ],
+                width: 100
+            },
+            { field: "IdKlaim", hidden: true, },
+            { field: "filename", title: "Nama" },
+            { field: "realfname", hidden: true },
+            { field: "url", title: "File", template: FileTemplate, editor: fileUploadEditor }
+        ],
+        edit: function (e) {
+            var detailCell = e.container.find("td:first");
+            detailCell.html('');
+            var commandCell = e.container.find("td:nth-child(1)");
+            commandCell.html('<a class="k-button-icon k-grid-update form-inline" href="\\#" title="Simpan"><span class="glyphicon glyphicon-floppy-saved"></span></a> <a class="k-button-icon k-grid-cancel form-inline" href="\\#" title="Batal"><span class="glyphicon glyphicon-remove"></span></a>');
+            var commandGroupCell = e.container.find("td:nth-child(0)");
+            commandGroupCell.html('');
+        },
+    }).data("kendoGrid");
+
+    gridVehicleNo = $("#GridMasterVehicleNo").kendoGrid({
+        dataSource: dsVehicleNo,
+        filterable: kendoGridFilterable,
+        sortable: true,
+        reorderable: true,
+        resizable: true,
+        pageable: true,
+        columns: [
+            {
+                command: [
+                 {
+                     name: "select",
+                     text: "Select",
+                     click: SelectVehicleNo,
+                     imageClass: "glyphicon glyphicon-ok",
+                     template: '<a class="k-button-icon #=className#" #=attr# href="\\#"><span class="#=iconClass# #=imageClass#"></span></a>'
+                 }
+                ],
+                width: "50px"
+            },
+            {
+                field: "NoTruck",
+                title: "No Truk"
+            },
+            {
+                field: "VehicleNo",
+                title: "No Vehicle"
+            },
+            {
+                field: "strJenisTruck",
+                title: "Jenis Truk"
+            },
+            {
+                field: "jenisPendingin",
+                title: "Jenis Pendingin"
+            },
+            {
+                field: "Keterangan",
+                title: "Keterangan"
+            },
+
+        ],
+    }).data("kendoGrid");
+
+    var dsMasterDriver = new kendo.data.DataSource({
+        transport: { read: { url: '/Driver/BindingDetailSo', dataType: "json" } },
+        schema: {
+            total: "total", data: "data",
+            model: {
+                fields: {
+                    "Id": { type: "number" }, "Status": { type: "string" }, "StatusSo": { type: "string" },
+                    "KodeDriver": { type: "string" }, "KodeDriverOld": { type: "string" }, "NamaDriver": { type: "string" },
+                    "NamaPangilan": { type: "string" }, "DokumenPending": { type: "string" }, "TglBerlakuSim": { type: "string" },
+                    "Training": { type: "string" }, "IdDataTruck": { type: "number" }
+                }
+            }
+        },
+        pageSize: 5, pageable: true, sortable: true,
+    });
+    var gridMasterDriver = $("#GridMasterDriver").kendoGrid({
+        dataSource: dsMasterDriver, filterable: kendoGridFilterable, sortable: true, reorderable: true, resizable: true,
+        pageable: true, groupable: true, columns: [
+            {
+                command: [
+                    {
+                        name: "select", text: "Select", click: SelectDriver, imageClass: "glyphicon glyphicon-ok",
+                        template: '<a class="k-button-icon #=className#" #=attr# href="\\#"><span class="#=iconClass# #=imageClass#"></span></a>'
+                    }
+                ],
+                width: "50px"
+            },
+            { field: "StatusSo", title: "Status Order" }, { field: "KodeDriver", title: "Kode Driver" },
+            { field: "KodeDriverOld", title: "Kode Driver Lama" },
+            { field: "NamaDriver", title: "Nama Driver", template: "<a href='\\#' data-toggle='modal' data-target='\\#ModalHistoryJalan' onclick='GetHistoryJalan(#:Id#)'> #= NamaDriver # </a>" },
+            { field: "NamaPangilan", title: "Nama Panggilan" }, { field: "DokumenPending", title: "Dokumen Pending" },
+            { field: "TglBerlakuSim", title: "Sim Expired", template: "#= TglBerlakuSim != null ? kendo.toString(kendo.parseDate(TglBerlakuSim, 'yyyy-MM-dd'), 'dd/MM/yyyy') : ''#" },
+            { field: "Training", title: "Training" }, {field: "VehicleNo", title: "No Vehicle"}, {field: "strJenisTruck", title: "Jenis Truk"},
+            {field: "JenisPendingin", title: "Jenis Pendingin"}
+        ]}).data("kendoGrid");
+    var kendoUploadButton;
+    var dsRute, dsFile = [];
+    var dsSo = new kendo.data.DataSource({
+        transport: {
+            read: {url: '@Url.Action("BindingSalesOrder")', dataType: "json"},
+                parameterMap: function (options, operation) {
+                    if (operation !== "read" && options != '')
+                        return kendo.stringify(options);
+                    else if (operation == "read") {
+                        if (options.filter) {
+                            filter = options.filter.filters;
+                            for (var i in filter) {
+                                if (filter[i].field == "VehicleNo")
+                                    filter[i].field = "DataTruck.VehicleNo";
+                                if (filter[i].field == "Driver1")
+                                    filter[i].field = "Driver.NamaDriver";
+                                if (filter[i].field == "NamaCustomer")
+                                    filter[i].field = "Customer.CustomerNama";
+                                if (filter[i].field == "TanggalMuat") {
+                                    filter[i].field = "OrderTanggalMuat";
+                                    Date.prototype.yyyymmdd = function () {
+                                        var mm = this.getMonth() + 1; // getMonth() is zero-based
+                                        var dd = this.getDate();
+                                        return [this.getFullYear(), (mm > 9 ? '' : '0') + mm, (dd > 9 ? '' : '0') + dd].join('-');
+                                    };
+                                    filter[i].value = filter[i].value.yyyymmdd()
+                                }
+                            }
+                        }
+                        return options;
+                    }
+                },
+            },
+            schema: {
+                total: "total", data: "data",
+                model: {
+                    fields: {
+                        "Id": { type: "number" }, "IdSoKontrak": { type: "number" }, "DN": { type: "string" }, "JenisOrder": { type: "string" }, "SONumber": { type: "string" },
+                        "TanggalMuat": { type: "date" }, "NamaCustomer": { type: "string" }, "StrProduct": { type: "string" }, "Suhu": { type: "number" },
+                        "Rute": { type: "string" }, "StrMultidrop": { type: "string" }, "StrJenisTruck": { type: "string" }, "StatusFlow": { type: "string" },
+                        "FlowDate": { type: "date" }, "StatusBatal": { type: "string" }, "StatusDokumen": { type: "string" }, "PenanganKhusus": { type: "string" },
+                        "VehicleNo": { type: "string" }, "Driver1": { type: "string" }, "DateRevised": { type: "boolean" }
+                    }
+                }
+            },
+            pageSize: 10, pageable: true, sortable: true, serverFiltering: true, serverPaging: true, serverSorting: true,
+        });
+        var dsSoKontrak = new kendo.data.DataSource({
+            transport: {
+                read: {url: '/BAP/BindingSalesOrderKontrak', dataType: "json"},
+                parameterMap: function (options, operation) {
+                    if (operation !== "read" && options != '')
+                        return kendo.stringify(options);
+                    else if (operation == "read") {
+                        if (options.filter) {
+                            filter = options.filter.filters;
+                            for (var i in filter) {
+                                if (filter[i].field == "SONumber")
+                                    filter[i].field = "NoSo";
+                                if (filter[i].field == "VehicleNo")
+                                    filter[i].field = "DataTruck.VehicleNo";
+                                if (filter[i].field == "Driver1")
+                                    filter[i].field = "Driver.NamaDriver";
+                                if (filter[i].field == "NamaCustomer")
+                                    filter[i].field = "Customer.CustomerNama";
+                                if (filter[i].field == "TanggalMuat") {
+                                    filter[i].field = "OrderTanggalMuat";
+                                    Date.prototype.yyyymmdd = function () {
+                                        var mm = this.getMonth() + 1; // getMonth() is zero-based
+                                        var dd = this.getDate();
+                                        return [this.getFullYear(), (mm > 9 ? '' : '0') + mm, (dd > 9 ? '' : '0') + dd].join('-');
+                                    };
+                                    filter[i].value = filter[i].value.yyyymmdd()
+                                }
+                            }
+                        }
+                        return options;
+                    }
+                },
+            },
+            schema: {
+                total: "total", data: "data",
+                model: {
+                    fields: {
+                        "Id": { type: "number" }, "IdSoKontrak": { type: "number" }, "DN": { type: "string" }, "JenisOrder": { type: "string" }, "SONumber": { type: "string" },
+                        "TanggalMuat": { type: "date" }, "NamaCustomer": { type: "string" }, "StrProduct": { type: "string" }, "Suhu": { type: "number" },
+                        "Rute": { type: "string" }, "StrMultidrop": { type: "string" }, "StrJenisTruck": { type: "string" }, "StatusFlow": { type: "string" },
+                        "FlowDate": { type: "date" }, "StatusBatal": { type: "string" }, "StatusDokumen": { type: "string" }, "PenanganKhusus": { type: "string" },
+                        "VehicleNo": { type: "string" }, "Driver1": { type: "string" }, "DateRevised": { type: "boolean" }
+                    }
+                }
+            },
+            pageSize: 10, pageable: true, sortable: true, serverFiltering: true, serverPaging: true, serverSorting: true,
+        });
+        var gridRute, gridSo, gridSoKontrak;
+        var dsProduct, cboproduct;
+        var dsGridLoad = [], dsGridUnLoad = [];
+        var GridCustLoad, GridCustUnLoad;
+        var checkedIdLoad = {}, checkedIdUnoad = {};
+
+        if('@Model.File' != '')
+        dsFile.push({ name: '@Model.File' });
+    function CreateLink() {
+        var filename = $("#filesDoc").data("kendoUpload").wrapper.find(".k-filename")
+        for (var i = 0; i < filename.length; i++) {
+            $(filename[i]).html("<a href='" + dsFile[i].name + "' target='_blank'>" + dsFile[i].name.replace(dsFile[i].name.substr(0, 45), '') + "</a>")
+        }
+    }
+    //uploader Doc
+    $("#filesDoc").kendoUpload({
+        multiple: false,
+        async: {
+            saveUrl: "/FileManagement/Upload?Dir=~/Uploads",
+            removeUrl: "/FileManagement/Delete?Dir=~/Uploads&temp=true",
+            autoUpload: true
+        },
+        files: dsFile,
+        select: onSelectImage,
+        success: function (e) {
+            if (e.operation == "upload") {
+                $(".k-filename:contains('" + e.files[0].name + "')").text('').append('<a href="' + e.response.imagelink + '" target="_blank">' + e.files[0].name + '</a>');
+                $('#File').val(e.response.imagelink);
+            }
+            else {
+                $('#File').val("");
+            }
+        }
+    });
+    CreateLink();
+
+    function SelectSo(e) {
+        e.preventDefault();
+        var data = this.dataItem(getDataRowGrid(e));
+        $.ajax({
+            url: 'GetPartialSo?idSo=' + data.Id + '&IdSoKontrak=' + data.IdSoKontrak,
+            contentType: 'application/html; charset=utf-8',
+            type: 'GET',
+            dataType: 'html'
+        }).success(function (res) {
+            $("#SOBapId").val(data.Id);
+            $("#SOBapKontrakId").val(data.IdSoKontrak);
+            $('#PartialSo').html(res);
+            //ambil data truck
+            $.ajax({
+                url: 'GetDetailSo?idSo=' + data.Id + '&IdSoKontrak=' + data.IdSoKontrak,
+                type: "POST",
+                success: function (data) {
+                    dataJson = JSON.parse(data);
+                    $("#Driver1Id").val(dataJson.driverId1);
+                    $("#KodeDriver1").val(dataJson.kodeDriver1);
+                    $("#NamaDriver1").val(dataJson.namaDriver1);
+                    $("#Driver2Id").val(dataJson.driverId2);
+                    $("#KodeDriver2").val(dataJson.kodeDriver2);
+                    $("#NamaDriver2").val(dataJson.namaDriver2);
+                    $("#IdDataTruck").val(dataJson.dataTruckId);
+                    $("#VehicleNo").val(dataJson.vehicleNo);
+                    $("#JenisTruk").val(dataJson.jenisTruck);
+                    $("#JenisPendingin").val(dataJson.jenisPendingin);
+                },
+                error:function(){
+                    $("#Driver1Id").val();
+                    $("#KodeDriver1").val();
+                    $("#NamaDriver1").val();
+                    $("#Driver2Id").val();
+                    $("#KodeDriver2").val();
+                    $("#NamaDriver2").val();
+                    $("#IdDataTruck").val();
+                    $("#VehicleNo").val();
+                    $("#JenisTruk").val();
+                    $("#JenisPendingin").val();
+                }
+            });
+        })
+        $('#modalGridSales').modal('hide');
+    }
+
+    $(document).ready(function () {
+        if ('@Model.SOBapId' != '0' && '@Model.SOBapId' != ' ')
+        {
+            $.ajax({
+                url: 'GetPartialSo?idSo=' + '@Model.SOBapId' + '&IdSoKontrak=' + '@Model.SOBapKontrakId',
+                contentType: 'application/html; charset=utf-8',
+                type: 'GET',
+                dataType: 'html',
+            }).success(function (res){
+                $('#PartialSo').html(res);
+            })
+        }
+
+        $("#PrioritasId").kendoComboBox();
+
+        var dsPrioritas = new kendo.data.DataSource({
+            transport: {
+                read: {
+                    url: '@Url.Action("GetSoPrioritas")',
+                    dataType: "json"
+                },
+            },
+        });
+
+        InitLookUp($("#PrioritasId"), dsPrioritas);
+
+        $("#StatusBap").kendoComboBox({
+            dataSource: {
+                transport: {
+                    read: {
+                        url: '@Url.Action("GetComboStatusBAP", "BAP")',
+                        dataType: "json"
+                    },
+                },
+            },
+            dataTextField: "Nama",
+            dataValueField: "Nama",
+            filter: "contains",
+            suggest: true,
+        });
+
+        $("#KategoriId").kendoComboBox({
+            dataSource: {
+                transport: {
+                    read: {
+                        url: '@Url.Action("GetComboKategoriBAP", "BAP")',
+                        dataType: "json"
+                    },
+                },
+            },
+            dataTextField: "Nama",
+            dataValueField: "Id",
+            filter: "contains",
+            suggest: true,
+        });
+
+        $("#Departemen1Id").kendoComboBox({
+            dataSource: {
+                transport: {
+                    read: {
+                        url: '@Url.Action("GetComboDepartemenBAP", "BAP")',
+                        dataType: "json"
+                    },
+                },
+            },
+            dataTextField: "Nama",
+            dataValueField: "Id",
+            filter: "contains",
+            suggest: true,
+        });
+
+        $("#Departemen2Id").kendoComboBox({
+            dataSource: {
+                transport: {
+                    read: {
+                        url: '@Url.Action("GetComboDepartemenBAP", "BAP")',
+                        dataType: "json"
+                    },
+                },
+            },
+            dataTextField: "Nama",
+            dataValueField: "Id",
+            filter: "contains",
+            suggest: true,
+        });
+
+        gridSoKontrak = $("#GridSalesKontrak").kendoGrid({
+            dataSource: dsSoKontrak, filterable: kendoGridFilterable, sortable: true, reorderable: true, resizable: true, scrollable: true, pageable: true, groupable: true,
+            columns: [
+                {
+                    command: [
+                        {
+                            name: "select", text: "Select", click: SelectSoKontrak, imageClass: "glyphicon glyphicon-ok",
+                            template: '<a class="k-button-icon #=className#" #=attr# href="\\#"><span class="#=iconClass# #=imageClass#"></span></a>'
+                        }
+                    ],
+                    width: "50px"
+                },
+                { field: "JenisOrder", title: "Jenis Order", width: "100px" }, { field: "DN", title: "DN", width: "120px" },
+                { field: "SONumber", title: "No SO", width: "120px" },
+                {
+                    field: "TanggalMuat", title: "Tgl Muat", width: "100px",
+                    template: "#= TanggalMuat != null ? kendo.toString(kendo.parseDate(TanggalMuat, 'yyyy-MM-dd'), 'dd/MM/yyyy') : ''#"
+                },
+                {
+                    field: "JamMuat", title: "Jam Muat",
+                    width: "100px", template: "#= JamMuat != null ? kendo.toString(new Date(1, 1, 1, JamMuat.Hours, JamMuat.Minutes), 'hh : mm') : ''#", filterable: false
+                },
+                { field: "NamaCustomer", title: "Customer", width: "200px" }, { field: "StrProduct", title: "Jenis Barang", width: "150px" },
+                { field: "Suhu", title: "Target Suhu", width: "100px" }, { field: "Rute", title: "Rute", width: "150px" },
+                { field: "StrMultidrop", title: "Multidrop", width: "150px" }, { field: "StrJenisTruck", title: "Jenis Truck", width: "100px" },
+                { field: "StatusBatal", title: "Status Batal", width: "150px" }, { field: "StatusDokumen", title: "Status Dokumen", width: "150px" },
+                { field: "PenanganKhusus", title: "Penangan Khusus", width: "300px" }, { width: "150px", field: "VehicleNo", title: "Vehicle No", },
+                { width: "150px", field: "Driver1", title: "Driver", },
+            ]}).data("kendoGrid");
+        gridSo = $("#GridSales").kendoGrid({
+            dataSource: dsSo, filterable: kendoGridFilterable, sortable: true, reorderable: true, resizable: true, scrollable: true, pageable: true, groupable: true,
+            columns: [
+                {
+                    command: [
+                        {
+                            name: "select",
+                            text: "Select",
+                            click: SelectSo,
+                            imageClass: "glyphicon glyphicon-ok",
+                            template: '<a class="k-button-icon #=className#" #=attr# href="\\#"><span class="#=iconClass# #=imageClass#"></span></a>'
+                        }
+                    ],
+                    width: "50px"
+                },
+                { field: "JenisOrder", title: "Jenis Order", width: "100px" },
+                { field: "DN", title: "DN", width: "120px" },
+                { field: "SONumber", title: "No SO", width: "120px" },
+                { field: "TanggalMuat", title: "Tgl Muat", width: "100px", template: "#= TanggalMuat != null ? kendo.toString(kendo.parseDate(TanggalMuat, 'yyyy-MM-dd'), 'dd/MM/yyyy') : ''#" },
+                { field: "JamMuat", title: "Jam Muat", width: "100px", template: "#= JamMuat != null ? kendo.toString(new Date(1, 1, 1, JamMuat.Hours, JamMuat.Minutes), 'hh : mm') : ''#", filterable: false },
+                { field: "NamaCustomer", title: "Customer", width: "200px" },
+                { field: "StrProduct", title: "Jenis Barang", width: "150px" },
+                { field: "Suhu", title: "Target Suhu", width: "100px" },
+                { field: "Rute", title: "Rute", width: "150px" },
+                { field: "StrMultidrop", title: "Multidrop", width: "150px" },
+                { field: "StrJenisTruck", title: "Jenis Truck", width: "100px" },
+                { field: "StatusBatal", title: "Status Batal", width: "150px" },
+                { field: "StatusDokumen", title: "Status Dokumen", width: "150px" },
+                { field: "PenanganKhusus", title: "Penangan Khusus", width: "300px" },
+                { width: "150px", field: "VehicleNo", title: "Vehicle No", },
+                { width: "150px", field: "Driver1", title: "Driver", },
+            ]}).data("kendoGrid");
+
+        $('#formsubmit').submit(function () {
+        });
+    });
+    </script>
+}
+}
+else{
+    ViewBag.Title = "AccessDenied";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    <h1>Maaf, anda tidak memiliki hak akses yang cukup untuk mengakses halaman ini</h1>
+}

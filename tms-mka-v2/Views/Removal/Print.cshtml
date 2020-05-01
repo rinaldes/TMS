@@ -1,0 +1,142 @@
+﻿@using tms_mka_v2.Models
+
+@model tms_mka_v2.Models.RemovalAUJ
+@{
+    
+}
+<style>
+    label {
+        font-size:9px;
+    }
+</style>
+<link rel="stylesheet" href="~/Content/metronic/bootstrap.min.css" />
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12 col-md-12">
+                <div class="row">
+                    <div class="col-xs-4 col-md-4">
+                        <label>@ViewBag.kodedr</label> 
+                    </div>
+                    <div class="col-xs-4 col-md-4">
+                        <label>@ViewBag.namadr</label> 
+                    </div>
+                    <div class="col-xs-4 col-md-4">
+                        <label>@ViewBag.nopol</label> 
+                    </div>
+                </div>
+                <div class="row">
+                    <label class="col-xs-4 col-md-4">Tanggal Jalan</label>
+                    <label class="col-xs-8 col-md-8">: @ViewBag.tgljalan</label>
+                </div>
+                <div class="row">
+                    <label class="col-xs-4 col-md-4">Customer</label>
+                    <label class="col-xs-8 col-md-8">: @ViewBag.customer</label>
+                </div>
+                <div class="row">
+                    <label class="col-xs-4 col-md-4">Rute</label>
+                    <label class="col-xs-8 col-md-8">: @ViewBag.rute</label>
+                </div>
+                <div class="row">
+                    <div class="col-xs-11 col-md-11"><hr style="height:1px;border:none;color:#333;background-color:#333" /></div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12 col-md-12">
+                <div class="row">
+                    <label class="col-xs-4 col-md-4">Uang Jalan</label><label class="col-xs-1 col-md-1">:</label>
+                    <label class="col-xs-6 col-md-6" style="text-align:right">@string.Format("{0:n0}", Model.NilaiBorongan.Value)</label>
+                </div>
+                @if (Model.Kawalan.Value > 0){
+                    <div class="row">
+                        <label class="col-xs-4 col-md-4">Kawalan</label><label class="col-xs-1 col-md-1">:</label>
+                        <label class="col-xs-6 col-md-6" style="text-align:right">@string.Format("{0:n0}", Model.Kawalan.Value)</label>
+                    </div>
+                }
+                @if (Model.Kawalan.Value > 0){
+                    <div class="row">
+                        <label class="col-xs-4 col-md-4">Timbangan</label><label class="col-xs-1 col-md-1">:</label>
+                        <label class="col-xs-6 col-md-6" style="text-align:right"> @string.Format("{0:n0}", Model.Timbangan.Value)</label>
+                    </div>
+                }
+                @if (Model.Multidrop.Value > 0){
+                    <div class="row">
+                        <label class="col-xs-4 col-md-4">Multidrop</label><label class="col-xs-1 col-md-1">:</label>
+                        <label class="col-xs-6 col-md-6" style="text-align:right"> @string.Format("{0:n0}", Model.Multidrop.Value)</label>
+                    </div>
+                }
+                <div class="row">
+                    <div class="col-xs-11 col-md-11"><hr style="height:1px;border:none;color:#333;background-color:#333" /></div>
+                    <div class="col-xs-1 col-md-1">+</div>
+                </div>
+                <div class="row">
+                    <label class="col-xs-4 col-md-4">SUBTOTAL</label><label class="col-xs-1 col-md-1">:</label>
+                    <label class="col-xs-6 col-md-6" style="text-align:right"> @string.Format("{0:n0}", Model.TotalBorongan.Value)</label>
+                </div>
+                @if (Model.TotalPotonganDriver.Value > 0){
+                    <div class="row">
+                        <label class="col-xs-4 col-md-4">POTONGAN</label><label class="col-xs-1 col-md-1">:</label>
+                        <label class="col-xs-6 col-md-6" style="text-align:right"> @string.Format("{0:n0}", Model.TotalPotonganDriver.Value)</label>
+                    </div>
+                }
+                <div class="row">
+                    <div class="col-xs-11 col-md-11"><hr style="height:1px;border:none;color:#333;background-color:#333" /></div>
+                    <div class="col-xs-1 col-md-1">-</div>
+                </div>
+                <div class="row">
+                    <label class="col-xs-4 col-md-4">Jumlah</label><label class="col-xs-1 col-md-1">:</label>
+                    <label class="col-xs-6 col-md-6" style="text-align:right"> @string.Format("{0:n0}", Model.TotalAlokasi.Value)</label>
+                </div>
+            </div>
+        </div>
+        <br />
+        <br />
+        <div class="row">
+            <div class="col-xs-12 col-md-12">
+                <label>REALISASI</label> 
+                @foreach (var item in Model.ModelListTf.Where(d => d.Nama == "Tunai"))
+                {
+                    if (item.Value.Value > 0){
+                        <div class="row">
+                            <label class="col-xs-5 col-md-5">KAS</label><label class="col-xs-1 col-md-1">:</label>
+                            <label class="col-xs-5 col-md-5" style="text-align:right">@string.Format("{0:n0}", item.Value.Value)</label>
+                        </div>
+                    }
+                }
+                <div class="row">
+                    <label class="col-xs-5 col-md-5">VOUCHER SPBU</label><label class="col-xs-1 col-md-1">:</label>
+                </div>
+                @foreach (var item in Model.ModelListSpbu)
+                {
+                    <div class="row">
+                        <label class="col-xs-5 col-md-5">@item.NamaSpbu</label><label class="col-xs-1 col-md-1">&nbsp;</label>
+                        <label class="col-xs-5 col-md-5" style="text-align:right">@string.Format("{0:n0}", item.Value.Value)</label>
+                    </div>
+                }
+                <div class="row">
+                    <label class="col-xs-5 col-md-5">VOUCHER PENYEBRANGAN</label><label class="col-xs-1 col-md-1">:</label>
+                </div>
+                @foreach (var item in Model.ModelListKapal)
+                {
+                    <div class="row">
+                        <label class="col-xs-5 col-md-5">@item.NamaPenyebrangan</label><label class="col-xs-1 col-md-1">&nbsp;</label>
+                        <label class="col-xs-5 col-md-5" style="text-align:right">@string.Format("{0:n0}", item.Value.Value)</label>
+                    </div>
+                }
+                <div class="row">
+                    <label class="col-xs-5 col-md-5">TRANSFER</label><label class="col-xs-1 col-md-1">:</label>
+                </div>
+                @{ var idx = 1;}
+                @foreach (var item in Model.ModelListTf.Where(d => d.Nama != "Tunai"))
+                {
+                    <div class="row">
+                        <label class="col-xs-5 col-md-5">@idx.ToString() .&nbsp; @item.Tanggal.Value.ToShortDateString()</label><label class="col-xs-1 col-md-1">&nbsp;</label>
+                        <label class="col-xs-5 col-md-5" style="text-align:right">@string.Format("{0:n0}", item.Value.Value)</label>
+                    </div>
+                    idx++;
+                }
+            </div>
+        </div>
+    </div>
+</body>

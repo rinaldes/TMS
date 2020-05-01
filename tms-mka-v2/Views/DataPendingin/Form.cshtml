@@ -1,0 +1,210 @@
+﻿@using tms_mka_v2.Models;
+
+@model tms_mka_v2.Models.DataPendingin
+@{
+    ViewBag.Title = "Form";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    string currentController = (string)ViewContext.RouteData.Values["controller"];
+    string currentAction = (string)ViewContext.RouteData.Values["action"];
+    string backLink = Url.Action("Index");
+    if (currentAction == "Add")
+    {
+        ViewBag.Title = "Tambah Pendingin";
+    }
+    else
+    {
+        ViewBag.Title = ViewBag.name + " | Edit";
+    }
+}
+<div class="portlet light">
+    <div class="portlet-title">
+        <div class="caption">
+            <span class="caption-subject font-dark sbold uppercase">@ViewBag.Title</span>
+        </div>
+    </div>
+    <div class="portlet-body form">
+        @using (@Html.BeginForm(currentAction, currentController, FormMethod.Post, new { @class = "form-horizontal form-label-left input_mask", @id = "formsubmit" }))
+        {
+            @Html.ValidationSummary(true)
+            @Html.HiddenFor(model => model.Id)
+            @Html.HiddenFor(model => model.VechileNo)
+            <div class="form-group">
+                @Html.LabelFor(model => model.NoPendingin, new { @class = "control-label col-md-2 col-sm-3 col-xs-12" })
+                <div class="col-md-6 col-sm-9 col-xs-12">
+                    @Html.TextBoxFor(model => model.NoPendingin, new { @class = "form-control input-sm", @readonly = "true" })
+                    @Html.ValidationMessageFor(model => model.NoPendingin)
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.IdDataTruk, new { @class = "control-label col-md-2 col-sm-3 col-xs-12" })
+                <div class="col-md-6 col-sm-9 col-xs-12">
+                    @Html.TextBoxFor(model => model.IdDataTruk, new { @class = "form-control input-sm" })
+                    @Html.HiddenFor(model => model.VechileNo)
+                    @Html.ValidationMessageFor(model => model.IdDataTruk)
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.Merk, new { @class = "control-label col-md-2 col-sm-3 col-xs-12" })
+                <div class="col-md-6 col-sm-9 col-xs-12">
+                    @Html.TextBoxFor(model => model.Merk, new { @class = "form-control input-sm focus" })
+                    @Html.ValidationMessageFor(model => model.Merk)
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.ModelPendingin, new { @class = "control-label col-md-2 col-sm-3 col-xs-12" })
+                <div class="col-md-6 col-sm-9 col-xs-12">
+                    @Html.TextBoxFor(model => model.ModelPendingin, new { @class = "form-control input-sm" })
+                    @Html.ValidationMessageFor(model => model.ModelPendingin)
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.HmLimit, new { @class = "control-label col-md-2 col-sm-3 col-xs-12" })
+                <div class="col-md-6 col-sm-9 col-xs-12">
+                    @Html.TextBoxFor(model => model.HmLimit, new { @class = "form-control-numeric-jam" })
+                    @Html.ValidationMessageFor(model => model.HmLimit)
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.Tahun, new { @class = "control-label col-md-2 col-sm-3 col-xs-12" })
+                <div class="col-md-6 col-sm-9 col-xs-12">
+                    @Html.TextBoxFor(model => model.Tahun, new { @class = "form-control-dateyear" })
+                    @Html.ValidationMessageFor(model => model.Tahun)
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.IdJenisPendingin, new { @class = "control-label col-md-2 col-sm-3 col-xs-12" })
+                <div class="col-md-6 col-sm-9 col-xs-12">
+                    @Html.TextBoxFor(model => model.IdJenisPendingin, new { @class = "form-control input-sm" })
+                    @Html.HiddenFor(model => model.NamaJenisPendingin)
+                    @Html.ValidationMessageFor(model => model.IdJenisPendingin)
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.NoMesin, new { @class = "control-label col-md-2 col-sm-3 col-xs-12" })
+                <div class="col-md-6 col-sm-9 col-xs-12">
+                    @Html.TextBoxFor(model => model.NoMesin, new { @class = "form-control input-sm" })
+                    @Html.ValidationMessageFor(model => model.NoMesin)
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.NoKompresor, new { @class = "control-label col-md-2 col-sm-3 col-xs-12" })
+                <div class="col-md-6 col-sm-9 col-xs-12">
+                    @Html.TextBoxFor(model => model.NoKompresor, new { @class = "form-control input-sm" })
+                    @Html.ValidationMessageFor(model => model.NoKompresor)
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.tglPasang, new { @class = "control-label col-md-2 col-sm-3 col-xs-12" })
+                <div class="col-md-6 col-sm-9 col-xs-12">
+                    @Html.TextBoxFor(model => model.tglPasang, new { @class = "form-control input-sm form-control-datepicker" })
+                    @Html.ValidationMessageFor(model => model.tglPasang)
+                </div>
+            </div>
+            if (Model.Id != 0)
+            {
+                <div class="portlet light">
+                    <div class="portlet-title">
+                        <div class="caption font-green-sharp">
+                            <span class="caption-subject"> History</span>
+                        </div>
+                        <div class="tools">
+                            <a href="" class="collapse"> </a>
+                        </div>
+                    </div>
+                    <div class="portlet-body">
+                        <div id="gridHistory"></div>
+                    </div>
+                </div>
+            }
+            <div class="ln_solid"></div>
+            <div class="form-group">
+                <div class="col-md-8">
+                    <button type="submit" class="btn btn-success">Submit</button>
+                    <a href="@backLink" class="btn btn-link">Cancel</a>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+@section scripts{
+    <script type="text/javascript">
+    $(document).ready(function () {
+        //ComboVehicle
+        var dsVehicle = new kendo.data.DataSource({
+            transport: {
+                read: {
+                    url: '@Url.Action("getTruck","DataTruck")?type=AC&id=' + '@Model.IdDataTruk',
+                    dataType: "json"
+                },
+            },
+        });
+        $("#IdDataTruk").kendoComboBox({
+            dataTextField: "VehicleNo",
+            dataValueField: "Id",
+            dataSource: dsVehicle,
+            filter: "contains",
+            suggest: true,
+            change: function (e) {
+                $("#VechileNo").val(this.text());
+            },
+        });
+
+
+        //ComboJenis
+        var dsJenis = new kendo.data.DataSource({
+            transport: {
+                read: {
+                    url: '@Url.Action("GetJenisPendingin")',
+                    dataType: "json"
+                },
+            },
+        });
+        InitLookUp($("#IdJenisPendingin"), dsJenis);
+
+        //gridhistory
+        var dsHistory = new kendo.data.DataSource({
+            transport: {
+                read: {
+                    url: '@Url.Action("BindingHistory")?IdPendingin=' + '@Model.Id',
+                    dataType: "json"
+                },
+            },
+            schema: {
+                data: "data",
+                model: {
+                    fields: {
+                        tanggal: { type: "string" },
+                        VechileNo: { type: "string" },
+                        username: { type: "string" }
+                    }
+                }
+            },
+        });
+
+        $("#gridHistory").kendoGrid({
+            dataSource: dsHistory,
+            columns: [
+                {
+                    field: "tglPasang",
+                    title: "Tanggal Pasang",
+                    template: "#= tglPasang != null ? kendo.toString(kendo.parseDate(tglPasang, 'yyyy-MM-dd'), 'MM/dd/yyyy') : ''#"
+                },
+                {
+                    field: "VechileNo",
+                    title: "Vehicle No",
+                },
+                {
+                    field: "username",
+                    title: "User",
+                },
+                {
+                    field: "tanggal",
+                    title: "Tanggal",
+                    template: "#= kendo.toString(kendo.parseDate(tanggal, 'yyyy-MM-dd'), 'MM/dd/yyyy HH:mm') #"
+                }
+            ],
+        }).data("kendoGrid");
+    });
+    </script>
+}

@@ -1,0 +1,279 @@
+﻿@using tms_mka_v2.Models;
+
+@model tms_mka_v2.Models.UnitList
+@{
+    ViewBag.Title = "Unit List " + ViewBag.name;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    string currentController = (string)ViewContext.RouteData.Values["controller"];
+    string currentAction = (string)ViewContext.RouteData.Values["action"];
+    string backLink = Url.Action("Index");
+}
+<div class="portlet light">
+    <div class="portlet-title">
+        <div class="caption">
+            <span class="caption-subject font-dark sbold uppercase">@ViewBag.Title</span>
+        </div>
+    </div>
+    <div class="portlet-body form">
+        @using (@Html.BeginForm(currentAction, currentController, FormMethod.Post, new { @class = "form-horizontal", @id = "formsubmit" }))
+        {
+            @Html.ValidationSummary(true)
+            @Html.HiddenFor(model => model.Id)
+            <div class="form-group">
+                @Html.LabelFor(model => model.VehicleNo, new { @class = "control-label col-md-2 col-sm-3 col-xs-12" })
+                <div class="col-md-6 col-sm-9 col-xs-12">
+                    <label class="control-label">@Model.VehicleNo</label>
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.JenisTruck, new { @class = "control-label col-md-2 col-sm-3 col-xs-12" })
+                <div class="col-md-6 col-sm-9 col-xs-12">
+                    <label class="control-label">@Model.JenisTruck</label>
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.MerkTruck, new { @class = "control-label col-md-2 col-sm-3 col-xs-12" })
+                <div class="col-md-6 col-sm-9 col-xs-12">
+                    <label class="control-label">@Model.MerkTruck</label>
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.ModelTruck, new { @class = "control-label col-md-2 col-sm-3 col-xs-12" })
+                <div class="col-md-6 col-sm-9 col-xs-12">
+                    <label class="control-label">@Model.ModelTruck</label>
+                </div>
+            </div>
+            <div class="portlet light">
+                <div class="portlet-title">
+                    <div class="caption font-green-sharp">
+                        <span class="caption-subject">Pendingin</span>
+                    </div>
+                    <div class="tools">
+                        <a href="" class="collapse"> </a>
+                    </div>
+                </div>
+                <div class="portlet-body">
+                    <div id="gridPendingin"></div>
+                </div>
+            </div>
+            <div class="portlet light">
+                <div class="portlet-title">
+                    <div class="caption font-green-sharp">
+                        <span class="caption-subject">Box</span>
+                    </div>
+                    <div class="tools">
+                        <a href="" class="collapse"> </a>
+                    </div>
+                </div>
+                <div class="portlet-body">
+                    <div id="gridBox"></div>
+                </div>
+            </div>
+            <div class="portlet light">
+                <div class="portlet-title">
+                    <div class="caption font-green-sharp">
+                        <span class="caption-subject">GPS</span>
+                    </div>
+                    <div class="tools">
+                        <a href="" class="collapse"> </a>
+                    </div>
+                </div>
+                <div class="portlet-body">
+                    <div id="gridGps"></div>
+                </div>
+            </div>
+            <div class="ln_solid"></div>
+            <div class="form-group">
+                <a href="@backLink" class="btn btn-link">Back To List</a>
+            </div>
+        }
+    </div>
+</div>
+
+@section scripts{
+    <script type="text/javascript">
+    $(document).ready(function () {
+        var dsPendingin = new kendo.data.DataSource({
+            transport: {
+                read: {
+                    url: '@Url.Action("BindingDataPendingin")?id=' + '@Model.Id',
+                    dataType: "json"
+                },
+            },
+            schema: {
+                data: "data",
+                model: {
+                    fields: {
+                        "NoPendingin": { type: "string" },
+                        "Merk": { type: "string" },
+                        "ModelPendingin": { type: "string" },
+                        "Tahun": { type: "number" },
+                        "tglPasang": { type: "string" }
+                    }
+                }
+            },
+            sort: {
+                field: "tglPasang",
+                dir: "desc"
+            },
+        });
+
+        $("#gridPendingin").kendoGrid({
+            dataSource: dsPendingin,
+            columns: [
+                {
+                    field: "NoPendingin",
+                    title: "No Pendingin"
+                },
+                {
+                    field: "Merk",
+                    title: "Merk Pendingin",
+                },
+                {
+                    field: "ModelPendingin",
+                    title: "Model Pendingin",
+                },
+                {
+                    field: "Tahun",
+                    title: "Tahun",
+                },
+                {
+                    field: "tglPasang",
+                    title: "Tanggal Pasang",
+                    template: "#= tglPasang != null ? kendo.toString(kendo.parseDate(tglPasang, 'yyyy-MM-dd'), 'MM/dd/yyyy') :''#"
+                }
+            ],
+        }).data("kendoGrid");
+
+
+        var dsBox = new kendo.data.DataSource({
+            transport: {
+                read: {
+                    url: '@Url.Action("BindingDataBox")?id=' + '@Model.Id',
+                    dataType: "json"
+                },
+            },
+            schema: {
+                data: "data",
+                model: {
+                    fields: {
+                        "NoBox": { type: "string" },
+                        "Karoseri": { type: "string" },
+                        "Lantai": { type: "string" },
+                        "Dinding": { type: "string" },
+                        "PintuSamping": { type: "boolean" },
+                        "Sekat": { type: "boolean" },
+                        "Tahun": { type: "number" },
+                        "tglPasang": { type: "string" }
+                    }
+                }
+            },
+            sort: {
+                field: "tglPasang",
+                dir: "desc"
+            },
+        });
+
+        $("#gridBox").kendoGrid({
+            dataSource: dsBox,
+            columns: [
+                {
+                    field: "NoBox",
+                    title: "No Box"
+                },
+                {
+                    field: "Karoseri",
+                    title: "Karoseri",
+                },
+                {
+                    field: "Lantai",
+                    title: "Lantai",
+                },
+                {
+                    field: "Dinding",
+                    title: "Dinding",
+                },
+                {
+                    field: "PintuSamping",
+                    title: "Pintu Samping",
+                    template: '#= PintuSamping ? "Ya" : "Tidak" #'
+                },
+                {
+                    field: "Sekat",
+                    title: "Sekat",
+                    template: '#= Sekat ? "Ya" : "Tidak" #'
+                },
+                {
+                    field: "Tahun",
+                    title: "Tahun",
+                },
+                {
+                    field: "tglPasang",
+                    title: "Tanggal Pasang",
+                    template: "#= tglPasang != null ? kendo.toString(kendo.parseDate(tglPasang, 'yyyy-MM-dd'), 'MM/dd/yyyy') :''#"
+                }
+            ],
+        }).data("kendoGrid");
+
+        var dsGps = new kendo.data.DataSource({
+            transport: {
+                read: {
+                    url: '@Url.Action("BindingDataGps")?id=' + '@Model.Id',
+                    dataType: "json"
+                },
+            },
+            schema: {
+                total: "total",
+                data: "data",
+                model: {
+                    fields: {
+                        "NoGPS": { type: "string" },
+                        "NoDevice": { type: "string" },
+                        "Vendor": { type: "string" },
+                        "SensorSuhu": { type: "boolean" },
+                        "SensorPintu": { type: "boolean" },
+                        "TanggalPasang": { type: "date" }
+                    }
+                }
+            },
+            sort: {
+                field: "TanggalPasang",
+                dir: "desc"
+            },
+        });
+
+        $("#gridGps").kendoGrid({
+            dataSource: dsGps,
+            columns: [
+                {
+                    field: "NoGPS",
+                    title: "No Gps"
+                },
+                {
+                    field: "NoDevice",
+                    title: "No Device",
+                },
+                {
+                    field: "Vendor",
+                    title: "Vendor",
+                },
+                {
+                    field: "SensorSuhu",
+                    title: "Sensor Suhu",
+                    template: '#= SensorSuhu ? "Ya" : "Tidak" #'
+                },
+                {
+                    field: "SensorPintu",
+                    title: "Sensor Pintu",
+                    template: '#= SensorPintu ? "Ya" : "Tidak" #'
+                },
+                {
+                    field: "TanggalPasang",
+                    title: "Tanggal Pasang",
+                    template: "#= TanggalPasang != null ? kendo.toString(kendo.parseDate(TanggalPasang, 'yyyy-MM-dd'), 'MM/dd/yyyy') :''#"
+                }
+            ],
+        }).data("kendoGrid");
+    })
+</script>
+}

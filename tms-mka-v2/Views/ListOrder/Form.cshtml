@@ -1,0 +1,252 @@
+﻿@using tms_mka_v2.Models;
+@model tms_mka_v2.Models.SalesOrderOncall
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    string currentController = (string)ViewContext.RouteData.Values["controller"];
+    string currentAction = ViewBag.PostData == null ? (string)ViewContext.RouteData.Values["action"] : ViewBag.PostData;
+    string backLink = Url.Action("Index");
+}
+<div class="portlet light">
+    <div class="portlet-title">
+        <div class="caption">
+            <span class="caption-subject font-dark sbold uppercase">@ViewBag.Title</span>
+        </div>
+    </div>
+    <div class="portlet-body form">
+        @using (@Html.BeginForm(currentAction, currentController, FormMethod.Post, new { @class = "form-horizontal", @id = "formsubmit" }))
+        {
+
+            @Html.ValidationSummary(true)
+            @Html.HiddenFor(model => model.SalesOrderId)
+            @Html.HiddenFor(model => model.SalesOrderOnCallId)
+            @Html.HiddenFor(model => model.JenisTruckId)
+            @Html.HiddenFor(model => model.Status)
+            @Html.HiddenFor(model => model.CustomerId)
+            <div class="portlet light">
+                <div class="portlet-title">
+                    <div class="caption font-green-sharp">
+                        <span class="caption-subject"> Basic Info</span>
+                    </div>
+                    <div class="tools">
+                        <a href="" class="collapse"> </a>
+                    </div>
+                </div>
+                <div class="portlet-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="control-label col-md-3"> NO SO</label>
+                                <label class="control-label col-md-9">: @Model.SONumber</label>
+                                @Html.HiddenFor(model => model.SONumber)
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-3"> Tanggal Order</label>
+                                <label class="control-label col-md-9">: @Model.TanggalOrder.Value.ToShortDateString()  @Model.JamOrder.ToString()</label>
+                                @Html.HiddenFor(model => model.TanggalOrder)
+                                @Html.HiddenFor(model => model.JamOrder)
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-3"> Kode Customer</label>
+                                <label class="control-label col-md-9">: @Model.KodeCustomer</label>
+                                @Html.HiddenFor(model => model.KodeCustomer)
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-3"> Kode Nama</label>
+                                <label class="control-label col-md-9">: @Model.KodeNama</label>
+                                @Html.HiddenFor(model => model.KodeNama)
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-3"> Nama Customer</label>
+                                <label class="control-label col-md-9">: @Model.NamaCustomer</label>
+                                @Html.HiddenFor(model => model.NamaCustomer)
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-3"> Prioritas</label>
+                                <label class="control-label col-md-9">: @Model.StrPrioritas</label>
+                                @Html.HiddenFor(model => model.StrPrioritas)
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-3"> Status Kredit</label>
+                                <label class="control-label col-md-9">: @Model.StatusKredit</label>
+                                @Html.HiddenFor(model => model.StatusKredit)
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-3"> Jenis Truk</label>
+                                <label class="control-label col-md-9">: @Model.StrJenisTruck</label>
+                                @Html.HiddenFor(model => model.StrJenisTruck)
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-3"> Jenis Barang</label>
+                                <label class="control-label col-md-9">: @Model.StrProduct</label>
+                                @Html.HiddenFor(model => model.StrProduct)
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-3"> Target Suhu</label>
+                                <label class="control-label col-md-9">: @Model.Suhu &deg;</label>
+                                @Html.HiddenFor(model => model.Suhu)
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="control-label col-md-3"> Tanggal Muat</label>
+                                <label class="control-label col-md-9">: @Model.TanggalMuat.Value.ToShortDateString()  @Model.JamMuat.ToString()</label>
+                                @Html.HiddenFor(model => model.TanggalMuat)
+                                @Html.HiddenFor(model => model.JamMuat)
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-3"> Rute</label>
+                                <label class="control-label col-md-9">: @Model.Rute</label>
+                                @Html.HiddenFor(model => model.Rute)
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-3"> Multidrop</label>
+                                <label class="control-label col-md-9">: @Model.StrMultidrop</label>
+                                @Html.HiddenFor(model => model.StrMultidrop)
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-3"> Penanganan Khusus</label>
+                                <label class="control-label col-md-9">: @Model.PenanganKhusus</label>
+                                @Html.HiddenFor(model => model.PenanganKhusus)
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-3"> Keterangan</label>
+                                <label class="control-label col-md-9">: @Model.Keterangan</label>
+                                @Html.HiddenFor(model => model.Keterangan)
+                            </div>
+                            <br /><br /><br />
+                            @if (ViewBag.kondisi != "planning" && ViewBag.kondisi != "konfirmasi")
+                            {
+                                <div class="form-group">
+                                    <label class="control-label col-md-3"> ID Driver</label>
+                                    <label class="control-label col-md-9">: @Model.KodeDriver1</label>
+                                    @Html.HiddenFor(model => model.KodeDriver1)
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-md-3"> Nama Driver</label>
+                                    <label class="control-label col-md-9">: @Model.NamaDriver1</label>
+                                    @Html.HiddenFor(model => model.NamaDriver1)
+                                </div>
+                            }
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.Keterangan, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                                <div class="col-md-9 col-sm-9 col-xs-12">
+                                    @Html.TextAreaFor(model => model.Keterangan, new { @class = "form-control input-sm" })
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <button type="submit" name="btnsave" class="btn btn-success">Save</button>
+        }
+    </div>
+</div>
+<div id="ModalHistoryJalanTruck" class="modal fade bs-modal-full" role="dialog" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-full">
+        <div id="modalForm" class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                <h4 class="modal-title">List Sales Order</h4>
+            </div>
+            <div class="modal-body">
+                <div id="GridHistoryJalanTruck"></div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="ModalHistoryJalan" class="modal fade bs-modal-full" role="dialog" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-full">
+        <div id="modalForm" class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                <h4 class="modal-title">List Sales Order</h4>
+            </div>
+            <div class="modal-body">
+                <div id="GridHistoryJalanDriver"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts{
+    <script type="text/javascript">
+        var checkedIdLoad = {}, checkedIdUnoad = {};
+        var GridCustLoad, GridCustUnLoad;
+        var dsGridLoad = [], dsGridUnLoad = [];
+
+        var piwbeg = '';
+        var eksyen = '@currentAction';
+
+    @if (ViewBag.errorMsgRevisiKapasitas != null) {
+            <text>
+        piwbeg = '@ViewBag.errorMsgRevisiKapasitas';
+        </text>
+        }
+
+        @if (ViewBag.errorMsgRevisiRute != null)
+    {
+        <text>
+        piwbeg = '@ViewBag.errorMsgRevisiRute';
+        </text>
+    }
+
+
+        @if (Model.ListLoad != null)
+        {
+            foreach (SalesOrderLoadUnload item in Model.ListLoad)
+            {
+                if (item.IsSelect)
+                {
+                    <text>checkedIdLoad[@item.Id] = true;</text>
+                }
+                <text>
+        dsGridLoad.push({Id: @item.Id,
+            Alamat: '@item.Alamat',
+            Provinsi: '@item.Provinsi',
+            Kota: '@item.Kota',
+            Zona: '@item.Zona',
+            Telp: '@item.Telp',
+            Fax: '@item.Fax',
+            urutan: '@item.urutan',
+            IsSelect : '@item.IsSelect'});
+        </text>
+            }
+        }
+
+        @if (Model.ListUnload != null)
+        {
+            foreach (SalesOrderLoadUnload item in Model.ListUnload)
+            {
+                if (item.IsSelect)
+                {
+                    <text>checkedIdUnoad[@item.Id] = true;</text>
+                }
+                <text>
+        dsGridUnLoad.push({Id: @item.Id,
+            Alamat: '@item.Alamat',
+            Provinsi: '@item.Provinsi',
+            Kota: '@item.Kota',
+            Zona: '@item.Zona',
+            Telp: '@item.Telp',
+            Fax: '@item.Fax',
+            urutan: '@item.urutan',
+            IsSelect : '@item.IsSelect'});
+        </text>
+            }
+        }
+
+        $(document).ready(function () {
+            @if (ViewBag.errorMsgRevisiTgl != null)
+            {
+                <text>
+            swal({
+                title: "Error",
+                type: 'error',
+                text: '@ViewBag.errorMsgRevisiTgl',
+                showCloseButton: true,
+            })
+            </text>
+            }
+        })
+    </script>
+}

@@ -1,0 +1,260 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "Daftar Harga On Call";
+    string currentController = "DaftarHargaOnCall";
+    string currentAction = "Index";
+}
+<div class="portlet light ">
+    <div class="portlet-title">
+        <div class="caption">
+            <span class="caption-subject font-dark sbold uppercase">@ViewBag.Title</span>
+        </div>
+        <div class="actions">
+            <a class="btn btn-sm green dropdown-toggle" href="@Url.Action("Add", "DaftarHargaOnCall")">
+                <i class="fa fa-plus"></i>Add
+            </a>
+            <a class="btn btn-sm green dropdown-toggle" href="~/Content/Template/TemplateDaftarHarga.xlsx" target="_blank">
+                <i class="fa fa-file-excel-o"></i>Download template
+            </a>
+            <a class="btn btn-sm green dropdown-toggle" data-toggle="modal" href="#ModalUpload">
+                <i class="fa fa-download"></i>Import
+            </a>
+            <a class="btn btn-sm green dropdown-toggle" href="@Url.Action("Export")">
+                <i class="fa fa-upload"></i>Export
+            </a>
+        </div>
+    </div>
+    <div class="portlet-body form">
+        <div class="portlet box blue ">
+            <div class="portlet-title">
+                <div class="caption">Hide Column :</div>
+                <div class="tools">
+                    <a href="" class="expand"> </a>
+                </div>
+            </div>
+            <div class="portlet-body form" style="display: none;">
+                <form role="form">
+                    <div class="form-body">
+                        <div id="content-col" class="md-checkbox-inline" style="margin-left:10px"></div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div id="grid"></div>
+    </div>
+</div>
+<!-- /.modal -->
+<div class="modal fade bs-modal-sm" id="ModalUpload" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                <h4 class="modal-title">Import Driver</h4>
+            </div>
+            <div class="modal-body">
+                <input name="files" id="files" type="file" />
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn dark btn-outline" data-dismiss="modal" onclick="upload()">Import</button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<!-- /.modal -->
+@section scripts
+{
+    <script type="text/javascript">
+        var kendoUploadButtonExim;
+
+        function upload() {
+            if (kendoUploadButtonExim)
+                totalFile = 0;
+            kendoUploadButtonExim.click();
+        }
+
+        function onSelectFile(e) {
+            var flagExtension = 0;
+            var allowedExtension = [".xlsx", ".xls"];
+            $.each(e.files, function (index, value) {
+                if ($.inArray((value.extension).toLowerCase(), allowedExtension) === -1) {
+                    flagExtension = 1;
+                }
+            });
+            if (flagExtension == 1) {
+                alert("File yang diperbolehkan hanya berupa Excell");
+                e.preventDefault();
+            }
+
+            setTimeout(function () {
+                kendoUploadButtonExim = $(".k-upload-selected");
+                kendoUploadButtonExim.hide();
+            }, 1);
+        }
+
+        function deleteItem(e) {
+            e.preventDefault();
+            var data = this.dataItem(getDataRowGrid(e));
+            goToDeletePage('@Url.Action("Delete")' + "?id=" + data.Id, this.dataSource);
+
+            @*var data = this.dataItem(getDataRowGrid(e));
+            $.getJSON('/DaftarHargaOnCall/IsUsed?id=' + data.Id + '&isImported=true', function (res) {
+                //console.log("JSON Result:");
+                //console.log(res);
+            }).done(function (result) {
+                if (result === true) {
+                    swal("", "Daftar Harga sudah terpakai, data tidak dapat dihapus!", "error")
+                } else {
+                    e.preventDefault();
+                    goToDeletePage('@Url.Action("Delete")' + "?id=" + data.Id, this.dataSource);
+                }
+            });*@
+        }
+
+        function editItem(e) {
+            e.preventDefault();
+            var data = this.dataItem(getDataRowGrid(e));
+            window.location.href = "@Url.Action("Edit")" + "?id=" + data.Id;
+        }
+
+        $(document).ready(function () {
+            CreateUploaderExim($("#files"), "@Url.Action("Upload")", $("#grid"));
+            currController = '@currentController';
+            currAction = '@currentAction';
+
+            var ds = new kendo.data.DataSource({
+                transport: {
+                    read: {
+                        url: '@Url.Action("Binding")',
+                        dataType: "json"
+                    },
+                    parameterMap: function (options, operation) {
+                        if (operation !== "read" && options != '') {
+                            return kendo.stringify(options);
+                        }
+                        else if (operation == "read") {
+                            if (options.filter) {
+                                filter = options.filter.filters;
+                                for (var i in filter) {
+                                    if (filter[i].field == "CodeCust") {
+                                        filter[i].field = "Customer.CustomerCode";
+                                    }
+                                    if (filter[i].field == "NamaCustomer") {
+                                        filter[i].field = "Customer.CustomerNama";
+                                    }
+                                    if (filter[i].field == "KodeNama") {
+                                        filter[i].field = "Customer.CustomerCodeOld";
+                                    }
+                                }
+                            }
+
+                            if (options.sort) {
+                                sort = options.sort;
+                                for (var i in sort) {
+                                    if (sort[i].field == "CodeCust") {
+                                        sort[i].field = "Customer.CustomerCode";
+                                    }
+                                    if (sort[i].field == "NamaCustomer") {
+                                        sort[i].field = "Customer.CustomerNama";
+                                    }
+                                    if (sort[i].field == "KodeNama") {
+                                        sort[i].field = "Customer.CustomerCodeOld";
+                                    }
+                                }
+                            }
+                            return options;
+                        }
+                    }
+                },
+                schema: {
+                    total: "total",
+                    data: "data",
+                    model: {
+                        fields: {
+                            "Id": { type: "number" },
+                            "IdCust": { type: "number" },
+                            "KodeCustomer": { type: "string" },
+                            "KodeNama": { type: "string" },
+                            "NamaCustomer": { type: "string" },
+                            "AlamatCustomer": { type: "string" },
+                            "TelpCustomer": { type: "string" },
+                            "FaxCustomer": { type: "string" },
+                            "ContactCustomer": { type: "string" },
+                            "HpCustomer": { type: "string" },
+                            "PeriodStart": { type: "date" },
+                            "PeriodEnd": { type: "date" }
+                        }
+                    }
+                },
+                pageSize: 10,
+                pageable: true,
+                serverFiltering: true,
+                serverPaging: true,
+                serverSorting: true,
+                sortable: true,
+                sort: { field: "PeriodStart", dir: "desc" }
+            });
+
+            gridIndex = $("#grid").kendoGrid({
+                dataSource: ds,
+                filterable: kendoGridFilterable,
+                sortable: true,
+                reorderable: true,
+                resizable: true,
+                pageable: true,
+                groupable: true,
+                //height: "615",
+                columns: [
+                    {
+                        command: [
+                            {
+                                name: "edit",
+                                text: "edit",
+                                click: editItem,
+                                imageClass: "glyphicon glyphicon-edit",
+                                template: '<a class="k-button-icon #=className#" #=attr# href="\\#"><span class="#=imageClass#"></span></a>'
+                            },
+                            {
+                                name: "delete",
+                                text: "delete",
+                                click: deleteItem,
+                                imageClass: "glyphicon glyphicon-remove",
+                                template: '<a class="k-button-icon #=className#" #=attr# href="\\#"><span class="#=iconClass# #=imageClass#"></span></a>'
+                            }
+                        ],
+                        width: 60
+                    },
+                    { field: "KodeCustomer", title: "Kode Customer", width: "130px" },
+                    { field: "KodeNama", title: "Kode Nama", width: "130px" },
+                    { field: "NamaCustomer", title: "Nama Customer", width: "170px" },
+                    { field: "AlamatCustomer", title: "Alamat", width: "190px" },
+                    { field: "TelpCustomer", title: "Telp", width: "160px" },
+                    { field: "FaxCustomer", title: "Fax", width: "140px" },
+                    { field: "ContactCustomer", title: "Contact", width: "160px" },
+                    { field: "HpCustomer", title: "Hp", width: "140px" },
+                    {
+                        field: "PeriodStart", title: "Periode Awal",
+                        template: "#= kendo.toString(kendo.parseDate(PeriodStart, 'yyyy-MM-dd'), 'dd/MM/yyyy') #",
+                        width: "150px",
+                        groupHeaderTemplate: "Periode Awal : #= value != null ? kendo.toString(kendo.parseDate(value, 'yyyy-MM-dd'), 'MM/dd/yyyy') : '' #"
+                    },
+                    {
+                        field: "PeriodEnd", title: "Periode Akhir",
+                        template: "#= kendo.toString(kendo.parseDate(PeriodEnd, 'yyyy-MM-dd'), 'dd/MM/yyyy') #",
+                        width: "150px",
+                        groupHeaderTemplate: "Periode Akhir : #= value != null ? kendo.toString(kendo.parseDate(value, 'yyyy-MM-dd'), 'MM/dd/yyyy') : '' #"
+                    }
+                ],
+            }).data("kendoGrid");
+
+            @foreach (tms_mka_v2.Context.UserReference item in (List<tms_mka_v2.Context.UserReference>)ViewBag.listKolom)
+            {
+                <text>
+            listKolom.push('@item.Coloumn');
+            </text>
+            }
+            GetColomnData(gridIndex);
+        })
+</script>
+}

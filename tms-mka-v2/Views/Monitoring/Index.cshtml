@@ -1,0 +1,1240 @@
+@{
+    ViewBag.Title = "Monitoring";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    string currentController = (string)ViewContext.RouteData.Values["controller"];
+    string currentAction = "Index";
+}
+@if (User.HasMenuAccess("Monitoring"))
+{
+    <style>
+        .form-group {
+            margin: 10px;
+        }
+
+        .popover-content {
+            width: 270px;
+            word-break: break-all;
+        }
+
+        .available {
+            background-color: #fff000;
+        }
+
+        .onduty {
+            background-color: #CADEF9;
+        }
+
+        .ready {
+            background-color: green;
+        }
+    </style>
+    <link rel="stylesheet" href="~/Content/OpenLayer/ol.css" type="text/css">
+    <script src="~/Content/OpenLayer/ol.js" type="text/javascript"></script>
+    <div class="form-group">
+        <div id="map" style="height:400px"><div id="popup"></div></div>
+        <hr />
+    </div>
+    <div class="form-group">
+        <div class="mt-radio-inline">
+            <label class="mt-radio">
+                <input type="radio" id="rdKondisi" name="rdKondisi" value="onduty" onclick="SetMapGrid($('#gridOnduty')); intervalGrid('OnDuty');"> On Duty
+                <span></span>
+            </label>
+            <label class="mt-radio">
+                <input type="radio" id="rdKondisi" name="rdKondisi" value="ontime" onclick="SetMapGrid($('#gridOntime')); intervalGrid('Ontime');"> On Time
+                <span></span>
+            </label>
+            <label class="mt-radio">
+                <input type="radio" id="rdKondisi" name="rdKondisi" value="ontemp" onclick="SetMapGrid($('#gridOntemp')); intervalGrid('Ontemp');"> On Temp
+                <span></span>
+            </label>
+            <label class="mt-radio">
+                <input type="radio" id="rdKondisi" name="rdKondisi" value="service" onclick="SetMapGrid($('#gridService')); intervalGrid('Service');"> Service
+                <span></span>
+            </label>
+            <label class="mt-radio">
+                <input type="radio" id="rdKondisi" name="rdKondisi" value="avaliable" onclick="SetMapGrid($('#gridAvaliable')); intervalGrid('Avaliable');"> Avaliable
+                <span></span>
+            </label>
+            <label class="mt-radio">
+                <input type="radio" id="rdKondisi" name="rdKondisi" value="ready" onclick="SetMapGrid($('#gridReady')); intervalGrid('Ready');"> Ready
+                <span></span>
+            </label>
+            <label class="mt-radio">
+                <input type="radio" checked="checked" id="rdKondisi" name="rdKondisi" value="position" onclick="SetMapGrid($('#gridPosition')); intervalGrid('Position');"> Position
+                <span></span>
+            </label>
+        </div>
+    </div>
+    <div class="form-group">
+        <div id="gridOnduty" hidden></div>
+        <div id="gridOntime" hidden></div>
+        <div id="gridOntemp" hidden></div>
+        <div id="gridService" hidden></div>
+        <div id="gridAvaliable" hidden></div>
+        <div id="gridReady" hidden></div>
+        <div id="gridPosition"></div>
+    </div>
+    <div id="modalDetailTruck" class="modal fade modal-full" role="dialog" aria-hidden="true" tabindex="-1">
+        <div class="modal-dialog modal-full">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                    <h4 class="caption">Info</h4>
+                </div>
+                <div class="modal-body" style="height:240px;">
+                    <div class="form-horizontal">
+                        <input type="hidden" id="Iditem" />
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="control-label col-md-4">Vehicle No :</label>
+                                <label class="control-label col-md-4" name="VehicleNo" id="VehicleNo"></label>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-4">Type :</label>
+                                <label class="control-label col-md-4" name="VehicleType" id="VehicleType"></label>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-4">AC :</label>
+                                <label class="control-label col-md-4" name="AC" id="AC"></label>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="control-label col-md-4">KM :</label>
+                                <label class="control-label col-md-4" name="KM" id="KM"></label>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-4">HM :</label>
+                                <label class="control-label col-md-4" name="HM" id="HM"></label>
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label class="control-label col-md-4">Alert</label>
+                            </div>
+                            <hr />
+                            <div class="form-group">
+                                <label class="control-label col-md-4">On Time :</label>
+                                <label class="control-label col-md-4" name="OnTime" id="OnTime"></label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-body">
+                    <div id="gridDetailTruck"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="modalDetailDriver" class="modal fade modal-full" role="dialog" aria-hidden="true" tabindex="-1" style="position: absolute;top: 10%;left: 35%;width: 1020px; height: 900px;">
+        <div class="modal-dialog modal-full">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                    <h4 class="caption">History Delivery</h4>
+                </div>
+                <div class="modal-body" style="height:80px;">
+                    <div class="form-horizontal">
+                        <input type="hidden" id="Iditem" />
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="control-label col-md-4">ID Driver :</label>
+                                <label class="control-label col-md-4" name="IdDriver" id="IdDriver"></label>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-4">Nama Driver :</label>
+                                <label class="control-label col-md-4" name="NamaDriver" id="NamaDriver"></label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-body">
+                    <div id="gridDetailDriver"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @section scripts{
+        <script id="command-template-duty" type="text/x-kendo-template">
+            <a class="k-button-icon k-grid-edit" href="\\#" title="Detail" onclick="editItem('#=VehicleNo#')"><span class="glyphicon glyphicon-eye-open"></span></a>
+        </script>
+
+        <script id="engine" type="text/x-kendo-template">
+            # if (Engine != null) {#
+            # if (Engine.toUpperCase() == 'OFF') {#
+            <label style="color:red">OFF</label>
+            # } else { #
+            <label style="color:green">ON</label>
+            # } #
+            # } #
+        </script>
+
+        <script id="Ac" type="text/x-kendo-template">
+            # if (Ac.toUpperCase() == 'OFF') {#
+            <label style="color:red">OFF</label>
+            # } else { #
+            <label style="color:green">ON</label>
+            # } #
+        </script>
+
+        <script id="suhu" type="text/x-kendo-template">
+            # if (isNaN(parseInt(Suhu))) {#
+            <label style="color:red">-</label>
+            # } else { #
+            #= parseFloat(Suhu).toFixed(1) #
+            # } #
+        </script>
+
+        <script id="suhuAvg" type="text/x-kendo-template">
+            # if (isNaN(parseInt(SuhuAvg))) {#
+            <label style="color:red">-</label>
+            # } else { #
+            #= parseFloat(SuhuAvg).toFixed(2) #
+            # } #
+        </script>
+
+        <script id="OnTemp" type="text/x-kendo-template">
+            #= parseFloat(SuhuAvg) > parseFloat(RangeSuhu.split(' - ')[0]) && parseFloat(SuhuAvg) < parseFloat(RangeSuhu.split(' - ')[1]) ? "YA" : "TIDAK" #
+        </script>
+
+        <script id="speed" type="text/x-kendo-template">
+            # if (isNaN(parseInt(Speed))) {#
+            <label style="color:red">-</label>
+            # } else { #
+            #= parseInt(Speed) #
+            # } #
+        </script>
+
+        <script type="text/javascript">
+            var timerMarker = null;
+            var gridOn = null;
+
+            //#region click grid
+            function editItem(id) {
+                window.location.href = "@Url.Action("Detail")";
+            }
+            //#endregion click grid
+
+            //#region Refresh All Grid
+            function intervalGrid(g) {
+                console.log('abus')
+                stopinterval();
+                vectorSource.clear();
+                if (g == "OnDuty") {
+                    stopinterval();
+                    vectorSource.clear();
+                    gridOn = "OnDuty";
+                    $('#gridOnduty').data('kendoGrid').dataSource.read();
+                    $('#gridOnduty').data('kendoGrid').refresh();
+                }
+                if (g == "Ontime") {
+                    stopinterval();
+                    vectorSource.clear();
+                    gridOn = "Ontime";
+                    $('#gridOntime').data('kendoGrid').dataSource.read();
+                    $('#gridOntime').data('kendoGrid').refresh();
+                }
+                if (g == "Ontemp") {
+                    gridOn = "Ontemp";
+                    $('#gridOntemp').data('kendoGrid').dataSource.read();
+                    $('#gridOntemp').data('kendoGrid').refresh();
+                }
+                if (g == "Service") {
+                    gridOn = "Service";
+                    $('#gridService').data('kendoGrid').dataSource.read();
+                    $('#gridService').data('kendoGrid').refresh();
+                }
+                if (g == "Avaliable") {
+                    gridOn = "Avaliable";
+                    $('#gridAvaliable').data('kendoGrid').dataSource.read();
+                    $('#gridAvaliable').data('kendoGrid').refresh();
+                }
+                if (g == "Ready") {
+                    gridOn = "Ready";
+                    $('#gridReady').data('kendoGrid').dataSource.read();
+                    $('#gridReady').data('kendoGrid').refresh();
+                }
+                if (g == "Position") {
+                    gridOn = "Position";
+                    $('#gridPosition').data('kendoGrid').dataSource.read();
+                    $('#gridPosition').data('kendoGrid').refresh();
+                }
+            }
+
+            function truckdetail() {
+                var q = $('#VehicleNo').text();
+                var grid = $("#gridDetailTruck").data("kendoGrid");
+                grid.dataSource.query({
+                    pageSize: 10,
+                    pageable: true,
+                    sortable: true,
+                    filter: {
+                        logic: "and",
+                        filters: [
+                            { field: "VehicleNo", operator: "contains", value: q },
+                        ]
+                    }
+                });
+            }
+
+            function driverdetail(KodeChange) {
+                var q = $('#IdDriver').text();
+                var grid = $("#gridDetailDriver").data("kendoGrid");
+                if (KodeChange == 1) {
+                    grid.dataSource.query({
+                        pageSize: 10,
+                        pageable: true,
+                        sortable: true,
+                        filter: {
+                            logic: "and",
+                            filters: [
+                                { field: "Id", operator: "eq", value: q },
+                            ]
+                        }
+                    });
+                }
+                else {
+                    grid.dataSource.query({
+                        pageSize: 10,
+                        pageable: true,
+                        sortable: true,
+                        filter: {
+                            logic: "and",
+                            filters: [
+                                { field: "Id2", operator: "eq", value: q },
+                            ]
+                        }
+                    });
+                }
+            }
+            //#endregion Refresh All Grid
+
+            //#region hitung derajat
+            function radians(n) {
+                return n * (Math.PI / 180);
+            }
+            function degrees(n) {
+                return n * (180 / Math.PI);
+            }
+
+            function getBearing(startLat, startLong, endLat, endLong) {
+                startLat = radians(startLat);
+                startLong = radians(startLong);
+                endLat = radians(endLat);
+                endLong = radians(endLong);
+
+                var dLong = endLong - startLong;
+
+                var dPhi = Math.log(Math.tan(endLat / 2.0 + Math.PI / 4.0) / Math.tan(startLat / 2.0 + Math.PI / 4.0));
+                if (Math.abs(dLong) > Math.PI) {
+                    if (dLong > 0.0)
+                        dLong = -(2.0 * Math.PI - dLong);
+                    else
+                        dLong = (2.0 * Math.PI + dLong);
+                }
+
+                return (degrees(Math.atan2(dLong, dPhi)) + 360.0) % 360.0;
+            }
+            //#endregion hitung derajat
+
+            //#region OpenLayers
+
+            function createStyle(src, img, startLat, startLong, endLat, endLong, colour, vehicleno) {
+                return new ol.style.Style({
+                    image: new ol.style.Icon(({
+                        src: src,
+                        img: img,
+                        imgSize: img ? [img.width, img.height] : undefined,
+                        //anchorOrigin: "bottom-left",  // v KML je počítáno od levého spodního rohu
+                        anchor: [0.5, 0.96],
+                        //anchorXUnits: "fraction",
+                        //anchorYUnits: "fraction",
+                        scale: 0.4,
+                        opacity: 0.75,
+                        rotation: getBearing(startLat, startLong, endLat, endLong),
+                        rotateWithView: "true"
+                    })),
+                    text: new ol.style.Text({
+                        text: vehicleno,
+                        fill: new ol.style.Fill({ color: 'black' }),
+                        stroke: new ol.style.Stroke({ color: colour, width: 5 }),
+                        offsetX: 50,
+                        offsetY: 1,
+                    })
+                });
+            }
+
+            //#region map
+
+            var iconFeature = [];
+
+            function addMarker(VehicleNo, Speed, LatNew, LongNew, Status, Suhu, Engine, Ac, Provinsi, Kabupaten, Alamat, LastUpdate) {
+                if (VehicleNo.indexOf('B') > -1) {
+
+                var Lat = parseFloat(LatNew);
+                var Long = parseFloat(LongNew);
+
+                var centerGis = ol.proj.transform([Long, Lat], 'EPSG:4326', 'EPSG:3857');
+
+                //#region keterangan popup
+                var iconFeatureGis = new ol.Feature({
+                    geometry: new ol.geom.Point(centerGis),
+                    name: '<p><b>' + VehicleNo + '</b></p>Lokasi :' + Alamat + '<br/>DateTime :' + kendo.toString(kendo.parseDate(LastUpdate, 'yyyy-MM-dd'), 'dd/MM/yyyy') + '<br/>Kecepatan :' + Speed + '<br/>Engine :' + Engine + '<br/>Temp :' + Suhu + '<br/>AC :' + Ac + '</p>'
+                });
+                //#region keterangan popup
+
+                if (Status == 'Available' || Status == 'Ready') {
+                    iconFeatureGis.set('style', createStyle('/Content/img/map/on.png', undefined, Lat, Long, Lat, Long, '#fff000', VehicleNo));
+                }
+                else if (Status == 'On Duty') {
+                    iconFeatureGis.set('style', createStyle('/Content/img/map/ready.png', undefined, Lat, Long, Lat, Long, '#03bf2c', VehicleNo));
+                }
+                else {
+                    iconFeatureGis.set('style', createStyle('/Content/img/map/off.png', undefined, Lat, Long, Lat, Long, '#ff0000', VehicleNo));
+                }
+
+                iconFeature.push(iconFeatureGis);
+                }
+            }
+
+            //#endregion map
+            // Now add markers
+            @foreach (var item in (List<tms_mka_v2.Models.MonitoringAll>)ViewBag.GPSRealtimeAll) {
+                @:addMarker('@item.Vehicle', '@item.Speed', '@item.Lat', '@item.Long', '@item.Status', '@item.Suhu', '@item.Engine', '@item.Ac', '@item.Provinsi', '@item.KotaKab', '@item.Lokasi', '@item.LastUpdate');
+                        }
+            var center = ol.proj.transform([123.5166958, -4.4871395], 'EPSG:4326', 'EPSG:3857');
+
+            //#region id map
+            var layerMap = new ol.layer.Tile({
+                source: new ol.source.OSM()
+            });
+            layerMap.setVisible(true);
+
+            //#region id map
+            var layerMap = new ol.layer.Tile({
+                source: new ol.source.OSM()
+            });
+            layerMap.setVisible(true);
+
+            var map = new ol.Map({
+                layers: [layerMap],
+                target: document.getElementById('map'),
+                view: new ol.View({
+                    center: center,
+                    zoom: 5
+                })
+            });
+
+            // Data Bound Map
+            function onDataBoundMapOnDuty(e) {
+                if (gridOn == "OnDuty") {
+                    var view = this.dataSource.view();
+                    stopinterval();
+                    vectorSource.clear();
+                    iconFeature = [];
+
+                    for (var i = 0; i < view.length; i++) {
+                        addMarker(view[i].Vehicle, view[i].Speed, view[i].Lat, view[i].Long, view[i].StatusFlow, view[i].Suhu, view[i].Engine, view[i].Ac,
+                         view[i].Provinsi, view[i].KotaKab, view[i].Lokasi, kendo.toString(kendo.parseDate(view[i].LastUpdate, 'yyyy-MM-dd'), 'dd/MM/yyyy'));
+                    };
+
+                    vectorSource.addFeatures(iconFeature);
+
+                    setInterval(function () {
+                        $('#gridOnduty').data('kendoGrid').dataSource.read();
+                        $('#gridOnduty').data('kendoGrid').refresh();
+                    }, 120000)
+                }
+            }
+
+            function onDataBoundMapOntime(e) {
+                if (gridOn == "Ontime") {
+                    var view = this.dataSource.view();
+                    stopinterval();
+                    vectorSource.clear();
+                    iconFeature = [];
+
+                    for (var i = 0; i < view.length; i++) {
+                        addMarker(view[i].Vehicle, view[i].Speed, view[i].Lat, view[i].Long, view[i].StatusFlow, view[i].Suhu, view[i].Engine, view[i].Ac,
+                         view[i].Provinsi, view[i].KotaKab, view[i].Lokasi, kendo.toString(kendo.parseDate(view[i].LastUpdate, 'yyyy-MM-dd'), 'dd/MM/yyyy'));
+                    };
+
+                    vectorSource.addFeatures(iconFeature);
+
+                    setInterval(function () {
+                        $('#gridOntime').data('kendoGrid').dataSource.read();
+                        $('#gridOntime').data('kendoGrid').refresh();
+                    }, 120000)
+                }
+            }
+
+            function onDataBoundMapOntemp(e) {
+                if (gridOn == "Ontemp") {
+                    var view = this.dataSource.view();
+                    stopinterval();
+                    vectorSource.clear();
+                    iconFeature = [];
+
+                    for (var i = 0; i < view.length; i++) {
+                        addMarker(view[i].Vehicle, view[i].Speed, view[i].Lat, view[i].Long, view[i].StatusFlow, view[i].Suhu, view[i].Engine, view[i].Ac,
+                         view[i].Provinsi, view[i].KotaKab, view[i].Lokasi, kendo.toString(kendo.parseDate(view[i].LastUpdate, 'yyyy-MM-dd'), 'dd/MM/yyyy'));
+                    };
+
+                    vectorSource.addFeatures(iconFeature);
+
+                    setInterval(function () {
+                        $('#gridOntemp').data('kendoGrid').dataSource.read();
+                        $('#gridOntemp').data('kendoGrid').refresh();
+                    }, 120000)
+                }
+            }
+
+            function onDataBoundMapService(e) {
+                if (gridOn == "Service") {
+                    var view = this.dataSource.view();
+                    stopinterval();
+                    vectorSource.clear();
+                    iconFeature = [];
+                    //view.length
+                    for (var i = 0; i < view.length; i++) {
+                        addMarker(view[i].Vehicle, view[i].Speed, view[i].Lat, view[i].Long, view[i].Status, view[i].Suhu, view[i].Engine, view[i].Ac,
+                         view[i].Provinsi, view[i].KotaKab, view[i].Lokasi, view[i].LastUpdate);
+                    };
+                    vectorSource.addFeatures(iconFeature);
+                    setInterval(function () {
+                        $('#gridService').data('kendoGrid').dataSource.read();
+                        $('#gridService').data('kendoGrid').refresh();
+                    }, 120000)
+                }
+            }
+
+            function onDataBoundMapAvaliable(e) {
+                if (gridOn == "Avaliable") {
+                    var view = this.dataSource.view();
+                    stopinterval();
+                    vectorSource.clear();
+                    iconFeature = [];
+                    //view.length
+                    for (var i = 0; i < view.length; i++) {
+                        addMarker(view[i].Vehicle, view[i].Speed, view[i].Lat, view[i].Long, view[i].Status, view[i].Suhu, view[i].Engine, view[i].Ac,
+                         view[i].Provinsi, view[i].KotaKab, view[i].Lokasi, view[i].LastUpdate);
+                    };
+
+                    vectorSource.addFeatures(iconFeature);
+                    setInterval(function () {
+                        $('#gridAvaliable').data('kendoGrid').dataSource.read();
+                        $('#gridAvaliable').data('kendoGrid').refresh();
+                    }, 120000)
+                }
+            }
+
+            function onDataBoundMapReady(e) {
+                if (gridOn == "Ready") {
+                    var view = this.dataSource.view();
+                    stopinterval();
+                    vectorSource.clear();
+                    iconFeature = [];
+                    //view.length
+                    for (var i = 0; i < view.length; i++) {
+                        addMarker(view[i].Vehicle, view[i].Speed, view[i].Lat, view[i].Long, view[i].Status, view[i].Suhu, view[i].Engine, view[i].Ac,
+                         view[i].Provinsi, view[i].KotaKab, view[i].Lokasi, view[i].LastUpdate);
+                    };
+
+                    vectorSource.addFeatures(iconFeature);
+                    setInterval(function () {
+                        $('#gridReady').data('kendoGrid').dataSource.read();
+                        $('#gridReady').data('kendoGrid').refresh();
+                    }, 120000)
+                }
+            }
+
+            function onDataBoundMapAll(e) {
+                if (gridOn == "Position") {
+                    var view = this.dataSource.view();
+                    stopinterval();
+                    vectorSource.clear();
+                    iconFeature = [];
+                    //view.length
+                    for (var i = 0; i < view.length; i++) {
+                        addMarker(view[i].Vehicle, view[i].Speed, view[i].Lat, view[i].Long, view[i].Status, view[i].Suhu, view[i].Engine, view[i].Ac,
+                         view[i].Provinsi, view[i].KotaKab, view[i].Lokasi, view[i].LastUpdate);
+                    };
+
+                    vectorSource.addFeatures(iconFeature);
+                    setInterval(function () {
+                        $('#gridPosition').data('kendoGrid').dataSource.read();
+                        $('#gridPosition').data('kendoGrid').refresh();
+                    }, 120000)
+                }
+            }
+            // Data Bound Map
+
+
+            // marker
+            var vectorSource = new ol.source.Vector({
+                features: iconFeature //add an array of features
+            });
+            var vectorLayer = new ol.layer.Vector({
+                style: function (feature) {
+                    return feature.get('style');
+                },
+                source: vectorSource,
+            });
+            map.addLayer(vectorLayer);
+
+            function stopinterval() {
+                window.clearInterval(timerMarker);
+                return false;
+            }
+
+            function NewMarker() {
+                stopinterval();
+                timerMarker = window.setInterval(function () {
+                    console.log('abus deui')
+                    //clean the layer from any existing markers
+                    vectorSource.clear();
+                    iconFeature = [];
+
+                    $.ajax({
+                        url: '/Monitoring/getCoordinate',
+                        type: "GET",
+                        dataType: 'Json',
+                        cache: false,
+                        success: function (res) {
+                            console.log(res)
+                            $.each(res, function (index, data) {
+                                addMarker(data.VehicleNo, data.Kecepatan, data.Lat, data.Long, data.Alamat, data.LatFisrt, data.LongFirst, data.StatusOrder, data.CreatedDate, data.Status, data.Suhu);
+                            });
+
+                            vectorSource.addFeatures(iconFeature);
+                        }, error: function () {
+                            console.log("Connection Failed");
+                        }
+                    });
+                }, 60000); //1 menit 60000
+            }
+
+            function NewMarkerAll() {
+                stopinterval();
+
+                timerMarker = window.setInterval(function () {
+                    //clean the layer from any existing markers
+                    vectorSource.clear();
+                    iconFeature = [];
+
+                    $.ajax({
+                        url: '/Monitoring/getCoordinateAll',
+                        type: "GET",
+                        dataType: 'Json',
+                        cache: false,
+                        success: function (res) {
+                            $.each(res, function (index, data) {
+                                addMarker(data.VehicleNo, data.Kecepatan, data.Lat, data.Long, data.Alamat, data.LatFisrt, data.LongFirst, data.StatusOrder, data.CreatedDate, data.Status, data.Suhu);
+                            });
+
+                            vectorSource.addFeatures(iconFeature);
+                        }, error: function () {
+                            console.log("Connection Failed");
+                        }
+                    });
+                }, 60000); //1 menit 60000
+            }
+            // marker
+
+            var FullScreen = new ol.control.FullScreen();
+            map.addControl(FullScreen);
+
+            //popup
+            var element = document.getElementById('popup');
+
+            var popup = new ol.Overlay({
+                element: element,
+                positioning: 'bottom-center',
+                stopEvent: false,
+                offset: [80, 0]
+            });
+
+            map.addOverlay(popup);
+
+            // display popup on click
+            map.on('click', function (evt) {
+                var feature = map.forEachFeatureAtPixel(evt.pixel,
+                    function (feature) {
+                        return feature;
+                    });
+
+                var coordinate = evt.coordinate;
+
+                if (feature) {
+                    $(element).popover('destroy');
+                    var coordinates = feature.getGeometry().getCoordinates();
+                    popup.setPosition(coordinates);
+                    map.getView().setCenter(coordinate);
+                    $(element).popover({
+                        'placement': 'bottom-center',
+                        'animation': false,
+                        'html': true,
+                        'content': feature.get('name')
+                    });
+                    $(element).popover('show');
+                } else {
+                    $(element).popover('destroy');
+                }
+            });
+
+            // change mouse cursor when over marker
+            map.on('pointermove', function (e) {
+                if (e.dragging) {
+                    $(element).popover('destroy');
+                    return;
+                }
+                var pixel = map.getEventPixel(e.originalEvent);
+                var hit = map.hasFeatureAtPixel(pixel);
+                map.getTarget().style.cursor = hit ? 'pointer' : '';
+            });
+            //popup
+
+            //#endregion id map
+
+            //#endregion OpenLayers
+
+            //#region grid
+            var GridOnduty, GridService, GridAvaliable, GridReady, GridAll;
+            $(document).ready(function () {
+                currController = '@currentController';
+                currAction = '@currentAction';
+
+                var dsDetailTruck = new kendo.data.DataSource({
+                    transport: {
+                        read: {
+                            url: '@Url.Action("BindingGridHistroyTruckDriver")', dataType: "json"
+                        },
+                    },
+                    schema: {
+                        total: "total", data: "data", id: "VehicleNo",
+                        model: {
+                            fields: {
+                                "VehicleNo": { type: "string" }, "soId": { type: "string" }, "AdminUangJalanId": { type: "string" }, "CustomerNama": { type: "string" }, "SoNumber": { type: "string" },
+                                "JenisOrder": { type: "string" }, "rute": { type: "string" }, "TanggalMuat": { type: "date" }, "Id": { type: "string" }, "Driver1": { type: "string" }, "Id2": { type: "string" },
+                                "Driver2": { type: "string" },
+                            }
+                        }
+                    }, pageSize: 10, pageable: true, sortable: true,
+                });
+
+                GridOnduty = $("#gridOnduty").kendoGrid({
+                    dataSource: {
+                        transport: { read: { url: '@Url.Action("BindingGridOnduty")', dataType: "json" } },
+                        schema: {
+                            total: "total", data: "data",
+                            model: {
+                                fields: {
+                                    StatusFlow: { type: "string" }, LastUpdate: { type: "date" }, Vehicle: { type: "string" }, TypeTruck: { type: "string" }, Gps: { type: "string" },
+                                    Lokasi: { type: "string" }, KotaKab: { type: "string" }, Provinsi: { type: "string" }, Zone: { type: "string" },
+                                    Customer: { type: "string" }, Rute: { type: "string" }, TglMuat: { type: "date" }, TglBrkt: { type: "date" },
+                                    TglTiba: { type: "date" }, TglEstimasi: { type: "date" }, Delay: { type: "string" }, RangeSuhu: { type: "string" },
+                                    SuhuAvg: { type: "string" }, Deviasi: {  type: "string" }, Muat: { type: "string" }, Perjalanan: { type: "string" },
+                                    Precooling: { type: "string" }, AcMati: { type: "string" }, SuhuSesuai: { type: "string" }, Lat: { type: "string" },
+                                    Long: { type: "string" }, Bongkar: {type: "string"}
+                                }
+                            }
+                        }, pageable: false, sortable: true,
+                    },
+                    dataBound: onDataBoundMapOnDuty, filterable: true, sortable: true, reorderable: true, resizable: true, pageable: false, groupable: false, height: 300,
+                    columns: [
+                        { field: "StatusFlow", title: "Status Flow", width: 100 },
+                        { field: "Vehicle", title: "Vehicle No", width: 100, template: '<a href="javascript:DetailModalItem(\'#=Vehicle#\',\'#=NoSo#\');" >#=Vehicle#</a>' },
+                        { field: "TypeTruck", title: "Type", width: 100 },
+                        { field: "Gps", title: "GPS", width: 100 },
+                        { field: "Lokasi", title: "Lokasi", width: 150 },
+                        { field: "KotaKab", title: "Kab./Kota", width: 100 },
+                        { field: "Provinsi", title: "Provinsi", width: 100 },
+                        { field: "Zone", title: "Zone", width: 100 },
+                        { field: "Customer", title: "Customer", width: 100 },
+                        { field: "Rute", title: "Rute", width: 100 },
+                        { field: "TglMuat", title: "Tgl Muat", width: 100, template: "#= TglMuat != null ? kendo.toString(kendo.parseDate(TglMuat, 'yyyy-MM-dd'), 'dd/MM/yyyy') : ''#", },
+                        { field: "TglBrkt", title: "Tgl Berangkat", width: 100, template: "#= TglBrkt != null ? kendo.toString(kendo.parseDate(TglBrkt, 'yyyy-MM-dd'), 'dd/MM/yyyy') : ''#", },
+                        { field: "TglTiba", title: "Target Tiba", width: 100, template: "#= TglTiba != null ? kendo.toString(kendo.parseDate(TglTiba, 'yyyy-MM-dd'), 'dd/MM/yyyy') : ''#", },
+                        { field: "TglEstimasi", title: "Estimasi Tiba", width: 100, template: "#= TglEstimasi != null ? kendo.toString(kendo.parseDate(TglEstimasi, 'yyyy-MM-dd'), 'dd/MM/yyyy') : ''#", },
+                        { field: "Delay", width: 100 },
+                        { field: "RangeSuhu", title: "Range Suhu", width: 100 },
+                        { field: "Deviasi", width: 100 },
+                        { field: "Muat", width: 100 },
+                        { field: "Perjalana", width: 100 },
+                        { field: "Bongkar", width: 100 },
+                        { field: "Precooling", width: 100 },
+                        { field: "AcMati", title: "Ac Mati", width: 100 },
+                        { field: "SuhuSesuai", title: "Suhu Sesuai", width: 100 },
+                        { field: "LastUpdate", title: "Last Edit", width: 100, template: "#= LastUpdate != null ? kendo.toString(kendo.parseDate(LastUpdate, 'yyyy-MM-dd'), 'dd/MM/yyyy') : ''#", },
+                    ],
+                }).data("kendoGrid");
+
+                GridOntime = $("#gridOntime").kendoGrid({
+                    dataSource: {
+                        transport: { read: { url: '@Url.Action("BindingGridOntime")', dataType: "json" } },
+                        schema: {
+                            total: "total", data: "data",
+                            model: {
+                                fields: {
+                                    StatusFlow: { type: "string" }, LastUpdate: { type: "date" }, Vehicle: { type: "string" }, TypeTruck: { type: "string" }, Gps: { type: "string" },
+                                    Lokasi: { type: "string" }, KotaKab: { type: "string" }, Provinsi: { type: "string" }, Zone: { type: "string" },
+                                    Customer: { type: "string" }, Rute: { type: "string" }, TglMuat: { type: "date" }, TglBrkt: { type: "date" },
+                                    TglTiba: { type: "date" }, TglEstimasi: { type: "date" }, Delay: { type: "string" }, TotalMoving: { type: "number" },
+                                    TotalStop: { type: "number" }, MaxStop: { type: "number" }, MaxStopPosition: { type: "string" }, Perjalanan: { type: "string" },
+                                    StopTime: { type: "string" }, Muat: { type: "string" }, Lat: { type: "string" }, Long: { type: "string" }, Bongkar: { type: "string" }
+                                }
+                            }
+                        }, pageable: false, sortable: true,
+                    },
+                    dataBound: onDataBoundMapOntime, filterable: true, sortable: true, reorderable: true, resizable: true, pageable: false, groupable: false, height: 300,
+                    columns: [
+                        { field: "StatusFlow", title: "Status Flow", width: 100 },
+                        { field: "Vehicle", title: "Vehicle No", width: 100 },
+                        { field: "TypeTruck", title: "Type", width: 100 },
+                        { field: "Gps", title: "GPS", width: 100 },
+                        { field: "Lokasi", title: "Lokasi", width: 150 },
+                        { field: "KotaKab", title: "Kab./Kota", width: 100 },
+                        { field: "Provinsi", title: "Provinsi", width: 100 },
+                        { field: "Zone", title: "Zone", width: 100 },
+                        { field: "Customer", title: "Customer", width: 100 },
+                        { field: "Rute", title: "Rute", width: 100 },
+                        { field: "TglMuat", title: "Tgl Muat", width: 100, template: "#= TglMuat != null ? kendo.toString(kendo.parseDate(TglMuat, 'yyyy-MM-dd'), 'dd/MM/yyyy') : ''#", },
+                        { field: "TglBrkt", title: "Tgl Berangkat", width: 100, template: "#= TglBrkt != null ? kendo.toString(kendo.parseDate(TglBrkt, 'yyyy-MM-dd'), 'dd/MM/yyyy') : ''#", },
+                        { field: "TglTiba", title: "Target Tiba", width: 100, template: "#= TglTiba != null ? kendo.toString(kendo.parseDate(TglTiba, 'yyyy-MM-dd'), 'dd/MM/yyyy') : ''#", },
+                        { field: "TglEstimasi", title: "Estimasi Tiba", width: 100, template: "#= TglEstimasi != null ? kendo.toString(kendo.parseDate(TglEstimasi, 'yyyy-MM-dd'), 'dd/MM/yyyy') : ''#", },
+                        { field: "Delay", width: 100 },
+                        { field: "TotalMoving", title: "Total Moving", width: 100 },
+                        { field: "TotalStop", title: "Total Stop", width: 100 },
+                        { field: "MaxStop", title: "Max Stop", width: 100 },
+                        { field: "MaxStopPosition", title: "Max Stop Position", width: 100 },
+                        { field: "StopTime", width: 100 },
+                        { field: "Muat", width: 100 },
+                        { field: "Perjalanan", width: 100 },
+                        { field: "Bongkar", width: 100 },
+                        { field: "LastUpdate", title: "Last Edit", width: 100, template: "#= LastUpdate != null ? kendo.toString(kendo.parseDate(LastUpdate, 'yyyy-MM-dd'), 'dd/MM/yyyy') : ''#", },
+                    ],
+                }).data("kendoGrid");
+
+                GridOntime = $("#gridOntemp").kendoGrid({
+                    dataSource: {
+                        transport: { read: { url: '@Url.Action("BindingGridOntemp")', dataType: "json" } },
+                        schema: {
+                            total: "total", data: "data",
+                            model: {
+                                fields: {
+                                    StatusFlow: { type: "string" }, LastUpdate: { type: "date" }, Vehicle: { type: "string" }, TypeTruck: { type: "string" }, Gps: { type: "string" },
+                                    Lokasi: { type: "string" }, KotaKab: { type: "string" }, Provinsi: { type: "string" }, Zone: { type: "string" },
+                                    Customer: { type: "string" }, Rute: { type: "string" }, TglMuat: { type: "date" }, TglBrkt: { type: "date" },
+                                    JenisProduct: { type: "string" }, RangeSuhu: { type: "string" }, Delay: { type: "string" }, AvgSuhu: { type: "number" },
+                                    Deviasi: { type: "string" }, AcOn: { type: "string" }, AcOff: { type: "string" }, MaxOff: { type: "string" },
+                                    MaxOffPosition: { type: "string" }, MaxOffTime: { type: "date" }, Precolling: { type: "string" }, AcMati: { type: "string" }, SuhuSesuai: { type: "string" },
+                                    Lat: { type: "string" }, Long: { type: "string" }
+                                }
+                            }
+                        }, pageable: false, sortable: true,
+                    },
+                    dataBound: onDataBoundMapOntemp, filterable: true, sortable: true, reorderable: true, resizable: true, pageable: false, groupable: false, height: 300,
+                    columns: [
+                        { field: "StatusFlow", title: "Status Flow", width: 100 },
+                        { field: "Vehicle", title: "Vehicle No", width: 100 },
+                        { field: "TypeTruck", title: "Type", width: 100 },
+                        { field: "Gps", title: "GPS", width: 100 },
+                        { field: "Lokasi", title: "Lokasi", width: 150 },
+                        { field: "KotaKab", title: "Kab./Kota", width: 100 },
+                        { field: "Provinsi", title: "Provinsi", width: 100 },
+                        { field: "Zone", title: "Zone", width: 100 },
+                        { field: "Customer", title: "Customer", width: 100 },
+                        { field: "Rute", title: "Rute", width: 100 },
+                        { field: "TglMuat", title: "Tgl Muat", width: 100, template: "#= TglMuat != null ? kendo.toString(kendo.parseDate(TglMuat, 'yyyy-MM-dd'), 'dd/MM/yyyy') : ''#", },
+                        { field: "TglBrkt", title: "Tgl Berangkat", width: 100, template: "#= TglBrkt != null ? kendo.toString(kendo.parseDate(TglBrkt, 'yyyy-MM-dd'), 'dd/MM/yyyy') : ''#", },
+                        { field: "JenisProduct", title: "Product", width: 100 },
+                        { field: "RangeSuhu", title: "Range Suhu", width: 100 },
+                        { field: "AvgSuhu", title: "AVG Suhu", width: 100 },
+                        { field: "Deviasi", width: 100 },
+                        { field: "AcOn", title: "AC On", width: 100 },
+                        { field: "AcOff", title: "AC Off", width: 100 },
+                        { field: "MaxOff", title: "Max Off", width: 100 },
+                        { field: "MaxOffPosition", title: "Max Off Position", width: 100 },
+                        { field: "MaxOffTime", title: "Max Off time", width: 100, template: "#= MaxOffTime != null ? kendo.toString(kendo.parseDate(MaxOffTime, 'yyyy-MM-dd'), 'dd/MM/yyyy') : ''#", },
+                        { field: "Precolling", title: "Precolling", width: 100 },
+                        { field: "AcMati", title: "AC Mati", width: 100 },
+                        { field: "SuhuSesuai", title: "Suhu Sesuai", width: 100 },
+                        { field: "LastUpdate", title: "Last Edit", width: 100, template: "#= LastUpdate != null ? kendo.toString(kendo.parseDate(LastUpdate, 'yyyy-MM-dd'), 'dd/MM/yyyy') : ''#", },
+                    ],
+                }).data("kendoGrid");
+
+                GridService = $("#gridService").kendoGrid({
+                    dataSource: {
+                        transport: { read: { url: '@Url.Action("BindingGridService")', dataType: "json" } },
+                        schema: {
+                            total: "total", data: "data",
+                            model: {
+                                fields: {
+                                    Status: { type: "string" }, StatusFlow: { type: "string" }, LastUpdate: { type: "date" },
+                                    Vehicle: { type: "string" }, TypeTruck: { type: "string" }, Speed: { type: "string" },
+                                    Engine: { type: "string" }, Gps: { type: "string" }, Lokasi: { type: "string" },
+                                    KotaKab: { type: "string" }, Provinsi: { type: "string" }, Zone: { type: "string" },
+                                    Suhu: { type: "string" }, Km: { type: "string" }, Hm: { type: "string" },
+                                    Ac: { type: "string" }, Lat: { type: "string" }, Long: { type: "string" },
+                                    LatOld: { type: "string" }, LongOld: { type: "string" }, NoSo: { type: "string" },
+                                    EstimasiService: { type: "date" }, RevEstimasi: { type: "number" }, KeteranganService: { type: "string" },
+                                    Customer: { type: "string" }, Rute: { type: "string" },
+                                }
+                            }
+                        }, pageable: false, sortable: true,
+                    }, dataBound: onDataBoundMapService, filterable: true, sortable: true, reorderable: true, resizable: true, pageable: false, groupable: false, height: 300,
+                    columns: [
+                        { field: "Status", title: "Status", width: 100 }, { field: "Vehicle", title: "Vehicle No", width: 100 },
+                        { field: "TypeTruck", title: "Type", width: 100 }, { field: "Gps", title: "GPS", width: 100 },
+                        { field: "LastUpdate", title: "Last Update", width: 100, template: "#= LastUpdate != null ? kendo.toString(kendo.parseDate(LastUpdate, 'yyyy-MM-dd'), 'dd/MM/yyyy') : ''#" },
+                        { field: "Lokasi", title: "Lokasi", width: 200 }, { field: "KotaKab", title: "Kab./Kota", width: 100 }, { field: "Provinsi", title: "Provinsi", width: 100 },
+                        { field: "Zone", title: "Zone", width: 100 },
+                        { field: "Km", title: "KM", width: 100, template: "#= Km == null ? parseFloat(0).toFixed(0) : parseFloat(Km).toFixed(0) #", attributes: { style: "text-align: right" } },
+                        { field: "Hm", title: "HM", width: 100, template: "#= Hm == null ? parseFloat(0).toFixed(0) : parseFloat(Hm).toFixed(0) #", attributes: { style: "text-align: right" } },
+                        { field: "EstimasiService", title: "Estimasi", width: 100 },
+                        { field: "RevEstimasi", title: "Rev Ext", width: 100 },
+                        { field: "KeteranganService", title: "Keterangan", width: 100 },
+                        { field: "StatusFlow", title: "Status Order", width: 100 },
+                        { field: "Customer", title: "Customer", width: 100 },
+                        { field: "Rute", title: "Rute", width: 100 }
+                    ],
+                }).data("kendoGrid");
+
+                GridAvaliable = $("#gridAvaliable").kendoGrid({
+                    dataSource: {
+                        transport: { read: { url: '@Url.Action("BindingGridByStat")' + '?stat=Available', dataType: "json" } },
+                        schema: {
+                            total: "total", data: "data",
+                            model: {
+                                fields: {
+                                    Status: { type: "string" }, LastUpdate: { type: "date" },
+                                    Vehicle: { type: "string" }, TypeTruck: { type: "string" }, Speed: { type: "string" },
+                                    Engine: { type: "string" }, Gps: { type: "string" }, Lokasi: { type: "string" },
+                                    KotaKab: { type: "string" }, Provinsi: { type: "string" }, Zone: { type: "string" },
+                                    Suhu: { type: "string" }, Km: { type: "string" }, Hm: { type: "string" },
+                                    Ac: { type: "string" }, Lat: { type: "string" }, Long: { type: "string" },
+                                    LatOld: { type: "string" }, LongOld: { type: "string" }, LastSo: { type: "string" }
+                                }
+                            }
+                        }, pageable: false, sortable: true,
+                    }, dataBound: onDataBoundMapAvaliable, filterable: true, sortable: true, reorderable: true, resizable: true, pageable: false, groupable: false, height: 300,
+                    columns: [
+                        { field: "Status", title: "Status", width: 100, attributes: { "class": "#= Status == 'Available' ? 'available' : Status == 'Ready' ? 'ready' : 'onduty'#", } },
+                        { field: "Vehicle", title: "Vehicle No", width: 100, template: '<a href="javascript:ZoomMap(#=Lat#,#=Long#,\'#=Vehicle#\');" >#=Vehicle#</a>' },
+                        { field: "TypeTruck", title: "Type", width: 100 }, { field: "Gps", title: "GPS", width: 100 },
+                        { field: "LastUpdate", title: "Last Update", width: 100, template: "#= LastUpdate != null ? kendo.toString(kendo.parseDate(LastUpdate, 'yyyy-MM-dd'), 'dd/MM/yyyy') : ''#" },
+                        { field: "Lokasi", title: "Lokasi", width: 200 }, { field: "KotaKab", title: "Kab./Kota", width: 100 }, { field: "Provinsi", title: "Provinsi", width: 100 },
+                        { field: "Zone", title: "Zone", width: 100 }, { field: "Speed", template: $('#speed').html(), width: 100 },
+                        { field: "Engine", template: $('#engine').html(), width: 100 }, { field: "Suhu", title: "Temp", template: $('#suhu').html(), width: 100 },
+                        { field: "Ac", title: "AC", template: $('#Ac').html(), width: 100 },
+                        { field: "Km", title: "KM", width: 100, template: "#= Km == null ? parseFloat(0).toFixed(0) : parseFloat(Km).toFixed(0) #", attributes: { style: "text-align: right" } },
+                        { field: "Hm", title: "HM", width: 100, template: "#= Hm == null ? parseFloat(0).toFixed(0) : parseFloat(Hm).toFixed(0) #", attributes: { style: "text-align: right" } },
+                        { field: "LastSo", title: "Last Event", width: 100 },
+                    ],
+                }).data("kendoGrid");
+
+                GridReady = $("#gridReady").kendoGrid({
+                    dataSource: {
+                        transport: { read: { url: '@Url.Action("BindingGridByStat")' + '?stat=Ready', dataType: "json" } },
+                        schema: {
+                            total: "total", data: "data",
+                            model: {
+                                fields: {
+                                    Status: { type: "string" }, LastUpdate: { type: "date" },
+                                    Vehicle: { type: "string" }, TypeTruck: { type: "string" }, Speed: { type: "string" },
+                                    Engine: { type: "string" }, Gps: { type: "string" }, Lokasi: { type: "string" },
+                                    KotaKab: { type: "string" }, Provinsi: { type: "string" }, Zone: { type: "string" },
+                                    Suhu: { type: "string" }, Km: { type: "string" }, Hm: { type: "string" },
+                                    Ac: { type: "string" }, Lat: { type: "string" }, Long: { type: "string" },
+                                    LatOld: { type: "string" }, LongOld: { type: "string" }, LastSo: { type: "string" }
+                                }
+                            }
+                        }, pageable: false, sortable: true,
+                    }, dataBound: onDataBoundMapReady, filterable: true, sortable: true, reorderable: true, resizable: true, pageable: false, groupable: false, height: 300,
+                    columns: [
+                        { field: "Status", title: "Status", width: 100, attributes: { "class": "#= Status == 'Available' ? 'available' : Status == 'Ready' ? 'ready' : 'onduty'#", } },
+                        { field: "Vehicle", title: "Vehicle No", width: 100, template: '<a href="javascript:ZoomMap(#=Lat#,#=Long#,\'#=Vehicle#\');" >#=Vehicle#</a>' },
+                        { field: "TypeTruck", title: "Type", width: 100 }, { field: "Gps", title: "GPS", width: 100 },
+                        { field: "LastUpdate", title: "Last Update", width: 100, template: "#= LastUpdate != null ? kendo.toString(kendo.parseDate(LastUpdate, 'yyyy-MM-dd'), 'dd/MM/yyyy') : ''#" },
+                        { field: "Lokasi", title: "Lokasi", width: 200 }, { field: "KotaKab", title: "Kab./Kota", width: 100 }, { field: "Provinsi", title: "Provinsi", width: 100 },
+                        { field: "Zone", title: "Zone", width: 100 }, { field: "Speed", template: $('#speed').html(), width: 100 },
+                        { field: "Engine", template: $('#engine').html(), width: 100 }, { field: "Suhu", title: "Temp", template: $('#suhu').html(), width: 100 },
+                        { field: "Ac", title: "AC", template: $('#Ac').html(), width: 100 },
+                        { field: "Km", title: "KM", width: 100, template: "#= Km == null ? parseFloat(0).toFixed(0) : parseFloat(Km).toFixed(0) #", attributes: { style: "text-align: right" } },
+                        { field: "Hm", title: "HM", width: 100, template: "#= Hm == null ? parseFloat(0).toFixed(0) : parseFloat(Hm).toFixed(0) #", attributes: { style: "text-align: right" } },
+                        { field: "LastSo", title: "Last Event", width: 100 },
+                    ],
+                }).data("kendoGrid");
+
+                GridAll = $("#gridPosition").kendoGrid({
+                    dataSource: {
+                        transport: { read: { url: '@Url.Action("BindingGridAllTruck")', dataType: "json" } },
+                        schema: {
+                            total: "total", data: "data",
+                            model: {
+                                fields: {
+                                    Status: { type: "string" }, StatusFlow: { type: "string" }, LastUpdate: { type: "date" },
+                                    Vehicle: { type: "string" }, TypeTruck: { type: "string" }, Speed: { type: "string" },
+                                    Engine: { type: "string" }, Gps: { type: "string" }, Lokasi: { type: "string" },
+                                    KotaKab: { type: "string" }, Provinsi: { type: "string" }, Zone: { type: "string" },
+                                    Suhu: { type: "string" }, Km: { type: "string" }, Hm: { type: "string" },
+                                    Ac: { type: "string" }, Lat: { type: "string" }, Long: { type: "string" },
+                                    LatOld: { type: "string" }, LongOld: { type: "string" }
+                                }
+                            }
+                        }, pageable: false, sortable: true,
+                    }, dataBound: onDataBoundMapAll, filterable: kendoGridFilterable, sortable: true, reorderable: true, resizable: true, pageable: false, groupable: false, height: 300,
+                    columns: [
+                        {
+                            command: [
+                                {
+                                    name: "edit",
+                                    text: "edit",
+                                    imageClass: "glyphicon glyphicon-edit",
+                                    template: '<a class="k-button-icon #=className#" #=attr# href="\\#"><span class="#=imageClass#"></span></a>'
+                                }
+                            ],
+                            width: "60px"
+                        },
+                        { field: "Status", title: "Status", width: 100, attributes: { "class": "#= Status == 'Available' ? 'available' : Status == 'Ready' ? 'ready' : 'onduty'#", } },
+                        { field: "StatusFlow", title: "Status Flow", width: 100 },
+                        { field: "Vehicle", title: "Vehicle No", width: 100, template: '<a href="javascript:ZoomMap(#=Lat#,#=Long#,\'#=Vehicle#\');" >#=Vehicle#</a>' },
+                        { field: "TypeTruck", title: "Type", width: 100 }, { field: "Gps", title: "GPS", width: 100 },
+                        { field: "LastUpdate", title: "Last Update", width: 100, template: "#= LastUpdate != null ? kendo.toString(kendo.parseDate(LastUpdate, 'yyyy-MM-dd'), 'dd/MM/yyyy HH:mm') : ''#" },
+                        { field: "Lokasi", title: "Lokasi", width: 200 }, { field: "KotaKab", title: "Kab./Kota", width: 100 }, { field: "Provinsi", title: "Provinsi", width: 100 },
+                        { field: "Zone", title: "Zone", width: 100 }, { field: "Speed", template: $('#speed').html(), width: 100, attributes: { style: "text-align: right" } },
+                        { field: "Engine", template: $('#engine').html(), width: 100, attributes: { style: "text-align: center" } }, { field: "Suhu", title: "Temp", template: $('#suhu').html(), width: 100, attributes: { style: "text-align: right" } },
+                        { field: "Ac", title: "AC", template: $('#Ac').html(), width: 100 },
+                        { field: "Km", title: "KM", width: 100, template: "#= Km == null ? parseFloat(0).toFixed(0) : parseFloat(Km).toFixed(0) #", attributes: { style: "text-align: right" } },
+                        { field: "Hm", title: "HM", width: 100, template: "#= Hm == null ? parseFloat(0).toFixed(0) : parseFloat(Hm).toFixed(0) #", attributes: { style: "text-align: right" } },
+                    ],
+                }).data("kendoGrid");
+
+                gridTruck = $("#gridDetailTruck").kendoGrid({
+                    dataSource: dsDetailTruck, sortable: true, reorderable: true, resizable: true, pageable: true, groupable: false,
+                    columns: [
+                        { field: "Driver1", title: "Driver 1", width: 150, template: '<a href="javascript:DetailModalItemDriver(\'#=Id#\',\'#=Driver1#\',1);" >#=Driver1#</a>' },
+                        { field: "Driver2", title: "Driver 2", width: 150, template: '<a href="javascript:DetailModalItemDriver(\'#=Id2#\',\'#=Driver2#\',2);" >#=Driver2#</a>' },
+                        { field: "CustomerNama", title: "Customer", width: 150 }, { field: "rute", title: "rute", width: 150 },
+                        { field: "TanggalMuat", title: "Tgl Muat", template: "#= TanggalMuat != null ? kendo.toString(kendo.parseDate(TanggalMuat, 'yyyy-MM-dd'), 'dd/MM/yyyy') : ''#", width: 80 },
+                    ],
+                }).data("kendoGrid");
+                gridTruck = $("#gridDetailDriver").kendoGrid({
+                    dataSource: dsDetailTruck, sortable: true, reorderable: true, resizable: true, pageable: true, groupable: false,
+                    columns: [
+                        { field: "soId", title: "Shipment ID", width: 150 }, { field: "SoNumber", title: "No SO", width: 150 },
+                        { field: "TanggalMuat", title: "Tgl Muat", template: "#= TanggalMuat != null ? kendo.toString(kendo.parseDate(TanggalMuat, 'yyyy-MM-dd'), 'dd/MM/yyyy') : ''#", width: 80 },
+                        { field: "JenisOrder", title: "Jenis Order", width: 150 }, { field: "CustomerNama", title: "Customer", width: 150 }, { field: "rute", title: "rute", width: 150 },
+                    ],
+                }).data("kendoGrid");
+            })
+            //#endregion grid
+            function SetMapGrid(el) {
+                $("#gridOnduty").hide();
+                $("#gridOntime").hide();
+                $("#gridOntemp").hide();
+                $("#gridService").hide();
+                $("#gridAvaliable").hide();
+                $("#gridReady").hide();
+                $("#gridPosition").hide();
+                el.show();
+            }
+            //#region Modal PopUp Detail
+            function DetailModalItem(Vhcle, NoSo) {
+                $.ajax({
+                    url: '/Monitoring/OnDutyDetail?VehicleNo=' + Vhcle + '&NoSo=' + NoSo,
+                    type: "GET",
+                    dataType: 'Json',
+                    cache: false,
+                    success: function (res) {
+                        $('#VehicleNo').text(Vhcle);
+                        $('#VehicleType').text(res.unit.JenisTruck);
+                        $('#AC').text(res.unit.MerkPendingin + ' ' + res.unit.ModelPendingin);
+                        $("#modalDetailTruck").modal('show');
+                        $('#OnTime').text(res.Delay.TotalHours.toFixed(2))
+                        truckdetail();
+                    }, error: function () {
+                        console.log("Connection Failed");
+                    }
+                });
+            };
+            function DetailModalItemDriver(IdDriver, Nama, Kode) {
+                $('#IdDriver').text(IdDriver);
+                $('#NamaDriver').text(Nama);
+                $("#modalDetailDriver").modal('show');
+                driverdetail(Kode);
+            };
+
+            function ZoomMap(Lat, Lng, VehicleNo) {
+            /*    view.animate({
+                    center: ol.proj.transform([Lng, Lat], 'EPSG:4326', 'EPSG:3857'), zoom: 11
+                });*/
+                window.open('/Monitoring/Detail?VehicleNo=' + VehicleNo, '_blank')
+            }
+
+            //#endregion Modal PopUp Detail
+//            $('#engine').html($('#engine').html().ToUpperCase())
+            //$('#engine').html($('#engine').html())
+
+            // A bounce easing method (from https://github.com/DmitryBaranovskiy/raphael).
+            function bounce(t) {
+                var s = 7.5625, p = 2.75, l;
+                if (t < (1 / p)) {
+                    l = s * t * t;
+                } else {
+                    if (t < (2 / p)) {
+                        t -= (1.5 / p);
+                        l = s * t * t + 0.75;
+                    } else {
+                        if (t < (2.5 / p)) {
+                            t -= (2.25 / p);
+                            l = s * t * t + 0.9375;
+                        } else {
+                            t -= (2.625 / p);
+                            l = s * t * t + 0.984375;
+                        }
+                    }
+                }
+                return l;
+            }
+
+            // An elastic easing method (from https://github.com/DmitryBaranovskiy/raphael).
+            function elastic(t) {
+                return Math.pow(2, -10 * t) * Math.sin((t - 0.075) * (2 * Math.PI) / 0.3) + 1;
+            }
+
+            function onClick(id, callback) {
+//                document.getElementById(id).addEventListener('click', callback);
+            }
+
+            onClick('rotate-left', function () {
+                view.animate({
+                    rotation: view.getRotation() + Math.PI / 2
+                });
+            });
+
+            onClick('rotate-right', function () {
+                view.animate({
+                    rotation: view.getRotation() - Math.PI / 2
+                });
+            });
+
+            onClick('rotate-around-rome', function () {
+                // Rotation animation takes the shortest arc, so animate in two parts
+                var rotation = view.getRotation();
+                view.animate({
+                    rotation: rotation + Math.PI,
+                    anchor: rome,
+                    easing: ol.easing.easeIn
+                }, {
+                    rotation: rotation + 2 * Math.PI,
+                    anchor: rome,
+                    easing: ol.easing.easeOut
+                });
+            });
+
+            onClick('pan-to-london', function () {
+                view.animate({
+                    center: london,
+                    duration: 2000
+                });
+            });
+
+            onClick('elastic-to-moscow', function () {
+                view.animate({
+                    center: moscow,
+                    duration: 2000,
+                    easing: elastic
+                });
+            });
+
+            onClick('bounce-to-istanbul', function () {
+                view.animate({
+                    center: istanbul,
+                    duration: 2000,
+                    easing: bounce
+                });
+            });
+
+            onClick('spin-to-rome', function () {
+                // Rotation animation takes the shortest arc, so animate in two parts
+                var center = view.getCenter();
+                view.animate({
+                    center: [
+                      center[0] + (rome[0] - center[0]) / 2,
+                      center[1] + (rome[1] - center[1]) / 2
+                    ],
+                    rotation: Math.PI,
+                    easing: ol.easing.easeIn
+                }, {
+                    center: rome,
+                    rotation: 2 * Math.PI,
+                    easing: ol.easing.easeOut
+                });
+            });
+
+            function flyTo(location, done) {
+                var duration = 2000;
+                var zoom = view.getZoom();
+                var parts = 2;
+                var called = false;
+                function callback(complete) {
+                    --parts;
+                    if (called) {
+                        return;
+                    }
+                    if (parts === 0 || !complete) {
+                        called = true;
+                        done(complete);
+                    }
+                }
+                view.animate({
+                    center: location,
+                    duration: duration
+                }, callback);
+                view.animate({
+                    zoom: zoom - 1,
+                    duration: duration / 2
+                }, {
+                    zoom: zoom,
+                    duration: duration / 2
+                }, callback);
+            }
+
+            onClick('fly-to-bern', function () {
+                flyTo(bern, function () { });
+            });
+
+            function tour() {
+                var locations = [london, bern, rome, moscow, istanbul];
+                var index = -1;
+                function next(more) {
+                    if (more) {
+                        ++index;
+                        if (index < locations.length) {
+                            var delay = index === 0 ? 0 : 750;
+                            setTimeout(function () {
+                                flyTo(locations[index], next);
+                            }, delay);
+                        } else {
+                            alert('Tour complete');
+                        }
+                    } else {
+                        alert('Tour cancelled');
+                    }
+                }
+                next(true);
+            }
+
+            onClick('tour', tour);    </script>
+    }
+}
+else
+{
+    ViewBag.Title = "AccessDenied";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    <h1>Maaf, anda tidak memiliki hak akses yang cukup untuk mengakses halaman ini</h1>
+}

@@ -1,0 +1,413 @@
+﻿@using tms_mka_v2.Models;
+
+@model tms_mka_v2.Models.Tiket
+@{
+    ViewBag.Title = "Form";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    string currentController = (string)ViewContext.RouteData.Values["controller"];
+    string currentAction = (string)ViewContext.RouteData.Values["action"];
+    string backLink = Url.Action("Index");
+    if (currentAction == "Add")
+    {
+        ViewBag.Title = "Tambah Tiket";
+    }
+    else
+    {
+        ViewBag.Title = ViewBag.name + " | Edit";
+    }
+}
+<style>
+    .countainer-img {
+        width: 100%;
+        height: 215px;
+        overflow: hidden;
+        position: relative;
+        border: 1px solid;
+    }
+
+    .img-profile {
+        position: absolute;
+        margin: auto;
+        max-height: 100%;
+        max-width: 100%;
+        left: -100%;
+        right: -100%;
+        top: -100%;
+        bottom: -100%;
+    }
+</style>
+
+<div class="portlet light">
+    <div class="portlet-title">
+        <div class="caption">
+            <span class="caption-subject font-dark sbold uppercase">@ViewBag.Title</span>
+        </div>
+    </div>
+    <div class="portlet-body form">
+        @using (@Html.BeginForm(currentAction, currentController, FormMethod.Post, new { @class = "form-horizontal form-label-left input_mask", @id = "formsubmit" }))
+        {
+
+            @Html.ValidationSummary(true)
+            @Html.HiddenFor(model => model.Id)
+            <div class="row">
+                <div class="col col-md-6">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.NoTiket, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                        <div class="col-md-8 col-sm-9 col-xs-12">
+                            @Html.TextBoxFor(model => model.NoTiket, new { @class = "form-control input-sm", @ReadOnly = "true" })
+                            @Html.ValidationMessageFor(model => model.NoTiket)
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.IdCustomer, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                        <div class="col-md-8 col-sm-9 col-xs-12">
+                            @Html.HiddenFor(model => model.IdCustomer)
+                            @Html.TextBoxFor(model => model.KodeCustomer, new { @class = "form-control input-sm", @ReadOnly = "true" })
+                            @Html.ValidationMessageFor(model => model.IdCustomer)
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.NamaPelapor, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                        <div class="col-md-8 col-sm-9 col-xs-12">
+                            @Html.TextBoxFor(model => model.NamaPelapor, new { @class = "form-control input-sm", @ReadOnly = "true" })
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.TanggalLapor, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                        <div class="col-md-8 col-sm-9 col-xs-12">
+                            @Html.TextBoxFor(model => model.TanggalLapor, new { @class = "form-control-datepicker", @ReadOnly = "true" })
+                            @Html.ValidationMessageFor(model => model.TanggalLapor)
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.DitujukanKe, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                        <div class="col-md-8 col-sm-9 col-xs-12">
+                            <input id="ditujukan" readonly />
+                            @Html.HiddenFor(model => model.DitujukanKe)
+                            @Html.ValidationMessageFor(model => model.DitujukanKe)
+                        </div>
+                    </div>
+                </div>
+                <div class="col col-md-6">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Kategori, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                        <div class="col-md-8 col-sm-9 col-xs-12">
+                            @Html.DropDownListFor(model => model.Kategori, new SelectList(
+                          new List<Object>{
+                            new { value = "Terlambat"},
+                            new { value = "Barang Kurang"},
+                            new { value = "Barang Rusak"},
+                            new { value = "Kerusakan Unit"},
+                            new { value = "Suhu Tidak Baik"},
+                            new { value = "Dokument kurang"},
+                            new { value = "Kotor"},
+                            new { value = "Info Harga"},
+                            new { value = "Info Tagihan"},
+                            new { value = "Info Kecelakaan"},
+                            new { value = "Info Posisi"},
+                            new { value = "Info Suhu"},
+                            new { value = "Info lainnya"}
+                          }, "value", "value", Model.Kategori), new { @ReadOnly = "true" })
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Prioritas, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                        <div class="col-md-8 col-sm-9 col-xs-12">
+                            @Html.DropDownListFor(model => model.Prioritas, new SelectList(
+                          new List<Object>{
+                            new { value = "High"},
+                            new { value = "Normal"},
+                            new { value = "Low"}
+                          }, "value", "value", Model.Prioritas), new { @ReadOnly = "true" })
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Status, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                        <div class="col-md-8 col-sm-9 col-xs-12">
+                            @if (User.id == @ViewBag.CreatedBy){
+                                @Html.DropDownListFor(model => model.Status, new SelectList(
+                                    new List<Object>{new { value = "Open"}, new { value = "On-Progres"}, new { value = "Closed"}}, "value", "value", Model.Status
+                                ))
+                            }
+                            else{
+                                @Html.DropDownListFor(model => model.Status, new SelectList(
+                                    new List<Object>{new { value = "Open"}, new { value = "On-Progres"}, new { value = "Closed"}}, "value", "value", Model.Status
+                                ), new { @ReadOnly = "true" })
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-2">
+                    <div class="countainer-img">
+                        <img id="profile-foto" src="@Model.pathFotoCs" class="img-profile" alt="">
+                    </div>
+                    <br />
+                    <span class="username username-hide-mobile" style="text-align:center;vertical-align:middle;">
+                        @Model.namaCs
+                    </span>
+                </div>
+                <div class="col-md-10">
+                    <div class="form-group">
+                        <div class="col-md-12">@Html.TextBoxFor(model => model.Subject, new { @class = "form-control input-sm", @ReadOnly = "true" })</div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-4">
+                            @ViewBag.SO.SONumber - @ViewBag.SO.DataTruck.VehicleNo - @ViewBag.SO.DataTruck.JenisTrucks.StrJenisTruck <br/>
+                            @ViewBag.SO.MasterProduct.NamaProduk - Temp @ViewBag.SO.MasterProduct.TargetSuhu <br/>
+                            @ViewBag.SO.StrDaftarHargaItem <br/>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="col-md-12">
+                                <label class="col-md-6">Berangkat</label>
+                                <label class="col-md-6">@ViewBag.SO.TanggalMuat</label>
+                            </div>
+                            <div class="col-md-12">
+                                <label class="col-md-6">Tiba</label>
+                                <label class="col-md-6">@ViewBag.TanggalTiba</label>
+                            </div>
+                            <div class="col-md-12">
+                                <label class="col-md-6">Delay</label>
+                                <label class="col-md-6">-</label>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="col-md-12">
+                                <label class="col-md-6">Driver 1</label>
+                                <label class="col-md-6">@ViewBag.SO.Driver1.NamaDriver</label>
+                                <label class="col-md-6">Driver 2</label>
+                                <label class="col-md-6">@(ViewBag.SO.Driver2 == null ? "" : ViewBag.SO.Driver2.NamaDriver)</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Keluhan, new { @class = "control-label col-md-1" })
+                        <div class="col-md-11">
+                            @Html.TextAreaFor(model => model.Keluhan, new { @class = "form-control input-sm", @ReadOnly = "true" })
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-md-1">Attachment</label>
+                        <a class="control-label col-md-11" href='/Uploads/Driver/@Model.Attactment' target='_blank'>@Model.Attactment</a>
+                        @Html.HiddenFor(model => model.Attactment)
+                    </div>
+                </div>
+            </div>
+            <br /><hr /><br />
+            foreach (var x in ViewBag.Responses){
+                <div class="form-group col-md-12">
+                    <div class="col-md-2">
+                        <img alt="" class="img-circle" style="width:150px;text-align:center;vertical-align:middle;" src="@x.User.path_foto">
+                        <br />
+                        <span class="username username-hide-mobile" style="text-align:center;vertical-align:middle;">
+                            @x.User.Fristname @x.User.Lastname
+                        </span>
+                        <br />
+                        <span class="username username-hide-mobile" style="text-align:center;vertical-align:middle;">
+                            @x.CreatedAt
+                        </span>
+                    </div>
+                    <div class="col-md-10">
+                        <div class="col-md-12">
+                            @Html.Label("Respon", new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                            <textarea class="form-control input-sm" disabled="disabled">@x.Respon</textarea>
+                        </div>
+                        <div class="col-md-12">
+                            <a href="@("/Uploads/Driver/" + @x.ResponseAttachment)" target="_blank">@x.ResponseAttachment</a>
+                        </div>
+                    </div>
+                </div>
+            }
+            <div class="form-group col-md-12">
+                <div class="col-md-2">
+                    <img alt="" class="img-circle" style="width:150px;text-align:center;vertical-align:middle;" src="@User.path_foto">
+                    <br />
+                    <span class="username username-hide-mobile" style="text-align:center;vertical-align:middle;">
+                        @User.firstname @User.lastname
+                    </span>
+                </div>
+                <div class="col-md-10">
+                    <div class="col-md-12">
+                        @Html.Label("Respon", new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                        <textarea class="form-control input-sm" name="Respon"></textarea>
+                    </div>
+                    <div class="col-md-12">
+                        <label class="control-label col-md-1">Attachment</label>
+                        <div class="col-md-11">
+                            <input name="files" id="files" type="file"/>
+                            @Html.HiddenFor(model => model.ResponseAttachment)
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="ln_solid"></div>
+            <div class="form-group">
+                <div class="col-md-12">
+                    <button type="submit" class="btn btn-success">Submit</button>
+                    <a href="@backLink" class="btn btn-link">Cancel</a>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+<div id="modalGridDriver" class="modal fade bs-modal-lg" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div id="modalForm" class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                <h4 class="modal-title">List Customer</h4>
+            </div>
+            <div class="modal-body">
+                <div id="GridDriver"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section scripts{
+    <script type="text/javascript">
+
+        function SelectDriver(e) {
+            e.preventDefault();
+            var data = this.dataItem(getDataRowGrid(e));
+            $('#IdCustomer').val(data.Id);
+            $('#KodeCustomer').val(data.CustomerCode + " - " + data.CustomerNama);
+            $('#modalGridDriver').modal('hide');
+        }
+
+        $(document).ready(function () {
+            $("#Kategori").kendoDropDownList();
+            $("#Prioritas").kendoDropDownList();
+            $("#Status").kendoDropDownList();
+            dsTraining = new kendo.data.DataSource({
+                transport: {
+                    read: {
+                        url: '@Url.Action("GetCS")',
+                        dataType: "json"
+                    },
+                },
+            });
+
+            var dummy = [];
+            @if (Model.DitujukanKe != "" && Model.DitujukanKe != null)
+            {
+                foreach (var val in Model.DitujukanKe.Split(','))
+                {
+                    <text> dummy.push(@val); </text>
+                }
+            }
+
+            $("#ditujukan").kendoMultiSelect({
+                dataTextField: "Nama",
+                dataValueField: "Id",
+                dataSource: dsTraining,
+                value: dummy
+            }).data("kendoMultiSelect");
+
+            //Driver
+            var dsDriver = new kendo.data.DataSource({
+                transport: {
+                    read: {
+                        url: '@Url.Action("Binding", "Customer")',
+                        dataType: "json"
+                    },
+                },
+                schema: {
+                    total: "total",
+                    data: "data",
+                    model: {
+                        fields: {
+                            "Id": { type: "number" },
+                            "CustomerCode": { type: "string" },
+                            "CustomerNama": { type: "string" },
+                        }
+                    }
+                },
+                pageSize: 10,
+                pageable: true,
+                serverFiltering: true,
+                serverPaging: true,
+                serverSorting: true,
+                sortable: true,
+                //sort: { field: "SubmittedDate", dir: "desc" }
+            })
+
+            gridDriver = $("#GridDriver").kendoGrid({
+                dataSource: dsDriver,
+                filterable: kendoGridFilterable,
+                sortable: true,
+                reorderable: true,
+                resizable: true,
+                pageable: true,
+                columns: [
+                    {
+                        command: [
+                         {
+                             name: "select",
+                             text: "Select",
+                             click: SelectDriver,
+                             imageClass: "glyphicon glyphicon-ok",
+                             template: '<a class="k-button-icon #=className#" #=attr# href="\\#"><span class="#=iconClass# #=imageClass#"></span></a>'
+                         }
+                        ],
+                        width: "50px"
+                    },
+                    {
+                        field: "CustomerCode",
+                        title: "Kode Pelapor"
+                    },
+                    {
+                        field: "CustomerCodeOld",
+                        title: "Kode Nama"
+                    },
+                    {
+                        field: "CustomerNama",
+                        title: "Nama Pelapor"
+                    },
+
+                ],
+            }).data("kendoGrid");
+
+        var dsAtt = [];
+        @if (Model.ResponseAttachment != "" && Model.ResponseAttachment != null)
+            {
+                <text> dsAtt.push({ name: '@Model.ResponseAttachment' }); </text>
+            }
+        $("#files").kendoUpload({
+            multiple: false,
+            files: dsAtt,
+            async: {
+                saveUrl: "/FileManagement/Upload?Dir=~/Uploads/Driver",
+                removeUrl: "/FileManagement/Delete?Dir=~/Uploads/Driver&temp=true",
+                autoUpload: true
+            },
+            success: function (e, options) {
+                if (e.operation == "upload") {
+                    $(".k-filename:contains('" + e.files[0].name + "')").text('').append('<a href="' + e.response.imagelink + '" target="_blank">' + e.response.fileName + '</a>');
+                    e.files[0].name = e.response.fileName;
+                    $('#ResponseAttachment').val(e.response.fileName);
+                } else if (e.operation == "remove") {
+                    $('#ResponseAttachment').val();
+                }
+            },
+            select: onSelectUpload,
+        }).data("kendoUpload");
+        var filename = $("#files").data("kendoUpload").wrapper.find(".k-filename")
+        for (var i = 0; i < filename.length; i++) {
+            $(filename[i]).html("<a href='/Uploads/Driver/" + dsAtt[i].name + "' target='_blank'>" + dsAtt[i].name + "</a>")
+        }
+        });
+
+        $('#formsubmit').submit(function (e) {
+            var dummyData = [];
+            var data = $("#ditujukan").data("kendoMultiSelect").value();
+            $.each(data, function (idx, val) {
+                dummyData.push(val);
+            });
+            $("#DitujukanKe").val(dummyData.join(','));
+        })
+
+    </script>
+}

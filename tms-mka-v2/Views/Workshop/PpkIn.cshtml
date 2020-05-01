@@ -1,0 +1,271 @@
+﻿@using tms_mka_v2.Models;
+
+@model tms_mka_v2.Models.Workshop
+@{
+    ViewBag.Title = "Form";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    string currentController = (string)ViewContext.RouteData.Values["controller"];
+    string currentAction = (string)ViewContext.RouteData.Values["action"];
+    string backLink = Url.Action("Index");
+    if (currentAction == "PPKIN")
+    {
+        ViewBag.Title = "PPK-IN";
+    }
+    else
+    {
+        ViewBag.Title = "PPK-IN";
+    }
+}
+<div class="portlet light">
+    <div class="portlet-title">
+        <div class="caption">
+            <span class="caption-subject font-dark sbold uppercase judulnya">PPK-IN</span>
+        </div>
+    </div>
+    <div class="portlet-body form">
+        @using (@Html.BeginForm(currentAction, currentController, FormMethod.Post, new { @class = "form-horizontal form-label-left input_mask", @id = "formsubmit" }))
+        {
+            @Html.ValidationSummary(true)
+            @Html.HiddenFor(model => model.Status, "PPK-IN")
+            @Html.HiddenFor(model => model.id)
+            <div class="col-md-6">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.NoPPK, new { @class = "control-label col-md-4 col-sm-3 col-xs-12" })
+                    <div class="col-md-8 col-sm-9 col-xs-12">
+                        @Html.Label(Model.NoPPK, new { @class = "control-label" })
+                        @Html.HiddenFor(model => model.NoPPK)
+                    </div>
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(model => model.TglPre, new { @class = "control-label col-md-4 col-sm-3 col-xs-12" })
+                    <div class="col-md-2 col-sm-9 col-xs-12">
+                        @Html.Label(Model.TglPre.ToString("dd/MM/yyyy"), new { @class = "control-label" })
+                        @Html.HiddenFor(model => model.TglPre)
+                    </div>
+                    @Html.LabelFor(model => model.TglPPK, new { @class = "control-label col-md-2 col-sm-3 col-xs-12" })
+                    <div class="col-md-2 col-sm-9 col-xs-12">
+                        @Html.Label(Model.TglPPK.ToString("dd/MM/yyyy"), new { @class = "control-label" })
+                        @Html.HiddenFor(model => model.TglPPK)
+                    </div>
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(model => model.IdVehicle, new { @class = "control-label col-md-4 col-sm-3 col-xs-12" })
+                    <div class="col-md-8 col-sm-9 col-xs-12">
+                        @Html.Label(Model.VehicleNo, new { @class = "control-label" })
+                        @Html.HiddenFor(model => model.IdVehicle)
+                    </div>
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(model => model.PrioritasFrom, new { @class = "control-label col-md-4 col-sm-3 col-xs-12" })
+                    <div class="col-md-8 col-sm-9 col-xs-12">
+                        @Model.Prioritas
+                        @Html.HiddenFor(model => model.PrioritasFrom)
+                        @Html.HiddenFor(model => model.PrioritasTo)
+                    </div>
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(model => model.KetPrioritas, new { @class = "control-label col-md-4 col-sm-3 col-xs-12" })
+                    <div class="col-md-8 col-sm-9 col-xs-12">
+                        @Html.HiddenFor(model => model.KetPrioritas)
+                        @Html.Label(Model.KetPrioritas != null ? Model.KetPrioritas : " ", new { @class = "control-label" })
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group col-md-6">
+                    @Html.Label("Status GPS", new { @class = "control-label col-md-4 col-sm-3 col-xs-12" })
+                    <div class="col-md-8 col-sm-9 col-xs-12">
+
+                    </div>
+                </div>
+                <div class="form-group col-md-6">
+                    @Html.Label("Last Update", new { @class = "control-label col-md-4 col-sm-3 col-xs-12" })
+                    <div class="col-md-8 col-sm-9 col-xs-12">
+
+                    </div>
+                </div><br /><br /><br />
+                <div class="form-group col-md-6">
+                    @Html.Label("KM Actual", new { @class = "control-label col-md-4 col-sm-3 col-xs-12" })
+                    <div class="col-md-8 col-sm-9 col-xs-12">
+                        @Html.TextBoxFor(model => model.KmActual, new { @class = "form-control-numeric input-sm" })
+                    </div>
+                    @Html.Label("HM Actual", new { @class = "control-label col-md-4 col-sm-3 col-xs-12" })
+                    <div class="col-md-8 col-sm-9 col-xs-12">
+                        @Html.TextBoxFor(model => model.HmActual, new { @class = "form-control-numeric input-sm" })
+                    </div>
+                </div>
+                <div class="form-group col-md-6">
+                    @Html.Label("KM GPS", new { @class = "control-label col-md-4 col-sm-3 col-xs-12" })
+                    <div class="col-md-8 col-sm-9 col-xs-12">
+                        @if (ViewBag.MonVech == null || ViewBag.MonVech.Km == null)
+                        {
+                            <input type="text" class="form-control-numeric input-sm" readonly="readonly" />
+                        }
+                        else
+                        {
+                            <input type="text" class="form-control-numeric input-sm" readonly="readonly" value=@Math.Round(Decimal.Parse(@ViewBag.MonVech.Km.ToString().Replace(".", ",")), 2) />
+                        }
+                    </div>
+                    @Html.Label("HM GPS", new { @class = "control-label col-md-4 col-sm-3 col-xs-12" })
+                    <div class="col-md-8 col-sm-9 col-xs-12">
+                        @if (ViewBag.MonVech == null || ViewBag.MonVech.Hm == null)
+                        {
+                            <input type="text" class="form-control-numeric input-sm" readonly="readonly" />
+                        }
+                        else
+                        {
+                            <input type="text" class="form-control-numeric input-sm" readonly="readonly" value=@Math.Round(Decimal.Parse(@ViewBag.MonVech.Hm.ToString().Replace(".", ",")), 2) />
+                        }
+                    </div>
+                </div><br /><br /><br />
+                <div class="form-group"></div>
+                <div class="form-group"></div>
+                <div class="form-group"></div>
+            </div>
+            
+            <div class="form-group jenis_perbaikan">
+                <h4> Jenis Perbaikan</h4>
+                <div class="col-md-1 col-sm-9 col-xs-12">
+                    @Html.CheckBoxFor(model => model.IsTruck, new { @class = "input-sm col-md-2 chkbx disabled", @ReadOnly = "true" })
+                    @Html.Label("Truck", new { @class = "control-label col-md-10" })
+                </div>
+                <div class="col-md-2 col-sm-9 col-xs-12">
+                    @Html.Label("Permintaan Perbaikan", new { @class = "control-label col-md-12" })
+                </div>
+                <div class="col-md-3 col-sm-9 col-xs-12">
+                    @Html.TextAreaFor(model => model.KetTruck, new { @class = "form-control input-sm" })
+                </div>
+                <div class="col-md-2 col-sm-9 col-xs-12">
+                    @Html.Label("Keterangan Pekerjaan", new { @class = "control-label col-md-12" })
+                </div>
+                <div class="col-md-3 col-sm-9 col-xs-12">
+                    @Html.TextAreaFor(model => model.KetKerjaTruck, new { @class = "form-control input-sm KetKerja" })
+                </div>
+                <br /><br /><br />
+                <div class="col-md-1 col-sm-9 col-xs-12">
+                    @Html.CheckBoxFor(model => model.IsAc, new { @class = "input-sm col-md-2 chkbx disabled", @ReadOnly = "true" })
+                    @Html.Label("AC", new { @class = "control-label col-md-10" })
+                </div>
+                <div class="col-md-2 col-sm-9 col-xs-12">
+                    @Html.Label("Permintaan Perbaikan", new { @class = "control-label col-md-12" })
+                </div>
+                <div class="col-md-3 col-sm-9 col-xs-12">
+                    @Html.TextAreaFor(model => model.KetAc, new { @class = "form-control input-sm" })
+                </div>
+                <div class="col-md-2 col-sm-9 col-xs-12">
+                    @Html.Label("Keterangan Pekerjaan", new { @class = "control-label col-md-12" })
+                </div>
+                <div class="col-md-3 col-sm-9 col-xs-12">
+                    @Html.TextAreaFor(model => model.KetKerjaAc, new { @class = "form-control input-sm KetKerja" })
+                </div>
+                <br /><br /><br />
+                <div class="col-md-1 col-sm-9 col-xs-12">
+                    @Html.CheckBoxFor(model => model.IsBan, new { @class = "input-sm col-md-2 chkbx disabled", @ReadOnly = "true" })
+                    @Html.Label("Ban", new { @class = "control-label col-md-10" })
+                </div>
+                <div class="col-md-2 col-sm-9 col-xs-12">
+                    @Html.Label("Permintaan Perbaikan", new { @class = "control-label col-md-12" })
+                </div>
+                <div class="col-md-3 col-sm-9 col-xs-12">
+                    @Html.TextAreaFor(model => model.KetBan, new { @class = "form-control input-sm" })
+                </div>
+                <div class="col-md-2 col-sm-9 col-xs-12">
+                    @Html.Label("Keterangan Pekerjaan", new { @class = "control-label col-md-12" })
+                </div>
+                <div class="col-md-3 col-sm-9 col-xs-12">
+                    @Html.TextAreaFor(model => model.KetKerjaBan, new { @class = "form-control input-sm KetKerja" })
+                </div>
+                <br /><br /><br />
+                <div class="col-md-1 col-sm-9 col-xs-12">
+                    @Html.CheckBoxFor(model => model.IsBox, new { @class = "input-sm col-md-2 chkbx disabled", @ReadOnly = "true" })
+                    @Html.Label("Box", new { @class = "control-label col-md-10" })
+                </div>
+                <div class="col-md-2 col-sm-9 col-xs-12">
+                    @Html.Label("Permintaan Perbaikan", new { @class = "control-label col-md-12" })
+                </div>
+                <div class="col-md-3 col-sm-9 col-xs-12">
+                    @Html.TextAreaFor(model => model.KetBox, new { @class = "form-control input-sm" })
+                </div>
+                <div class="col-md-2 col-sm-9 col-xs-12">
+                    @Html.Label("Keterangan Pekerjaan", new { @class = "control-label col-md-12" })
+                </div>
+                <div class="col-md-3 col-sm-9 col-xs-12">
+                    @Html.TextAreaFor(model => model.KetKerjaBox, new { @class = "form-control input-sm KetKerja" })
+                </div>
+                <br /><br /><br />
+                <div class="col-md-1 col-sm-9 col-xs-12">
+                    @Html.CheckBoxFor(model => model.IsGps, new { @class = "input-sm col-md-2 chkbx disabled", @ReadOnly = "true" })
+                    @Html.Label("GPS", new { @class = "control-label col-md-10" })
+                </div>
+                <div class="col-md-2 col-sm-9 col-xs-12">
+                    @Html.Label("Permintaan Perbaikan", new { @class = "control-label col-md-12" })
+                </div>
+                <div class="col-md-3 col-sm-9 col-xs-12">
+                    @Html.TextAreaFor(model => model.KetGps, new { @class = "form-control input-sm" })
+                </div>
+                <div class="col-md-2 col-sm-9 col-xs-12">
+                    @Html.Label("Keterangan Pekerjaan", new { @class = "control-label col-md-12" })
+                </div>
+                <div class="col-md-3 col-sm-9 col-xs-12">
+                    @Html.TextAreaFor(model => model.KetKerjaGps, new { @class = "form-control input-sm KetKerja" })
+                </div>
+                <br /><br /><br />
+            </div>
+
+            <div class="ln_solid"></div>
+            <div class="form-group">
+                <div class="col-md-9 col-sm-9 col-xs-12 col-md-offset-2">
+                    <button type="submit" class="keklik btn btn-primary hide">Submit</button>
+                    <label class="btn btn-primary tombol_ppk" onclick="tadi_diklik('SPK')">SPK</label>
+                    <label class="btn btn-success" onclick="tadi_diklik('PPK-IN')">Save</label>
+                    <a href="@backLink" class="btn btn-link">Cancel</a>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+@section scripts{
+    <script type="text/javascript">
+        function tadi_diklik(yang_mana) {
+            $('#Status').val(yang_mana)
+            if (yang_mana == "PPK") {
+                $(".tombol_ppk").addClass("hide")
+                $(".tombol_ppk_in").removeClass("hide")
+                $(".keklik").removeClass("hide")
+            }
+            else {
+                setTimeout(function () {
+                    $(".keklik").click();
+                }, 1);
+            }
+        }
+
+        $(document).ready(function () {
+            $(":checkbox").bind("click", false);
+            if (!$("#IsTruck").is(':checked')){
+                matiin("#KetKerjaTruck");
+                matiin("#KetTruck");
+            }
+            if (!$("#IsAc").is(':checked')){
+                matiin("#KetKerjaAc");
+                matiin("#KetAc");
+            }
+            if (!$("#IsBan").is(':checked')){
+                matiin("#KetKerjaBan");
+                matiin("#KetBan");
+            }
+            if (!$("#IsBox").is(':checked')){
+                matiin("#KetKerjaBox");
+                matiin("#KetBox");
+            }
+            if (!$("#IsGps").is(':checked')){
+                matiin("#KetKerjaGps");
+                matiin("#KetGps");
+            }
+        });
+        function matiin(yang_mana) {
+            $(yang_mana).prop("disabled", "disabled");
+        }
+</script>
+}

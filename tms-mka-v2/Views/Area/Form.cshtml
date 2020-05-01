@@ -1,0 +1,271 @@
+﻿@using tms_mka_v2.Models;
+
+@model tms_mka_v2.Models.MasterArea
+@{
+    ViewBag.Title = "Form";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    string currentController = (string)ViewContext.RouteData.Values["controller"];
+    string currentAction = (string)ViewContext.RouteData.Values["action"];
+    string backLink = Url.Action("Index");
+    if (currentAction == "Add")
+    {
+        ViewBag.Title = "Tambah Master Area";
+    }
+    else
+    {
+        ViewBag.Title = ViewBag.name + " | Edit";
+    }
+}
+<div class="portlet light">
+    <div class="portlet-title">
+        <div class="caption">
+            <span class="caption-subject font-dark sbold uppercase">@ViewBag.Title</span>
+        </div>
+    </div>
+    <div class="portlet-body form">
+        @using (@Html.BeginForm(currentAction, currentController, FormMethod.Post, new { @class = "form-horizontal form-label-left input_mask", @id = "formsubmit" }))
+        {
+            @Html.ValidationSummary(true)
+            @Html.HiddenFor(model => model.Id)
+            <div class="form-group">
+                @Html.LabelFor(model => model.Kode, new { @class = "control-label col-md-2 col-sm-3 col-xs-12" })
+                <div class="col-md-6 col-sm-9 col-xs-12">
+                    @Html.TextBoxFor(model => model.Kode, new { @class = "form-control input-sm", @readonly = "true" })
+                    @Html.ValidationMessageFor(model => model.Kode)
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.Nama, new { @class = "control-label col-md-2 col-sm-3 col-xs-12" })
+                <div class="col-md-6 col-sm-9 col-xs-12">
+                    @Html.TextBoxFor(model => model.Nama, new { @class = "form-control input-sm focus" })
+                    @Html.ValidationMessageFor(model => model.Nama)
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-md-8">
+                    <div id="gridLocation"></div>
+                    @Html.HiddenFor(model => model.strArea)
+                </div>
+            </div>
+
+            <div class="ln_solid"></div>
+            <div class="form-group">
+                <div class="col-md-8">
+                    <button type="submit" class="btn btn-success">Submit</button>
+                    <a href="@backLink" class="btn btn-link">Cancel</a>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+@section scripts{
+    <script type="text/javascript">
+    var dsGrid = [];
+    @foreach(LocationArea item in Model.listArea)
+        {
+        <text>
+        dsGrid.push({
+            id: 0,
+            idLoc: parseInt('@item.idLoc'),
+            code: '@item.code',
+            type: '@item.type',
+            parentLoc: '@item.parentLoc',
+            name: '@item.name'
+    })
+    </text>
+        }
+        console.log(dsGrid)
+    @*var dsLocation = new kendo.data.DataSource({
+            transport: {
+                read: {
+                    url: '@Url.Action("GetLocation")',
+                    dataType: "json"
+                },
+            },
+        });*@
+    var dsLocation = new kendo.data.DataSource({
+        transport: {
+            read: {
+                url: '@Url.Action("BindingCombo","Location")',
+                dataType: "json"
+            },
+        },
+        schema: {
+            total: "total",
+            data: "data",
+            model: {
+                fields: {
+                    "Id": { type: "number" },
+                    "Code": { type: "string" },
+                    "Type": { type: "string" },
+                    "Nama": { type: "string" },
+                    "strPArent": { type: "string" }
+                }
+            }
+        },
+        //pageSize: 5,
+        serverFiltering: true,
+    });
+
+    $(document).ready(function () {
+        $("#gridLocation").kendoGrid({
+            dataSource: {
+                data: dsGrid,
+                schema: {
+                    model: {
+                        id: "id",
+                        fields: {
+                            idLoc: { type: "number" },
+                            code: { type: "string" },
+                            type: { type: "string" },
+                            parentLoc: { type: "string" },
+                            name: {
+                                type: "string",
+                                validation: {
+                                    required: { message: "Nama harus diisi." },
+                                    comboreq: function (input) {
+                                        if ($(input).data("kendoComboBox")) {
+                                            if ($(input).data("kendoComboBox").selectedIndex == -1) {
+                                                return false;
+                                            }
+                                        }
+
+                                        return true;
+                                    },
+                                }
+                            }
+                        }
+                    }
+                },
+            },
+            scrollable : false,
+            editable: { mode: "inline", confirmation: "Anda yakin menghapus data?" },
+            toolbar: [{ name: "create", text: "Tambah" }],
+            columns: [
+                {
+                    command: [
+                        {
+                            name: "edit",
+                            text: "Edit",
+                            imageClass: "glyphicon glyphicon-edit",
+                            template: '<a class="k-button-icon #=className#" #=attr# title="edit" href="\\#"><span class="#=imageClass#"></span></a>'
+                        },
+                        {
+                            name: "destroy",
+                            text: "Hapus",
+                            imageClass: "glyphicon glyphicon-remove",
+                            template: '<a class="k-button-icon #=className#" #=attr# href="\\#" title="#=text#"><span class="#=imageClass#"></span></a>'
+                        }
+                    ],
+                    width: 90
+                },
+                {
+                    field: "name",
+                    title: "Name",
+                    editor: kodeEditor,
+                },
+                {
+                    field: "code",
+                    title: "Kode",
+                    editor: ReadOnlyEditorTxt,
+                },
+                {
+                    field: "type",
+                    title: "Type",
+                    editor: ReadOnlyEditorTxt
+                },
+                {
+                    field: "parentLoc",
+                    title: "Parent",
+                    editor: ReadOnlyEditorTxt
+                }
+            ],
+            edit: function (e) {
+                var detailCell = e.container.find("td:first");
+                detailCell.html('');
+                var commandCell = e.container.find("td:nth-child(1)");
+                commandCell.html('<a class="k-button-icon k-grid-update form-inline" href="\\#" title="Simpan"><span class="glyphicon glyphicon-floppy-saved"></span></a> <a class="k-button-icon k-grid-cancel form-inline" href="\\#" title="Batal"><span class="glyphicon glyphicon-remove"></span></a>');
+                var commandGroupCell = e.container.find("td:nth-child(0)");
+                commandGroupCell.html('');
+            },
+        }).data("kendoGrid");
+    })
+
+    function ReadOnlyEditorTxt(container, options) {
+        $('<input class="k-input k-textbox" name="' + options.field + '" data-value-field="Value" data-bind="value:' + options.field + '"/>')
+                        .appendTo(container)
+                        .attr("readonly", "readonly");
+    }
+
+    function kodeEditor(container, options) {
+        $('<input required data-comboreq-msg="Nama harus diisi." data-required-msg="Nama harus diisi." data-text-field="Nama" data-value-field="Nama" data-bind="value:' + options.field + '" name="' + options.field + '"/>')
+               .appendTo(container)
+               .kendoComboBox({
+                   dataSource: {
+                       //type: "odata",
+                       serverFiltering: true,
+                       transport: {
+                           read: {
+                               url: '@Url.Action("BindingCombo", "Location")',
+                               dataType: "json"
+                           }
+                       }
+                   },
+                   autoBind: false,
+                   dataTextField: "Nama",
+                   dataValueField: "Id",
+                   filter: "contains",
+                   minLength: 3,
+                   suggest: true,
+                   change: function (e) {
+                       var grid = $("#gridLocation").data("kendoGrid"),
+                           model = grid.dataItem(this.element.closest("tr"));
+                       var val = this.text();
+                       $.ajax({
+                           url: '@Url.Action("GetLocationByName", "Location")?name=' + val,
+                           type: 'GET',
+                           dataType: 'Json',
+                           cache: false,
+                           success: function (obj) {
+                               console.log()
+                               if (obj != null) {
+                                   model.set("idLoc", obj.Id);
+                                   model.set("type", obj.Type);
+                                   if (obj.LocationParent != null) {
+                                       model.set("parentLoc", obj.LocationParent.Nama);
+                                   } else {
+                                       model.set("parentLoc", "");
+                                   }
+                                   model.set("code", obj.Code);
+                               }
+                               else {
+                                   model.set("idLoc", "");
+                                   model.set("type", "");
+                                   model.set("parentLoc", "");
+                                   model.set("code", "");
+                               }
+                           }
+                       })
+                       //if (val != "") {
+                           
+                       //}
+                       //else {
+                       //    model.set("idLoc", "");
+                       //    model.set("type", "");
+                       //    model.set("parentLoc", "");
+                       //    model.set("name", "");
+                       //}
+                   },
+               });
+        $("<span class='k-invalid-msg' data-for='" + options.field + "'></span>").appendTo(container);
+    }
+
+    $('#formsubmit').submit(function (e) {
+        var grid = $('#gridLocation').data('kendoGrid');
+        grid.saveRow();
+        var data = grid.dataSource.data();
+        $('#strArea').val(JSON.stringify(data));
+    })
+    </script>
+}

@@ -1,0 +1,200 @@
+﻿@model tms_mka_v2.Models.Customer
+
+@{
+    string currentController = (string)ViewContext.RouteData.Values["controller"];
+    string currentAction = (string)ViewContext.RouteData.Values["action"];
+    ViewBag.SubTitle = "Customer Supplier List";
+}
+
+<div class="row ">
+    <div class="col-md-6">
+        <div class="btn-group">
+            <div class="caption">
+                <h2>@ViewBag.SubTitle</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="btn-group pull-right">
+            <span class="btn green" id="btnAdd" title="Customer Supplier" data-toggle="modal" data-target="#modalFormSupplier" onclick="ShowSupplierPopup()">Add New Supplier</span>
+        </div>
+    </div>
+</div>
+<br />
+@using (Html.BeginForm("UpdateCustSupplier", currentController))
+{
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(model => model.Id)
+    <div id="GridCustSupp"></div>
+}
+<div id="modalFormSupplier" class="modal fade bs-modal-full" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-full">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                <h4 class="modal-title">Supplier List</h4>
+            </div>
+            <div class="modal-body">
+                <form id="formSupplier" class="form-horizontal">
+                    @Html.Hidden("CustomerSupplierId")
+                    @Html.Hidden("Condition")
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                @Html.Label("Kode Supplier", new { @class = "control-label col-md-3" })
+                                <div class="col-md-7">
+                                    <input id="KodeSupplier" name="KodeSupplier" class="form-control input-sm" disabled="disabled" />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-3">Zona<span style="color:red;"></span></label>
+                                @*@Html.Label("Zona", new { @class = "control-label col-md-3" })*@
+                                <div class="col-md-7">
+                                    <input type="text" id="ZonaSupplier" name="ZonaSupplier" pattern="[a-zA-Z0-9\s]+" class="k-textbox" validationmessage="Format Zona tidak valid." />
+                                    <span class="k-invalid-msg" data-for="ZonaSupplier"></span>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-3">Nama Supplier<span style="color:red;">*</span></label>
+                                @*@Html.Label("Nama Supplier", new { @class = "control-label col-md-3" })*@
+                                <div class="col-md-7">
+                                    <input id="NamaSupplier" name="NamaSupplier" class="k-textbox" pattern="[a-zA-Z0-9,.\s]+" required data-required-msg="Nama harus diisi." validationmessage="Format Nama tidak valid." />
+                                    <span class="k-invalid-msg" data-for="NamaSupplier"></span>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-3">Alamat<span style="color:red;">*</span></label>
+                                @*@Html.Label("Alamat", new { @class = "control-label col-md-3" })*@
+                                <div class="col-md-7">
+                                    <textarea type="text" rows="9" id="AlamatSupplier" name="AlamatSupplier" class="k-textbox" pattern="[a-zA-Z0-9,./\\n\s]+" required data-required-msg="Alamat harus diisi." validationmessage="Format Alamat tidak valid."></textarea>
+                                    <span class="k-invalid-msg" data-for="AlamatSupplier"></span>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                @Html.Label("Kelurahan/desa", new { @class = "control-label col-md-3" })
+                                <div class="col-md-7">
+                                    <input id="KelurahanSupplier" name="KelurahanSupplier" />
+                                    <span class="k-invalid-msg" data-for="KelurahanSupplier"></span>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                @Html.Label("Kecamatan", new { @class = "control-label col-md-3" })
+                                <div class="col-md-7">
+                                    <input id="KecamatanSupplier" name="KecamatanSupplier" />
+                                    <span class="k-invalid-msg" data-for="KecamatanSupplier"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                @Html.Label("Kabupaten/Kota", new { @class = "control-label col-md-3" })
+                                <div class="col-md-7">
+                                    <input id="KotaSupplier" name="KotaSupplier" />
+                                    <span class="k-invalid-msg" data-for="KotaSupplier"></span>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                @Html.Label("Provinsi", new { @class = "control-label col-md-3" })
+                                <div class="col-md-7">
+                                    <input id="ProvinsiSupplier" name="ProvinsiSupplier"/>
+                                    <span class="k-invalid-msg" data-for="ProvinsiSupplier"></span>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-3">Longitude<span style="color:red;"></span></label>
+                                @*@Html.Label("Longitude", new { @class = "control-label col-md-3" })*@
+                                <div class="col-md-7">
+                                    <input id="LongSupplier" name="LongSupplier" class="form-control-numeric-latlong"/>
+                                    <span id="valSupplierLong" class="k-invalid-msg" data-for="LongSupplier"></span>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-3">Latitude<span style="color:red;"></span></label>
+                                @*@Html.Label("Latitude", new { @class = "control-label col-md-3" })*@
+                                <div class="col-md-7">
+                                    <input id="LatSupplier" name="LatSupplier" class="form-control-numeric-latlong"/>
+                                    <span id="valSupplierLat" class="k-invalid-msg" data-for="LatSupplier"></span>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-3">Radius<span style="color:red;"></span></label>
+                                @*@Html.Label("Radius", new { @class = "control-label col-md-3" })*@
+                                <div class="col-md-7">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <input id="RadiusSupplier" name="RadiusSupplier" class="form-control-numeric-ns"/>
+                                            <span class="k-invalid-msg" data-for="RadiusSupplier"></span>
+                                        </div>
+                                        <div class="col-md-2" style="padding:0px">
+                                            <label class="control-label">Meter</label>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <button type="button" class="btn btn-sm green" id="btnviewmapSupplier" title="View Map" data-toggle="modal" data-target="#modalviewmapSupplier" onclick="getMapByLatLong($('#LongSupplier').val(), $('#LatSupplier').val(), $('#RadiusSupplier').val(), cboKecSupplier.text(), document.getElementById('viewmapSupplier'), $('#modalviewmapSupplier'))">Map</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-3">Telephone<span style="color:red;"></span></label>
+                                @*@Html.Label("Telephone", new { @class = "control-label col-md-3" })*@
+                                <div class="col-md-2">
+                                    <input id="KodeTlpSupplier" name="KodeTlpSupplier" class="k-textbox form-control-kodearea"/>
+                                    <span class="k-invalid-msg" data-for="KodeTlpSupplier"></span>
+                                </div>
+                                <div class="col-md-5">
+                                    <input id="TlpSupplier" name="TlpSupplier" class="k-textbox form-control-tel"/>
+                                    <span class="k-invalid-msg" data-for="TlpSupplier"></span>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-3">PIC<span style="color:red;"></span></label>
+                                @*@Html.Label("PIC", new { @class = "control-label col-md-3" })*@
+                                <div class="col-md-7">
+                                    <input id="PicSupplier" name="PicSupplier" class="k-textbox"/>
+                                    <span class="k-invalid-msg" data-for="PicSupplier"></span>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-3">Fax<span style="color:red;"></span></label>
+                                @*@Html.Label("Fax", new { @class = "control-label col-md-3" })*@
+                                <div class="col-md-2">
+                                    <input id="KodeFaxSupplier" name="KodeFaxSupplier" class="k-textbox form-control-kodearea"/>
+                                    <span class="k-invalid-msg" data-for="KodeFaxSupplier"></span>
+                                </div>
+                                <div class="col-md-5">
+                                    <input id="FaxSupplier" name="FaxSupplier" class="k-textbox form-control-tel"/>
+                                    <span class="k-invalid-msg" data-for="FaxSupplier"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn green" onclick="SaveSupplier($('#Condition').val());">Submit</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="modalviewmapSupplier" class="modal fade bs-modal-lg" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                <h4 class="modal-title">View Map</h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-horizontal">
+                    <div class="form-group">
+                        <div class="col-md-12">
+                            <div id="viewmapSupplier" style="height:400px; width:800px; margin: auto"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn green" onclick="addMapLatLongSupplier()">Submit</button>
+            </div>
+        </div>
+    </div>
+</div>

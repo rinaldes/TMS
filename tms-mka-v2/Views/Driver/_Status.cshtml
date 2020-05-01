@@ -1,0 +1,12 @@
+﻿@using tms_mka_v2.Models
+@model tms_mka_v2.Models.Driver
+@{
+    string currentController = (string)ViewContext.RouteData.Values["controller"];
+    string currentAction = (string)ViewContext.RouteData.Values["action"];
+}
+<div class="form-group">
+    <label class="control-label">History Status</label>
+</div>
+<div class="form-group">
+    <div id="gridStat"></div>
+</div>

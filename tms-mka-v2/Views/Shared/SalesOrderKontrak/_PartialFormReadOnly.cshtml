@@ -1,0 +1,92 @@
+﻿@using tms_mka_v2.Models;
+@model tms_mka_v2.Models.AdminUangJalan
+
+<div id="PartialSo" class="row">
+    @Html.HiddenFor(model => model.ModelKontrak.JenisTruckId)
+    @Html.HiddenFor(model => model.ModelKontrak.JumlahTruck)
+    @Html.HiddenFor(model => model.ModelKontrak.Rit)
+    @Html.HiddenFor(model => model.ModelKontrak.SalesOrderId)
+    @Html.HiddenFor(model => model.ModelKontrak.CustomerId)
+    <div class="col-md-6">
+        <div class="form-group">
+            <label class="control-label col-md-3"> NO SO</label>
+            @if (ViewBag.NoSo == null)
+            {
+                <label class="control-label col-md-9">: @string.Join(", ", Model.ModelKontrak.ListModelSOKontrak.Select(d => d.NoSo).ToList())</label>
+            }
+            else
+            {
+                <label class="control-label col-md-9">: @ViewBag.NoSo</label>
+            }
+        </div>
+        <div class="form-group">
+            <label class="control-label col-md-3"> Kode Customer</label>
+            <label class="control-label col-md-9">: @Model.ModelKontrak.KodeCustomer</label>
+            @Html.HiddenFor(model => model.ModelKontrak.KodeCustomer)
+        </div>
+        <div class="form-group">
+            <label class="control-label col-md-3"> Kode Nama</label>
+            <label class="control-label col-md-9">: @Model.ModelKontrak.KodeNama</label>
+        </div>
+        <div class="form-group">
+            <label class="control-label col-md-3"> Nama Customer</label>
+            <label class="control-label col-md-9">: @Model.ModelKontrak.NamaCustomer</label>
+            @Html.HiddenFor(model => model.ModelKontrak.NamaCustomer)
+        </div>
+        <div class="form-group">
+            <label class="control-label col-md-3"> Status Kredit</label>
+            <label class="control-label col-md-9">: @Model.ModelKontrak.StatusKredit</label>
+            @Html.HiddenFor(model => model.ModelKontrak.StatusKredit)
+        </div>
+        <div class="form-group">
+            <label class="control-label col-md-3"> Jenis Barang</label>
+            <label class="control-label col-md-9">: @Model.ModelKontrak.StrProduct</label>
+            @Html.HiddenFor(model => model.ModelKontrak.StrProduct)
+        </div>
+        <div class="form-group">
+            <label class="control-label col-md-3"> Suhu</label>
+            <label class="control-label col-md-9">: @Model.ModelKontrak.Suhu <sup>o</sup>C</label>
+            @Html.HiddenFor(model => model.ModelKontrak.Suhu)
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="form-group">
+            <label class="control-label col-md-3">Periode</label>
+            @Html.TextBoxFor(model => model.ModelKontrak.PeriodStr, new { @class = "form-control input-sm hidden" })
+            @Html.ValidationMessageFor(model => model.ModelKontrak.PeriodStr)
+
+            @Html.TextBoxFor(model => model.ModelKontrak.PeriodEnd, new { @class = "form-control input-sm hidden" })
+            @Html.ValidationMessageFor(model => model.ModelKontrak.PeriodEnd)
+            <div class="col-md-9 col-sm-9 col-xs-12">
+                <label class="control-label col-md-4">: @Model.ModelKontrak.PeriodStr.Value.ToShortDateString()</label>
+                <label class="control-label col-md-2">s.d.</label>
+                <label class="control-label col-md-4">@Model.ModelKontrak.PeriodEnd.Value.ToShortDateString()</label>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="control-label col-md-3">Jam Muat</label>
+            <div class="col-md-3 col-sm-9 col-xs-12">
+                <label class="control-label col-md-9">: @Model.ModelKontrak.JamMuat</label>
+                @Html.HiddenFor(model => model.ModelKontrak.JamMuat)
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="control-label col-md-3">Truk</label>
+            <div class="col-md-3 col-sm-9 col-xs-12">
+                <label class="control-label col-md-9">: @Model.ModelKontrak.ListModelSOKontrak.FirstOrDefault().Nopol</label>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="control-label col-md-3">Jenis Truk</label>
+            <div class="col-md-3 col-sm-9 col-xs-12">
+                <label class="control-label col-md-9">: @Model.ModelKontrak.ListModelSOKontrak.FirstOrDefault().NamaJenisTruck</label>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="control-label col-md-3"> Driver</label>
+            <div class="col-md-9 col-sm-9 col-xs-12">
+                <label class="control-label col-md-9">: @Model.NamaDriver1</label>
+            </div>
+        </div>
+    </div>
+</div>

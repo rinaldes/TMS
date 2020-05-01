@@ -1,0 +1,268 @@
+﻿@using tms_mka_v2.Models;
+@model tms_mka_v2.Models.Removal
+@{
+    int idxRute = Model.ModelListTambahanRute.Count();
+    int idxLain = Model.ModelListTambahanLain.Count();
+    int idxPotongan = Model.ModelListPotonganLain.Count();
+}
+<div class="row">
+    <div class="col-md-4">
+        <div class="form-group">
+            <div class="col-md-10">
+                @Html.HiddenFor(model => model.ModelListBorongan[0].IsDelete)
+                @Html.TextBoxFor(model => model.ModelListBorongan[0].IdDataBorongan)
+                @Html.ValidationMessageFor(model => model.ModelListBorongan[0].IdDataBorongan)
+            </div>
+        </div>
+        <div id="CountainerBorongan">
+            @for (int i = 0; i <= Model.ModelListBorongan.Count() - 1; i++)
+            {
+                if (i == 0)
+                {
+
+                }
+                else
+                {
+                    var _idbor = "Borongan" + i.ToString();
+                    <div id="@_idbor" class="form-group">
+                        <div class="col-md-10">
+                            @Html.HiddenFor(model => model.ModelListBorongan[i].IsDelete)
+                            @Html.TextBoxFor(model => model.ModelListBorongan[i].IdDataBorongan, new { @class = "IdBorongan" + i , @readonly = true})
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+        <div class="form-group">
+            <label class="control-label col-md-5"> Harga Borongan</label>
+            <div class="col-md-7">
+                @Html.TextBoxFor(model => model.NilaiBorongan, new { @class = "form-control-numeric-idr", @readonly = true })
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="control-label col-md-5"> Kawalan</label>
+            <div class="col-md-7">
+                @Html.TextBoxFor(model => model.Kawalan, new { @class = "form-control-numeric-idr", @readonly = true })
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="control-label col-md-5"> Timbangan</label>
+            <div class="col-md-7">
+                @Html.TextBoxFor(model => model.Timbangan, new { @class = "form-control-numeric-idr", @readonly = true })
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="control-label col-md-5"> Karantina</label>
+            <div class="col-md-7">
+                @Html.TextBoxFor(model => model.Karantina, new { @class = "form-control-numeric-idr", @readonly = true })
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="control-label col-md-5"> SPSI</label>
+            <div class="col-md-7">
+                @Html.TextBoxFor(model => model.SPSI, new { @class = "form-control-numeric-idr", @readonly = true })
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="control-label col-md-5"> Multidrop</label>
+            <div class="col-md-7">
+                @Html.TextBoxFor(model => model.Multidrop, new { @class = "form-control-numeric-idr", @readonly = true })
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="control-label col-md-5"> Tambahan Rute muat</label>
+        </div>
+        <div id="tambahanRute" class="form-group">
+            @for (int i = 0; i <= Model.ModelListTambahanRute.Count() - 1; i++)
+            {
+                var cls = "tambahanRute" + i;
+                <div id="@cls" class="form-group">
+                    <div class="col-md-5">
+                        @Html.HiddenFor(model => model.ModelListTambahanRute[i].IsDelete)
+                        @Html.TextBoxFor(model => model.ModelListTambahanRute[i].IdDataBorongan, new { @class = "IdDataBorongan" + i , @readonly = true})
+                    </div>
+                    <div class="col-md-5">
+                        @Html.TextBoxFor(model => model.ModelListTambahanRute[i].value, new { @class = "valRute" + i, @readonly = true })
+                    </div>
+                </div>
+            }
+        </div>
+        <div class="form-group">
+            <label class="control-label col-md-5"> Tambahan Rute lain</label>
+        </div>
+        <div id="tambahanLain" class="form-group">
+            @for (int i = 0; i <= Model.ModelListTambahanLain.Count() - 1; i++)
+            {
+                var cls = "tambahanLain" + i;
+                <div id="@cls" class="form-group">
+                    <div class="col-md-5">
+                        @Html.HiddenFor(model => model.ModelListTambahanLain[i].IsDelete)
+                        @Html.TextBoxFor(model => model.ModelListTambahanLain[i].Keterangan, new { @class = "form-control input-sm" , @readonly = true})
+                    </div>
+                    <div class="col-md-5">
+                        @Html.TextBoxFor(model => model.ModelListTambahanLain[i].Value, new { @class = "valLain" + i, @readonly = true });
+                    </div>
+                </div>
+            }
+        </div>
+        <hr />
+        <div class="form-group">
+            <label class="control-label col-md-5"> Total Borongan</label>
+            <div class="col-md-7">
+                @Html.TextBoxFor(model => model.TotalBorongan, new { @class = "form-control-numeric-idr", @readonly = true })
+            </div>
+        </div>
+        <br />
+        <div class="form-group">
+            <div class="col-md-12">
+                <label class="control-label"> Keterangan Admin</label>
+                @Html.TextAreaFor(model => model.KeteranganAdmin, new { @class = "form-control input-sm", @readonly = true })
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="form-group">
+            <label class="control-label col-md-4"> Driver 1</label>
+            <div class="col-md-6">
+                @Html.HiddenFor(model => model.IdDriver1)
+                @Html.TextBoxFor(model => model.NamaDriver1, new { @class = "form-control input-sm", @readonly = true })
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="control-label col-md-4"> Driver 2</label>
+            <div class="col-md-6">
+                @Html.HiddenFor(model => model.IdDriver2)
+                @Html.TextBoxFor(model => model.NamaDriver2, new { @class = "form-control input-sm", @readonly = true })
+            </div>
+        </div>
+        <br />
+        <div class="form-group">
+            <label class="control-label col-md-4"> Total Kasbon</label>
+            <div class="col-md-6">
+                @Html.TextBoxFor(model => model.TotalKasbon, new { @class = "form-control-numeric-idr", @readonly = true })
+            </div>
+            <div class="col-md-1">
+                <button type="button" class="btn btn-sm">Detail</button>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="control-label col-md-4"> &nbsp;&nbsp;&nbsp;&nbsp; Kasbon Driver 1</label>
+            <div class="col-md-6">
+                @Html.TextBoxFor(model => model.KasbonDriver1, new { @class = "form-control-numeric-idr", @readonly = true })
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="control-label col-md-4"> &nbsp;&nbsp;&nbsp;&nbsp; Kasbon Driver 2</label>
+            <div class="col-md-6">
+                @Html.TextBoxFor(model => model.KasbonDriver2, new { @class = "form-control-numeric-idr", @readonly = true })
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="control-label col-md-4"> Total Klaim</label>
+            <div class="col-md-6">
+                @Html.TextBoxFor(model => model.TotalKlaim, new { @class = "form-control-numeric-idr", @readonly = true })
+            </div>
+            <div class="col-md-1">
+                <button type="button" class="btn btn-sm">Detail</button>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="control-label col-md-4"> &nbsp;&nbsp;&nbsp;&nbsp; Klaim Driver 1</label>
+            <div class="col-md-6">
+                @Html.TextBoxFor(model => model.KlaimDriver1, new { @class = "form-control-numeric-idr", @readonly = true })
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="control-label col-md-4"> &nbsp;&nbsp;&nbsp;&nbsp; Klaim Driver 2</label>
+            <div class="col-md-6">
+                @Html.TextBoxFor(model => model.KlaimDriver2, new { @class = "form-control-numeric-idr", @readonly = true })
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="control-label col-md-4"> Potongan Lain Driver 1</label>
+        </div>
+        <div id="potonganDriver1" class="form-group">
+            @for (int i = 0; i <= Model.ModelListPotonganLain.Count() - 1; i++)
+            {
+                if (Model.ModelListPotonganLain[i].TypeDriver == 1)
+                {
+                    var cls = "potonganLain1" + i;
+                    <div id="@cls" class="form-group">
+                        <div class="col-md-4">
+                            @Html.HiddenFor(model => model.ModelListPotonganLain[i].IsDelete)
+                            @Html.HiddenFor(model => model.ModelListPotonganLain[i].TypeDriver)
+                            @Html.TextBoxFor(model => model.ModelListPotonganLain[i].Keterangan, new { @class = "form-control input-sm", @readonly = true })
+                        </div>
+                        <div class="col-md-6">
+                            @Html.TextBoxFor(model => model.ModelListPotonganLain[i].Value, new { @class = "valPotonganDriver1" + i, @readonly = true })
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+        <div class="form-group">
+            <label class="control-label col-md-4"> Potongan Lain Driver 2</label>
+        </div>
+        <div id="potonganDriver2" class="form-group">
+            @for (int i = 0; i <= Model.ModelListPotonganLain.Count() - 1; i++)
+            {
+                if (Model.ModelListPotonganLain[i].TypeDriver == 2)
+                {
+                    var cls = "potonganLain2" + i;
+                    <div id="@cls" class="form-group">
+                        <div class="col-md-4">
+                            @Html.HiddenFor(model => model.ModelListPotonganLain[i].IsDelete)
+                            @Html.HiddenFor(model => model.ModelListPotonganLain[i].TypeDriver)
+                            @Html.TextBoxFor(model => model.ModelListPotonganLain[i].Keterangan, new { @class = "form-control input-sm", @readonly = true })
+                        </div>
+                        <div class="col-md-6">
+                            @Html.TextBoxFor(model => model.ModelListPotonganLain[i].Value, new { @class = "valPotonganDriver2" + i, @readonly = true })
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+        <hr />
+        <div class="form-group">
+            <label class="control-label col-md-4"> Total</label>
+            <div class="col-md-6">
+                @Html.TextBoxFor(model => model.TotalPotonganDriver, new { @class = "form-control-numeric-idr", @readonly = true })
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="form-group">
+            <div class="col-md-12">
+                <label>Voucher Solar</label>
+                @Html.HiddenFor(model => model.StrSolar)
+                <div id="gridSolar"></div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-md-12">
+                <label>Voucher Kapal</label>
+                @Html.HiddenFor(model => model.StrKapal)
+                <div id="gridKapal"></div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-md-12">
+                <label>Uang</label>
+                @Html.HiddenFor(model => model.StrUang)
+                <div id="gridUang"></div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-md-12">
+                <label class="control-label col-md-4"> Total Alokasi</label>
+                <div class="col-md-8">
+                    @Html.TextBoxFor(model => model.TotalAlokasi, new { @class = "form-control-numeric-idr", @readonly = true })
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+
+
+</script>

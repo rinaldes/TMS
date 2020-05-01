@@ -1,0 +1,346 @@
+﻿@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "Calendar View";
+    string currentController = (string)ViewContext.RouteData.Values["controller"];
+    string currentAction = "Index";
+}
+@if (User.HasMenuAccess("Calendar View"))
+{
+    <div class="portlet light ">
+        <div class="portlet-title">
+            <div class="caption">
+                <span class="caption-subject font-dark sbold uppercase">@ViewBag.Title</span>
+            </div>
+        </div>
+        <div class="portlet-body form">
+            @*Filter*@
+            <div class="row">
+                <div class="col-md-11">
+                    <div class="col-md-3"><div class="form-group"><label class="control-label col-md-4">From :</label><div class="col-md-8"><input id="TanggalFrom" name="TanggalFrom" /></div></div></div>
+                    <div class="col-md-3"><div class="form-group"><label class="control-label col-md-4">To :</label><div class="col-md-8"><input id="TanggalTo" name="TanggalTo" /></div></div></div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label class="control-label col-md-3">Type :</label><div class="col-md-7"><select id="TypeCalender" name="TypeCalender" class="form-control input-sm"></select></div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label class="control-label col-md-3">Area :</label><div class="col-md-7"><select id="AreaCalender" name="AreaCalender" class="form-control input-sm"></select></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-1">
+                    <div class="actions"><button class="btn btn-sm green dropdown-toggle" id="btnView" onclick="GenerateGrid()">View</button></div>
+                </div>
+            </div>
+            <br />
+            @*Filter*@
+            <div class="row">
+                <div class="portlet-body flip-scroll">
+                    <table class="table table-bordered table-striped table-condensed flip-content">
+                        <thead class="flip-content">
+                            <tr style="text-align:center">
+                                <th id="day1"> </th>
+                                <th id="day2"> </th>
+                                <th id="day3"> </th>
+                                @*<th id="day4"> </th>
+                                <th id="day5"> </th>
+                                <th id="day6"> </th>*@
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td colspan=6><center>Outstanding Order</center></td></tr>
+                            <tr>
+                                <td>
+                                    <div id="gridOutstanding1"></div>
+                                </td>
+                                <td>
+                                    <div id="gridOutstanding2"></div>
+                                </td>
+                                <td>
+                                    <div id="gridOutstanding3"></div>
+                                </td>
+                                @*<td>
+                                    <div id="gridOutstanding4"></div>
+                                </td>
+                                <td>
+                                    <div id="gridOutstanding5"></div>
+                                </td>
+                                <td>
+                                    <div id="gridOutstanding6"></div>
+                                </td>*@
+                            </tr>
+                            <tr>
+                                <td colspan=6><center>Current Unit Ready</center></td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div id="gridCurrentUnitReady1"></div>
+                                </td>
+                                <td>
+                                    <div id="gridCurrentUnitReady2"></div>
+                                </td>
+                                <td>
+                                    <div id="gridCurrentUnitReady3"></div>
+                                </td>
+                                @*<td>
+                                    <div id="gridCurrentUnitReady4"></div>
+                                </td>
+                                <td>
+                                    <div id="gridCurrentUnitReady5"></div>
+                                </td>
+                                <td>
+                                    <div id="gridCurrentUnitReady6"></div>
+                                </td>*@
+                            </tr>
+                            <tr>
+                                <td colspan=6><center>Current Unit Available</center></td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div id="gridCurrentUnitAvailable1"></div>
+                                </td>
+                                <td>
+                                    <div id="gridCurrentUnitAvailable2"></div>
+                                </td>
+                                <td>
+                                    <div id="gridCurrentUnitAvailable3"></div>
+                                </td>
+                                @*<td>
+                                    <div id="gridCurrentUnitAvailable4"></div>
+                                </td>
+                                <td>
+                                    <div id="gridCurrentUnitAvailable5"></div>
+                                </td>
+                                <td>
+                                    <div id="gridCurrentUnitAvailable6"></div>
+                                </td>*@
+                            </tr>
+                            <tr>
+                                <td colspan=6><center>Current Unit From On Duty</center></td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div id="gridCurrentUnitFromOnDuty1"></div>
+                                </td>
+                                <td>
+                                    <div id="gridCurrentUnitFromOnDuty2"></div>
+                                </td>
+                                <td>
+                                    <div id="gridCurrentUnitFromOnDuty3"></div>
+                                </td>
+                                @*<td>
+                                    <div id="gridCurrentUnitFromOnDuty4"></div>
+                                </td>
+                                <td>
+                                    <div id="gridCurrentUnitFromOnDuty5"></div>
+                                </td>
+                                <td>
+                                    <div id="gridCurrentUnitFromOnDuty6"></div>
+                                </td>*@
+                            </tr>
+                            <tr>
+                                <td colspan=6><center>Current Unit From On Service</center></td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div id="gridCurrentUnitFromService1"></div>
+                                </td>
+                                <td>
+                                    <div id="gridCurrentUnitFromService2"></div>
+                                </td>
+                                <td>
+                                    <div id="gridCurrentUnitFromService3"></div>
+                                </td>
+                                @*<td>
+                                    <div id="gridCurrentUnitFromService4"></div>
+                                </td>
+                                <td>
+                                    <div id="gridCurrentUnitFromService5"></div>
+                                </td>
+                                <td>
+                                    <div id="gridCurrentUnitFromService6"></div>
+                                </td>*@
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    @section scripts
+{
+        <script type="text/javascript">
+            var TglFrom = $("#TanggalFrom").kendoDatePicker({
+                format: "dd/MM/yyyy",
+                change: function () {
+                    var dateP = new Date(this.value());
+                    dateP.setDate(dateP.getDate() + 2);
+                    $("#TanggalTo").data('kendoDatePicker').value(dateP);
+                }
+            }).data("kendoDatePicker");
+            var TanggalToDp = $("#TanggalTo").kendoDatePicker({
+                format: "dd/MM/yyyy"
+            }).data("kendoDatePicker");
+            TanggalToDp.enable(false);
+
+            var cboType = $("#TypeCalender").kendoComboBox({
+                dataTextField: "StrJenisTruck",
+                dataValueField: "Id",
+                dataSource: {
+                    transport: {
+                        read: {
+                            url: '@Url.Action("GetJnsTruck","JenisTruck")',
+                            dataType: "json"
+                        },
+                    },
+                },
+                filter: "contains",
+                suggest: true,
+            }).data("kendoComboBox");
+            var cboArea = $("#AreaCalender").kendoComboBox({
+                dataTextField: "Nama",
+                dataValueField: "Id",
+                dataSource: {
+                    transport: {
+                        read: {
+                            url: '@Url.Action("BindingCal","Area")',
+                            dataType: "json"
+                        },
+                    },
+                },
+                filter: "contains",
+                suggest: true,
+            }).data("kendoComboBox");
+
+            function GenerateGrid() {
+                var CurrDate = TglFrom.value();
+                var days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+                var months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+                console.log(TglFrom.value() == null);
+                if (TglFrom.value() == null)
+                {
+                    CurrDate = new Date($.now());
+                    CurrDate.setDate(CurrDate.getDate() - 1);
+                }
+                console.log(CurrDate)
+
+                for (var i = 0; i < 3; i++) {
+                    var ParamDate = new Date(CurrDate);
+                    ParamDate.setDate(ParamDate.getDate() + i);
+                    document.getElementById("day" + (i + 1)).innerHTML = days[ParamDate.getDay()] + ', ' + ParamDate.getDate() + ' ' + months[ParamDate.getMonth()] + ' ' + ParamDate.getFullYear();
+                    // outstanding
+                    $("#gridOutstanding" + (i + 1)).kendoGrid({
+                        dataSource: {
+                            transport: {
+                                read: {
+                                    url: '/CalendarView/BindingOutStandingOrder',
+                                    data: {
+                                        start_date: kendo.toString(ParamDate, "MM/dd/yyyy"),
+                                        strJnsTruck: cboType.text(),
+                                        strArea: cboArea.text()
+                                    },
+                                    dataType: "json"
+                                },
+                            },
+                            pageSize: 10,
+                            pageable: false,
+                        },
+                        reorderable: true,
+                        resizable: true,
+                        pageable: true,
+                        columns: [{ field: "Area" }, { field: "Customer" }, { field: "To" }, { field: "Type" }],
+                    }).data("kendoGrid");
+                    //ready
+                    $("#gridCurrentUnitReady" + (i + 1)).kendoGrid({
+                        dataSource: {
+                            transport: {
+                                read: {
+                                    url: '/CalendarView/BindingCurrentUnitReady',
+                                    data: {
+                                        start_date: kendo.toString(ParamDate, "MM/dd/yyyy"),
+                                        strJnsTruck: cboType.text(),
+                                        strArea: cboArea.text()
+                                    },
+                                    dataType: "json"
+                                },
+                            },
+                            pageSize: 10,
+                            pageable: false,
+                        },
+                        reorderable: true,
+                        resizable: true,
+                        pageable: true,
+                        columns: [{ field: "Area" }, { field: "Position" }, { field: "Vehicle" }, { field: "Type" }]
+                    }).data("kendoGrid");
+                    //Available
+                    $("#gridCurrentUnitAvailable" + (i + 1)).kendoGrid({
+                        dataSource: {
+                            transport: {
+                                read: {
+                                    url: '/CalendarView/BindingCurrentUnitAvailable',
+                                    data: { start_date: kendo.toString(ParamDate, "MM/dd/yyyy") },
+                                    dataType: "json"
+                                },
+                            },
+                            pageSize: 10,
+                            pageable: false,
+                        },
+                        reorderable: true,
+                        resizable: true,
+                        pageable: true,
+                        columns: [{ field: "Area" }, { field: "Position" }, { field: "Vehicle" }, { field: "Type" }]
+                    }).data("kendoGrid");
+                    //on duty
+                    $("#gridCurrentUnitFromOnDuty" + (i + 1)).kendoGrid({
+                        dataSource: {
+                            transport: {
+                                read: {
+                                    url: '/CalendarView/BindingCurrentUnitFromOnDuty',
+                                    data: {
+                                        start_date: kendo.toString(ParamDate, "MM/dd/yyyy"),
+                                        strJnsTruck: cboType.text(),
+                                        strArea: cboArea.text()
+                                    },
+                                    dataType: "json"
+                                },
+                            },
+                            pageSize: 10,
+                            pageable: false,
+                        },
+                        reorderable: true,
+                        resizable: true,
+                        pageable: true,
+                        columns: [{ field: "Area" }, { field: "Position" }, { field: "Vehicle" }, { field: "Type" }]
+                    }).data("kendoGrid");
+                    //service
+                    $("#gridCurrentUnitFromService" + (i + 1)).kendoGrid({
+                        dataSource: {
+                            transport: {
+                                read: {
+                                    url: '/CalendarView/BindingCurrentUnitFromService',
+                                    data: { start_date: kendo.toString(ParamDate, "MM/dd/yyyy") },
+                                    dataType: "json"
+                                },
+                            },
+                            pageSize: 10,
+                            pageable: false,
+                        },
+                        reorderable: true,
+                        resizable: true,
+                        pageable: true,
+                        columns: [{ field: "Area" }, { field: "Position" }, { field: "Vehicle" }, { field: "Type" }]
+                    }).data("kendoGrid");
+                }
+            }
+            GenerateGrid();
+        </script>
+    }
+}
+else
+{
+    ViewBag.Title = "AccessDenied";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    <h1>Maaf, anda tidak memiliki hak akses yang cukup untuk mengakses halaman ini</h1>
+}

@@ -1,0 +1,64 @@
+﻿@using tms_mka_v2.Models
+<link rel="stylesheet" href="~/Content/metronic/bootstrap.min.css" />
+<page size="A4" layout="portrait">
+    <div class="container" style="margin-top: 56px">
+        <div class="col-xs-6 col-md-6">
+            <div class="row">
+                <label class="col-xs-3 col-md-3"></label><label class="col-xs-9 col-md-9" style="font-size: 11px !important; font-weight: 100"> @ViewBag.cust</label>
+                <label class="col-xs-3 col-md-2"></label><label class="col-xs-9 col-md-9" style="font-size: 11px !important; font-weight: 100"> @ViewBag.dari</label>
+            </div>
+            <div style="margin-top: 25px">
+                <label class="col-xs-2 col-md-2"></label><label class="col-xs-10 col-md-8" style="font-size: 11px !important; font-weight: 100">@ViewBag.type</label>
+            </div>
+            <div style="margin-top: 49px">
+                <label class="col-xs-2 col-md-2"></label><label class="col-xs-10 col-md-8" style="font-size: 11px !important; font-weight: 100"> @ViewBag.barang </label>
+            </div>
+            <div style="margin-top: 77px">
+                <label class="col-xs-2 col-md-2"></label><label class="col-xs-10 col-md-8" style="font-size: 11px !important; font-weight: 100"> @ViewBag.tgl</label>
+            </div>
+            <div style="margin-top: 189px">
+                <label class="col-xs-4 col-md-4"></label><label class="col-xs-8 col-md-8" style="font-size: 11px !important; font-weight: 100"> @ViewBag.tujuan</label>
+            </div>
+        </div>
+        <div class="col-xs-6 col-md-6">
+            <div class="row">
+                <label class="col-xs-4 col-md-4"></label><label class="col-xs-8 col-md-8" style="font-size: 11px !important; font-weight: 100"> @ViewBag.namadr</label>
+            </div>
+            <div style="margin-top: 28px">
+                <label class="col-xs-4 col-md-4"></label><label class="col-xs-8 col-md-8" style="font-size: 11px !important; font-weight: 100"> @ViewBag.nopol</label>
+            </div>
+        </div>
+    </div>
+</page>
+@section styles{
+    <style>
+        body {
+            background: rgb(204,204,204);
+        }
+
+        page {
+            background: white;
+            display: block;
+            box-shadow: 0 0 0.5cm rgba(0,0,0,0.5);
+        }
+
+            page[size="A4"] {
+                width: 21cm;
+                height: 29.7cm;
+                margin: 0 !important;
+            }
+
+                page[size="A4"][layout="portrait"] {
+                    width: 29.7cm;
+                    height: 21cm;
+                }
+
+        body, page {
+            margin: 0;
+            box-shadow: 0;
+        }
+    </style>
+}
+<script>
+    window.print()
+</script>

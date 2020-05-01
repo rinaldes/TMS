@@ -1,0 +1,95 @@
+﻿@using tms_mka_v2.Models;
+@model tms_mka_v2.Models.SalesOrderProsesKonsolidasi
+
+<div id="PartialSo" class="row">
+    <input type='hidden' value='@Model.TanggalMuat.Value.ToString("MM/dd/yyyy")' id='tglmuatbuatuang'>
+    <input type='hidden' value='@Model.SalesOrderProsesKonsolidasiId' id='SalesOrderProsesKonsolidasiId'>
+    <div class="col-md-6">
+        <div class="form-group">
+            <label class="control-label col-md-3"> Tanggal Proses</label>
+            <label class="control-label col-md-9">: @Model.TanggalProses.Value.ToShortDateString()</label>
+        </div>
+        <div class="form-group">
+            <label class="control-label col-md-3"> NO SO</label>
+            <label class="control-label col-md-9">: @Model.SONumber</label>
+        </div>
+        <div class="form-group">
+            <label class="control-label col-md-3"> Tanggal Muat</label>
+            <label class="control-label col-md-9">: @Model.TanggalMuat.Value.ToShortDateString()  @Model.JamMuat.ToString()</label>
+        </div>
+        <div class="form-group">
+            <label class="control-label col-md-3"> Jenis Truk</label>
+            @if (Model.StrJnsTruck == Model.JenisTruckItem)
+            {
+                <label class="control-label col-md-9">: @Model.StrJnsTruck</label>
+            }
+            else
+            {
+                <label class="control-label col-md-9">: @Model.StrJnsTruck ( Real : @Model.JenisTruckItem )</label>
+            }
+
+            <input type="hidden" value="@Model.StrJnsTruck" id="StrJenisTruck" />
+        </div>
+        <div class="form-group">
+            <label class="control-label col-md-3"> Vehicle No</label>
+            <label class="control-label col-md-9">: @(ViewBag.VehicleNo == null ? Model.VehicleNo : ViewBag.VehicleNo)</label>
+        </div>
+        @if (ViewBag.KeteranganBatalTruk != null)
+        {
+            <div class="form-group">
+                <label class="control-label col-md-3"> Keterangan Batal Truk</label>
+                <label class="control-label col-md-9">: @ViewBag.KeteranganBatalTruk</label>
+            </div>
+        }
+    </div>
+    <div class="col-md-6">
+        <div class="form-group">
+            <label class="control-label col-md-3"> Rute</label>
+            <label class="control-label col-md-9">: @Model.Rute</label>
+        </div>
+        <div class="form-group">
+            <label class="control-label col-md-3"> Multidrop</label>
+            <label class="control-label col-md-9">: @Model.Multidrop</label>
+        </div>
+        <br />
+        @if (Model.Driver1Id.HasValue)
+        {
+            <div class="form-group">
+                <label class="control-label col-md-3"> ID Driver</label>
+                <label class="control-label col-md-9">: @Model.KodeDriver1</label>
+            </div>
+            <div class="form-group">
+                <label class="control-label col-md-3"> ID Driver Lama</label>
+                <label class="control-label col-md-9">: @Model.KodeDriver1Old</label>
+            </div>
+            <div class="form-group">
+                <label class="control-label col-md-3"> Nama</label>
+                <label class="control-label col-md-9">: @Model.NamaDriver1</label>
+            </div>
+        }
+        @if (ViewBag.KeteranganAdmin != null)
+        {
+            <div class="form-group">
+                <label class="control-label col-md-3">Keterangan Admin</label>
+                <div class="col-md-9">
+                    <textarea class="form-control" style="height: 210px" disabled>@ViewBag.KeteranganAdmin</textarea>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+<div class="row">
+    <div class="portlet light">
+        <div class="portlet-title">
+            <div class="caption font-green-sharp">
+                <span class="caption-subject"> Customer</span>
+            </div>
+            <div class="tools">
+                <a href="" class="collapse"> </a>
+            </div>
+        </div>
+        <div class="portlet-body">
+            <div id="GridKonsolidasi"></div>
+        </div>
+    </div>
+</div>

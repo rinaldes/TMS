@@ -1,0 +1,139 @@
+﻿@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "Daftar Barang";
+    string currentController = (string)ViewContext.RouteData.Values["controller"];
+    string currentAction = "Index";
+}
+<div class="portlet light ">
+    <div class="portlet-title">
+        <div class="caption">
+            <span class="caption-subject font-dark sbold uppercase">Report Order History</span>
+        </div>
+        <div class="actions">
+            <a class="btn btn-sm green dropdown-toggle" href="/Report/ExportDaftarBarang" id="export">
+                <i class="fa fa-upload"></i>Export
+            </a>
+        </div>
+    </div>
+    <div class="portlet-body form">
+        <div class="portlet box blue ">
+            <div class="portlet-title">
+                <div class="caption">Hide Column :</div>
+                <div class="tools">
+                    <a href="" class="expand"> </a>
+                </div>
+            </div>
+            <div class="portlet-body form" style="display: none;">
+                <form role="form">
+                    <div class="form-body">
+                        <div id="content-col" class="md-checkbox-inline" style="margin-left:10px"></div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div id="grid"></div>
+    </div>
+</div>
+
+@section scripts
+{
+    <script id="command-template" type="text/x-kendo-template">
+        <a class="k-button-icon k-grid-edit" href="\\#" title="View" onclick="viewItem(#=SalesOrderId#)"><span class="glyphicon glyphicon-eye-open"></span></a>
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            currController = '@currentController';
+            currAction = '@currentAction';
+
+            var ds = new kendo.data.DataSource({
+                transport: {
+                    read: {
+                        url: '@Url.Action("BindingOrderHistory")',
+                        dataType: "json"
+                    },
+                    parameterMap: function (options, operation) {
+                        if (operation !== "read" && options != '') {
+                            return kendo.stringify(options);
+                        }
+                        else if (operation == "read") {
+                            if (options.filter) {
+                                filter = options.filter.filters;
+                                for (var i in filter) {
+                                    if (filter[i].field == "SupplierName")
+                                        filter[i].field = "SalesOrderKonsolidasi.Supplier.CustomerNama";
+                                }
+                            }
+                            if (options.sort) {
+                                sort = options.sort;
+                                for (var i in sort) {
+                                    if (sort[i].field == "TanggalMuat")
+                                        sort[i].field = "OrderTanggalMuat";
+                                }
+                            }
+                            $('#export').attr('href', "/Report/ExportDaftarBarang?" + jQuery.param(options).replace('take=10', 'take=100000000'))
+                            return options;
+                        }
+                    },
+                },
+                schema: {
+                    total: "total",
+                    data: "data",
+                    model: {
+                        fields: {                            
+                            "SalesOrderId": { type: "number" }, "IKSNo": { type: "string" },
+                            "SalesOrderkosolidasiId": { type: "number" },
+                            "SONumber": { type: "string" },
+                            "Urutan": { type: "number" },
+                            "TanggalOrder": { type: "date" },
+                            "TanggalMasuk": { type: "date" },
+                            "SONumberCust": { type: "date" },
+                            "CustomerId": { type: "number" },
+                            "KodeCustomer": { type: "string" },
+                            "KodeNama": { type: "string" },
+                            "NamaCustomer": { type: "string" },
+                            "SupplierId": { type: "number" },
+                            "SupplierName": { type: "string" },
+                            "KodeCustomerTagihan": { type: "string" },
+                            "NamaCustomerTagihan": { type: "string" },
+                            "Keterangan": { type: "string" },
+                            "ProductId": { type: "number" },
+                            "StrProduct": {type: "string"}, "Suhu": {type: "number"}, "Rute": {type: "string"}, "TypeKonsolidasi": {type: "string"}, "StrType": {type: "string"}, "Tonase": {type: "number"},
+                            "karton": {type: "number"}, "Pallet": {type: "number"}, "Container": {type: "number"}, "m3": {type: "number"}, "isMinimumBerat": {type: "boolean"}, "BeratMinimum": {type: "number"},
+                            "PerhitunganDasar": {type: "string"}, "Harga": {type: "number"}, "TotalHarga": {type: "number"}, "CaraBayar": {type: "string"}, "Status": {type: "string"}, 
+                            "IsSelect":{type: "boolean"}
+                        }
+                    }
+                },
+                pageSize: 10, pageable: true, sortable: true, serverFiltering: true, serverPaging: true, serverSorting: true, sort: { field: "SONumber", dir: "desc" }
+            });
+            gridIndex = $("#grid").kendoGrid({
+                dataSource: ds, filterable: kendoGridFilterable, sortable: true, reorderable: true,  pageable: true, groupable: true, resizable: true, scrollable: true,
+                columns: [
+                    {field: "KodeNama", title: "Kode Nama", width: "180px"}, {field: "NamaCustomer", title: "Customer", width: "180px"},
+                    {field: "SupplierName", title: "Supplier", width: "180px"},
+                    {field: "Keterangan", width: "190px"}, {field: "StrProduct", title: "Jenis Barang", width: "150px"},
+                    {field: "Suhu", width: "80px", attributes: { style: "text-align:right;" }},
+                    {field: "Rute", width: "150px"},{field: "TypeKonsolidasi", title: "Type", width: "100px"},
+                    {field: "Tonase", attributes: { style: "text-align:right;" }, width: "100px"},
+                    {field: "karton", attributes: { style: "text-align:right;" }, width: "100px"}, {field: "Pallet", attributes: { style: "text-align:right;" }, width: "100px"},
+                    {field: "Container", attributes: { style: "text-align:right;" }, width: "100px"}, {field: "m3", attributes: { style: "text-align:right;" }, width: "100px"},
+                    {field: "isMinimumBerat", title: "Minimum Berat", template: "#= isMinimumBerat ? 'Ya' : 'Tidak' #", width: "130px"},
+                    {field: "PerhitunganDasar", title: "Dasar Perhitungan", width: "150px"},
+                    {field: "Harga", template: 'Rp. #: Harga == null ? 0 : kendo.format("{0:n2}", Harga)#', attributes: { style: "text-align:right;" }, title: "Harga", width: "150px"},
+                    {field: "TotalHarga", title: "Total Perhitungan", template: 'Rp. #: TotalHarga == null ? 0 : kendo.format("{0:n2}", TotalHarga)#', attributes: { style: "text-align:right;" }, width: "150px"},
+                    {field: "CaraBayar", title: "Cara Pembayaran", width: "130px"},
+                ],
+            }).data("kendoGrid");
+            @foreach (tms_mka_v2.Context.UserReference item in (List<tms_mka_v2.Context.UserReference>)ViewBag.listKolom)
+            {
+                <text>
+            listKolom.push('@item.Coloumn');
+            </text>
+            }
+
+            GetColomnData(gridIndex);
+        })
+    </script>
+}

@@ -1,0 +1,380 @@
+﻿@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "Data Borongan";
+    string currentController = (string)ViewContext.RouteData.Values["controller"];
+    string currentAction = "Index";
+}
+<div class="portlet light ">
+    <div class="portlet-title">
+        <div class="caption">
+            <span class="caption-subject font-dark sbold uppercase">@ViewBag.Title</span>
+        </div>
+        <div class="actions">
+            <a class="btn btn-sm green dropdown-toggle"
+               href="@Url.Action("Add","DataBorongan")">
+                <i class="fa fa-plus"></i>Add
+            </a>
+            <a class="btn btn-sm green dropdown-toggle" href="~/Content/Template/TemplateDataBorongan.xlsx" target="_blank">
+                <i class="fa fa-file-excel-o"></i>Download template
+            </a>
+            <a class="btn btn-sm green dropdown-toggle" data-toggle="modal" href="#ModalUpload">
+                <i class="fa fa-download"></i>Import
+            </a>
+            <a class="btn btn-sm green dropdown-toggle" href="@Url.Action("Export")">
+                <i class="fa fa-upload"></i>Export
+            </a>
+        </div>
+    </div>
+    <div class="portlet-body form">
+        <div class="portlet box blue ">
+            <div class="portlet-title">
+                <div class="caption">
+                    Hide Column :
+                </div>
+                <div class="tools">
+                    <a href="" class="expand"> </a>
+                </div>
+            </div>
+            <div class="portlet-body form" style="display: none;">
+                <form role="form">
+                    <div class="form-body">
+                        <div id="content-col" class="md-checkbox-inline" style="margin-left:10px"></div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div id="grid"></div>
+    </div>
+</div>
+<!-- /.modal -->
+<div class="modal fade bs-modal-sm" id="ModalUpload" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                <h4 class="modal-title">Import Data Borongan</h4>
+            </div>
+            <div class="modal-body">
+                <input name="files" id="files" type="file" />
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn dark btn-outline" data-dismiss="modal" onclick="upload()">Import</button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<!-- /.modal -->
+@section scripts
+{
+    <script type="text/javascript">
+        var kendoUploadButtonExim;
+
+        function deleteItem(e) {
+            e.preventDefault();
+            var data = this.dataItem(getDataRowGrid(e));
+            goToDeletePage('@Url.Action("Delete")' + "?id=" + data.Id, this.dataSource);
+        }
+
+        function editItem(e) {
+            e.preventDefault();
+            var data = this.dataItem(getDataRowGrid(e));
+            window.location.href = "@Url.Action("Edit")" + "?id=" + data.Id;
+        }
+
+        function upload() {
+            if (kendoUploadButtonExim)
+                totalFile = 0;
+            kendoUploadButtonExim.click();
+        }
+
+        function onSelectFile(e) {
+            var flagExtension = 0;
+            var allowedExtension = [".xlsx", ".xls"];
+            $.each(e.files, function (index, value) {
+                if ($.inArray((value.extension).toLowerCase(), allowedExtension) === -1) {
+                    flagExtension = 1;
+                }
+            });
+            if (flagExtension == 1) {
+                alert("File yang diperbolehkan hanya berupa Excell");
+                e.preventDefault();
+            }
+
+            setTimeout(function () {
+                kendoUploadButtonExim = $(".k-upload-selected");
+                kendoUploadButtonExim.hide();
+            }, 1);
+        }
+
+        $(document).ready(function () {
+            CreateUploaderExim($("#files"), "@Url.Action("Upload")", $("#grid"));
+
+            currController = '@currentController';
+            currAction = '@currentAction';
+
+            var ds = new kendo.data.DataSource({
+                transport: {
+                    read: {
+                        url: '@Url.Action("Binding")',
+                        dataType: "json"
+                    },
+                    parameterMap: function (options, operation) {
+                        if (operation !== "read" && options != '') {
+                            return kendo.stringify(options);
+                        }
+                        else if (operation == "read") {
+                            if (options.filter) {
+                                filter = options.filter.filters;
+                                for (var i in filter) {
+                                    if (filter[i].field == "StrJenisTruck") {
+                                        filter[i].field = "JenisTrucks.StrJenisTruck";
+                                    }
+                                    if (filter[i].field == "KodeNama") {
+                                        filter[i].field = "Customer.CustomerCodeOld";
+                                    }
+                                    if (filter[i].field == "CustomerName") {
+                                        filter[i].field = "Customer.CustomerNama";
+                                    }
+                                }
+                            }
+
+                            if (options.sort) {
+                                sort = options.sort;
+                                for (var i in sort) {
+                                    if (sort[i].field == "StrJenisTruck") {
+                                        sort[i].field = "JenisTrucks.StrJenisTruck";
+                                    }
+                                    if (sort[i].field == "KodeNama") {
+                                        sort[i].field = "Customer.CustomerCodeOld";
+                                    }
+                                    if (sort[i].field == "CustomerName") {
+                                        sort[i].field = "Customer.CustomerNama";
+                                    }
+                                }
+                            }
+                            return options;
+                        }
+                    }
+                },
+                schema: {
+                    total: "total",
+                    data: "data",
+                    model: {
+                        fields: {
+                            "Id": { type: "number" },
+                            "StrJenisTruck": { type: "string" },
+                            "NamaBorongan": { type: "string" },
+                            "Jarak": { type: "number" },
+                            "KodeNama": { type: "string" },
+                            "CustomerName": { type: "string" },
+                            "Rasio": { type: "string" },
+                            "LiterSolar": { type: "number" },
+                            "HargaSolar": { type: "number" },
+                            "WaktuHariKerja": { type: "number" },
+                            "AreaUangMakan": { type: "string" },
+                            "JumlahMakan": { type: "number" },
+                            "UangMakan": { type: "number" },
+                            "SPSI": { type: "number" },
+                            "BobotGaji1": { type: "number" },
+                            "gaji1": { type: "number" },
+                            "BobotGaji2": { type: "number" },
+                            "gaji2": { type: "number" },
+                            "TotalGaji": { type: "number" },
+                            "BiayaTol": { type: "number" },
+                            "BobotTipsParkir": { type: "number" },
+                            "TipsParkir": { type: "number" },
+                            "BiayaKapal": { type: "number" },
+                            "TotalBorongan": { type: "number" },
+                            "Pembulatan": { type: "number" },
+                        }
+                    }
+                },
+                pageSize: 10,
+                pageable: true,
+                serverFiltering: true,
+                serverPaging: true,
+                serverSorting: true,
+                sortable: true,
+            });
+
+            gridIndex = $("#grid").kendoGrid({
+                dataSource: ds,
+                filterable: kendoGridFilterable,
+                sortable: true,
+                reorderable: true,
+                resizable: true,
+                pageable: true,
+                groupable: true,
+                serverFiltering: true,
+                serverPaging: true,
+                serverSorting: true,
+                //height: "615",
+                columns: [
+                    {
+                        command: [
+                            {
+                                name: "edit",
+                                text: "edit",
+                                click: editItem,
+                                imageClass: "glyphicon glyphicon-edit",
+                                template: '<a class="k-button-icon #=className#" #=attr# href="\\#"><span class="#=imageClass#"></span></a>'
+                            },
+                            {
+                                name: "delete",
+                                text: "delete",
+                                click: deleteItem,
+                                imageClass: "glyphicon glyphicon-remove",
+                                template: '<a class="k-button-icon #=className#" #=attr# href="\\#"><span class="#=iconClass# #=imageClass#"></span></a>'
+                            }
+                        ],
+                        width: "60px"
+                    },
+                    {
+                        field: "StrJenisTruck",
+                        title: "Jenis Truck",
+                        width: "160px",
+                    },
+                    {
+                        field: "NamaBorongan",
+                        title: "Nama Borongan",
+                        width: "160px",
+                    },
+                    {
+                        field: "Jarak",
+                        title: "Jarak",
+                        width: "160px",
+                    },
+                    {
+                        field: "KodeNama",
+                        title: "Kode Nama",
+                        width: "160px",
+                    },
+                    {
+                        field: "CustomerName",
+                        title: "Customer",
+                        width: "160px",
+                    },
+                    {
+                        field: "Rasio",
+                        title: "Rasio",
+                        width: "160px",
+                    },
+                    {
+                        field: "LiterSolar",
+                        title: "Solar ( Ltr )",
+                        width: "160px",
+                    },
+                    {
+                        field: "HargaSolar",
+                        title: "Solar ( Rp )",
+                        template: 'Rp #: HargaSolar == null ? 0 : kendo.format("{0:n}", HargaSolar)#',
+                        width: "160px",
+                    },
+                    {
+                        field: "WaktuHariKerja",
+                        title: "Hari Kerja",
+                        width: "170px",
+                    },
+                    {
+                        field: "AreaUangMakan",
+                        title: "Area Uang Makan",
+                        width: "180px",
+                    },
+                    {
+                        field: "JumlahMakan",
+                        title: "Jumlah Makan",
+                        width: "170px",
+                    },
+                    {
+                        field: "UangMakan",
+                        title: "Uang Makan",
+                        template: 'Rp #: UangMakan == null ? 0 : kendo.format("{0:n}", UangMakan)#',
+                        width: "170px"
+                    },
+                    {
+                        field: "SPSI",
+                        title: "SPSI",
+                        template: 'Rp #: SPSI == null ? 0 : kendo.format("{0:n}", SPSI)#',
+                        width: "160px"
+                    },
+                    {
+                        field: "BobotGaji1",
+                        title: "Bobot Gaji 1",
+                        width: "170px"
+                    },
+                    {
+                        field: "gaji1",
+                        title: "gaji 1",
+                        template: 'Rp #: gaji1 == null ? 0 : kendo.format("{0:n}", gaji1)#',
+                        width: "160px"
+                    },
+                    {
+                        field: "BobotGaji2",
+                        title: "Bobot Gaji 2",
+                        width: "170px",
+                    },
+                    {
+                        field: "gaji2",
+                        title: "Gaji 2",
+                        template: 'Rp #: gaji2 == null ? 0 : kendo.format("{0:n}", gaji2)#',
+                        width: "160px",
+                    },
+                    {
+                        field: "TotalGaji",
+                        title: "Total Gaji",
+                        template: 'Rp #: TotalGaji == null ? 0 : kendo.format("{0:n}", TotalGaji)#',
+                        width: "160px",
+                    },
+                    {
+                        field: "BiayaTol",
+                        title: "Tol",
+                        template: 'Rp #: BiayaTol == null ? 0 : kendo.format("{0:n}", BiayaTol)#',
+                        width: "160px",
+                    },
+                    {
+                        field: "BobotTipsParkir",
+                        title: "Bobot Parkir",
+                        width: "170px"
+                    },
+                    {
+                        field: "TipsParkir",
+                        title: "Tips Parkir",
+                        template: 'Rp #: TipsParkir == null ? 0 : kendo.format("{0:n}", TipsParkir)#',
+                        width: "170px"
+                    },
+                    {
+                        field: "BiayaKapal",
+                        title: "Kapal",
+                        template: 'Rp #: BiayaKapal == null ? 0 : kendo.format("{0:n}", BiayaKapal)#',
+                        width: "170px"
+                    },
+                    {
+                        field: "TotalBorongan",
+                        title: "Total",
+                        template: 'Rp #: TotalBorongan == null ? 0 : kendo.format("{0:n}", TotalBorongan)#',
+                        width: "160px"
+                    },
+                    {
+                        field: "Pembulatan",
+                        title: "Total Pembulatan",
+                        template: 'Rp #: Pembulatan == null ? 0 : kendo.format("{0:n}", Pembulatan)#',
+                        width: "180px"
+                    },
+                ],
+            }).data("kendoGrid");
+
+            @foreach (tms_mka_v2.Context.UserReference item in (List<tms_mka_v2.Context.UserReference>)ViewBag.listKolom)
+            {
+                <text>
+            listKolom.push('@item.Coloumn');
+            </text>
+            }
+
+            GetColomnData(gridIndex);
+        })
+    </script>
+}
+

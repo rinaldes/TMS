@@ -1,0 +1,346 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "Mekanik";
+    string currentController = "WorkshopMekanik";
+    string currentAction = "Index";
+}
+<div class="portlet light ">
+    <div class="portlet-title">
+        <div class="caption">
+            <span class="caption-subject font-dark sbold uppercase">@ViewBag.Title</span>
+        </div>
+    </div>
+    <div class="portlet-body form">
+        <div class="portlet box blue ">
+            <div class="portlet-title">
+                <div class="caption">
+                    Hide Column :
+                </div>
+                <div class="tools">
+                    <a href="" class="expand"> </a>
+                </div>
+            </div>
+            <div class="portlet-body form" style="display: none;">
+                <form role="form">
+                    <div class="form-body">
+                        <div id="content-col" class="md-checkbox-inline" style="margin-left:10px"></div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div id="grid"></div>
+    </div>
+</div>
+
+<div class="modal fade bs-modal-lg" id="ModalPpk" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                <h4 class="modal-title">Info PPK</h4>
+            </div>
+            <div class="modal-body">
+                <div id="grid2"></div>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade bs-modal-lg" id="ModalHistory" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                <h4 class="modal-title">History</h4>
+            </div>
+            <div class="modal-body">
+                <div id="grid3"></div>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts
+{
+    <script id="ppkPopUp" type="text/x-kendo-template">
+        <a onclick="PopUpPPK(#=Id#)">#=NoPPK#</a>
+    </script>
+    <script id="historyPopUp" type="text/x-kendo-template">
+        <a class="k-button-icon history" onclick="HistoryMeka(#=Id#)"><span class="glyphicon glyphicon-repeat"></span></a>
+    </script>
+    <script type="text/javascript">
+        function HistoryMeka(idnya) {
+            var ds2 = new kendo.data.DataSource({
+                transport: {
+                    read: {
+                        url: '@Url.Action("BindingHistory", "WorkshopMekanik")?id='+idnya,
+                        dataType: "json"
+                    }
+                },
+                schema: {
+                    total: "total",
+                    data: "data",
+                    model: {
+                        fields: {
+                            "Id": { type: "number" },
+                            "Tanggal": { type: "string" },
+                            "NoSPK": { type: "string" },
+                            "VehicleNo": { type: "string" },
+                            "Permintaan": { type: "string" },
+                            "Keterangan": { type: "string" },
+                            "Mulai": { type: "string" },
+                            "Selesai": { type: "string" }
+                        }
+                    }
+                },
+                pageSize: 10,
+                pageable: true,
+                serverPaging: true,
+                serverSorting: true,
+                //sort: { field: "SubmittedDate", dir: "desc" }
+            });
+
+            gridPPK = $("#grid3").kendoGrid({
+                dataSource: ds2,
+                pageable: true,
+                //height: "615",
+                columns: [
+                    {
+                        field: "Tanggal",
+                        title: "Tanggal"
+                    },
+                    {
+                        field: "NoSPK",
+                        title: "No SPK"
+                    },
+                    {
+                        field: "VehicleNo",
+                        title: "Vehicle No"
+                    },
+                    {
+                        field: "Permintaan",
+                        title: "Permintaan Perbaikan"
+                    },
+                    {
+                        field: "Keterangan",
+                        title: "Keterangan Pekerjaan"
+                    },
+                    {
+                        field: "Mulai",
+                        title: "Mulai"
+                    },
+                    {
+                        field: "Selesai",
+                        title: "Selesai"
+                    }
+                ],
+            }).data("kendoGrid");
+            $("#ModalHistory").modal('show');
+        }
+        function PopUpPPK(idnya){
+            var ds2 = new kendo.data.DataSource({
+                transport: {
+                    read: {
+                        url: '@Url.Action("BindingKet", "Workshop")?id='+idnya,
+                        dataType: "json"
+                    }
+                },
+                schema: {
+                    total: "total",
+                    data: "data",
+                    model: {
+                        fields: {
+                            "Id": { type: "number" },
+                            "Jenis": { type: "string" },
+                            "Permintaan": { type: "string" },
+                            "Keterangan": { type: "string" },
+                            "ServiceIn": { type: "string" },
+                            "Estimasi": { type: "string" },
+                            "RevEstimasi": { type: "string" },
+                            "ServiceOut": { type: "string" }
+                        }
+                    }
+                },
+                pageSize: 10,
+                pageable: true,
+                serverPaging: true,
+                serverSorting: true,
+                //sort: { field: "SubmittedDate", dir: "desc" }
+            });
+
+            gridPPK = $("#grid2").kendoGrid({
+                dataSource: ds2,
+                pageable: true,
+                //height: "615",
+                columns: [
+                    {
+                        field: "Jenis",
+                        title: "Jenis Perbaikan"
+                    },
+                    {
+                        field: "Permintaan",
+                        title: "Permintaan Perbaikan"
+                    },
+                    {
+                        field: "Keterangan",
+                        title: "Keterangan"
+                    },
+                    {
+                        field: "Level",
+                        title: "Level Mekanik"
+                    },
+                    {
+                        field: "ServiceIn",
+                        title: "Service In"
+                    },
+                    {
+                        field: "Estimasi",
+                        title: "Estimasi Selesai"
+                    },
+                    {
+                        field: "RevEstimasi",
+                        title: "Revisi Estimasi"
+                    },
+                    {
+                        field: "ServiceOut",
+                        title: "Service Out"
+                    }
+                ],
+            }).data("kendoGrid");
+            $("#ModalPpk").modal('show');
+        }
+        $(document).ready(function () {
+            currController = '@currentController';
+            currAction = '@currentAction';
+
+            var ds = new kendo.data.DataSource({
+                transport: {
+                    read: {
+                        url: '@Url.Action("Binding")',
+                        dataType: "json"
+                    },
+                    parameterMap: function (options, operation) {
+                        if (operation !== "read" && options != '') {
+                            return kendo.stringify(options);
+                        }
+                        else if (operation == "read") {
+                            if (options.filter) {
+                                filter = options.filter.filters;
+                                for (var i in filter) {
+                                    if (filter[i].field == "NamaBank") {
+                                        filter[i].field = "LookupCodeBank.Nama";
+                                    }
+                                    if (filter[i].field == "KodeDriver") {
+                                        filter[i].field = "Driver.KodeDriver";
+                                    }
+                                    if (filter[i].field == "NamaDriver") {
+                                        filter[i].field = "Driver.NamaDriver";
+                                    }
+                                    if (filter[i].field == "Panggilan") {
+                                        filter[i].field = "Driver.NamaPangilan";
+                                    }
+                                }
+                            }
+
+                            if (options.sort) {
+                                sort = options.sort;
+                                for (var i in sort) {
+                                    if (sort[i].field == "NamaBank") {
+                                        sort[i].field = "LookupCodeBank.Nama";
+                                    }
+                                    if (sort[i].field == "KodeDriver") {
+                                        sort[i].field = "Driver.KodeDriver";
+                                    }
+                                    if (sort[i].field == "NamaDriver") {
+                                        sort[i].field = "Driver.NamaDriver";
+                                    }
+                                    if (sort[i].field == "Panggilan") {
+                                        sort[i].field = "Driver.NamaPangilan";
+                                    }
+                                }
+                            }
+                            return options;
+                        }
+                    }
+                },
+                schema: {
+                    total: "total",
+                    data: "data",
+                    model: {
+                        fields: {
+                            "Id": { type: "number" },
+                            "MekanikName": { type: "string" },
+                            "Bagian": { type: "string" },
+                            "NoPPK": { type: "string" },
+                            "Mulai": { type: "string" },
+                            "Selesai": { type: "string" },
+                            "PPKSesudah": { type: "string" }
+                        }
+                    }
+                },
+                pageSize: 10,
+                pageable: true,
+                serverFiltering: true,
+                serverPaging: true,
+                serverSorting: true,
+                sortable: true,
+                //sort: { field: "SubmittedDate", dir: "desc" }
+            });
+
+            gridIndex = $("#grid").kendoGrid({
+                dataSource: ds,
+                filterable: kendoGridFilterable,
+                sortable: true,
+                reorderable: true,
+                resizable: true,
+                pageable: true,
+                groupable: true,
+                //height: "615",
+                columns: [
+                    {
+                        field: "MekanikName",
+                        title: "Mekanik",
+                        width: "150px",
+                    },
+                    {
+                        field: "Bagian",
+                        title: "Bagian",
+                        width: "150px",
+                    },
+                    {
+                        field: "NoPPK",
+                        title: "No PPK",
+                        template: kendo.template($('#ppkPopUp').html()),
+                        width: "150px",
+                    },
+                    {
+                        field: "Mulai",
+                        title: "Mulai",
+                        width: "150px",
+                    },
+                    {
+                        field: "Selesai",
+                        title: "Estimasi Selesai",
+                        width: "150px",
+                    },
+                    {
+                        field: "PPKSesudah",
+                        title: "PPK Sesudah",
+                        width: "150px",
+                    },
+                    {
+                        width: "60px",
+                        template: kendo.template($('#historyPopUp').html())
+                    },
+                ],
+            }).data("kendoGrid");
+            GetColomnData(gridIndex);
+        })
+</script>
+}
+
+

@@ -1,0 +1,64 @@
+﻿@using tms_mka_v2.Models
+@model tms_mka_v2.Models.Customer
+@{
+    string currentController = (string)ViewContext.RouteData.Values["controller"];
+    string currentAction = (string)ViewContext.RouteData.Values["action"];
+    ViewBag.SubTitle = "Customer Truck Type";
+}
+
+<h2>Customer Truck Type</h2>
+@using (Html.BeginForm("UpdateTruckType", currentController, FormMethod.Post))
+{
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(model => model.Id)
+        <div class="form-group">
+            <div class="col-md-4">
+                <table class="table table-striped table-hover table-bordered">
+                <tr>
+                    <th>
+                        Default
+                    </th>
+                    <th>
+                        Alias
+                    </th>
+                </tr>
+                    @foreach (CustTruckType item in Model.ListCustTruckType)
+                    {
+                        int idx = Model.ListCustTruckType.LastIndexOf(item);
+                        @Html.HiddenFor(model => model.ListCustTruckType[idx].TruckId)
+                        <tr>
+                            <td>
+                                <div class="col-md-12">
+                                <label class="checkbox checkbox-inline">
+                                    @Html.CheckBoxFor(model => model.ListCustTruckType[idx].IsKode , new { @onClick="kodeClick(this, " + idx + ")" })
+                                    @Model.ListCustTruckType[idx].Kode
+                                </label>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="col-md-1">
+                                    <label class="checkbox checkbox-inline" style="width:5%">
+                                        @Html.CheckBoxFor(model => model.ListCustTruckType[idx].IsAlias, new { @onClick="chkClick(this, " + idx + ")" })
+                                    </label>
+                                </div>
+                                <div class="col-md-8">
+                                    @if (Model.ListCustTruckType[idx].IsAlias == true)
+                                    {
+                                        @Html.TextBoxFor(model => model.ListCustTruckType[idx].Alias, new { @class = "form-control input-sm"})
+                                    }
+                                    else
+                                    {
+                                        @Html.TextBoxFor(model => model.ListCustTruckType[idx].Alias, new { @class = "form-control input-sm", @readonly = "true" })
+                                    }
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </table>
+            </div>
+        </div>
+        <div class="form-group">
+            <input type="submit" name="submittruckType" value="Update" class="btn btn-default" />
+            <input type="submit" name="submittruckType" value="Update and Next" class="btn btn-default" />
+        </div>
+}

@@ -1,0 +1,44 @@
+﻿@using tms_mka_v2.Models;
+@model tms_mka_v2.Models.SalesOrderOncall
+<div class="portlet light">
+    <div class="portlet-title">
+        <div class="caption font-green-sharp">
+            <span class="caption-subject">Revisi Kapasitas</span>
+        </div>
+        <div class="tools">
+            <a href="" class="collapse"> </a>
+        </div>
+    </div>
+    <div class="portlet-body">
+        <div class="form-group">
+            <div class="col-md-4">
+                <div class="row">
+                    @Html.Label("Jenis Truk Awal", new { @class = "control-label col-md-5" })
+                    <div class="col-md-7">
+                        @Html.TextBoxFor(model => model.StrJenisTruck, new { @class = "form-control input-sm" , @ReadOnly=true})
+                    </div>                    
+                </div><br />
+                <div class="row">
+                    @Html.Label("Jenis Truk Baru", new { @class = "control-label col-md-5" })
+                    <div class="col-md-7">
+                        @*<input type="text" class="form-control input-sm" id="JenisTruckBaruId" name="JenisTruckBaruId" required data-required-msg="Jenis Truk Harus Diisi." />
+                        <span class="k-invalid-msg" data-for="JenisTruckIdBaru"></span>*@
+                        @Html.TextBoxFor(model => model.JenisTruckBaruId, new { @class = "form-control input-sm" })
+                        @Html.ValidationMessageFor(model => model.JenisTruckBaruId)
+                        @*@Html.HiddenFor(model => model.JenisTruckBaruId)*@
+                    </div>
+
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="row">
+                    @Html.LabelFor(model => model.KeteranganRevisi, new { @class = "control-label col-md-4" })
+                    <div class="col-md-6">
+                        @Html.TextAreaFor(model => model.KeteranganRevisi, new { @class = "form-control input-sm" })
+                        @Html.ValidationMessageFor(model => model.KeteranganRevisi)
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

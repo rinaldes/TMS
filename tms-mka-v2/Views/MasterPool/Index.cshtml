@@ -1,0 +1,318 @@
+﻿@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "Master Pool";
+    string currentController = (string)ViewContext.RouteData.Values["controller"];
+    string currentAction = "Index";
+}
+<div class="portlet light ">
+    <div class="portlet-title">
+        <div class="caption">
+            <span class="caption-subject font-dark sbold uppercase">@ViewBag.Title</span>
+        </div>
+        <div class="actions">
+            <a class="btn btn-sm green dropdown-toggle" href="@Url.Action("Add", "MasterPool")">
+                <i class="fa fa-plus"></i>Add
+            </a>
+            <a class="btn btn-sm green dropdown-toggle" href="~/Content/Template/TemplateMasterPool.xlsx" target="_blank">
+                <i class="fa fa-file-excel-o"></i>Download template
+            </a>
+            <a class="btn btn-sm green dropdown-toggle" data-toggle="modal" href="#ModalUpload">
+                <i class="fa fa-download"></i>Import
+            </a>
+            <a class="btn btn-sm green dropdown-toggle" href="@Url.Action("Export")">
+                <i class="fa fa-upload"></i>Export
+            </a>
+        </div>
+    </div>
+    <div class="portlet-body form">
+        <div class="portlet box blue ">
+            <div class="portlet-title">
+                <div class="caption">
+                    Hide Column :
+                </div>
+                <div class="tools">
+                    <a href="" class="expand"> </a>
+                </div>
+            </div>
+            <div class="portlet-body form" style="display: none;">
+                <form role="form">
+                    <div class="form-body">
+                        <div id="content-col" class="md-checkbox-inline" style="margin-left:10px"></div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div id="grid"></div>
+    </div>
+</div>
+<div class="modal fade bs-modal-sm" id="ModalUpload" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                <h4 class="modal-title">Import Master Pool</h4>
+            </div>
+            <div class="modal-body">
+                <input name="files" id="files" type="file" />
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn dark btn-outline" data-dismiss="modal" onclick="upload()">Import</button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+@section scripts
+{
+    <script type="text/javascript">
+        var kendoUploadButtonExim;
+
+        function deleteItem(e) {
+            e.preventDefault();
+            var data = this.dataItem(getDataRowGrid(e));
+            goToDeletePage('@Url.Action("Delete")' + "?id=" + data.Id, this.dataSource);
+        }
+
+        function editItem(e) {
+            e.preventDefault();
+            var data = this.dataItem(getDataRowGrid(e));
+            window.location.href = "@Url.Action("Edit")" + "?id=" + data.Id;
+        }
+
+        function upload() {
+            if (kendoUploadButtonExim)
+                totalFile = 0;
+            kendoUploadButtonExim.click();
+        }
+
+        function onSelectFile(e) {
+            var flagExtension = 0;
+            var allowedExtension = [".xlsx", ".xls"];
+            $.each(e.files, function (index, value) {
+                if ($.inArray((value.extension).toLowerCase(), allowedExtension) === -1) {
+                    flagExtension = 1;
+                }
+            });
+            if (flagExtension == 1) {
+                alert("File yang diperbolehkan hanya berupa Excell");
+                e.preventDefault();
+            }
+
+            setTimeout(function () {
+                kendoUploadButtonExim = $(".k-upload-selected");
+                kendoUploadButtonExim.hide();
+            }, 1);
+        }
+
+        $(document).ready(function () {
+            CreateUploaderExim($("#files"), "@Url.Action("Upload")", $("#grid"));
+
+            currController = '@currentController';
+            currAction = '@currentAction';
+
+            var ds = new kendo.data.DataSource({
+                transport: {
+                    read: {
+                        url: '@Url.Action("Binding")',
+                        dataType: "json"
+                    },
+                    parameterMap: function (options, operation) {
+                        if (operation !== "read" && options != '') {
+                            return kendo.stringify(options);
+                        }
+                        else if (operation == "read") {
+                            if (options.filter) {
+                                filter = options.filter.filters;
+                                for (var i in filter) {
+                                    if (filter[i].field == "NameProv") {
+                                        filter[i].field = "LocProvinsi.Nama";
+                                    }
+                                    if (filter[i].field == "NameKabKot") {
+                                        filter[i].field = "LocKabKota.Nama";
+                                    }
+                                    if (filter[i].field == "NameKec") {
+                                        filter[i].field = "LocKecamatan.Nama";
+                                    }
+                                    if (filter[i].field == "NameKel") {
+                                        filter[i].field = "LocKelurahan.Nama";
+                                    }
+                                }
+                            }
+
+                            if (options.sort) {
+                                sort = options.sort;
+                                for (var i in sort) {
+                                    if (sort[i].field == "NameProv") {
+                                        sort[i].field = "LocProvinsi.Nama";
+                                    }
+                                    if (sort[i].field == "NameKabKot") {
+                                        sort[i].field = "LocKabKota.Nama";
+                                    }
+                                    if (sort[i].field == "NameKec") {
+                                        sort[i].field = "LocKecamatan.Nama";
+                                    }
+                                    if (sort[i].field == "NameKel") {
+                                        sort[i].field = "LocKelurahan.Nama";
+                                    }
+                                }
+                            }
+                            return options;
+                        }
+                    }
+                },
+                schema: {
+                    total: "total",
+                    data: "data",
+                    model: {
+                        fields: {
+                            "Id": { type: "number" },
+                            "IsActive": { type: "boolean" },
+                            "IsDelete": { type: "boolean" },
+                            "NamePool": { type: "string" },
+                            "Capacity": { type: "number" },
+                            "Address": { type: "string" },
+                            "IdProvinsi": { type: "number" },
+                            "IdKabKota": { type: "number" },
+                            "IdKec": { type: "number" },
+                            "IdKel": { type: "number" },
+                            "NameProv": { type: "string" },
+                            "NameKabKot": { type: "string" },
+                            "NameKec": { type: "string" },
+                            "NameKel": { type: "string" },
+                            "Longitude": { type: "string" },
+                            "Latitude": { type: "string" },
+                            "Radius": { type: "number" },
+                            "KodeTelp": { type: "string" },
+                            "Telp": { type: "string" },
+                            "Pic": { type: "string" },
+                            "Handphone": { type: "string" }
+                        }
+                    }
+                },
+                pageSize: 10,
+                pageable: true,
+                serverFiltering: true,
+                serverPaging: true,
+                serverSorting: true,
+                sortable: true,
+                //sort: { field: "SubmittedDate", dir: "desc" }
+            });
+
+            gridIndex = $("#grid").kendoGrid({
+                dataSource: ds,
+                filterable: kendoGridFilterable,
+                sortable: true,
+                reorderable: true,
+                resizable: true,
+                pageable: true,
+                groupable: true,
+                //height: "615",
+                columns: [
+                    {
+                        command: [
+                            {
+                                name: "edit",
+                                text: "edit",
+                                click: editItem,
+                                imageClass: "glyphicon glyphicon-edit",
+                                template: '<a class="k-button-icon #=className#" #=attr# href="\\#"><span class="#=imageClass#"></span></a>'
+                            },
+                            {
+                                name: "delete",
+                                text: "delete",
+                                click: deleteItem,
+                                imageClass: "glyphicon glyphicon-remove",
+                                template: '<a class="k-button-icon #=className#" #=attr# href="\\#"><span class="#=iconClass# #=imageClass#"></span></a>'
+                            }
+                        ],
+                        width: "60px"
+                    },
+                    {
+                        field: "IsActive",
+                        title: "Active",
+                        template: "#=IsActive ? 'Ya' : 'Tidak'#",
+                        width: "100px",
+                    },
+                    {
+                        field: "NamePool",
+                        title: "Nama Pool",
+                        width: "140px",
+                    },
+                    {
+                        field: "Capacity",
+                        title: "Kapasitas",
+                        width: "100px",
+                    },
+                    {
+                        field: "Address",
+                        title: "Alamat",
+                        width: "170px",
+                    },
+                    {
+                        field: "NameKel",
+                        title: "Kelurahan",
+                        width: "170px",
+                    },
+                    {
+                        field: "NameKec",
+                        title: "Kecamatan",
+                        width: "150px",
+                    },
+                    {
+                        field: "NameKabKot",
+                        title: "Kab / Kota",
+                        width: "160px",
+                    },
+                    {
+                        field: "NameProv",
+                        title: "Provinsi",
+                        width: "160px",
+                    },
+                    {
+                        field: "Longitude",
+                        title: "Longitude",
+                        width: "150px",
+                    },
+                    {
+                        field: "Latitude",
+                        title: "Latitude",
+                        width: "150px",
+                    },
+                    {
+                        field: "Radius",
+                        title: "Radius",
+                        width: "100px",
+                    },
+                    {
+                        field: "Telp",
+                        title: "Telp",
+                        width: "130px",
+                    },
+                    {
+                        field: "Pic",
+                        title: "PIC",
+                        width: "130px",
+                    },
+                    {
+                        field: "Handphone",
+                        title: "Handphone",
+                        width: "150px",
+                    }
+                ],
+            }).data("kendoGrid");
+
+            @foreach (tms_mka_v2.Context.UserReference item in (List<tms_mka_v2.Context.UserReference>)ViewBag.listKolom)
+            {
+                <text>
+            listKolom.push('@item.Coloumn');
+            </text>
+            }
+
+            GetColomnData(gridIndex);
+        })
+    </script>
+}
+
+

@@ -1,0 +1,317 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "Planning Oncall ";
+    string currentController = "PlanningOncall";
+    string currentAction = "Index";
+}
+
+<div class="portlet light ">
+    <div class="portlet-title">
+        <div class="caption">
+            <span class="caption-subject font-dark sbold uppercase">@ViewBag.Title</span>
+        </div>
+    </div>
+    <div class="portlet-body form">
+        <div class="portlet box blue ">
+            <div class="portlet-title">
+                <div class="caption">
+                    Hide Column :
+                </div>
+                <div class="tools">
+                    <a href="" class="expand"> </a>
+                </div>
+            </div>
+            <div class="portlet-body form" style="display: none;">
+                <form role="form">
+                    <div class="form-body">
+                        <div id="content-col" class="md-checkbox-inline" style="margin-left:10px"></div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div id="grid"></div>
+    </div>
+</div>
+
+@*Modal Detail Konsoldasi*@
+<div id="ModalDetailKonsoldasi" class="modal fade bs-modal-full" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-full">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+            </div>
+            <div class="modal-body">
+                <div id="GridDetailKonsoldasi"></div>
+            </div>
+        </div>
+    </div>
+</div>
+@section scripts
+{
+    <script id="dok-template" type="text/x-kendo-template">
+        # if(DateRevised) { #
+        <label style="color:red">#= TanggalMuat != null ? kendo.toString(kendo.parseDate(TanggalMuat, 'yyyy-MM-dd'), 'dd/MM/yyyy') : ''#</label>
+        # } else { #
+        <label>#= TanggalMuat != null ? kendo.toString(kendo.parseDate(TanggalMuat, 'yyyy-MM-dd'), 'dd/MM/yyyy') : ''#</label>
+        # } #
+    </script>
+    <script id="command-template" type="text/x-kendo-template">
+        <a class="k-button-icon k-grid-edit" href="\\#" title="Edit" onclick="editItem(#=Id#)"><span class="glyphicon glyphicon-edit"></span></a>
+        # if(Status == "draft planning" || Status == "save") { #
+        <a class="k-button-icon k-grid-edit" href="\\#" title="Submit" onclick="submitItem(#=Id#)"><span class="glyphicon glyphicon-check"></span></a>
+        <a class="k-button-icon k-grid-edit" href="\\#" title="Return" onclick="returnItem(#=Id#)"><span class="glyphicon glyphicon-repeat"></span></a>
+        # } #
+    </script>
+    <script id="rute" type="text/x-kendo-template">
+        # if(RuteRevised) { #
+        <label style="color:red">#=Rute#</label>
+        # } else { #
+        <label>#=Rute#</label>
+        # } #
+    </script>
+    <script id="typeso-template" type="text/x-kendo-template">
+        # if(TypeSo == "Konsolidasi") { #
+        <a class="k-button-icon k-grid-edit" href="\\#" data-toggle="modal" data-target="\\#ModalDetailKonsoldasi" onclick="RefreshDetail(#:IdChild#)">Konsolidasi</a>
+        # } else { #
+        #: TypeSo #
+        # } #
+    </script>
+    <script id="so-template" type="text/x-kendo-template">
+        # if(IsReturn) { #
+        <label style="color:red">#=SONumber#</label>
+        # } else { #
+        <label>#=SONumber#</label>
+        # } #
+    </script>
+    <script id="jns-truck" type="text/x-kendo-template">
+        # if(IsBatalTruk) { #
+        <label style="color:red">#=MktJenisTruck#</label>
+        # } else { #
+        <label>#=MktJenisTruck#</label>
+        # } #
+    </script>
+    <script type="text/javascript">
+        function submitItem(id) {
+            goToSubmitPage('@Url.Action("Submit")' + "?id=" + id, gridIndex.dataSource);
+        }
+
+        function editItem(id) {
+            window.location.href = "@Url.Action("Edit")" + "?id=" + id;
+        }
+
+        function returnItem(id) {
+            goToReturnPage('@Url.Action("Return")' + "?id=" + id, gridIndex.dataSource);
+        }
+
+        function RefreshDetail(Id) {
+            var dsDetail = new kendo.data.DataSource({
+                transport: {
+                    read: {
+                        url: '@Url.Action("FindDetailSo", "SalesOrderProsesKonsolidasi")?id=' + Id,
+                        dataType: "json"
+                    },
+                },
+                schema: {
+                    total: "total",
+                    data: "data",
+                    model: {
+                        fields: {
+                            "KodeNama": { type: "string" },
+                            "SupplierName": { type: "string" },
+                            "NamaCustomer": { type: "string" },
+                            "StrProduct": { type: "string" },
+                            "Rute": { type: "string" },
+                            "Tonase": { type: "number" , defaultValue: 0},
+                            "karton": { type: "number" , defaultValue: 0},
+                            "Pallet": { type: "number" , defaultValue: 0},
+                            "Container": { type: "number" , defaultValue: 0},
+                            "m3": { type: "number" , defaultValue: 0},
+                        }
+                    }
+                },
+                aggregate: [
+                    { field: "Tonase", aggregate: "sum" },
+                    { field: "karton", aggregate: "sum" },
+                    { field: "Pallet", aggregate: "sum" },
+                    { field: "Container", aggregate: "sum" },
+                    { field: "m3", aggregate: "sum" }],
+                pageSize: 40,
+                pageable: true,
+                sortable: true,
+            });
+
+            $("#GridDetailKonsoldasi").kendoGrid({
+                dataSource: dsDetail,
+                filterable: kendoGridFilterable,
+                sortable: true,
+                reorderable: true,
+                resizable: true,
+                pageable: true,
+                columns: [
+                { field: "KodeNama", title: "Kode Nama" },
+                { field: "SupplierName" },
+                { field: "NamaCustomer", title: "Customer" },
+                { field: "StrProduct", title: "Jenis Barang" },
+                { field: "Rute", title: "Tujuan" },
+                { field: "Tonase", title: "Tonase", template: "#= Tonase != null ? Tonase : 0 #", footerTemplate: "Total : #=sum#" },
+                { field: "karton", title: "Karton", template: "#= karton != null ? karton    : 0 #", footerTemplate: "Total : #=sum#" },
+                { field: "Pallet", title: "Pallet", template: "#= Pallet != null ? Pallet : 0 #", footerTemplate: "Total : #=sum#" },
+                { field: "Container", title: "Container", template: "#= Container != null ? Container : 0 #", footerTemplate: "Total : #=sum#" },
+                { field: "m3", title: "m3", template: "#= m3 != null ? m3 : 0 #", footerTemplate: "Total : #=sum#" }
+                ],
+            });
+        }
+
+        $(document).ready(function () {
+            currController = '@currentController';
+            currAction = '@currentAction';
+
+            var ds = new kendo.data.DataSource({
+                transport: {
+                    read: {
+                        url: '@Url.Action("Binding")',
+                        dataType: "json"
+                    },
+                },
+                schema: {
+                    total: "total",
+                    data: "data",
+                    model: {
+                        fields: {
+                            "Id": { type: "number" },
+                            "DN": { type: "string" },
+                            "TypeSo": { type: "string" },
+                            "JenisOrder": { type: "string" },
+                            "SONumber": { type: "string" },
+                            "TanggalMuat": { type: "date" },
+                            "TanggalOrder": { type: "date" },
+                            "KodeNama": { type: "string" },
+                            "NamaCustomer": { type: "string" },
+                            "StrProduct": { type: "string" },
+                            "Suhu": { type: "number" },
+                            "Rute": { type: "string" },
+                            "StrMultidrop": { type: "string" },
+                            "MktJenisTruck": { type: "string" },
+                            "StatusFlow": { type: "string" },
+                            "FlowDate": { type: "date" },
+                            "StatusBatal": { type: "string" },
+                            "StatusDokumen": { type: "string" },
+                            "PenanganKhusus": { type: "string" },
+                            "VehicleNo": { type: "string" },
+                            "Driver1": { type: "string" },
+                            "IsReturn": { type: "bool" },
+                            "IsBatalTruk": { type: "bool" },
+                        }
+                    }
+                },
+                pageSize: 10,
+                pageable: true,
+                sortable: true,
+                sort: { field: "FlowDate", dir: "desc" },
+            });
+
+            gridIndex = $("#grid").kendoGrid({
+                dataSource: ds,
+                filterable: kendoGridFilterable,
+                sortable: true,
+                reorderable: true,
+                resizable: true,
+                pageable: true,
+                groupable: true,
+                columns: [
+                    {
+                        template: kendo.template($("#command-template").html()),
+                        width: 90
+                    },
+                    {
+                        field: "SONumber",
+                        title: "No SO",
+                        template: kendo.template($("#so-template").html()),
+                        width: "109px"
+                    },
+                    {
+                        field: "TypeSo",
+                        title: "Jenis Order",
+                        template: kendo.template($("#typeso-template").html()),
+                        width: "91px"
+                    },
+                    {
+                        field: "TanggalOrder",
+                        title: "Tgl Order",
+                        template: "#= TanggalOrder != null ? kendo.toString(kendo.parseDate(TanggalOrder, 'yyyy-MM-dd'), 'dd/MM/yyyy') : ''#",
+                        width: "91px",
+                        groupHeaderTemplate: "Tgl Order : #= value != null ? kendo.toString(kendo.parseDate(value, 'yyyy-MM-dd'), 'dd/MM/yyyy') : '' #"
+                    },
+                    {
+                        field: "TanggalMuat",
+                        title: "Tgl Muat",
+                        template: kendo.template($("#dok-template").html()),
+                        width: "91px",
+                        groupHeaderTemplate: "Tgl Muat : #= value != null ? kendo.toString(kendo.parseDate(value, 'yyyy-MM-dd'), 'dd/MM/yyyy') : '' #"
+                    },
+                {
+                    field: "JamMuat",
+                    title: "Jam Muat",
+                    width: "100px",
+                    template: "#= JamMuat != null ? kendo.toString(new Date(1, 1, 1, JamMuat.Hours, JamMuat.Minutes), 'HH : mm') : ''#",
+                    filterable: false
+                },
+                    {
+                        field: "KodeNama",
+                        title: "Kode Nama",
+                        width: "91px",
+                    },
+                    {
+                        field: "NamaCustomer",
+                        title: "Customer",
+                        width: "91px",
+                    },
+                    {
+                        field: "StrProduct",
+                        title: "Jenis Barang",
+                        width: "91px",
+                    },
+                    {
+                        field: "Suhu",
+                        title: "Target Suhu",
+                        width: "91px",
+                    },
+                    {
+                        field: "Rute",
+                        title: "Rute",
+                        template: kendo.template($("#rute").html()),
+                        width: "77px",
+                    },
+                    {
+                        field: "MktJenisTruck",
+                        title: "Jenis Truk",
+                        template: kendo.template($("#jns-truck").html()),
+                        width: "77px",
+                    },
+                    {
+                        field: "VehicleNo",
+                        title: "Vehicle No",
+                        width: "91px",
+                    },
+                    {
+                        field: "Driver1",
+                        title: "Driver1",
+                        width: "91px",
+                    },
+                ],
+            }).data("kendoGrid");
+
+            @foreach (tms_mka_v2.Context.UserReference item in (List<tms_mka_v2.Context.UserReference>)ViewBag.listKolom)
+                {
+                    <text>
+            listKolom.push('@item.Coloumn');
+            </text>
+                }
+
+            GetColomnData(gridIndex);
+            setTimeout(function(){
+                location = ''
+            },180000)
+        })
+    </script>
+}

@@ -1,0 +1,92 @@
+﻿@model tms_mka_v2.Models.Customer
+
+@{
+    string currentController = (string)ViewContext.RouteData.Values["controller"];
+    string currentAction = (string)ViewContext.RouteData.Values["action"];
+    ViewBag.SubTitle = "Customer PIC";
+}
+
+<div class="row ">
+    <div class="col-md-6">
+        <div class="btn-group">
+            <div class="caption">
+                <h2>@ViewBag.SubTitle</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="btn-group pull-right">
+            <span class="btn green" id="btnPic" title="Customer PIC" data-toggle="modal" data-target="#modalFormPic" onclick="ShowPicPopup()">Add New PIC</span>
+        </div>
+    </div>
+</div>
+<br />
+@using (Html.BeginForm("UpdateCustPic", currentController))
+{
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(model => model.Id)
+    <div id="GridCustPic"></div>
+}
+<div id="modalFormPic" class="modal fade bs-modal-lg" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                <h4 class="modal-title">Customer PIC</h4>
+            </div>
+            <div class="modal-body">
+                <form id="formPic" class="form-horizontal">
+                    @Html.Hidden("CustomerPicId")
+                    <div class="form-group">
+                        @Html.Label("Code", new { @class = "control-label col-md-3" })
+                        <div class="col-md-7">
+                            <input type="text" id="Code" name="Code" class="form-control input-sm" disabled="disabled" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-md-3">Nama<span style="color:red;">*</span></label>
+                        @*@Html.Label("Nama", new { @class = "control-label col-md-3" })*@
+                        <div class="col-md-7">
+                            <input type="text" id="Name" name="Name" class="k-textbox" pattern="[a-zA-Z0-9\s]+" required data-required-msg="Nama harus diisi." validationmessage="Format Nama tidak valid." />
+                            <span class="k-invalid-msg" data-for="Name"></span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-md-3">Departemen<span style="color:red;">*</span></label>
+                        @*@Html.Label("Departemen", new { @class = "control-label col-md-3" })*@
+                        <div class="col-md-7">
+                            <input id="DepartemenId" name="DepartemenId" required validationmessage="Departemen harus diisi" />
+                            <span class="k-invalid-msg" data-for="DepartemenId"></span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-md-3">Jabatan<span style="color:red;">*</span></label>
+                        @*@Html.Label("Jabatan", new { @class = "control-label col-md-3" })*@
+                        <div class="col-md-7">
+                            <input id="JabatanId" name="JabatanId" required validationmessage="Jabatan harus diisi" />
+                            <span class="k-invalid-msg" data-for="JabatanId"></span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-md-3">Email<span style="color:red;">*</span></label>
+                        @*@Html.Label("Email", new { @class = "control-label col-md-3" })*@
+                        <div class="col-md-7">
+                            <input type="email" id="EmailAdd" name="EmailAdd" class="k-textbox" required validationmessage="Email harus diisi" data-email-msg="Format email tidak valid" />
+                            <span class="k-invalid-msg" data-for="Email"></span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-md-3">Handphone<span style="color:red;">*</span></label>
+                        @*@Html.Label("Handphone", new { @class = "control-label col-md-3" })*@
+                        <div class="col-md-7">
+                            <input type="tel" id="MobilePic" name="MobilePic" class="k-textbox form-control-hp" required validationmessage="Mobile harus diisi" />
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn green" onclick="SavePic($('#Condition').val());">Submit</button>
+            </div>
+        </div>
+    </div>
+</div>

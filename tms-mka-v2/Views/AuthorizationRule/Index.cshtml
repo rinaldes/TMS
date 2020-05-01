@@ -1,0 +1,505 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "Authorization Rule";
+    string currentController = (string)ViewContext.RouteData.Values["controller"];
+    string currentAction = "Index";
+}
+
+<div class="portlet light ">
+    <div class="portlet-title">
+        <div class="caption">
+            <span class="caption-subject font-dark sbold uppercase">@ViewBag.Title</span>
+        </div>
+    </div>
+    <div class="portlet-body form">
+        <div class="portlet box blue ">
+            <div class="portlet-title">
+                <div class="caption">
+                    Hide Colomn :
+                </div>
+                <div class="tools">
+                    <a href="" class="expand"> </a>
+                </div>
+            </div>
+            <div class="portlet-body form" style="display: none;">
+                <form role="form">
+                    <div class="form-body">
+                        <div id="content-col" class="md-checkbox-inline" style="margin-left:10px"></div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div id="gridAuthorizationRule"></div>
+    </div>
+</div>
+
+@*#region Modal Form*@
+
+<div id="modalFormAuthorizationRule" class="modal fade bs-modal-lg" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div id="modalForm" class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                <h4 class="modal-title">@ViewBag.Title</h4>
+            </div>
+            <div class="modal-body">
+                <form id="formModalAuthorizationRule" class="form-horizontal">
+                    @Html.Hidden("AuthorizationRuleId")
+                    @Html.Hidden("Condition")
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="control-label col-md-3">Proses<span style="color:red;">*</span></label>
+                                <div class="col-md-8">
+                                    <input id="ProsesId" name="ProsesId" required validationmessage="Proses harus diisi" />
+                                    <span class="k-invalid-msg" data-for="ProsesId"></span>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-3">Status</label>
+                                <div class="col-md-8">
+                                    <label class="checkbox-inline">
+                                        <input type="checkbox" id="StatusAuthorizationRule" name="StatusAuthorizationRule" />
+                                        Active
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-3">Bagian</label>
+                                <div class="col-md-8">
+                                    <input name="BagianAuthorizationRule" id="BagianAuthorizationRule" class="k-textbox" type="text" readonly />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-3">Over >=<span style="color:red;">*</span></label>
+                                <div class="col-md-8">
+                                    <input name="OverAuthorizationRule" id="OverAuthorizationRule" class="k-textbox" type="text" required validationmessage="Over harus diisi" />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-3">Satuan<span style="color:red;">*</span></label>
+                                <div class="col-md-8">
+                                    <input id="SatuanOver" name="SatuanOver" required validationmessage="Satuan harus diisi" />
+                                    <span class="k-invalid-msg" data-for="SatuanOver"></span>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-3">Alert To<span style="color:red;">*</span></label>
+                                @*@Html.Label("Rute", new { @class = "control-label col-md-4" })*@
+                                <div class="col-md-8">
+                                    <div class="input-group input-group-sm">
+                                        <input type="hidden" id="idUserAlert" />
+                                        <input id="userAlertTo" class="form-control" readonly />
+                                        <span class="input-group-btn">
+                                            <button type="button" class="btn btn-success" data-toggle="modal" data-target="#modalGridUser" onclick="refreshUser()">Browse</button>
+                                        </span>
+                                    </div>
+                                    <input hidden name="HiduserAlertTo" id="HiduserAlertTo" data-rutereq-msg="Rute harus dipilih." />
+                                    <span class="k-invalid-msg" data-for="HiduserAlertTo"></span>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-3">Alert Method</label>
+                                <div class="col-md-8">
+                                    <label class="checkbox-inline">
+                                        <input type="checkbox" id="AlertPopupAuthorizationRule" name="AlertPopupAuthorizationRule" />
+                                        <label style="width: 70px;">Popup</label>
+                                        <input type="checkbox" id="AlertSoundAuthorizationRule" name="AlertSoundAuthorizationRule" />
+                                        <label style="width: 70px;">Sound</label>
+                                        <input type="checkbox" id="AlertEmailAuthorizationRule" name="AlertEmailAuthorizationRule" />
+                                        <label style="width: 70px;">Email</label>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-3">Row Color<span style="color:red;">*</span></label>
+                                <div class="col-md-8">
+                                    <input id="colorRow" name="colorRow" required validationmessage="Row Color harus diisi" />
+                                    <span class="k-invalid-msg" data-for="colorRow"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn green" onclick="saveAuthorizationRule($('#Condition').val());">Submit</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="modalGridUser" class="modal fade bs-modal-lg" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div id="modalForm" class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                <h4 class="modal-title">List User</h4>
+            </div>
+            <div class="modal-body">
+                <div id="GridUser"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn green" onclick="SelectUser();">Submit</button>
+            </div>
+        </div>
+    </div>
+</div>
+@*#endregion Modal Form*@
+
+
+@section scripts
+{
+
+<script type="text/javascript">
+    modalAuthorizationRule = $("#modalFormAuthorizationRule");
+    var checkedIds = {};
+    var checkedNama = {};
+
+    //#region action modal form
+    function saveAuthorizationRule() {
+
+        var stat;
+        var popup;
+        var sound;
+        var email;
+
+        if ($('input:checkbox[name=StatusAuthorizationRule]').is(':checked')) {
+            stat = true;
+        }
+        else {
+            stat = false;
+        }
+
+        if ($('input:checkbox[name=AlertPopupAuthorizationRule]').is(':checked')) {
+            popup = true;
+        }
+        else {
+            popup = false;
+        }
+
+        if ($('input:checkbox[name=AlertSoundAuthorizationRule]').is(':checked')) {
+            sound = true;
+        }
+        else {
+            sound = false;
+        }
+
+        if ($('input:checkbox[name=AlertEmailAuthorizationRule]').is(':checked')) {
+            email = true;
+        }
+        else {
+            email = false;
+        }
+
+        var data = {
+            Id: $('#AuthorizationRuleId').val(),
+            idProses: $('#ProsesId').val(),
+            status: stat,
+            idUserAlert: $('#idUserAlert').val(),
+            over: $('#OverAuthorizationRule').val(),
+            overSatuan: $('#SatuanOver').val(),
+            AlertPopup: popup,
+            AlertSound: sound,
+            AlertEmail: email,
+            rowColor: $('#colorRow').val(),
+        };
+        console.log(data)
+        modalAuthorizationRule.modal('hide');
+        goToSavePage('@Url.Action("SaveAuthorizationRule")', data, gridAuthorizationRule.dataSource);
+    }
+
+    function deleteAuthorizationRule(e) {
+        e.preventDefault();
+        var data = this.dataItem(getDataRowGrid(e));
+        goToDeletePage('@Url.Action("Delete")' + "?id=" + data.Id, this.dataSource);
+    }
+
+    cboSatuanOver = $("#SatuanOver").kendoComboBox({
+        dataTextField: "Nama",
+        dataValueField: "Id",
+        dataSource: [
+            { Nama: "Jam", Id: "Jam" },
+            { Nama: "Hari", Id: "Hari" },
+            { Nama: "Menit", Id: "Menit" }
+        ],
+        filter: "contains",
+        suggest: true,
+        index: 3
+    }).data("kendoComboBox");
+
+    cboProses = $("#ProsesId").kendoComboBox({
+        dataTextField: "Nama",
+        dataValueField: "Id",
+        dataSource: [
+            { Nama: "Speed Alert", Id: "S" },
+            { Nama: "Parking Alert", Id: "P" },
+            { Nama: "Revisi Rute Alert", Id: "R" }
+        ],
+        filter: "contains",
+        suggest: true,
+        index: 3
+    }).data("kendoComboBox");
+
+    cboRowColor = $("#colorRow").kendoComboBox({
+        dataTextField: "Nama",
+        dataValueField: "Id",
+        dataSource: [
+            { Nama: "Kuning", Id: "K" },
+            { Nama: "Merah", Id: "M" },
+            { Nama: "Hijau", Id: "H" }
+        ],
+        filter: "contains",
+        suggest: true,
+        index: 3
+    }).data("kendoComboBox");
+
+    function editAuthorizationRule(e) {
+        e.preventDefault();
+        var data = this.dataItem(getDataRowGrid(e));
+
+        $('.k-invalid-msg').hide();
+        $("input:checkbox").prop('checked', false);
+        $('#AuthorizationRuleId').val(data.Id);
+        $('#OverAuthorizationRule').val(data.over);
+
+        var cboSatuanOver = $("#SatuanOver").data("kendoComboBox");
+        cboSatuanOver.text(data.overSatuan);
+
+        var cboProses = $("#ProsesId").data("kendoComboBox");
+        cboProses.text(data.ProsesKet);
+
+        $('#BagianAuthorizationRule').val(data.keteranganBagian);
+
+        if (data.status == true)
+            $(":checkbox[name=StatusAuthorizationRule]").prop("checked", true);
+
+        $('#idUserAlert').val(data.idUserAlert);
+        $('#userAlertTo').val(data.namaUserAlert);
+        checkedIds = {};
+        checkedNama = {};
+        var substrUser = data.idUserAlert.split(',');
+        for (var i = 0; i < substrUser.length; i++) {
+            checkedIds[substrUser[i]] = true;
+        }
+        var substrUserName = data.namaUserAlert.split(', ');
+        for (var i = 0; i < substrUserName.length; i++) {
+            checkedNama[substrUserName[i]] = true;
+        }
+        gridUser.dataSource.read();
+        gridUser.refresh();
+
+        if (data.AlertPopup == true)
+            $(":checkbox[name=AlertPopupAuthorizationRule]").prop("checked", true);
+
+        if (data.AlertSound == true)
+            $(":checkbox[name=AlertSoundAuthorizationRule]").prop("checked", true);
+
+        if (data.AlertEmail == true)
+            $(":checkbox[name=AlertEmailAuthorizationRule]").prop("checked", true);
+
+        var cboRowColor = $("#colorRow").data("kendoComboBox");
+        cboRowColor.text(data.rowColorKet);
+
+        modalAuthorizationRule.modal('show');
+    }
+
+    function selectRow() {
+        var checked = this.checked,
+        row = $(this).closest("tr"),
+        dataItem = gridUser.dataItem(row);
+
+        checkedIds[dataItem.Id] = checked;
+        checkedNama[dataItem.Username] = checked;
+        if (checked) {
+            //-select the row
+            row.addClass("k-state-selected");
+        } else {
+            //-remove selection
+            row.removeClass("k-state-selected");
+        }
+    }
+
+    function SelectUser() {
+        var checked = [];
+        var checked2 = [];
+        for (var i in checkedIds) {
+            if (checkedIds[i]) {
+                checked.push(i);
+            }
+        }
+        for (var i in checkedNama) {
+            if (checkedNama[i]) {
+                checked2.push(i);
+            }
+        }
+
+        $('#idUserAlert').val(checked.join(','));
+        $('#userAlertTo').val(checked2.join(', '));
+        $('#modalGridUser').modal('hide');
+    }
+
+    function refreshUser() {
+        if ($('#idUserAlert').val() == "") {
+            gridUser.dataSource.read();
+            gridUser.refresh();
+        }
+    }
+
+    function onDataBound(e) {
+        var view = this.dataSource.view();
+        for (var i = 0; i < view.length; i++) {
+            console.log(checkedIds)
+            if (checkedIds[view[i].Id]) {
+                this.tbody.find("tr[data-uid='" + view[i].uid + "']")
+                .addClass("k-state-selected")
+                .find(".checkbox")
+                .attr("checked", "checked");
+            }
+        }
+    }
+
+    var dsUser = new kendo.data.DataSource({
+        transport: {
+            read: {
+                url: '/User/BindingName',
+                dataType: "json"
+            },
+        },
+        schema: {
+            total: "total",
+            data: "data",
+            model: {
+                fields: {
+                    "Id": { type: "number" },
+                    "Username": { type: "string" },
+                }
+            }
+        },
+        pageSize: 10,
+        pageable: true,
+        sortable: true,
+    });
+
+    gridUser = $("#GridUser").kendoGrid({
+        dataSource: dsUser,
+        filterable: kendoGridFilterable,
+        sortable: true,
+        reorderable: true,
+        resizable: true,
+        pageable: true,
+        dataBound: onDataBound,
+        columns: [
+            {
+                template: "<input type='checkbox' class='checkbox' />",
+                width: "50px"
+            },
+            {
+                field: "Username",
+                title: "Username"
+            },
+
+        ],
+    }).data("kendoGrid");
+
+    gridUser.table.on("click", ".checkbox", selectRow);
+
+    //#endregion action modal form
+
+    $(document).ready(function () {
+        currController = '@currentController';
+        currAction = '@currentAction';
+
+        var ds = new kendo.data.DataSource({
+            transport: {
+                read: {
+                    url: '@Url.Action("Binding")',
+                    dataType: "json"
+                },
+            },
+            schema: {
+                total: "total",
+                data: "data",
+                model: {
+                    fields: {
+                        "Id": { type: "number" },
+                        "idProses": { type: "string" },
+                        "keteranganBagian": { type: "string" },
+                        "idUserAlert": { type: "string" },
+                    }
+                }
+            },
+            pageSize: 10,
+            pageable: true,
+            sortable: true,
+        });
+
+        gridAuthorizationRule = $("#gridAuthorizationRule").kendoGrid({
+            dataSource: ds,
+            filterable: kendoGridFilterable,
+            sortable: true,
+            reorderable: true,
+            resizable: true,
+            pageable: true,
+            groupable: true,
+            columns: [
+                {
+                    command: [
+                        {
+                            name: "edit",
+                            text: "edit",
+                            click: editAuthorizationRule,
+                            imageClass: "glyphicon glyphicon-edit",
+                            template: '<a class="k-button-icon #=className#" #=attr# href="\\#"><span class="#=imageClass#"></span></a>'
+                        },
+                        {
+                            name: "delete",
+                            text: "delete",
+                            click: deleteAuthorizationRule,
+                            imageClass: "glyphicon glyphicon-remove",
+                            template: '<a class="k-button-icon #=className#" #=attr# href="\\#"><span class="#=iconClass# #=imageClass#"></span></a>'
+                        }
+                    ],
+                    width: "60px"
+                },
+
+                {
+                    field: "ProsesKet",
+                    title: "Proses"
+                },
+                {
+                    field: "statusKet",
+                    title: "Status",
+                },
+                {
+                    field: "keteranganBagian",
+                    title: "Bagian"
+                },
+                {
+                    field: "overKet",
+                    title: "Over"
+                },
+                {
+                    field: "namaUserGridAlert",
+                    title: "Alert To",
+                    template: "#= namaUserGridAlert.replace(',', '<br/>') #"
+                },
+                {
+                    field: "methodAlert",
+                    title: "Alert Method"
+                },
+            ],
+        }).data("kendoGrid");
+
+        @foreach (tms_mka_v2.Context.UserReference item in (List<tms_mka_v2.Context.UserReference>)ViewBag.listKolom)
+        {
+            <text>
+        listKolom.push('@item.Coloumn');
+            </text>
+        }
+
+        GetColomnData(gridAuthorizationRule);
+    })
+</script>
+
+}

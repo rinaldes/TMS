@@ -1,0 +1,386 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "Kasir Kas";
+    string currentController = (string)ViewContext.RouteData.Values["controller"];
+    string currentAction = "Index";
+}
+<div class="portlet light ">
+    <div class="portlet-title">
+        <div class="caption">
+            <span class="caption-subject font-dark sbold uppercase">Report Kasir Kas</span>
+        </div>
+        <div class="actions">
+            <a class="btn btn-sm green dropdown-toggle" href="/Report/ExportKasirKas" id="export">
+                <i class="fa fa-upload"></i>Export
+            </a>
+        </div>
+    </div>
+    <div class="portlet-body form">
+        <div class="portlet box blue ">
+            <div class="portlet-title">
+                <div class="caption">
+                    Hide Colomn :
+                </div>
+                <div class="tools">
+                    <a href="" class="expand"> </a>
+                </div>
+            </div>
+            <div class="portlet-body form" style="display: none;">
+                <form role="form">
+                    <div class="form-body">
+                        <div id="content-col" class="md-checkbox-inline" style="margin-left:10px"></div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div id="grid"></div>
+    </div>
+</div>
+@*Modal Detail Konsoldasi*@
+<div id="ModalDetailKonsoldasi" class="modal fade bs-modal-full" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-full">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+            </div>
+            <div class="modal-body">
+                <div id="GridDetailKonsoldasi"></div>
+            </div>
+        </div>
+    </div>
+</div>
+@section scripts
+{
+    <script id="command-template" type="text/x-kendo-template">
+        # if(JenisOrder == "Kontrak") { #
+        <a class="k-button-icon k-grid-edit" href="\\#" title="View" onclick="viewItemKontrak(#=IdSalesOrder#, '#=ListIdSo#', #=IdAdminUangJalan#)"><span class="glyphicon glyphicon-eye-open"></span></a>
+        # } else { #
+        <a class="k-button-icon k-grid-edit" href="\\#" title="View" onclick="viewItem(#=IdSalesOrder#, #=IdRemoval#, #=IdAdminUangJalan#)"><span class="glyphicon glyphicon-eye-open"></span></a>
+        # } #
+        <a class="k-button-icon k-grid-edit" href="\\#" title="Print" onclick="printItem(#=IdSalesOrder#, #=IdRemoval#, '#=ListIdSo#', '#=Realisasi#', #=IdAdminUangJalan#)"><span class="glyphicon glyphicon-print"></span></a>
+    </script>
+    <script type="text/javascript">
+        function FilterStatus(element) {
+            element.kendoDropDownList({
+                dataSource: ["Sudah", "Belum", "Batal"],
+                optionLabel: "--Select Value--",
+            });
+        }
+
+        function printItem(id, idRemoval, listso, rel, aujId) {
+            terbilang = update(rel);
+            if(idRemoval != null)
+                window.location.href = "@Url.Action("PrintKasRemoval")" + "?id=" + idRemoval + "&Terbilang=" + terbilang;
+            else
+                window.open("@Url.Action("ShowPrintKas")" + "?id=" + id + "&listSo=" + listso + "&Terbilang=" + terbilang+"&aujId="+aujId+"&total="+rel, '_blank', 'location=yes,scrollbars=yes,status=yes');
+        }
+
+        function editItem(id, idRemoval) {
+            if(idRemoval != null)
+                window.location.href = "@Url.Action("EditKasRemoval")" + "?id=" + idRemoval;
+            else
+                window.location.href = "@Url.Action("EditKas")" + "?id=" + id;
+        }
+
+        function viewItem(id, idRemoval, AdminUangJalanId) {
+            if(idRemoval != null)
+                window.location.href = "@Url.Action("ViewKasRemoval")" + "?id=" + idRemoval;
+            else
+                window.location.href = "@Url.Action("ViewKas")" + "?id=" + id + "&AdminUangJalanId=" + AdminUangJalanId;
+        }
+        function viewItemKontrak(id, listso, AdminUangJalanId) {
+            window.location.href = "@Url.Action("ViewKasKontrak")" + "?id=" + id + "&listSo=" + listso + "&listSo=" + listso + "&AdminUangJalanId=" + AdminUangJalanId;
+        }
+        function editItemKontrak(id, listso) {
+            window.location.href = "@Url.Action("EditKasKontrak")" + "?id=" + id + "&listSo=" + listso;
+        }
+
+        function update(numString){
+            var bigNumArry = new Array('', ' RIBU', ' JUTA', ' MILYAR', ' TRILIUN', ' QUADRALIUN', ' QUINTIILIUN');
+            var output = '';
+            var finlOutPut = new Array();
+            if (numString == '0' || numString == 0)
+                return;
+            var i = numString.length-1;
+            while (numString.length > 3) {//cut the number to grups of three digits and add them to the Arry
+                var triDig = new Array(3);
+                triDig[2] = numString.charAt(numString.length - 1);
+                triDig[1] = numString.charAt(numString.length - 2);
+                triDig[0] = numString.charAt(numString.length - 3);
+                var varToAdd = triDig[0] + triDig[1] + triDig[2];
+                finlOutPut.push(varToAdd);
+                i--;
+                numString = numString.substring(0, numString.length - 3);
+            }
+            finlOutPut.push(numString);
+            finlOutPut.reverse();
+            for (j = 0; j < finlOutPut.length; j++) {
+                finlOutPut[j] = triConvert(parseInt(finlOutPut[j]));
+            }//conver each grup of three digits to english word, if all digits are zero the triConvert, function return the string "dontAddBigSufix"
+            var bigScalCntr = 0; //this int mark the million billion trillion... Arry
+            for (b = finlOutPut.length - 1; b >= 0; b--) {
+                if (finlOutPut[b] != "dontAddBigSufix") {
+                    finlOutPut[b] = finlOutPut[b] + bigNumArry[bigScalCntr] + ' RP';
+                    bigScalCntr++;
+                }
+                else {
+                    finlOutPut[b] = ' ';//replace the string at finlOP[b] from "dontAddBigSufix" to empty String.
+                    bigScalCntr++; //advance the counter  
+                }
+            }
+            for(n = 0; n<finlOutPut.length; n++){//convert The output Arry to , more printable string 
+                output +=finlOutPut[n];
+            }
+            return output.replace('SE ', 'SE');//print the output
+        }
+
+    //simple function to convert from numbers to words from 1 to 999
+    function triConvert(num){
+        var ones = new Array('', ' SE', ' DUA', ' TIGA', ' EMPAT', ' LIMA', ' ENAM', ' TUJUH', ' DELAPAN', ' SEMBILAN', ' SEPULUH', ' SEBELAS', ' DUA BELAS', ' TIGA BELAS', ' EMPAT BELAS', ' LIMA BELAS', ' ENAM BELAS', ' TUJUH BELAS', ' DELAPAN BELAS', ' SEMBILAN BELAS');
+        var tens = new Array('', '', ' DUA PULUH', ' TIGA PULUH', ' EMPAT PULUH', ' LIMA PULUH', ' ENAM PULUH', ' TUJUH PULUH', ' DELAPAN PULUH', ' SEMBILAN PULUH');
+        var hundred = ' RATUS';
+        var output = '';
+        var numString = num.toString();
+
+        if (num == 0) {
+            return 'dontAddBigSufix';
+        }
+        //the case of 10, 11, 12 ,13, .... 19 
+        if (num < 20) {
+            output = ones[num];
+            return output;
+        }
+
+        //100 and more
+        if (numString.length == 3) {
+            output = ones[parseInt(numString.charAt(0))] + hundred;
+            output += tens[parseInt(numString.charAt(1))];
+            output += ones[parseInt(numString.charAt(2))];
+            return output;
+        }
+
+        output += tens[parseInt(numString.charAt(0))];
+        output += ones[parseInt(numString.charAt(1))];
+
+        return output;
+    }
+
+
+        $(document).ready(function () {
+            currController = '@currentController';
+            currAction = '@currentAction';
+
+            var ds = new kendo.data.DataSource({
+                transport: {
+                    read: {
+                        url: '@Url.Action("BindingKas")',
+                        dataType: "json"
+                    },
+                    parameterMap: function (options, operation) {
+                        if (operation !== "read" && options != '') {
+                            return kendo.stringify(options);
+                        }
+                        else if (operation == "read") {
+                            if (options.filter) {
+                                filter = options.filter.filters;
+                                for (var i in filter) {
+                                    if (filter[i].field == "TanggalJalan") {
+                                        filter[i].field = "AdminUangJalan.AUJTanggalMuat";
+                                        filter[i].value = filter[i].value.toJSON().split('T')[0]
+                                    }
+                                    if (filter[i].field == "SoNo")
+                                        filter[i].field = "AdminUangJalan.SONumber";
+                                    if (filter[i].field == "NamaCustomer")
+                                        filter[i].field = "AdminUangJalan.Customer.CustomerNama";
+                                    if (filter[i].field == "Rute")
+                                        filter[i].field = "AdminUangJalan.StrDaftarHargaItem";
+                                    if (filter[i].field == "VehicleNo")
+                                        filter[i].field = "AdminUangJalan.DataTruck.VehicleNo";
+                                    if (filter[i].field == "Driver")
+                                        filter[i].field = "AdminUangJalan.Driver1.NamaDriver";
+                                    if (filter[i].field == "IdDriver")
+                                        filter[i].field = "AdminUangJalan.Driver1.KodeDriver";
+                                    if (filter[i].field == "StrJenisTruck")
+                                        filter[i].field = "AdminUangJalan.JenisTrucks.StrJenisTruck";
+                                   if (filter[i].field == "KodeNama")
+                                       filter[i].field = "AdminUangJalan.Customer.CustomerCodeOld";
+                                    if (filter[i].field == "Customer")
+                                        filter[i].field = "AdminUangJalan.Customer.CustomerNama";
+                                    if (filter[i].field == "Realisasi")
+                                        filter[i].field = "JumlahTransfer";
+                                }
+                            }
+
+                            if (options.sort) {
+                                sort = options.sort;
+                                for (var i in sort) {
+                                    if (sort[i].field == "TanggalMuat") {
+                                        sort[i].field = "SalesOrderOncall.TanggalMuat";
+                                        sort[i].value = sort[i].value.toJSON().split('T')[0]
+                                    }
+                                    if (sort[i].field == "NamaCustomer") {
+                                        sort[i].field = "SalesOrderOncall.Customer.CustomerNama";
+                                    }
+                                    if (sort[i].field == "Rute") {
+                                        sort[i].field = "SalesOrderOncall.StrDaftarHargaItem";
+                                    }
+                                    if (sort[i].field == "VehicleNo") {
+                                        sort[i].field = "SalesOrderOncall.DataTruck.VehicleNo";
+                                    }
+                                    if (sort[i].field == "Driver1") {
+                                        sort[i].field = "SalesOrderOncall.Driver1.NamaDriver";
+                                    }
+                                    if (sort[i].field == "Keterangan") {
+                                        sort[i].field = "SalesOrderOncall.Keterangan";
+                                    }
+                                    if (sort[i].field == "StrJenisTruck") {
+                                        sort[i].field = "SalesOrderOncall.JenisTrucks.StrJenisTruck";
+                                    }
+                                }
+                            }
+                            $('#export').attr('href', "/Report/ExportKasirKas?" + jQuery.param(options).replace('take=10', 'take=100000000'))
+                            return options;
+                        }
+                    }
+                },
+                schema: {
+                    total: "total",
+                    data: "data",
+                    model: {
+                        fields: {
+                            "Id": { type: "number" },
+                            "Status": { type: "string" },
+                            "IdSalesOrder": { type: "number" },
+                            "IdRemoval": { type: "number" },
+                            "DnNo": { type: "string" },
+                            "SoNo": { type: "string" },
+                            "IdChild": { type: "number" },
+                            "IdDriver": { type: "string" },
+                            "Driver": { type: "string" },
+                            "VehicleNo": { type: "string" },
+                            "KodeNama": { type: "string" },
+                            "Customer": { type: "string" },
+                            "TanggalJalan": { type: "date" },
+                            "Keterangan": { type: "number" },
+                            "Jumlah": { type: "number" },
+                            "Tanggal": { type: "date" },
+                            "Realisasi": { type: "number" },
+                            "Penerima": { type: "string" },
+                            "Waktu": { type: "date" },
+                            "JenisOrder" : { type: "string" },
+                            "ListIdSo" : { type: "string" }
+                        }
+                    }
+                },
+                pageSize: 10,
+                pageable: true,
+                sortable: true,
+                serverFiltering: true,
+                serverPaging: true,
+                serverSorting: true,
+            });
+
+            gridIndex = $("#grid").kendoGrid({
+                dataSource: ds,
+                filterable: kendoGridFilterable,
+                sortable: true,
+                reorderable: true,
+                resizable: true,
+                pageable: true,
+                groupable: true,
+                serverFiltering: true,
+                serverPaging: true,
+                serverSorting: true,
+                columns: [
+                    {
+                        template: kendo.template($("#command-template").html()),
+                        width: 60
+                    },
+                    {
+                        field: "Status",
+                        title: "Status",
+                        filterable: {
+                            ui: FilterStatus,
+                            operators: {
+                                string: {
+                                    eq: "Sama Dengan",
+                                }
+                            },
+                            extra: false,
+                        }
+                    },
+                    {
+                        field: "DnNo",
+                        title: "DN No"
+                    },
+                    {
+                        field: "SoNo",
+                        title: "SO No"
+                    },
+                    {
+                        field: "IdDriver",
+                        title: "Id Driver"
+                    },
+                    {
+                        field: "Driver",
+                        title: "Driver"
+                    },
+                    {
+                        field: "VehicleNo",
+                        title: "Vehicle No"
+                    },
+                    {
+                        field: "KodeNama",
+                        title: "Kode Nama",
+                    },
+                    {
+                        field: "Customer",
+                        title: "Customer",
+                    },
+                    {
+                        field: "TanggalJalan",
+                        title: "Tanggal Muat",
+                        template: "#= TanggalJalan != null ? kendo.toString(kendo.parseDate(TanggalJalan, 'yyyy-MM-dd'), 'dd/MM/yyyy') : ''#",
+                    },
+                    {
+                        field: "Keterangan",
+                        title: "Keterangan"
+                    },
+                    {
+                        field: "Jumlah",
+                        title: "Jumlah",
+                        template: 'Rp #: Jumlah == null ? kendo.format("{0:n}", 0) : kendo.format("{0:n}", Jumlah)#',
+                    },
+                    {
+                        field: "Tanggal",
+                        title: "Tanggal",
+                        template: "#= Tanggal != null ? kendo.toString(kendo.parseDate(Tanggal, 'yyyy-MM-dd'), 'dd/MM/yyyy') : ''#",
+                    },
+                    {
+                        field: "Realisasi",
+                        title: "Realisasi",
+                        template: 'Rp #: Realisasi == null ? kendo.format("{0:n}", 0) : kendo.format("{0:n}", Realisasi)#',
+                    },
+                    {
+                        field: "Penerima",
+                        title: "Penerima",
+                    },
+                    {
+                        field: "Waktu",
+                        title: "Waktu",
+                        template: "#= Waktu != null ? kendo.toString(kendo.parseDate(Waktu, 'yyyy-MM-dd'), 'dd/MM/yyyy') : ''#",
+                    },
+                ],
+            }).data("kendoGrid");
+
+            @foreach (tms_mka_v2.Context.UserReference item in (List<tms_mka_v2.Context.UserReference>)ViewBag.listKolom)
+            {
+                <text>
+            listKolom.push('@item.Coloumn');
+            </text>
+            }
+
+            GetColomnData(gridIndex);
+        })
+</script>
+}

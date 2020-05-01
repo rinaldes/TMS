@@ -1,0 +1,1744 @@
+﻿﻿@using tms_mka_v2.Models;
+@model tms_mka_v2.Models.DaftarHargaKontrak
+@{
+    ViewBag.Title = "Form";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    string currentController = (string)ViewContext.RouteData.Values["controller"];
+    string currentAction = (string)ViewContext.RouteData.Values["action"];
+    string backLink = Url.Action("Index");
+
+    if (currentAction == "Add")
+    {
+        ViewBag.Title = "Tambah Daftar Harga Kontrak";
+    }
+    else
+    {
+        ViewBag.Title = ViewBag.name + " | Edit";
+    }
+}
+<div class="portlet light">
+    <div class="portlet-title">
+        <div class="caption">
+            <span class="caption-subject font-dark sbold uppercase">@ViewBag.Title</span>
+        </div>
+    </div>
+    <div class="portlet-body form">
+        @using (@Html.BeginForm(currentAction, currentController, FormMethod.Post, new { @class = "form-horizontal", @id = "formsubmit" }))
+        {
+            @Html.ValidationSummary(true) @Html.HiddenFor(model => model.Id)
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.IdCust, new { @class = "control-label col-md-3" })
+                        <div class="col-md-9">
+                            <div class="input-group input-group-sm">
+                                @Html.HiddenFor(model => model.IdCust) @Html.TextBoxFor(model => model.KodeCustomer, new { @class = "form-control input-sm", @readonly = true })
+                                <span class="input-group-btn">
+                                    <button type="button" class="btn btn-sm btn-success" data-toggle="modal" data-target="#modalGridCust">Browse</button>
+                                </span>
+                            </div>
+                            @Html.ValidationMessageFor(model => model.IdCust)
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.KodeNama, new { @class = "control-label col-md-3" })
+                        <div class="col-md-9">
+                            <div class="input-group input-group-sm">
+                                @Html.TextBoxFor(model => model.KodeNama, new { @class = "form-control input-sm", @readonly = true })
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        @Html.Label("Nama Customer", new { @class = "control-label col-md-3" })
+                        <div class="col-md-9">
+                            @Html.TextBoxFor(model => model.NamaCustomer, new { @class = "form-control input-sm", @readonly = true })
+                        </div>
+                    </div>
+                </div>
+            </div>
+            //tab pane info
+            <div class="row">
+                <div class="col-md-12">
+                    <ul class="nav nav-tabs">
+                        <li class="active">
+                            <a href="#tab_BasicData" data-toggle="tab"> Basic Informasi </a>
+                        </li>
+                        <li>
+                            <a href="#tab_Kondisi" data-toggle="tab"> Kondisi </a>
+                        </li>
+                        <li>
+                            <a href="#tab_Dokumen" data-toggle="tab"> Dokumen </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            // tab pane content
+            <div class="portlet light ">
+                <div class="portlet-body">
+                    <div class="tab-content">
+                        <div class="tab-pane fade active in" id="tab_BasicData">
+                            <div class="portlet box green ">
+                                <div class="portlet-title">
+                                    <div class="caption">Setting Asuransi</div>
+                                    <div class="tools">
+                                        <a href="" class="expand"> </a>
+                                    </div>
+                                </div>
+                                <div class="portlet-body form" style="display: none;">
+                                    <div class="form-body" style="margin-left:10px; margin-right:10px">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label class="control-label col-md-3">Diasuransikan</label>
+                                                    <div class="col-md-9">
+                                                        <div class="mt-radio-inline">
+                                                            <label class="mt-radio mt-radio-outline" style="font-size:small">
+                                                                <input type="radio" id="IsAsuransiForAllTrue" name="IsAsuransiForAll" value=true />Ya
+                                                                <span></span>
+                                                            </label>
+                                                            <label class="mt-radio mt-radio-outline" style="font-size:small">
+                                                                <input type="radio" id="IsAsuransiForAllFalse" name="IsAsuransiForAll" value=false />Tidak
+                                                                <span></span>
+                                                            </label>
+                                                        </div>
+                                                    </div>
+                                                    <label class="control-label col-md-3">Nilai Tanggungan</label>
+                                                    <div class="col-md-9">
+                                                        <div class="mt-radio-list">
+                                                            <label class="mt-radio mt-radio-outline" style="font-size:small">
+                                                                <input type="radio" id="TipeNilaiTanggunganForAll" name="TipeNilaiTanggunganForAll" value="REAL" class="IsAsuransiForAll" disabled="disabled" />Real
+                                                                <span></span>
+                                                            </label>
+                                                            <div class="row">
+                                                                <div class="col-md-2">
+                                                                    <label class="mt-radio mt-radio-outline" style="font-size:small">
+                                                                        <input type="radio" id="TipeNilaiTanggunganForAll" name="TipeNilaiTanggunganForAll" value="RP" class="IsAsuransiForAll" disabled="disabled" />Rp.
+                                                                        <span></span>
+                                                                    </label>
+                                                                </div>
+                                                                <div class="col-md-5">
+                                                                    <input type="text" class="form-control-numeric-idr RP" id="NilaiTanggunganForAll" name="NilaiTanggunganForAll" disabled="disabled" />
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    @Html.Label("Penanggung", new { @class = "control-label col-md-3" })
+                                                    <div class="col-md-9">
+                                                        <div class="mt-radio-inline">
+                                                            <label class="mt-radio mt-radio-outline" style="font-size:small">
+                                                                <input type="radio" id="PenanggungForAll" name="PenanggungForAll" value="MKA" class="IsAsuransiForAll" disabled="disabled" />PT. MANGGALA KIAT ANANDA
+                                                                <span></span>
+                                                            </label>
+                                                            <label class="mt-radio mt-radio-outline" style="font-size:small">
+                                                                <input type="radio" id="PenanggungForAll" name="PenanggungForAll" value="CUSTOMER" class="IsAsuransiForAll" disabled="disabled" />Customer
+                                                                <span></span>
+                                                            </label>
+                                                        </div>
+                                                    </div>
+                                                    @Html.Label("Premi", new { @class = "control-label col-md-3" })
+                                                    <div class="col-md-2">
+                                                        <input type="text" class="form-control-numeric-persen IsAsuransiForAll" id="PremiForAll" name="PremiForAll" style="text-align:right" disabled="disabled" />
+                                                    </div>
+                                                    <label class="mt-checkbox mt-checkbox-outline" style="font-size:small; margin-bottom:5px">
+                                                        <input type="checkbox" id="isApplyToAll" name="isApplyToAll" value=true />Apply to All
+                                                        <span></span>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                        
+                                </div>
+                            </div>
+                            <hr />
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.PeriodStart, new { @class = "control-label col-md-3" })
+                                        <div class="col-md-3">
+                                            @Html.TextBoxFor(model => model.PeriodStart, new { @class = "form-control input-sm col-md-3" }) 
+                                            @Html.ValidationMessageFor(model => model.PeriodStart)
+                                        </div>
+                                        <div class="col-md-3">
+                                            @Html.TextBoxFor(model => model.PeriodEnd, new { @class = "form-control input-sm col-md-3" }) 
+                                            @Html.ValidationMessageFor(model => model.PeriodEnd)
+                                        </div>
+                                        <div class="col-md-1">
+                                            <button type="button" class="btn btn-sm btn-success" data-toggle="modal" onclick="showModalImport()">Import</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.IdTypeKontrak, new { @class = "control-label col-md-3" })
+                                        <div class="col-md-3">
+                                            @Html.TextBoxFor(model => model.IdTypeKontrak, new { @class = "form-control input-sm" }) @Html.ValidationMessageFor(model => model.IdTypeKontrak)
+                                        </div>
+                                        <label class="control-label"><i class="fa fa-question-circle fa-2x font-green" aria-hidden="true" data-toggle="modal" data-target="#modalDetailKontrak" style="cursor:pointer"></i></label>                                        
+                                    </div>
+                                </div>
+                            </div>
+                            <hr />
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="button-group pull-right">
+                                        <button type="button" class="btn btn-sm btn-success" data-toggle="modal" data-target="#modalItem" onclick="ShowModalItem()">
+                                            <i class="fa fa-plus" aria-hidden="true"></i> Add
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <br />
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div id="GridItem" style="width: auto"></div>
+                                    @Html.HiddenFor(model => Model.StrItem)
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="tab_Kondisi">
+                            @Html.Partial("_TabKondisi", Model)
+                        </div>
+                        <div class="tab-pane fade" id="tab_Dokumen">
+                            <div id="GridAtt"></div>
+                            @Html.HiddenFor(model => Model.StrAttachment)
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group" style="padding: 15px 0px 0px 0px">
+                <div class="col-md-offset-10">
+                    <button type="submit" class="btn btn-success" style="width: 100px">Submit</button>
+                    <a href="@backLink" class="btn btn-link" style="width: 100px">Cancel</a>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+<div id="modalDetailKontrak" class="modal fade" role="dialog" data-replace="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                <h4 class="caption modal-title font-black-sharp sbold">Detail Tipe Kontrak</h4>
+            </div>
+            <div class="modal-body">
+                <ul>
+                    <li>
+                        <label class="caption-subject font-black-sharp sbold">Type Kontrak terpilih yaitu Type 1, Contoh: CPI</label>
+                        <ol>
+                            <li>
+                                Nilai Kontrak 20.904.480 dibagi jumlah hari kerja = 836.179 (Angka di belakang desimal tidak
+                                dihitung)
+                            </li>
+                            <li>Nilai 836.179 dikali hari kerja = 20.904.475</li>
+                            <li>Nilai kontrak (20.904.480) - perkalian no 2(20.904.475) = 5</li>
+                            <li>5 dibagi 5 dan dimasukan kehari kontrak sampai hari ke n</li>
+                            <li>Jadi tagihan perhari dari hari kerja 1-5 = 836.179 + 1 = 836.180</li>
+                            <li>Tagihan dari hari kerja 6 - 25 = 836.179</li>
+                            <li>Bila mobil tidak hadir di customer mamka dikurangi 836.179 per berapa hari ketidak hadiran</li>
+                        </ol>
+                    </li>
+                    <li>
+                        <label class="caption-subject font-black-sharp sbold">Type Kontrak terpilih yaitu Type 2, Contoh: AFD</label>
+                        <ol>
+                            <li>Customer membayar pada awal bulan sebesar nilai kontrak</li>
+                            <li>Tidak ada pembagian proporsional untuk pemakaian</li>
+                            <li>Customer berhak memakai truck untuk pemakaian yang tidak terbatas perharinya.</li>
+                            <li>Pemakainan truck tidak dibagi menurut kehadiran MKA</li>
+                            <li>Nilai kontrak tetap saat ada pemakaian maupun tidak</li>
+                        </ol>
+                    </li>
+                    <li>
+                        <label class="caption-subject font-black-sharp sbold">Type Kontrak terpilih yaitu Type 3, Contoh: Elders/Santori</label>
+                        <ol>
+                            <li>Customer akan mengirimkan nilai kontrak perbulan</li>
+                            <li>Nilai kontrak akan menjadi proporsional ( 20.904.480/25=836.179,2)</li>
+                            <li>Perhari pemakaian maka nilainya seperti no.2</li>
+                            <li>Pemakaian kontrak perhari adalah 1 rit</li>
+                            <li>Bila atas kesalahan MKA mobil tidak hadir akan dikurangi nilai perhari seperti no 2</li>
+                            <li>Bila ada pemakaian melebihi nilai kontrak (rit2) maka ditambahkan senilai 936.179,2</li>
+                        </ol>
+                    </li>
+                </ul>
+            </div>
+            <div class="modal-footer">
+                <button type="button" data-dismiss="modal" class="btn dark btn-outline">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="modalItem" class="modal fade modal-full" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-full">
+        <div id="modalForm" class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                <h4 class="caption">Tambah Data</h4>
+            </div>
+            <div class="modal-body">
+                <span id="notif" style="display:none;"></span>
+                <div id="appendto" style="text-align: center;"></div>
+                <br />
+                <form id="formItem" class="form-horizontal">
+                    <input type="hidden" id="Iditem" />
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="control-label col-md-4">Nama Rute Daftar Harga<span style="color: red">&nbsp; *</span></label>
+                            <div class="col-md-7">
+                                <input type="text" class="form-control input-sm" id="NamaRuteDHK" name="NamaRuteDHK" required data-required-msg="Nama harus diisi." />
+                                <span class="k-invalid-msg" data-for="NamaRuteDHK"></span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label col-md-4">Rute<span style="color: red">&nbsp; *</span></label>
+                            <div class="col-md-7">
+                                <div class="input-group input-group-sm">
+                                    <input type="hidden" id="ListRuteId" name="ListRuteId" required data-required-msg="Rute harus diisi." />
+                                    <input id="ListRuteNama" name="ListRuteNama" type="text" class="form-control input-sm" readonly />
+                                    <span class="input-group-btn">
+                                        <button type="button" class="btn btn-success" data-toggle="modal" data-target="#modalGridRute">Browse</button>
+                                    </span>
+                                </div>
+                                <span class="k-invalid-msg" data-for="ListRuteId"></span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label col-md-4">Jenis Truk<span style="color: red">&nbsp; *</span></label>
+                            <div class="col-md-7">
+                                <input type="text" class="form-control input-sm" id="IdJenisTruck" name="IdJenisTruck" required data-required-msg="Jenis Truk Harus Diisi." />
+                                <span class="k-invalid-msg" data-for="IdJenisTruck"></span>
+                            </div>
+                        </div>
+                        <div class="form-group">                            
+                            <label class="control-label col-md-4">Minimum Berat<span style="color: red">&nbsp; *</span></label>
+                            <div class="col-md-7">
+                                <input type="text" class="form-control-numeric" id="BeratMinimum" name="BeratMinimum" required data-required-msg="Minimum harus diisi." />
+                                <span class="k-invalid-msg" data-for="BeratMinimum"></span>
+                            </div>
+                        </div>
+                        <div class="form-group">                            
+                            <label class="control-label col-md-4">Harga (Rp)<span style="color: red">&nbsp;*</span></label>
+                            <div class="col-md-4">
+                                <input type="text" class="form-control-numeric-idr" id="Harga" name="Harga" required data-required-msg="Harga harus diisi." />
+                                <span class="k-invalid-msg" data-for="Harga"></span>
+                            </div>
+                            @Html.Label("/", new { @class = "control-label pull-left" })
+                            <div class="col-md-3">
+                                <input type="text" class="form-control input-sm" id="IdSatuanHarga" name="IdSatuanHarga" required data-required-msg="Satuan Harga Harus Diisi." />
+                                <span class="k-invalid-msg" data-for="IdSatuanHarga"></span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            @Html.Label("Harga Rit Ke-2", new { @class = "control-label col-md-4" })
+                            <div class="col-md-7">
+                                <input type="text" class="form-control-numeric-idr" id="HargaRit2" name="HargaRit2" />
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            @Html.Label("Overtime/Jam", new { @class = "control-label col-md-4" })
+                            <div class="col-md-7">
+                                <input type="text" class="form-control-numeric-idr" id="Overtime" name="Overtime" />
+                            </div>
+                        </div>
+                        <div class="form-group">                            
+                            <label class="control-label col-md-4">Ritase/Bulan<span style="color: red">&nbsp;*</span></label>
+                            <div class="col-md-7">
+                                <input type="text" class="form-control-numeric" id="RitaseBulan" name="RitaseBulan" required data-required-msg="Ritase Per-Bulan Harus Diisi." />
+                                <span class="k-invalid-msg" data-for="RitaseBulan"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="control-label col-md-5">Asuransi</label>
+                            <div class="mt-checkbox-outline col-md-7">
+                                <label class="mt-checkbox mt-checkbox-outline" style="font-size:small; margin-bottom:5px">
+                                    <input type="checkbox" id="IsAsuransi" name="IsAsuransi" value=true />
+                                    <span></span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label col-md-5">Penanggung</label>
+                            <div class="col-md-7">
+                                <div class="mt-radio-inline">
+                                    <label class="mt-radio mt-radio-outline IsAsuransi" style="font-size:small">
+                                        <input type="radio" name="pihakPenanggung" value="MKA" class="IsAsuransi" disabled="disabled" />PT. MANGGALA KIAT ANANDA
+                                        <span></span>
+                                    </label>
+                                    <label class="mt-radio mt-radio-outline IsAsuransi" style="font-size:small">
+                                        <input type="radio" name="pihakPenanggung" value="CUSTOMER" class="IsAsuransi" disabled="disabled" />Customer
+                                        <span></span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label col-md-5">Premi</label>
+                            <div class="col-md-7">
+                                <input type="text" class="form-control-numeric-persen IsAsuransi" id="Premi" name="Premi" disabled="disabled" />
+                                <span class="k-invalid-msg" data-for="Premi"></span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            @Html.Label("Nilai Tanggungan", new { @class = "control-label col-md-5" })
+                            <div class="col-md-7">
+                                <div class="mt-radio-list">
+                                    <label class="mt-radio mt-radio-outline" style="font-size:small">
+                                        <input type="radio" id="TipeNilaiTanggungan" name="TipeNilaiTanggungan" value="REAL" class="IsAsuransi" disabled="disabled" />Real
+                                        <span></span>
+                                    </label>
+                                    <div class="row">
+                                        <div class="col-md-2">
+                                            <label class="mt-radio mt-radio-outline" style="font-size:small">
+                                                <input type="radio" id="TipeNilaiTanggungan" name="TipeNilaiTanggungan" value="RP" class="IsAsuransi" disabled="disabled" />Rp.
+                                                <span></span>
+                                            </label>
+                                        </div>
+                                        <div class="col-md-10">
+                                            <input type="text" class="form-control-numeric-idr TipeNilaiTanggunganRp" id="NilaiTanggungan" name="NilaiTanggungan" disabled="disabled" />
+                                        </div>
+                                    </div>
+                                </div>
+                                @*<input type="text" class="form-control-numeric-idr IsAsuransi" id="NilaiTanggungan" name="NilaiTanggungan" disabled="disabled" />*@
+                                @*<span class="k-invalid-msg" data-for="TanggunganItem"></span>*@
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            @Html.Label("Keterangan", new { @class = "control-label col-md-5" })
+                            <div class="col-md-7">
+                                <textarea class="form-control input-sm" id="KeteranganItem"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <div class="col-md-8 col-md-offset-4">
+                    <button type="button" class="btn btn-success" onclick="SaveItem()">Submit</button>
+                    <button type="button" class="btn btn-link" data-dismiss="modal">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="modalGridCust" class="modal fade bs-modal-lg" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div id="modalForm" class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                <h4 class="modal-title">List Customer</h4>
+            </div>
+            <div class="modal-body">
+                <div id="GridCust"></div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="modalGridRute" class="modal fade bs-modal-lg" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div id="modalForm" class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                <h4 class="modal-title">List Rute</h4>
+            </div>
+            <div class="modal-body">
+                <div id="GridRute"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn green" onclick="SelectRute();">Submit</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="modalImportDaftarHarga" class="modal fade bs-modal" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+        <div id="modalForm" class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                <h4 class="modal-title">Import Daftar Harga</h4>
+            </div>
+            <div class="modal-body">
+                <form id="formImport" class="form-horizontal">
+                    <div class="form-group">
+                        @Html.Label("Customer/Pelanggan", new { @class = "control-label col-md-4" })
+                        <div class="col-md-8">
+                            <input type="text" class="form-control input-sm" id="IdCustImportHarga" name="IdCustImportHarga" required data-required-msg="Customer/Pelanggan Harus Diisi." />
+                            <span class="k-invalid-msg" data-for="IdCustImportHarga"></span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        @Html.Label("Periode", new { @class = "control-label col-md-4" })
+                        <div class="col-md-8">
+                            <input type="text" class="form-control input-sm" id="CustImportPeriode" name="CustImportPeriode" required data-required-msg="Periode Harga Harus Diisi." />
+                            <span class="k-invalid-msg" data-for="CustImportPeriode"></span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        @Html.Label("Penyesuaian Harga", new { @class = "control-label col-md-4" })
+                        <div class="col-md-8">
+                            <div class="col-md-6 col-xs-6" style="padding-left: 0px">
+                                <input type="text" class="form-control input-sm" id="idPenyesuaianHarga" name="idPenyesuaianHarga" />
+                            </div>
+                            <div class="col-md-2 col-xs-2" style="padding-left: 0px; padding-right: 0px">
+                                <input type="text" class="form-control-numeric-persen" id="NilaiPenyesuaianHarga" name="NilaiPenyesuaianHarga" style="text-align:right" />
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="btn-load" class="btn btn-success" data-toggle="modal" data-target="#modalGridItemDetails">Detail</button>
+                <button type="button" class="btn green" onclick="loadItemFromHistory() ">Import</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="modalGridItemDetails" class="modal fade bs-modal-full" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-full">
+        <div id="modalForm" class="modal-content">
+            <div class="modal-header" id="titlePeriode">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                <h4 class="modal-title"></h4>
+                <h5 class="modal-title"></h5>
+            </div>
+            <div class="modal-body">
+                <div id="GridItemDetails"></div>
+            </div>
+        </div>
+    </div>
+</div>
+@section scripts
+{
+    <script type="text/javascript">
+    var dsGrid = [];
+    var dsGridItemDetails;
+    var dsAttch = [];
+    var dsPeriodeHarga;
+    var dsImportHarga;
+    var dsDHK;    
+    var dsDHKKondisi;
+    var checkedIds = {};
+    var checkedNama = {};
+    var FormValidator;
+    var FormValidatorImport;
+    var gridRute;
+    var gridItem;
+    var gridItemDetails;
+    var gridCust;
+    var gridAtt;
+    var currDataItem;
+    var cboPeriodeHarga;
+    var applyForAll;
+    var statusAsuransi;
+    var dsRute;
+
+    @foreach(DaftarHargaKontrakItem item in Model.listItem) {
+        <text>
+    dsGrid.push({
+        Id: parseInt('@item.Id'),
+        NamaRuteDaftarHarga: '@item.NamaRuteDaftarHarga',
+        ListIdRute: '@item.ListIdRute',
+        ListNamaRute: '@item.ListNamaRute',
+        IdJenisTruck: parseInt('@item.IdJenisTruck'),
+        NamaJenisTruck: '@item.NamaJenisTruck',
+        BeratMinimum: parseInt('@item.BeratMinimum'),
+        Harga: parseFloat('@item.Harga'),
+        IdSatuanHarga: parseInt('@item.IdSatuanHarga'),
+        SatuanHarga: '@item.SatuanHarga',
+        HargaRit2: parseFloat('@item.HargaRit2'),
+        Overtime: parseFloat('@item.Overtime'),
+        RitaseBulan: parseInt('@item.RitaseBulan'),
+        IsAsuransi: '@item.IsAsuransi',
+        Premi: '@item.Premi',
+        PihakPenanggung: '@item.PihakPenanggung',
+        TipeNilaiTanggungan: '@item.TipeNilaiTanggungan',
+        NilaiTanggungan: parseFloat('@item.NilaiTanggungan'),
+        Keterangan: '@item.Keterangan',
+    });
+    </text>
+    };
+
+    @foreach(DaftarHargaKontrakAttachment item in Model.listAtt){
+        <text>
+    dsAttch.push({
+        Id: parseInt('@item.Id'),
+        FileName: '@item.FileName',
+        RFileName: '@item.RFileName',
+    });
+    </text>
+    }
+
+    function SelectCust(e) {
+        e.preventDefault();
+        var data = this.dataItem(getDataRowGrid(e));
+        if (callerGrid = 'notif') {
+            $('#IdCust').val(data.Id);
+            $('#KodeCustomer').val(data.CustomerCode);
+            $('#KodeNama').val(data.CustomerCodeOld);
+            $('#NamaCustomer').val(data.CustomerNama);
+            $('#modalGridCust').modal('hide');
+        }
+        if (data.id != null || data.id != '') {
+            callAjax(data.Id);
+            gridRute.setDataSource(dsRute);
+            refreshRute();
+        }
+    };
+
+    function callAjax(id) {
+        dsRute = new kendo.data.DataSource({
+            transport: {
+                read: {
+                    url: '@Url.Action("BindingPerCustomer", "Rute")?CustId=' + id,
+                    dataType: "json"
+                },
+                parameterMap: function (options, operation) {
+                    if (operation !== "read" && options != '') {
+                        return kendo.stringify(options);
+                    }
+                    else if (operation == "read") {
+                        if (options.filter) {
+                            filter = options.filter.filters;
+                            for (var i in filter) {
+                                if (filter[i].field == "Asal") {
+                                    filter[i].field = "LocationAsal.Nama";
+                                }
+                                if (filter[i].field == "AreaAsal") {
+                                    filter[i].field = "AreaAsal.Nama";
+                                }
+                                if (filter[i].field == "Tujuan") {
+                                    filter[i].field = "LocationTujuan.Nama";
+                                }
+                                if (filter[i].field == "AreaTujuan") {
+                                    filter[i].field = "AreaTujuan.Nama";
+                                }
+                                if (filter[i].field == "Multidrop") {
+                                    filter[i].field = "Multidrop.tujuan";
+                                }
+                            }
+                        }
+                        if (options.sort) {
+                            sort = options.sort;
+                            for (var i in sort) {
+                                if (sort[i].field == "Asal") {
+                                    sort[i].field = "LocationAsal.Nama";
+                                }
+                                if (sort[i].field == "AreaAsal") {
+                                    sort[i].field = "AreaAsal.Nama";
+                                }
+                                if (sort[i].field == "Tujuan") {
+                                    sort[i].field = "LocationTujuan.Nama";
+                                }
+                                if (sort[i].field == "AreaTujuan") {
+                                    sort[i].field = "AreaTujuan.Nama";
+                                }
+                                if (sort[i].field == "Multidrop") {
+                                    sort[i].field = "Multidrop.tujuan";
+                                }
+                            }
+                        }
+                        return options;
+                    }
+                }
+            },
+            schema: {
+                total: "total",
+                data: "data",
+                model: {
+                    fields: {
+                        "Id": { type: "number" },
+                        "Kode": { type: "string" },
+                        "Nama": { type: "string" },
+                        "Asal": { type: "string" },
+                        "AreaAsal": { type: "string" },
+                        "Tujuan": { type: "string" },
+                        "AreaTujuan": { type: "string" },
+                        "MultiDrop": { type: "string" },
+                        "Jarak": { type: "number" },
+                        "WaktuKerja": { type: "number" },
+                        "WatkuTempuh": { type: "number" },
+                        "Toleransi": { type: "number" },
+                        "Keterangan": { type: "number" },
+                    }
+                }
+            },
+            pageSize: 10,
+            pageable: true,
+            serverFiltering: true,
+            serverPaging: true,
+            serverSorting: true,
+            sortable: true,
+        });
+    }
+
+    function selectRow() {
+        var checked = this.checked,
+        row = $(this).closest("tr"),
+        dataItem = gridRute.dataItem(row);
+        checkedIds[dataItem.Id] = checked;
+        checkedNama[dataItem.Nama] = checked;
+        if (checked) {
+            //-select the row
+            row.addClass("k-state-selected");
+        } else {
+            //-remove selection
+            row.removeClass("k-state-selected");
+        }
+    };
+
+    function onDataBound(e) {
+        var view = this.dataSource.view();
+        for (var i = 0; i < view.length; i++) {
+            if (checkedIds[view[i].Id]) {
+                this.tbody.find("tr[data-uid='" + view[i].uid + "']")
+                .addClass("k-state-selected")
+                .find(".checkbox")
+                .attr("checked", "checked");
+            }
+        }
+    };
+
+    function SelectRute() {
+        var checked = [];
+        var checked2 = [];
+        for (var i in checkedIds) {
+            if (checkedIds[i]) {
+                checked.push(i);
+            }
+        }
+        for (var i in checkedNama) {
+            if (checkedNama[i]) {
+                checked2.push(i);
+            }
+        }
+
+        $('#ListRuteId').val(checked.join(','));
+        $('#ListRuteNama').val(checked2.join(', '));
+        $('#modalGridRute').modal('hide');
+    };
+    function refreshRute() {
+        gridRute.dataSource.read();
+        gridRute.refresh();
+    };
+    function ShowModalItem() {
+        isEdited = false;
+        $('.k-invalid-msg').hide();
+        $('#Iditem').val(0);
+        $('#NamaRuteDHK').val("");
+        $('#ListRuteId').val("");
+        $('#ListRuteNama').val("");
+        $('#IdJenisTruck').data('kendoComboBox').value(-1);
+        $('#IdJenisTruck').data('kendoComboBox').text("");
+        $('#BeratMinimum').data("kendoNumericTextBox").value("");
+        $('#Harga').data("kendoNumericTextBox").value("");
+        $('#IdSatuanHarga').data('kendoComboBox').value(-1);
+        $('#IdSatuanHarga').data('kendoComboBox').text("");
+        $('#HargaRit2').data("kendoNumericTextBox").value("");
+        $('#Overtime').data("kendoNumericTextBox").value(""),
+        $('#RitaseBulan').data("kendoNumericTextBox").value("");
+        if ($('#isApplyToAll').is(':checked')) {
+            $('input[name=IsAsuransiForAll]:checked').val() == 'true' ? $("#IsAsuransi").prop('checked', true) : $("#IsAsuransi").prop('checked', false);
+            if ($('input[name=TipeNilaiTanggunganForAll][type=radio]:checked').val() == 'REAL') {
+                $('input[name=TipeNilaiTanggungan][value=REAL]').prop('checked', true)
+            } else if ($('input[name=TipeNilaiTanggunganForAll][type=radio]:checked').val() == 'RP') {
+                $('input[name=TipeNilaiTanggungan][value=RP]').prop('checked', true)
+            } else {
+                $("#TipeNilaiTanggungan").prop('checked', false);
+            }
+            $('#NilaiTanggunganForAll').data('kendoNumericTextBox').value() == '' ? $('#NilaiTanggungan').data("kendoNumericTextBox").value("") : $('#NilaiTanggungan').data("kendoNumericTextBox").value($('#NilaiTanggunganForAll').val());
+            var tempPremi = $('#PremiForAll').val();
+            $('#PremiForAll').data("kendoNumericTextBox").value() == '' ? $('#Premi').data("kendoNumericTextBox").value('') : $('#Premi').data("kendoNumericTextBox").value($('#PremiForAll').val());
+            $('input[name=PenanggungForAll][type=radio]:checked').val() == 'MKA' ? $('input[name=pihakPenanggung][value=MKA]').prop('checked', true) : $('input[name=pihakPenanggung][value=CUSTOMER]').prop('checked', true);
+        } else {
+            $("#IsAsuransi").prop('checked', false);
+            $('.IsAsuransi').prop('disabled', true);
+            $('input[name=pihakPenanggung]').prop('checked', false);
+            $('input[name=TipeNilaiTanggungan]').prop('checked', false);
+            $('input[name=Premi]').data('kendoNumericTextBox').value('');
+            $('input[name=NilaiTanggungan]').data('kendoNumericTextBox').value('');
+        }
+        $('#KeteranganItem').val("");
+
+
+        checkedIds = {};
+        checkedNama = {};
+        gridRute.dataSource.read();
+        gridRute.refresh();
+
+    };
+    function EditModalItem(e) {
+        e.preventDefault();
+        isEdited = true;
+        var data = this.dataItem(getDataRowGrid(e));
+        currDataItem = data;
+
+        $('.k-invalid-msg').hide();
+        $('#Iditem').val(data.Id);
+        $('#NamaRuteDHK').val(data.NamaRuteDaftarHarga);
+        $('#ListRuteId').val(data.ListIdRute);
+        $('#ListRuteNama').val(data.ListNamaRute);
+        $('#IdJenisTruck').data('kendoComboBox').value(data.IdJenisTruck);
+        $('#BeratMinimum').data("kendoNumericTextBox").value(data.BeratMinimum);
+        $('#Harga').data("kendoNumericTextBox").value(data.Harga);
+        $('#IdSatuanHarga').data('kendoComboBox').value(data.IdSatuanHarga);
+        $('#HargaRit2').data("kendoNumericTextBox").value(data.HargaRit2);
+        $('#Overtime').data("kendoNumericTextBox").value(data.Overtime);
+        $('#RitaseBulan').data("kendoNumericTextBox").value(data.RitaseBulan);
+        if ($('#isApplyToAll').is(':checked')) {
+            //set value in modal item
+            $('input[name=IsAsuransiForAll]:checked').val() == 'true' ? $("#IsAsuransi").prop('checked', true) : $("#IsAsuransi").prop('checked', false);
+            if ($('input[name=TipeNilaiTanggunganForAll][type=radio]:checked').val() == 'REAL') {
+                $('input[name=TipeNilaiTanggungan][value=REAL]').prop('checked', true)
+            } else if ($('input[name=TipeNilaiTanggunganForAll][type=radio]:checked').val() == 'RP') {
+                $('input[name=TipeNilaiTanggungan][value=RP]').prop('checked', true)
+            } else {
+                $("#TipeNilaiTanggungan").prop('checked', false);
+            }
+            $('#NilaiTanggunganForAll').data('kendoNumericTextBox').value() == '' ? $('#NilaiTanggungan').data("kendoNumericTextBox").value("") : $('#NilaiTanggungan').data("kendoNumericTextBox").value($('#NilaiTanggunganForAll').val());
+            var tempPremi = $('#PremiForAll').val();
+            $('#PremiForAll').data("kendoNumericTextBox").value() == '' ? $('#Premi').data("kendoNumericTextBox").value('') : $('#Premi').data("kendoNumericTextBox").value($('#PremiForAll').val());
+            $('input[name=PenanggungForAll][type=radio]:checked').val() == 'MKA' ? $('input[name=pihakPenanggung][value=MKA]').prop('checked', true) : $('input[name=pihakPenanggung][value=CUSTOMER]').prop('checked', true);
+            //set value in gridItem
+
+        } else {
+            if (data.IsAsuransi) {
+                $("#IsAsuransi").prop("checked", true)
+                $('.IsAsuransi').prop('disabled', false);
+            } else {
+                $("#IsAsuransi").prop("checked", false);
+                $('.IsAsuransi').prop('disabled', true);
+            }
+            if (data.PihakPenanggung == 'MKA') {
+                $('input[name=pihakPenanggung][value=MKA]').prop('checked', true);
+            } else if (data.PihakPenanggung == 'CUSTOMER') {
+                $('input[name=pihakPenanggung][value=CUSTOMER]').prop('checked', true);
+            } else {
+                $('input[name=pihakPenanggung]').prop('checked', false);
+            }
+            if (data.TipeNilaiTanggungan == 'RP') {
+                $('input[type=radio][name=TipeNilaiTanggungan][value=RP]').prop('checked', true);
+                $('.TipeNilaiTanggunganRp').prop('disabled', false);
+            } else if (data.TipeNilaiTanggungan == 'REAL') {
+                $('input[name=TipeNilaiTanggungan][value=REAL]').prop('checked', true);
+                $('.TipeNilaiTanggunganRp').prop('disabled', true);
+            } else {
+                $('input[name=TipeNilaiTanggungan]').prop('checked', false);
+            }
+            $('#Premi').data("kendoNumericTextBox").value(data.Premi);
+            $('#NilaiTanggungan').data("kendoNumericTextBox").value(data.NilaiTanggungan);
+        }
+        $('#KeteranganItem').val(data.Keterangan);
+
+        checkedIds = {};
+        checkedNama = {};
+
+        var substrRute = data.ListIdRute.split(',');
+        for (var i = 0; i < substrRute.length; i++) {
+            checkedIds[substrRute[i]] = true;
+        }
+
+        var substrRuteNama = data.ListNamaRute.split(', ');
+        for (var i = 0; i < substrRuteNama.length; i++) {
+            checkedNama[substrRuteNama[i]] = true;
+        }
+
+        gridRute.dataSource.read();
+        gridRute.refresh();
+        $("#modalItem").modal('show');
+    };
+    function isValidItem() {
+        var currRuteId = $('#ListRuteId').val();
+        var currTruk = $('#IdJenisTruck').data("kendoComboBox").value();
+        var currSatuan = $('#IdSatuanHarga').data("kendoComboBox").value();
+        var currUid = currDataItem == null ? "0" : currDataItem.uid;
+        var ds = gridItem.dataSource.data();
+        var results = true;
+
+        ds = $.grep(ds, function (item, index) {
+        //    return item.uid != currUid && item.ListIdRute == currRuteId && item.IdJenisTruck == currTruk && item.IdSatuanHarga == currSatuan;
+        });
+        
+        if (ds.length > 0) {
+            results = false;
+        }
+
+        return results;
+    }
+    function SaveItem() {
+        if (FormValidator.validate()) {
+            if (isValidItem()) {
+                if (isEdited == false) {
+                    gridItem.dataSource.add({
+                        Id: $('#Iditem').val(),
+                        NamaRuteDaftarHarga: $('#NamaRuteDHK').val(),
+                        ListIdRute: $('#ListRuteId').val(),
+                        ListNamaRute: $('#ListRuteNama').val(),
+                        IdJenisTruck: $('#IdJenisTruck').data("kendoComboBox").value(),
+                        NamaJenisTruck: $('#IdJenisTruck').data("kendoComboBox").text(),
+                        BeratMinimum: $('#BeratMinimum').data("kendoNumericTextBox").value(),
+                        Harga: $('#Harga').data("kendoNumericTextBox").value(),
+                        IdSatuanHarga: $('#IdSatuanHarga').data("kendoComboBox").value(),
+                        SatuanHarga: $('#IdSatuanHarga').data("kendoComboBox").text(),
+                        HargaRit2: $('#HargaRit2').data("kendoNumericTextBox").value(),
+                        Overtime: $('#Overtime').data("kendoNumericTextBox").value(),
+                        RitaseBulan: $('#RitaseBulan').data("kendoNumericTextBox").value(),
+                        IsAsuransi: $("#IsAsuransi").is(":checked"),//isAsuransiValue,
+                        PihakPenanggung: $('input[type=radio][name=pihakPenanggung]:checked').val(),
+                        TipeNilaiTanggungan: $('input[type=radio][name=TipeNilaiTanggungan]:checked').val(),
+                        Premi: $('#Premi').data("kendoNumericTextBox").value(),
+                        NilaiTanggungan: $('#NilaiTanggungan').data("kendoNumericTextBox").value(),
+                        Keterangan: $('#KeteranganItem').val()
+                    });
+                    gridItem.dataSource.sync();
+                }
+                else {
+                    currDataItem.set("Id", $('#Iditem').val());
+                    currDataItem.set("NamaRuteDaftarHarga", $('#NamaRuteDHK').val());
+                    currDataItem.set("ListIdRute", $('#ListRuteId').val());
+                    currDataItem.set("ListNamaRute", $('#ListRuteNama').val());
+                    currDataItem.set("IdJenisTruck", $('#IdJenisTruck').data("kendoComboBox").value());
+                    currDataItem.set("NamaJenisTruck", $('#IdJenisTruck').data("kendoComboBox").text());
+                    currDataItem.set("BeratMinimum", $('#BeratMinimum').data("kendoNumericTextBox").value());
+                    currDataItem.set("Harga", $('#Harga').data("kendoNumericTextBox").value());
+                    currDataItem.set("IdSatuanHarga", $('#IdSatuanHarga').data("kendoComboBox").value());
+                    currDataItem.set("SatuanHarga", $('#IdSatuanHarga').data("kendoComboBox").text());
+                    currDataItem.set("HargaRit2", $('#HargaRit2').data("kendoNumericTextBox").value());
+                    currDataItem.set("Overtime", $('#Overtime').data("kendoNumericTextBox").value());
+                    currDataItem.set("RitaseBulan", $('#RitaseBulan').data("kendoNumericTextBox").value());
+                    currDataItem.set("IsAsuransi", $("#IsAsuransi").is(":checked"));
+                    currDataItem.set("PihakPenanggung", $('input[type=radio][name=pihakPenanggung]:checked').val());
+                    currDataItem.set("TipeNilaiTanggungan", $('input[type=radio][name=TipeNilaiTanggungan]:checked').val());
+                    currDataItem.set("Premi", $('#Premi').data("kendoNumericTextBox").value());
+                    currDataItem.set("NilaiTanggungan", $('#NilaiTanggungan').data("kendoNumericTextBox").value());
+                    currDataItem.set("Keterangan", $('#KeteranganItem').val());
+                }
+                $("#modalItem").modal('hide');
+            }
+            else {
+                ErrorNotif('Data sudah ada');
+            }
+        }
+    };
+    function deleteRowGridItem(e) {
+        e.preventDefault();
+        gridItem.removeRow($(e.currentTarget).closest("tr"));
+        gridItem.dataSource.sync();
+    };
+    function deleteItem(e) {
+        e.preventDefault();
+        var gview = $("#gridItem").data("kendoGrid").dataSource.data();
+    };
+    function FileTemplate(container, options) {
+        if (container.RFileName != null) {
+            var extFile = container.RFileName.split('.').pop();
+            var ExtensionImage = ["jpg", "jpeg", "pdf"];
+            if ($.inArray((extFile).toLowerCase(), ExtensionImage) !== -1) {
+                return '<a href="/Uploads/' + container.RFileName + '" target="blank_"> ' + container.RFileName + ' </a>';
+            }
+        }
+    };
+    function getlistFile(options) {
+        var files = []
+        if (options.model.RFileName != "" && options.model.RFileName != null) {
+            files.push({ name: options.model.RFileName })
+        }
+        return files;
+    };
+    function fileUploadEditor(container, options) {
+        $('<input type="file" name="files" id="files"/>')
+           .appendTo(container)
+           .kendoUpload({
+               multiple: false,
+               async: {
+                   saveUrl: "/FileManagement/Upload?Dir=~/Uploads",
+                   removeUrl: "/FileManagement/Delete?Dir=~/Uploads&temp=true",
+                   autoUpload: true
+               },
+               files: getlistFile(options),
+               select: onSelectImage,
+               success: function (e) {
+                   if (e.operation == "upload") {
+                       $(".k-filename:contains('" + e.files[0].name + "')").text('').append('<a href="' + e.response.imagelink + '" target="_blank">' + e.response.fileName.replace(e.response.fileName.substr(0, 36), '') + '</a>');
+                       e.files[0].name = e.response.fileName;
+                       options.model.set("RFileName", e.response.fileName);
+                   } else if (e.operation == "remove") {
+                       options.model.set("RFileName", "");
+                   }
+               },
+           });
+        $("<span class='k-invalid-msg' data-for='files'></span>").appendTo(container);
+    }
+    function showModalImport() {
+        if(@Model.Id == 0){
+            $('.k-invalid-msg').hide();
+
+            $("#IdCustImportHarga").data("kendoComboBox").text('');
+            $("#IdCustImportHarga").data("kendoComboBox").value('');
+
+            cboPeriodeHarga.text('');
+            cboPeriodeHarga.value();
+            cboPeriodeHarga.setDataSource();
+
+            $("#idPenyesuaianHarga").data("kendoComboBox").text('');
+            $("#idPenyesuaianHarga").data("kendoComboBox").value('');
+
+            $("#NilaiPenyesuaianHarga").text('');
+            $("#NilaiPenyesuaianHarga").data("kendoNumericTextBox").value('');
+            dsPeriodeHarga = null;
+                    
+            $("#modalImportDaftarHarga").modal("show");
+        } else {
+            swal({
+                title: "Konfirmasi",
+                text: "Data yang sudah ada akan ditimpa.",
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#DD6B55",
+                confirmButtonText: "Ya",
+                cancelButtonText: "Batal",
+                closeOnConfirm: false
+            },
+            function (isConfirm) {
+                if (isConfirm) {
+                    // ajax call
+                    $.ajax({
+                        url: '@Url.Action("IsUsed", "DaftarHarga")?id=' + this.value(),
+                        type: 'GET',
+                        dataType: 'Json',
+                        cache: false,
+                        success: function (obj) {
+                            console.log(obj);
+                        }
+                    })
+
+
+                    //$('.k-invalid-msg').hide();
+
+                    //$("#IdCustImportHarga").data("kendoComboBox").text('');
+                    //$("#IdCustImportHarga").data("kendoComboBox").value('');
+
+                    //cboPeriodeHarga.text('');
+                    //cboPeriodeHarga.value();
+                    //cboPeriodeHarga.setDataSource();
+
+                    //$("#idPenyesuaianHarga").data("kendoComboBox").text('');
+                    //$("#idPenyesuaianHarga").data("kendoComboBox").value('');
+
+                    //$("#NilaiPenyesuaianHarga").text('');
+                    //$("#NilaiPenyesuaianHarga").data("kendoNumericTextBox").value('');
+                    //dsPeriodeHarga = null;
+                    
+                    //$("#modalImportDaftarHarga").modal("show");
+                    //swal.close();
+                }
+            });
+        }
+    }
+    function loadItemFromHistory() {
+        if (FormValidatorImport.validate()) {
+            var penyesuaian = $("#NilaiPenyesuaianHarga").data("kendoNumericTextBox").value() / 100;
+
+            dsGridItemDetails.fetch();
+            var ds = dsGridItemDetails.data();
+            var dsGrid = new kendo.data.DataSource();
+
+            for (var i = 0; i < ds.length; i++) {
+                //cek Id
+                var dsOld = $.grep(gridItem.dataSource.data(), function (item, index) {
+                    return item.IdJenisTruck == ds[i].IdJenisTruck && item.IdSatuanHarga == ds[i].IdSatuanHarga && item.ListIdRute == ds[i].ListIdRute;
+                });
+
+                if(dsOld.length > 0)
+                    ds[i].Id = dsOld[0].Id;
+                else
+                    ds[i].Id = 0;
+
+                switch ($("#idPenyesuaianHarga").val()) {
+                    case "1":
+                        ds[i].Harga = (ds[i].Harga + (ds[i].Harga * penyesuaian));
+                        ds[i].HargaRit2 = (ds[i].HargaRit2 + (ds[i].HargaRit2 * penyesuaian));
+                        ds[i].Overtime = (ds[i].Overtime + (ds[i].Overtime * penyesuaian));
+                        ds[i].NilaiTanggungan = (ds[i].NilaiTanggungan + (ds[i].NilaiTanggungan * penyesuaian));
+                        break;
+                    case "2":
+                        ds[i].Harga = (ds[i].Harga - (ds[i].Harga * penyesuaian));
+                        ds[i].HargaRit2 = (ds[i].HargaRit2 - (ds[i].HargaRit2 * penyesuaian));
+                        ds[i].Overtime = (ds[i].Overtime - (ds[i].Overtime * penyesuaian));
+                        ds[i].NilaiTanggungan = (ds[i].NilaiTanggungan - (ds[i].NilaiTanggungan * penyesuaian));
+                        break;
+                }
+            }
+            dsGrid.data(ds);
+            gridItem.setDataSource(dsGrid);
+            gridItem.dataSource.sync();
+
+            $("#modalImportDaftarHarga").modal("hide");
+        }
+    };
+    function initForm(status) {
+        $("#btn-load").prop('disabled', true);
+    }
+
+    $(document).ready(function () {
+        var currActionStatus = '@currentAction';
+        FormValidator = $("#formItem").kendoValidator().data("kendoValidator");
+        FormValidatorImport = $("#formImport").kendoValidator().data("kendoValidator");
+        $("#btn-load").prop('disabled', true);
+
+        @if (Model.IdCust.HasValue)
+        {
+            <text>
+        callAjax('@Model.IdCust');
+            </text>
+                
+        }
+        
+        @*@if(ViewBag.errorMsg != null){
+            <text>
+        alert(@ViewBag.errorMsg);
+        </text>
+        }*@
+
+        var dsTypeKontrak = new kendo.data.DataSource({
+            transport: {
+                read: {
+                    url: '@Url.Action("GetTypeKontrak")',
+                    dataType: "json"
+                },
+            },
+        });
+        var dsSatuan = new kendo.data.DataSource({
+            transport: {
+                read: {
+                    url: '@Url.Action("GetSatuanHarga")',
+                    dataType: "json"
+                },
+            },
+        });
+        var dsTruck = new kendo.data.DataSource({
+            transport: {
+                read: {
+                    url: '@Url.Action("GetJnsTruck", "JenisTruck")',
+                    dataType: "json"
+                },
+            },
+        });
+        var dsCustLookup = new kendo.data.DataSource({
+            transport: {
+                read: {
+                    url: '@Url.Action("GetCustomer", "Customer")',
+                    dataType: "json"
+                },
+            },
+        });
+        var dsCust = new kendo.data.DataSource({
+            transport: {
+                read: {
+                    url: '/Customer/Binding/',
+                    dataType: "json"
+                },
+            },
+            schema: {
+                total: "total",
+                data: "data",
+                model: {
+                    fields: {
+                        "Id": { type: "number" },
+                        "CustomerCode": { type: "string" },
+                        "KodeNama": { type: "string" },
+                        "CustomerNama": { type: "string" },
+                        "WajibPO": { type: "boolean" },
+                        "WajibGPS": { type: "boolean" },
+                        "SpecialTreatment": { type: "string" }
+                    }
+                }
+            },
+            pageSize: 10,
+            pageable: true,
+            serverFiltering: true,
+            serverPaging: true,
+            serverSorting: true,
+            sortable: true,
+        });
+
+        InitLookUp($("#IdTypeKontrak"), dsTypeKontrak);
+        // event for isApplyForAll status:
+        $('#isApplyToAll').change(function () {
+            if ($('#isApplyToAll').is(':checked')) {
+                var previousWindowKeyDown = window.onkeydown;
+                swal({
+                    title: "Setting Asuransi",
+                    text: "Apakah anda yakin akan menggunakan setting Asuransi tersebut ?",
+                    type: "warning",
+                    cancelButtonText: "Batal",
+                    showCancelButton: true,
+                    confirmButtonClass: "btn btn-primary",
+                    confirmButtonText: "Ya",
+                    closeOnConfirm: false
+                },
+                    function () {
+                        var ds = gridItem.dataSource.data();
+                        dsOld = [];
+
+                        if (ds.length > 0) {
+                            for (var i = 0; i < ds.length; i++) {
+                                dsOld.push({
+                                    Id: ds[i].Id,
+                                    NamaRuteDaftarHarga: ds[i].NamaRuteDaftarHarga,
+                                    ListIdRute: ds[i].ListIdRute,
+                                    ListNamaRute: ds[i].ListNamaRute,
+                                    IdJenisTruck: ds[i].IdJenisTruck,
+                                    NamaJenisTruck: ds[i].NamaJenisTruck,
+                                    BeratMinimum: ds[i].BeratMinimum,
+                                    Harga: ds[i].Harga,
+                                    IdSatuanHarga: ds[i].IdSatuanHarga,
+                                    SatuanHarga: ds[i].SatuanHarga,
+                                    HargaRit2: ds[i].HargaRit2,
+                                    Overtime: ds[i].Overtime,
+                                    RitaseBulan: ds[i].RitaseBulan,
+                                    IsAsuransi: ds[i].IsAsuransi,
+                                    PihakPenanggung: ds[i].PihakPenanggung,
+                                    TipeNilaiTanggungan: ds[i].TipeNilaiTanggungan,
+                                    Premi: ds[i].Premi,
+                                    NilaiTanggungan: ds[i].NilaiTanggungan,
+                                    Keterangan: ds[i].Keterangan
+                                });
+
+                                ds[i].IsAsuransi = ($('input[name=IsAsuransiForAll][type=radio]:checked').val() === 'true');
+                                ds[i].TipeNilaiTanggungan = $('input[name=TipeNilaiTanggunganForAll][type=radio]:checked').val();
+                                ds[i].NilaiTanggungan = $('#NilaiTanggunganForAll').data("kendoNumericTextBox").value() == '' ? 0 : $('#NilaiTanggunganForAll').data('kendoNumericTextBox').value();
+                                ds[i].PihakPenanggung = $('input[name=PenanggungForAll][type=radio]:checked').val();
+                                ds[i].Premi = $("#PremiForAll").data("kendoNumericTextBox").value() == '' ? 0 : $("#PremiForAll").data("kendoNumericTextBox").value();
+                            };
+                        }
+                        gridItem.dataSource.data(ds);
+                        swal('Applied!', 'Setting Asuransi telah Diterapkan', 'success');
+                    });
+            } else {
+                gridItem.dataSource.data(dsOld);
+            }
+        });
+        // radio button event for IsAsuransiForAll
+        $('input[type=radio][name=IsAsuransiForAll]').click(function () {
+            var related_class = $(this).prop("name");
+            if ($('input[type=radio][name=IsAsuransiForAll][value=true]').is(':checked')) {
+                $('.' + related_class).prop('disabled', false);
+                $('input[type=radio][name=PenanggungForAll][value=MKA]').prop('checked', true);
+                $('input[type=radio][name=TipeNilaiTanggunganForAll][value=REAL]').prop('checked', true);
+            } else {
+                $('.' + related_class).prop('disabled', true);
+                $('input[name=PenanggungForAll]').prop('checked', false);
+                $('input[name=TipeNilaiTanggunganForAll]').prop('checked', false);
+                $('input[name=PremiForAll]').data('kendoNumericTextBox').value('');
+                $('input[name=NilaiTanggunganForAll]').data('kendoNumericTextBox').value('');
+            }
+        });
+        // radio button event for TipeNilaiTanggunganForAll
+        $('input[type=radio][name=TipeNilaiTanggunganForAll]').click(function () {
+            var related_class = $(this).val();
+            $('.' + related_class).prop('disabled', false);
+
+            $('input[type=radio][name=TipeNilaiTanggunganForAll]').not(':checked').each(function () {
+                var other_class = $(this).val();
+                $('.' + other_class).prop('disabled', true);
+                $('input[name=NilaiTanggunganForAll]').data('kendoNumericTextBox').value('');
+            });
+        });
+        // radio button event for TipeNilaiTanggungan
+        $('input[type=radio][name=TipeNilaiTanggungan]').change(function () {
+            if ($('input[type=radio][name=TipeNilaiTanggungan]:checked').val() == 'RP') {
+                $('.TipeNilaiTanggunganRp').prop('disabled', false);
+            } else {
+                $('.TipeNilaiTanggunganRp').prop('disabled', true);
+                $('input[name=NilaiTanggungan]').data('kendoNumericTextBox').value('');
+            }
+        });
+        // checkbox event for IsAsuransi in ModalItem
+        $('input[type=checkbox][name=IsAsuransi]').change(function () {
+            var related_class = $(this).prop("name");
+            if ($(this).is(":checked")) {
+                $('.' + related_class).prop('disabled', false);
+                $('input[type=radio][name=pihakPenanggung][value=MKA]').prop('checked', true);
+                $('input[type=radio][name=TipeNilaiTanggungan][value=REAL]').prop('checked', true);
+            } else {
+                $('.' + related_class).prop('disabled', true);
+                $('input[name=pihakPenanggung]').prop('checked', false);
+                $('input[name=TipeNilaiTanggungan]').prop('checked', false);
+                $('input[name=Premi]').data('kendoNumericTextBox').value('');
+                $('input[name=NilaiTanggungan]').data('kendoNumericTextBox').value('');
+            }
+        });
+        // init data for kendoComboBox
+        $("#IdJenisTruck").kendoComboBox({
+            dataTextField: "StrJenisTruck",
+            dataValueField: "Id",
+            dataSource: dsTruck,
+            filter: "contains",
+            suggest: true,
+            change: truckChange
+        });
+        $("#IdSatuanHarga").kendoComboBox({
+            dataTextField: "SatuanHarga",
+            dataValueField: "IdSatuanHarga",
+            dataSource: dsSatuan,
+            filter: "contains",
+            suggest: true
+        });
+        $("#IdCustImportHarga").kendoComboBox({
+            dataTextField: "CustomerNama",
+            dataValueField: "Id",
+            filter: "contains",
+            serverFiltering: true,
+            suggest: true,
+            dataSource: dsCustLookup,
+            change: custChange
+        });
+        $("#idPenyesuaianHarga").kendoComboBox({
+            dataTextField: "text",
+            dataValueField: "value",
+            dataSource: [
+                { text: "", value: "0" },
+                { text: "Naik", value: "1" },
+                { text: "Turun", value: "2" }
+            ],
+            filter: "contains",
+            suggest: true
+        });
+        cboPeriodeHarga = $("#CustImportPeriode").kendoComboBox({
+            dataTextField: "PeriodeHarga",
+            dataValueField: "Id",
+            filter: "contains",
+            suggest: true,
+            change: onPeriodeChange
+        }).data("kendoComboBox");
+        function custChange(e) {
+            if (this.value() != "") {
+                setPeriodeHarga(this.value());
+            } else {
+                cboPeriodeHarga.text('');
+                cboPeriodeHarga.value();
+                cboPeriodeHarga.setDataSource();
+            }
+        };
+        function onPeriodeChange(e) {
+            if (this.value() != "") {
+                dsGridItemDetails = new kendo.data.DataSource({
+                    transport: {
+                        read: {
+                            url: '/DaftarHargaKontrak/GetItem',//?id=' + this.value() + '?date='+this.text(),
+                            dataType: "json",
+                            data: ({ id: this.value(), date: this.text() })
+                        }
+                    },
+                    schema: {
+                        model: {
+                            fields: {
+                                Id: { type: "number" },
+                                NamaRuteDaftarHarga: { type: "string" },
+                                ListIdRute: { type: "string" },
+                                ListNamaRute: { type: "string" },
+                                IdJenisTruck: { type: "number" },
+                                NamaJenisTruck: { type: "string" },
+                                BeratMinimum: { type: "number" },
+                                Harga: { type: "number" },
+                                HargaRit2: { type: "number" },
+                                Overtime: { type: "number" },
+                                RitaseBulan: { type: "number" },
+                                IsAsuransi: { type: "boolean" },
+                                PihakPenanggung: { type: "string" },
+                                TipeNilaiPenanggung: { type: "string" },
+                                Premi: { type: "number" },
+                                NilaiTanggungan: { type: "number" },
+                                Keterangan: { type: "string" },
+                            }
+                        }
+                    }
+                });
+                gridItemDetails.setDataSource(dsGridItemDetails);
+
+                $("div#titlePeriode h4").html("Daftar Harga Rute<br />" + $("#IdCustImportHarga").data("kendoComboBox").text());
+                $("div#titlePeriode h5").html("Periode " + this.text());
+                $("#btn-load").prop('disabled', false);
+            } else {
+                $("#btn-load").prop('disabled', true);
+            }
+        };
+        function truckChange(e) {
+            if (this.value() != "") {
+                $.ajax({
+                    url: '@Url.Action("GetJnsTruckById", "JenisTruck")?id=' + this.value(),
+                    type: 'GET',
+                    dataType: 'Json',
+                    cache: false,
+                    success: function (obj) {
+                        $("#JenisTruck").val(obj.strJenisTruck);
+                    }
+                })
+            }
+        };
+        function setPeriodeHarga(IdCust) {
+            dsPeriode = new kendo.data.DataSource({
+                transport: {
+                    read: {
+                        url: '/DaftarHargaKontrak/GetPeriodeByCust?id=' + IdCust,
+                        dataType: "json",
+                    }
+                }
+            });
+            cboPeriodeHarga.text('');
+            cboPeriodeHarga.value();
+            cboPeriodeHarga.setDataSource(dsPeriode);
+        };
+        function setDHKItemHistory(IdCust) {
+            dsGridHistory = new kendo.data.DataSource({
+                transport: {
+                    read: {
+                        url: '/DaftarHargaKontrak/GetPeriodeByCust?id=' + IdCust,
+                        dataType: "json"
+                    }
+                }
+            });
+        };
+        //gridSetting
+        gridCust = $("#GridCust").kendoGrid({
+            dataSource: dsCust,
+            filterable: kendoGridFilterable,
+            sortable: true,
+            reorderable: true,
+            resizable: true,
+            pageable: true,
+            columns: [
+                {
+                    command: [
+                        {
+                            name: "select",
+                            text: "Select",
+                            click: SelectCust,
+                            imageClass: "glyphicon glyphicon-ok",
+                            template: '<a class="k-button-icon #=className#" #=attr# href="\\#"><span class="#=iconClass# #=imageClass#"></span></a>'
+                        }
+                    ],
+                    width: "50px"
+                },
+                { field: "CustomerCode", title: "Kode Customer" },
+                { field: "CustomerCodeOld", title: "Kode Nama" },
+                { field: "CustomerNama", title: "Nama Customer" },
+                { field: "WajibPO", title: "Wajib PO", template: "#: WajibPO ? 'Ya' : 'Tidak' #" },
+                { field: "WajibGPS", title: "Wajib GPS", template: "#: WajibGPS ? 'Ya' : 'Tidak' #" },
+                { field: "SpecialTreatment", title: "Prioritas" },
+            ],
+        }).data("kendoGrid");
+        gridRute = $("#GridRute").kendoGrid({
+            dataSource: dsRute,
+            filterable: kendoGridFilterable,
+            sortable: true,
+            reorderable: true,
+            resizable: true,
+            pageable: true,
+            dataBound: onDataBound,
+            columns: [
+                {
+                    template: "<input type='checkbox' class='checkbox'/>",
+                    width: "50px"
+                },
+                { field: "Nama", title: "Nama Rute" },
+                { field: "Asal", title: "Dari" },
+                { field: "Tujuan", title: "Tujuan" },
+                { field: "MultiDrop", title: "MultiDrop" },
+            ],
+        }).data("kendoGrid");
+        gridItemDetails = $("#GridItemDetails").kendoGrid({
+            dataSource: {
+                data: dsGridItemDetails,
+                schema: {
+                    model: {
+                        id: "Id",
+                        fields: {
+                            Id: { type: "number" },
+                            NamaRuteDaftarHarga: { type: "string" },
+                            ListIdRute: { type: "string" },
+                            ListNamaRute: { type: "string" },
+                            //IdDaftarHargaKontrak: { type: "number" },
+                            IdJenisTruck: { type: "number" },
+                            NamaJenisTruck: { type: "string" },
+                            BeratMinimum: { type: "number" },
+                            Harga: { type: "number" },
+                            IdSatuan: { type: "number" },
+                            Satuan: { type: "string" },
+                            HargaRit2: { type: "number" },
+                            Overtime: { type: "number" },
+                            RitaseBulan: { type: "number" },
+                            IsAsuransi: { type: "boolean" },
+                            PihakPenanggung: { type: "string" },
+                            TipeNilaiPenanggung: { type: "string" },
+                            Premi: { type: "number" },
+                            NilaiTanggungan: { type: "number" },
+                            Keterangan: { type: "string" },
+                        }
+                    }
+                },
+            },
+            filterable: kendoGridFilterable,
+            resizable: true,
+            scrollable: true,
+            columns: [
+                { field: "NamaRuteDaftarHarga", title: "Nama Rute Daftar Harga", width: "200px" },
+                { field: "ListNamaRute", title: "List Rute", width: "250px" },
+                { field: "NamaJenisTruck", title: "Jenis Truk", width: "100px" },
+                { field: "BeratMinimum", title: "Min (Ton)", attributes: { style: "text-align:right;" }, width: "80px" },
+                {
+                    field: "Harga", title: "Harga",
+                    template: 'Rp. #: kendo.format("{0:n2}", Harga) + " /" +SatuanHarga#',
+                    attributes: { style: "text-align:right;" },
+                    width: "150px"
+                },
+                {
+                    field: "HargaRit2", title: "Harga Rit Ke2",
+                    template: "#: HargaRit2 == null || HargaRit2 == '0' ? '' : \"Rp. \" +kendo.toString(HargaRit2, \"n2\") +\" /Rit\"#",
+                    attributes: { style: "text-align:right;" },
+                    width: "150px"
+                },
+                {
+                    field: "Overtime", title: "Overtime/Jam",
+                    template: "#: Overtime == null || Overtime == '0' ? '' : \"Rp. \" +kendo.toString(Overtime, \"n2\")#",
+                    attributes: { style: "text-align:right;" },
+                    width: "150px"
+                },
+                {
+                    field: "RitaseBulan", title: "Ritase/Bulan",
+                    template: "#: RitaseBulan == null || RitaseBulan == '0' ? '' : kendo.toString(RitaseBulan, \"n2\")#",
+                    attributes: { style: "text-align:right;" },
+                    width: "100px"
+                },
+                {
+                    field: "IsAsuransi", title: "Asuransi",
+                    template: "#= IsAsuransi ? 'Ya' : 'Tidak' #",
+                    width: "80px"
+                },
+                {
+                    field: "Premi", title: "Premi",
+                    template: "#: Premi == null || Premi == '0' || Premi == '' ? '' : kendo.toString(Premi, \"n2\") +\" %\"#",
+                    attributes: { style: "text-align:right;" },
+                    width: "100px"
+                },
+                {
+                    field: "NilaiTanggungan", title: "Nilai Tanggungan",
+                    template: "#: NilaiTanggungan == null || NilaiTanggungan == '0' || NilaiTanggungan == '' ? '' : \"Rp. \" +kendo.toString(NilaiTanggungan, \"n2\")#",
+                    attributes: { style: "text-align:right;" },
+                    width: "250px"
+                },
+                { field: "Keterangan", title: "Keterangan", width: "250px" },
+            ],
+        }).data("kendoGrid");
+        gridItem = $("#GridItem").kendoGrid({
+            dataSource: {
+                data: dsGrid,
+                schema: {
+                    model: {
+                        id: "Id",
+                        fields: {
+                            Id: { type: "number", defaultValue:0 },
+                            NamaRuteDaftarHarga: { type: "string" },
+                            ListIdRute: { type: "string" },
+                            ListNamaRute: { type: "string" },
+                            IdDaftarHargaKontrak: { type: "number" },
+                            IdJenisTruck: { type: "number" },
+                            NamaJenisTruck: { type: "string" },
+                            BeratMinimum: { type: "number" },
+                            Harga: { type: "number" },
+                            IdSatuan: { type: "number" },
+                            Satuan: { type: "string" },
+                            HargaRit2: { type: "number" },
+                            Overtime: { type: "number" },
+                            RitaseBulan: { type: "number" },
+                            IsAsuransi: { type: "boolean" },
+                            PihakPenanggung: { type: "string" },
+                            TipeNilaiPenanggung: { type: "string" },
+                            Premi: { type: "number" },
+                            NilaiTanggungan: { type: "number" },
+                            Keterangan: { type: "string" },
+                        }
+                    }
+                },
+            },
+            filterable: kendoGridFilterable,
+            resizable: true,
+            scrollable: true,
+            columns: [
+                {
+                    command: [
+                        {
+                            name: "edit",
+                            text: "Edit",
+                            imageClass: "glyphicon glyphicon-edit",
+                            template: '<a class="k-button-icon #=className#" #=attr# title="edit" href="\\#"><span class="#=imageClass#"></span></a>',
+                            click: EditModalItem
+                        },
+                        {
+                            text: "Hapus",
+                            imageClass: "glyphicon glyphicon-remove",
+                            template: '<a class="k-button-icon #=className#" #=attr# href="\\#" title="#=text#"><span class="#=imageClass#"></span></a>',
+                            click: deleteRowGridItem
+                        }
+                    ],
+                    width: "70px"
+                },
+                { field: "NamaRuteDaftarHarga", title: "Nama Rute Daftar Harga", width: "200px" },
+                { field: "ListNamaRute", title: "List Rute", width: "250px" },
+                { field: "NamaJenisTruck", title: "Jenis Truk", width: "100px" },
+                {
+                    field: "BeratMinimum", title: "Min (Ton)", attributes: { style: "text-align:right;" },
+                    template: '#: kendo.format("{0:n2}", BeratMinimum)#',
+                    width: "80px"
+                },
+                {
+                    field: "Harga", title: "Harga",
+                    template: 'Rp. #: kendo.format("{0:n2}", Harga) + " /" +SatuanHarga#',
+                    attributes: { style: "text-align:right;" },
+                    width: "150px"
+                },
+                {
+                    field: "HargaRit2", title: "Harga Rit Ke2",
+                    template: "#: HargaRit2 == null || HargaRit2 == '0' ? '' : \"Rp. \" +kendo.toString(HargaRit2, \"n2\") +\" /Rit\"#",
+                    attributes: { style: "text-align:right;" },
+                    width: "150px"
+                },
+                {
+                    field: "Overtime", title: "Overtime/Jam",
+                    template: "#: Overtime == null || Overtime == '0' ? '' : \"Rp. \" +kendo.toString(Overtime, \"n2\")#",
+                    attributes: { style: "text-align:right;" },
+                    width: "150px"
+                },
+                {
+                    field: "RitaseBulan", title: "Ritase/Bulan",
+                    template: "#: RitaseBulan == null || RitaseBulan == '0' ? '' : kendo.toString(RitaseBulan, \"n2\")#",
+                    attributes: { style: "text-align:right;" },
+                    width: "100px"
+                },
+                {
+                    field: "IsAsuransi", title: "Asuransi",
+                    template: "#= IsAsuransi ? 'Ya' : 'Tidak' #",
+                    width: "80px"
+                },
+                {
+                    field: "Premi", title: "Premi",
+                    template: "#: Premi == null || Premi == '0' || Premi == '' ? '' : kendo.toString(Premi, \"n2\") +\" %\"#",
+                    attributes: { style: "text-align:right;" },
+                    width: "100px"
+                },
+                {
+                    field: "NilaiTanggungan", title: "Nilai Tanggungan",
+                    template: "#: NilaiTanggungan == null || NilaiTanggungan == '0' || NilaiTanggungan == '' ? '' : \"Rp. \" +kendo.toString(NilaiTanggungan, \"n2\")#",
+                    attributes: { style: "text-align:right;" },
+                    width: "250px"
+                },
+                { field: "Keterangan", title: "Keterangan", width: "250px" },
+            ],
+            edit: function (e) {
+                var detailCell = e.container.find("td:first");
+                detailCell.html('');
+                var commandCell = e.container.find("td:nth-child(1)");
+                commandCell.html('<a class="k-button-icon k-grid-update form-inline" href="\\#" title="Simpan"><span class="glyphicon glyphicon-floppy-saved"></span></a> <a class="k-button-icon k-grid-cancel form-inline" href="\\#" title="Batal"><span class="glyphicon glyphicon-remove"></span></a>');
+                var commandGroupCell = e.container.find("td:nth-child(0)");
+                commandGroupCell.html('');
+            },
+        }).data("kendoGrid");
+        gridAtt = $("#GridAtt").kendoGrid({
+            dataSource: {
+                data: dsAttch,
+                schema: {
+                    model: {
+                        id: "Id",
+                        fields: {
+                            Id: { type: "number", defaultValue: 0 },
+                            FileName: {
+                                type: "string", validation: {
+                                    required: { message: "Nama harus diisi." },
+                                }
+                            },
+                            RFileName: {
+                                type: "string", validation: {
+                                    filereq: function (input) {
+                                        if (input.is("[name='files']")) {
+                                            if (!input.closest(".k-upload").find(".k-file").length) {
+                                                input.attr("data-filereq-msg", "File harus diisi.");
+                                                return false;
+                                            }
+                                        }
+
+                                        return true;
+                                    },
+                                }
+                            },
+                        }
+                    }
+                },
+            },
+            editable: { mode: "inline", confirmation: "Anda yakin menghapus data?" },
+            scrollable: false,
+            toolbar: [{ name: "create", text: "Tambah" }],
+            columns: [
+                {
+                    command: [
+                        {
+                            name: "edit",
+                            text: "Edit",
+                            //click: EditModalItem,
+                            imageClass: "glyphicon glyphicon-edit",
+                            template: '<a class="k-button-icon #=className#" #=attr# title="edit" href="\\#"><span class="#=imageClass#"></span></a>'
+                        },
+                        {
+                            name: "destroy",
+                            text: "Hapus",
+                            //click: deleteItem,
+                            imageClass: "glyphicon glyphicon-remove",
+                            template: '<a class="k-button-icon #=className#" #=attr# href="\\#" title="#=text#"><span class="#=imageClass#"></span></a>'
+                        }
+                    ],
+                    width: "70px"
+                },
+                {
+                    field: "FileName",
+                    title: "Nama File",
+                },
+                {
+                    field: "RFileName",
+                    title: "File",
+                    template: FileTemplate,
+                    editor: fileUploadEditor
+                }
+            ],
+            edit: function (e) {
+                var detailCell = e.container.find("td:first");
+                detailCell.html('');
+                var commandCell = e.container.find("td:nth-child(1)");
+                commandCell.html('<a class="k-button-icon k-grid-update form-inline" href="\\#" title="Simpan"><span class="glyphicon glyphicon-floppy-saved"></span></a> <a class="k-button-icon k-grid-cancel form-inline" href="\\#" title="Batal"><span class="glyphicon glyphicon-remove"></span></a>');
+                var commandGroupCell = e.container.find("td:nth-child(0)");
+                commandGroupCell.html('');
+            },
+        }).data("kendoGrid");
+        gridRute.table.on("click", ".checkbox", selectRow);
+        CreateDateRange($("#PeriodStart"), $("#PeriodEnd"));
+    });
+    $('#formsubmit').submit(function (e) {
+        var grid = $('#GridItem').data('kendoGrid');
+        var grid2 = $('#GridAtt').data('kendoGrid');
+        grid.saveRow();
+        grid2.saveRow();
+
+        var data = grid.dataSource.data();
+        var data2 = grid2.dataSource.data();
+        $('#StrItem').val(JSON.stringify(data));
+        $('#StrAttachment').val(JSON.stringify(data2));
+    });
+    </script>
+}

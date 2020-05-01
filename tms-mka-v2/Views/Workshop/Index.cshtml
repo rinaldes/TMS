@@ -1,0 +1,220 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "Perbaikan Kendaraan";
+    string currentController = "Workshop";
+    string currentAction = "Index";
+}
+<div class="portlet light ">
+    <div class="portlet-title">
+        <div class="caption">
+            <span class="caption-subject font-dark sbold uppercase">@ViewBag.Title</span>
+        </div>
+        <div class="actions">
+            <a class="btn btn-sm green dropdown-toggle" href="@Url.Action("Add", "Workshop")">
+                <i class="fa fa-plus"></i>Add
+            </a>
+        </div>
+    </div>
+    <div class="portlet-body form">
+        <div class="portlet box blue ">
+            <div class="portlet-title">
+                <div class="caption">
+                    Hide Column :
+                </div>
+                <div class="tools">
+                    <a href="" class="expand"> </a>
+                </div>
+            </div>
+            <div class="portlet-body form" style="display: none;">
+                <form role="form">
+                    <div class="form-body">
+                        <div id="content-col" class="md-checkbox-inline" style="margin-left:10px"></div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div id="grid"></div>
+    </div>
+</div>
+@section scripts
+{
+    <script id="command-template" type="text/x-kendo-template">
+        # if(Status == "SPK-O" || Status == "SPK-P" || Status == "SPK-C" || Status == "SPK-W") { #
+            <a class="k-button-icon k-grid-edit" href="\\#" title="SPK" onclick="editItemSPK(#=id#)"><span class="glyphicon glyphicon-edit"></span></a>
+        # } else if(Status == "PPK-IN") { #
+            <a class="k-button-icon k-grid-edit" href="\\#" title="PPK-IN" onclick="editItemPPKIN(#=id#)"><span class="glyphicon glyphicon-edit"></span></a>
+        # } else { #
+            <a class="k-button-icon k-grid-edit" href="\\#" title="PPK" onclick="editItem(#=id#)"><span class="glyphicon glyphicon-edit"></span></a>
+        # } #
+        <a class="k-button-icon k-grid-edit" href="\\#" title="Delete" onclick="deleteItem(#=id#)"><span class="glyphicon glyphicon-remove"></span></a>
+    </script>
+    <script type="text/javascript">
+        var ds;
+        function deleteItem(id) {
+            goToDeletePage('@Url.Action("Delete")' + "?id=" + id, ds);
+        }
+
+        function editItem(id) {
+            window.location.href = "@Url.Action("Edit")" + "?id=" + id;
+        }
+
+        function editItemSPK(id) {
+            window.location.href = "Workshop/Spk/" + id + "?idnya=" + id;
+        }
+
+        function editItemPPKIN(id) {
+            window.location.href = "Workshop/PpkIn/" + id + "?id=" + id;
+        }
+
+        $(document).ready(function () {
+            currController = '@currentController';
+            currAction = '@currentAction';
+
+            ds = new kendo.data.DataSource({
+                transport: {
+                    read: {
+                        url: '@Url.Action("Binding")',
+                        dataType: "json"
+                    },
+                    parameterMap: function (options, operation) {
+                        if (operation !== "read" && options != '') {
+                            return kendo.stringify(options);
+                        }
+                        else if (operation == "read") {
+                            if (options.filter) {
+                                filter = options.filter.filters;
+                                for (var i in filter) {
+                                    if (filter[i].field == "ServiceInDateTime") {
+                                        filter[i].field = "ServiceIn";
+                                        Date.prototype.yyyymmdd = function() {
+                                            var mm = this.getMonth() + 1; // getMonth() is zero-based
+                                            var dd = this.getDate();
+
+                                            return [this.getFullYear(),
+                                                    (mm>9 ? '' : '0') + mm,
+                                                    (dd>9 ? '' : '0') + dd
+                                            ].join('-');
+                                        };
+                                        filter[i].value = filter[i].value.yyyymmdd()
+                                    }
+                                    if (filter[i].field == "Estimasi") {
+                                        Date.prototype.yyyymmdd = function() {
+                                            var mm = this.getMonth() + 1; // getMonth() is zero-based
+                                            var dd = this.getDate();
+
+                                            return [this.getFullYear(),
+                                                    (mm>9 ? '' : '0') + mm,
+                                                    (dd>9 ? '' : '0') + dd
+                                            ].join('-');
+                                        };
+                                        filter[i].value = filter[i].value.yyyymmdd()
+                                    }
+                                    if (filter[i].field == "ServiceOut") {
+                                        Date.prototype.yyyymmdd = function() {
+                                            var mm = this.getMonth() + 1; // getMonth() is zero-based
+                                            var dd = this.getDate();
+
+                                            return [this.getFullYear(),
+                                                    (mm>9 ? '' : '0') + mm,
+                                                    (dd>9 ? '' : '0') + dd
+                                            ].join('-');
+                                        };
+                                        filter[i].value = filter[i].value.yyyymmdd()
+                                    }
+                                    if (filter[i].field == "VehicleNo") {
+                                        filter[i].field = "Workshop.Truk.VehicleNo";
+                                    }
+                                    if (filter[i].field == "JenisTruk") {
+                                        filter[i].field = "Workshop.Truk.JenisTrucks.StrJenisTruck";
+                                    }
+                                    if (filter[i].field == "Mekanik1") {
+                                        filter[i].field = "Mekanik.NamaMekanik";
+                                    }
+                                    if (filter[i].field == "Mekanik2") {
+                                        filter[i].field = "Mekanikk.NamaMekanik";
+                                    }
+                                    if (filter[i].field == "JenisPerbaikan") {
+                                        filter[i].field = "Jenis";
+                                    }
+                                    if (filter[i].field == "NoPPK") {
+                                        filter[i].field = "Workshop.NoPPK";
+                                    }
+                                    if (filter[i].field == "Status") {
+                                        filter[i].field = "Workshop.Status";
+                                    }
+                                    if (filter[i].field == "Prioritas") {
+                                        filter[i].field = "Workshop.LookUp.Nama";
+                                    }
+                                }
+                            }
+
+                            if (options.sort) {
+                                sort = options.sort;
+                                for (var i in sort) {
+                                    if (sort[i].field == "VehicleNo") {
+                                        sort[i].field = "Truk.VehicleNo";
+                                    }
+                                    if (sort[i].field == "JenisTruk") {
+                                        sort[i].field = "Truk.JenisTrucks.StrJenisTruck";
+                                    }
+                                }
+                            }
+                            return options;
+                        }
+                    }
+                },
+                schema: {
+                    total: "total",
+                    data: "data",
+                    model: {
+                        fields: {
+                            "id": { type: "number" },
+                            "Status": { type: "string" },
+                            "NoPPK": { type: "string" },
+                            "NoSPK": { type: "string" },
+                            "VehicleNo": { type: "string" },
+                            "JenisTruk": { type: "string" },
+                            "Prioritas": { type: "string" },
+                            "JenisPerbaikan": { type: "string" },
+                            "Mekanik1": { type: "string" },
+                            "Mekanik2": { type: "string" },
+                            "RevEstimasi": { type: "string" },
+                            "ServiceInDateTime": { type: "date" },
+                            "Estimasi": { type: "date" },
+                            "ServiceOut": { type: "date" },
+                        }
+                    }
+                }, pageSize: 10, pageable: true, serverFiltering: true, serverPaging: true, serverSorting: true, sortable: true, sort: { field: "Id", dir: "desc" },
+            });
+            gridIndex = $("#grid").kendoGrid({
+                pageSize: 10, dataSource: ds, filterable: kendoGridFilterable, sortable: true, reorderable: true, resizable: true, pageable: true, groupable: true,
+                columns: [
+                    {template: kendo.template($("#command-template").html()), width: 60}, {field: "Status"}, {field: "NoPPK", title: "No PPK"},
+                    {field: "NoSPK", title: "No SPK"}, {field: "VehicleNo", title: "Vehicle No"}, {field: "JenisTruk", title: "Jenis Truk"}, {field: "Prioritas"},
+                    {field: "JenisPerbaikan", title: "Jenis Perbaikan"}, {field: "Mekanik1", title: "Mekanik 1"}, {field: "Mekanik2", title: "Mekanik 2"},
+                    {
+                        field: "ServiceInDateTime", title: "Service In",
+                        width: "105px", template: "#= ServiceInDateTime != null ? kendo.toString(kendo.parseDate(ServiceInDateTime, 'yyyy-MM-dd'), 'HH:mm') != '00:00' ? kendo.toString(kendo.parseDate(ServiceInDateTime, 'yyyy-MM-dd'), 'dd/MM/yyyy HH:mm') : kendo.toString(kendo.parseDate(ServiceInDateTime, 'yyyy-MM-dd'), 'dd/MM/yyyy')+' '+JamServiceInString : ''#",
+                    },
+                    {
+                        field: "Estimasi", title: "Estimasi Selesai",
+                        width: "105px", template: "#= EstimasiDateTime != null ? kendo.toString(kendo.parseDate(EstimasiDateTime, 'yyyy-MM-dd'), 'HH:mm') != '00:00' ? kendo.toString(kendo.parseDate(EstimasiDateTime, 'yyyy-MM-dd'), 'dd/MM/yyyy HH:mm') : kendo.toString(kendo.parseDate(EstimasiDateTime, 'yyyy-MM-dd'), 'dd/MM/yyyy')+' '+JamEstimasiString : ''#",
+                    },
+                    {field: "RevEstimasi", title: "Revisi Estimasi", width: "105px"},
+                    {
+                        field: "ServiceOut", title: "Service Out",
+                        width: "105px", template: "#= ServiceOutDateTime != null ? kendo.toString(kendo.parseDate(ServiceOutDateTime, 'yyyy-MM-dd'), 'HH:mm') != '00:00' ? kendo.toString(kendo.parseDate(ServiceOutDateTime, 'yyyy-MM-dd'), 'dd/MM/yyyy HH:mm') : kendo.toString(kendo.parseDate(ServiceOutDateTime, 'yyyy-MM-dd'), 'dd/MM/yyyy')+' '+JamServiceOutString : ''#",
+                    },
+                ],
+            }).data("kendoGrid");
+            @foreach (tms_mka_v2.Context.UserReference item in (List<tms_mka_v2.Context.UserReference>)ViewBag.listKolom)
+            {
+                    <text>
+                        listKolom.push('@item.Coloumn');
+                    </text>
+            }
+
+            GetColomnData(gridIndex);
+        })
+    </script>
+}

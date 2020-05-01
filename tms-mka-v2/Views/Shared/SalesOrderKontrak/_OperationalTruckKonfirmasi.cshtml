@@ -1,0 +1,174 @@
+﻿@using tms_mka_v2.Models;
+@model tms_mka_v2.Models.SalesOrderKontrak
+@Html.HiddenFor(model => model.strListTruck)
+<div class="portlet light">
+    <div class="portlet-title">
+        <div class="caption font-green-sharp">
+            <span class="caption-subject"> Truk </span>
+        </div>
+        <div class="tools">
+            <a href="" class="collapse"> </a>
+        </div>
+    </div>
+    <div class="portlet-body">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label class="control-label col-md-2">Periode Awal</label>
+                    <div class="col-md-4">
+                        <input id="patokanStr" class="form-control-datepicker" />
+                    </div>
+                    <label class="control-label col-md-2">Periode Akhir</label>
+                    <div class="col-md-4">
+                        <input id="patokanEnd" class="form-control-datepicker" />
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <button type="button" class="btn btn-sm" onclick="GenerateTanggalSO()">Generate</button>
+            <button type="button" class="btn btn-sm" onclick="ProsesTanggalSO()">Proses</button>
+        </div>
+        <br />
+        <div class="row">
+            <div id="GirdItemTruk"></div>
+        </div>
+    </div>
+</div>
+
+<div id="ModalDriver" class="modal fade bs-modal-lg" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg" style="width: 80%;">
+        <div id="modalForm" class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                <h4 class="modal-title">Driver</h4>
+            </div>
+            <div class="modal-body">
+                <span id="notif" style="display:none;"></span>
+                <div id="appendto" style="text-align: center;"></div>
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="portlet light">
+                            <div class="portlet-title">
+                                <div class="caption font-green-sharp">
+                                    <span class="caption-subject"> Truk </span>
+                                </div>
+                            </div>
+                            <div class="portlet-body">
+                                <input type="hidden" id="IdTruckItem" />
+                                <div class="form-group">
+                                    <label class="control-label col-md-4">Vehicle No</label>
+                                    <div class="col-md-8">
+                                        <div class="input-group input-group-sm">
+                                            <input id="VehicleNoItem" class="form-control" readonly />
+                                            <span class="input-group-btn">
+                                                <button type="button" class="btn red" onclick="clearTruk()"><i class="glyphicon glyphicon-remove"></i></button>
+                                                <button type="button" class="btn btn-success" data-toggle="modal" data-target="#ModalMasterTruk">Browse</button>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-md-4">Jenis Ttruck</label>
+                                    <div class="col-md-8">
+                                        <input id="JenisTrukItem" class="form-control" readonly />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="portlet light">
+                            <div class="portlet-title">
+                                <div class="caption font-green-sharp">
+                                    <span class="caption-subject"> Driver 1 </span>
+                                </div>
+                            </div>
+                            <div class="portlet-body">
+                                <input type="hidden" id="IdDriver1Item" />
+                                <div class="form-group">
+                                    <label class="control-label col-md-4">ID Driver</label>
+                                    <div class="col-md-8">
+                                        <div class="input-group input-group-sm">
+                                            <input id="KodeDriver1Item" class="form-control" readonly />
+                                            <span class="input-group-btn">
+                                                <button type="button" class="btn red" onclick="clearDriver(1)"><i class="glyphicon glyphicon-remove"></i></button>
+                                                <button type="button" class="btn btn-success" data-toggle="modal" data-target="#ModalMasterDriver" onclick="caller = 1;">Browse</button>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-md-4">Nama Driver</label>
+                                    <div class="col-md-8">
+                                        <input id="NamaDriver1Item" class="form-control" readonly />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="portlet light">
+                            <div class="portlet-title">
+                                <div class="caption font-green-sharp">
+                                    <span class="caption-subject"> Driver 2 </span>
+                                </div>
+                            </div>
+                            <div class="portlet-body">
+                                <input type="hidden" id="IdDriver2Item" />
+                                <div class="form-group">
+                                    <label class="control-label col-md-4">ID Driver</label>
+                                    <div class="col-md-8">
+                                        <div class="input-group input-group-sm">
+                                            <input id="KodeDriver2Item" class="form-control" readonly />
+                                            <span class="input-group-btn">
+                                                <button type="button" class="btn red" onclick="clearDriver(2)"><i class="glyphicon glyphicon-remove"></i></button>
+                                                <button type="button" class="btn btn-success" data-toggle="modal" data-target="#ModalMasterDriver" onclick="caller = 2;">Browse</button>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-md-4">Nama Driver</label>
+                                    <div class="col-md-8">
+                                        <input id="NamaDriver2Item" class="form-control" readonly />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-sm " data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-sm green" onclick="SaveDriver()">Submit</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="ModalMasterDriver" class="modal fade bs-modal-full" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-full">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+            </div>
+            <div class="modal-body">
+                <div id="GridMasterDriver"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="ModalMasterTruk" class="modal fade bs-modal-full" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-full">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+            </div>
+            <div class="modal-body">
+                <div id="GridMasterTruk"></div>
+            </div>
+        </div>
+    </div>
+</div>

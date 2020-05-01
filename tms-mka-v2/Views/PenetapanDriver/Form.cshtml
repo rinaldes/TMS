@@ -1,0 +1,701 @@
+﻿@using tms_mka_v2.Models;
+
+@model tms_mka_v2.Models.PenetapanDriver
+@{
+    ViewBag.Title = "Form";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    string currentController = (string)ViewContext.RouteData.Values["controller"];
+    string currentAction = (string)ViewContext.RouteData.Values["action"];
+    string backLink = Url.Action("Index");
+    if (currentAction == "Add")
+    {
+        ViewBag.Title = "Tambah Penetapan Driver";
+    }
+    else
+    {
+        ViewBag.Title = ViewBag.name + " | Edit";
+    }
+}
+<div class="portlet light">
+    <div class="portlet-title">
+        <div class="caption">
+            <span class="caption-subject font-dark sbold uppercase">@ViewBag.Title</span>
+        </div>
+    </div>
+    <div class="portlet-body form">
+        @using (@Html.BeginForm(currentAction, currentController, FormMethod.Post, new { @class = "form-horizontal", @id = "formsubmit" }))
+        {
+            @Html.ValidationSummary(true)
+            @Html.HiddenFor(model => model.Id)
+            <div class="form-group">
+                @Html.LabelFor(model => model.IdDataTruck, new { @class = "control-label col-md-1" })
+                <div class="col-md-2">
+                    @if (Model.Id == 0)
+                    {
+                        <div class="input-group input-group-sm">
+                            @Html.HiddenFor(model => model.IdDataTruck)
+                            @Html.TextBoxFor(model => model.VehicleNo, new { @class = "form-control input-sm", @readonly = true })
+                            <span class="input-group-btn">
+                                <button type="button" class="btn btn-success" data-toggle="modal" data-target="#ModalMasterTruk">Browse</button>
+                            </span>
+                        </div>
+                    }
+                    else
+                    {
+                        @Html.HiddenFor(model => model.IdDataTruck)
+                        @Html.TextBoxFor(model => model.VehicleNo, new { @class = "form-control input-sm", @readonly = true })
+                    }
+                    @Html.ValidationMessageFor(model => model.IdDataTruck)
+                </div>
+                @Html.LabelFor(model => model.JenisTruck, new { @class = "control-label col-md-1" })
+                <div class="col-md-2">
+                    @Html.TextBoxFor(model => model.JenisTruck, new { @class = "form-control input-sm", @readonly = "true" })
+                </div>
+
+            </div>
+            if (Model.Id != 0)
+            {
+                <div class="portlet light">
+                    <div class="portlet-title">
+                        <div class="caption font-green-sharp">
+                            <span class="caption-subject"> History truk</span>
+                        </div>
+                        <div class="tools">
+                            <a href="" class="collapse"> </a>
+                        </div>
+                    </div>
+                    <div class="portlet-body">
+                        <div id="gridHistory"></div>
+                    </div>
+                </div>
+            }
+            <div class="form-group">
+                <div class="col-md-6">
+                    <div class="portlet light">
+                        <div class="portlet-title">
+                            <div class="caption font-green-sharp">
+                                <span class="caption-subject"> Driver 1</span>
+                            </div>
+                        </div>
+                        <div class="portlet-body">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.IdDriver1, new { @class = "control-label col-md-3" })
+                                <div class="col-md-9">
+                                    <div class="input-group input-group-sm">
+                                        @Html.HiddenFor(model => model.IdDriver1)
+                                        @Html.TextBoxFor(model => model.Kode1, new { @class = "form-control input-sm", @readonly = true })
+                                        <span class="input-group-btn">                                            
+                                            <button type="button" class="btn btn-success" data-toggle="modal" data-target="#modalDriver" onclick="callerGrid = 'driver1'">Browse</button>
+                                            <button type="button" class="btn btn-info" data-toggle="modal" data-target="#modalRiwayatDriver1">Riwayat</button>
+                                        </span>
+                                    </div>
+                                    @Html.ValidationMessageFor(model => model.IdDriver1)
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.Nama1, new { @class = "control-label col-md-3" })
+                                <div class="col-md-9">
+                                    @Html.TextBoxFor(model => model.Nama1, new { @class = "form-control input-sm", @readonly = true })
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.Panggilan1, new { @class = "control-label col-md-3" })
+                                <div class="col-md-9">
+                                    @Html.TextBoxFor(model => model.Panggilan1, new { @class = "form-control input-sm", @readonly = true })
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.NoHp1Driver1, new { @class = "control-label col-md-3" })
+                                <div class="col-md-9">
+                                    @Html.TextBoxFor(model => model.NoHp1Driver1, new { @class = "form-control input-sm focus" })
+                                    @Html.ValidationMessageFor(model => model.NoHp1Driver1)
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.NoHp2Driver1, new { @class = "control-label col-md-3" })
+                                <div class="col-md-9">
+                                    @Html.TextBoxFor(model => model.NoHp2Driver1, new { @class = "form-control input-sm" })
+                                    @Html.ValidationMessageFor(model => model.NoHp2Driver1)
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.Sim1, new { @class = "control-label col-md-3" })
+                                <div class="col-md-3">
+                                    @Html.TextBoxFor(model => model.Sim1, new { @class = "form-control input-sm", @readonly = true })
+                                </div>
+                                @Html.LabelFor(model => model.BerlakuSim1, new { @class = "control-label col-md-3" })
+                                <div class="col-md-3">
+                                    @Html.TextBoxFor(model => model.BerlakuSim1, "{0:dd/MM/yyyy}", new { @class = "form-control input-sm", @readonly = true })
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.IdDitetapkanOleh1, new { @class = "control-label col-md-3" })
+                                <div class="col-md-3">
+                                    @Html.TextBoxFor(model => model.IdDitetapkanOleh1, new { @class = "form-control input-sm" })
+                                    @Html.ValidationMessageFor(model => model.IdDitetapkanOleh1)
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="portlet light">
+                        <div class="portlet-title">
+                            <div class="caption font-green-sharp">
+                                <span class="caption-subject"> Driver 2</span>
+                            </div>
+                        </div>
+                        <div class="portlet-body">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.IdDriver2, new { @class = "control-label col-md-3" })
+                                <div class="col-md-9">
+                                    <div class="input-group input-group-sm">
+                                        @Html.HiddenFor(model => model.IdDriver2)
+                                        @Html.TextBoxFor(model => model.Kode2, new { @class = "form-control input-sm", @readonly = true })
+                                        <span class="input-group-btn">
+                                            <button type="button" class="btn red" onclick="clearDriver2()">Clear</button>
+                                            <button type="button" class="btn btn-success" data-toggle="modal" data-target="#modalDriver" onclick="callerGrid = 'driver2'">Browse</button>
+                                            <button type="button" class="btn btn-info" data-toggle="modal" data-target="#modalRiwayatDriver2">Riwayat</button>
+                                        </span>
+                                    </div>
+                                    @*@Html.ValidationMessageFor(model => model.IdDriver2)*@
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.Nama2, new { @class = "control-label col-md-3" })
+                                <div class="col-md-9">
+                                    @Html.TextBoxFor(model => model.Nama2, new { @class = "form-control input-sm", @readonly = true })
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.Panggilan2, new { @class = "control-label col-md-3" })
+                                <div class="col-md-9">
+                                    @Html.TextBoxFor(model => model.Panggilan2, new { @class = "form-control input-sm", @readonly = true })
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.NoHp1Driver2, new { @class = "control-label col-md-3" })
+                                <div class="col-md-9">
+                                    @Html.TextBoxFor(model => model.NoHp1Driver2, new { @class = "form-control input-sm" })
+                                    @*@Html.ValidationMessageFor(model => model.NoHp1Driver2)*@
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.NoHp2Driver2, new { @class = "control-label col-md-3" })
+                                <div class="col-md-9">
+                                    @Html.TextBoxFor(model => model.NoHp2Driver2, new { @class = "form-control input-sm" })
+                                    @*@Html.ValidationMessageFor(model => model.NoHp2Driver2)*@
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.Sim2, new { @class = "control-label col-md-3" })
+                                <div class="col-md-3">
+                                    @Html.TextBoxFor(model => model.Sim2, new { @class = "form-control input-sm", @readonly = true })
+                                </div>
+                                @Html.LabelFor(model => model.BerlakuSim2, new { @class = "control-label col-md-3" })
+                                <div class="col-md-3">
+                                    @Html.TextBoxFor(model => model.BerlakuSim2, "{0:dd/MM/yyyy}", new { @class = "form-control input-sm", @readonly = true })
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.IdDitetapkanOleh2, new { @class = "control-label col-md-3" })
+                                <div class="col-md-3">
+                                    @Html.TextBoxFor(model => model.IdDitetapkanOleh2, new { @class = "form-control input-sm" })
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="ln_solid"></div>
+
+
+            <div class="form-group">
+                <button type="submit" class="btn btn-success">Submit</button>
+                <a href="@backLink" class="btn btn-link">Cancel</a>
+            </div>
+        }
+    </div>
+</div>
+<div id="ModalMasterTruk" class="modal fade bs-modal-full" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-full">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+            </div>
+            <div class="modal-body">
+                <div id="GridMasterTruk"></div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="modalDriver" class="modal fade bs-modal-lg" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div id="modalForm" class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                <h4 class="modal-title">List Driver</h4>
+            </div>
+            <div class="modal-body">
+                <div id="GridDriver"></div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="modalRiwayatDriver1" class="modal fade bs-modal-lg" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div id="modalForm" class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                <h4 class="modal-title">Riwayat Driver 1</h4>
+            </div>
+            <div class="modal-body">
+                <label>Riwayat Truk</label>
+                <div id="GridTruckDriver1"></div>
+                <label>Status </label>
+                <div id="GridStatDriver1"></div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="modalRiwayatDriver2" class="modal fade bs-modal-lg" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div id="modalForm" class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                <h4 class="modal-title">Riwayat Driver 2</h4>
+            </div>
+            <div class="modal-body">
+                <label>Riwayat Truk</label>
+                <div id="GridTruckDriver2"></div>
+                <label>Status </label>
+                <div id="GridStatDriver2"></div>
+            </div>
+        </div>
+    </div>
+</div>
+@section scripts{
+    <script type="text/javascript">
+    var callerGrid;
+    //var gridStatDr1, gridStatDr2, gridTruckDr1, gridTruckDr2;
+    var dsGridStat1, dsGridStat1, dsGridTruck1, dsGridTruck2;
+    function GenerateHistoryDr1() {
+        dsGridTruck1 = new kendo.data.DataSource({
+            transport: {
+                read: {
+                    url: '/Driver/BindingTruckHistory?id=' + $("#IdDriver1").val(),
+                    dataType: "json"
+                },
+            },
+            schema: {
+                model: {
+                    fields: {
+                        "Tanggal": { type: "string" },
+                        "Type": { type: "string" },
+                        "Nopol": { type: "string" },
+                    }
+                }
+            },
+        });
+
+        $("#GridTruckDriver1").kendoGrid({
+            dataSource: dsGridTruck1,
+            columns: [
+                {
+                    field: "Tanggal",
+                    title: "Tanggal",
+                    template: "#= kendo.toString(kendo.parseDate(Tanggal, 'yyyy-MM-dd'), 'MM/dd/yyyy') #"
+                },
+                {
+                    field: "Type",
+                    title: "Type"
+                },
+                {
+                    field: "Nopol",
+                    title: "No Pol"
+                },
+            ],
+        }).data("kendoGrid");
+
+        dsGridStat1 = new kendo.data.DataSource({
+            transport: {
+                read: {
+                    url: '/Driver/BindingStatHistory?id=' + $("#IdDriver1").val(),
+                    dataType: "json"
+                },
+            },
+            schema: {
+                model: {
+                    fields: {
+                        "Tanggal": { type: "string" },
+                        "Status": { type: "string" },
+                        "keterangan": { type: "string" },
+                    }
+                }
+            },
+        });
+
+        $("#GridStatDriver1").kendoGrid({
+            dataSource: dsGridStat1,
+            columns: [
+                {
+                    field: "Tanggal",
+                    title: "Tanggal",
+                    template: "#= kendo.toString(kendo.parseDate(Tanggal, 'yyyy-MM-dd'), 'MM/dd/yyyy') #"
+                },
+                {
+                    field: "Status",
+                    title: "Status"
+                },
+                {
+                    field: "keterangan",
+                    title: "Keterangan"
+                },
+            ],
+        }).data("kendoGrid");
+    }
+    function GenerateHistoryDr2() {
+        dsGridTruck2 = new kendo.data.DataSource({
+            transport: {
+                read: {
+                    url: '/Driver/BindingTruckHistory?id=' + $("#IdDriver2").val(),
+                    dataType: "json"
+                },
+            },
+            schema: {
+                model: {
+                    fields: {
+                        "Tanggal": { type: "string" },
+                        "Type": { type: "string" },
+                        "Nopol": { type: "string" },
+                    }
+                }
+            },
+        });
+
+        $("#GridTruckDriver2").kendoGrid({
+            dataSource: dsGridTruck2,
+            columns: [
+                {
+                    field: "Tanggal",
+                    title: "Tanggal",
+                    template: "#= kendo.toString(kendo.parseDate(Tanggal, 'yyyy-MM-dd'), 'MM/dd/yyyy') #"
+                },
+                {
+                    field: "Type",
+                    title: "Type"
+                },
+                {
+                    field: "Nopol",
+                    title: "No Pol"
+                },
+            ],
+        }).data("kendoGrid");
+
+        dsGridStat2 = new kendo.data.DataSource({
+            transport: {
+                read: {
+                    url: '/Driver/BindingStatHistory?id=' + $("#IdDriver2").val(),
+                    dataType: "json"
+                },
+            },
+            schema: {
+                model: {
+                    fields: {
+                        "Tanggal": { type: "string" },
+                        "Status": { type: "string" },
+                        "keterangan": { type: "string" },
+                    }
+                }
+            },
+        });
+
+        $("#GridStatDriver2").kendoGrid({
+            dataSource: dsGridStat2,
+            columns: [
+                {
+                    field: "Tanggal",
+                    title: "Tanggal",
+                    template: "#= kendo.toString(kendo.parseDate(Tanggal, 'yyyy-MM-dd'), 'MM/dd/yyyy') #"
+                },
+                {
+                    field: "Status",
+                    title: "Status"
+                },
+                {
+                    field: "keterangan",
+                    title: "Keterangan"
+                },
+            ],
+        }).data("kendoGrid");
+    }
+    function SelectRef(e) {
+        e.preventDefault();
+        var data = this.dataItem(getDataRowGrid(e));
+        var currentTime = new Date(parseInt(data.TglBerlakuSim.substr(6)));
+        var month = currentTime.getMonth() + 1;
+        var day = currentTime.getDate();
+        var year = currentTime.getFullYear();
+        var date = day + "/" + month + "/" + year;
+
+        if (callerGrid == 'driver1') {
+            $('#IdDriver1').val(data.Id);
+            $('#Kode1').val(data.KodeDriver);
+            $('#Nama1').val(data.NamaDriver);
+            $('#Panggilan1').val(data.NamaPangilan);
+            $('#NoHp1Driver1').val(data.NoHp1);
+            $('#NoHp2Driver1').val(data.NoHp2);
+            $('#Sim1').val(data.StrJenisSim);
+            $('#BerlakuSim1').val(date);
+            GenerateHistoryDr1();
+        }
+        else {
+            $('#IdDriver2').val(data.Id);
+            $('#Kode2').val(data.KodeDriver);
+            $('#Nama2').val(data.NamaDriver);
+            $('#Panggilan2').val(data.NamaPangilan);
+            $('#NoHp1Driver2').val(data.NoHp1);
+            $('#NoHp2Driver2').val(data.NoHp2);
+            $('#Sim2').val(data.StrJenisSim);
+            $('#BerlakuSim2').val(date);
+            GenerateHistoryDr2();
+        }
+
+        $('#modalDriver').modal('hide');
+    }
+    function SelectTruk(e)
+    {
+        e.preventDefault();
+        var data = this.dataItem(getDataRowGrid(e));
+        $("#IdDataTruck").val(data.Id);
+        $("#VehicleNo").val(data.VehicleNo);
+        $("#JenisTruck").val(data.JenisTruk);
+        $("#ModalMasterTruk").modal('hide');
+    }
+    @*function truckChange(e) {
+            if (this.value() != "") {
+                $.ajax({
+                    url: '@Url.Action("GetTruckById", "DataTruck")?id=' + this.value(),
+                    type: 'GET',
+                    dataType: 'Json',
+                    cache: false,
+                    success: function (obj) {
+                        $("#JenisTruck").val(obj.strJenisTruck);
+                    }
+                })
+            }
+        };*@
+
+
+    $(document).ready(function () {
+        GenerateHistoryDr1();
+        GenerateHistoryDr2();
+        var dsRef = new kendo.data.DataSource({
+            transport: {
+                read: {
+                    url: '/Driver/Binding',
+                    dataType: "json"
+                },
+            },
+            schema: {
+                total: "total",
+                data: "data",
+                model: {
+                    fields: {
+                        "Id": { type: "number" },
+                        "KodeDriver": { type: "string" },
+                        "NamaDriver": { type: "string" },
+                        "NamaPangilan": { type: "string" },
+                        "TglLahir": { type: "string" },
+                        "Alamat": { type: "string" },
+                    }
+                }
+            },
+            pageSize: 10,
+            pageable: true,
+            serverFiltering: true,
+            serverPaging: true,
+            serverSorting: true,
+            sortable: true,
+            //sort: { field: "SubmittedDate", dir: "desc" }
+        });
+
+        $("#GridDriver").kendoGrid({
+            dataSource: dsRef,
+            filterable: kendoGridFilterable,
+            sortable: true,
+            reorderable: true,
+            resizable: true,
+            pageable: true,
+            groupable: true,
+            //height: "615",
+            columns: [
+                {
+                    command: [
+                        {
+                            name: "select",
+                            text: "Select",
+                            click: SelectRef,
+                            imageClass: "glyphicon glyphicon-ok",
+                            template: '<a class="k-button-icon #=className#" #=attr# href="\\#"><span class="#=iconClass# #=imageClass#"></span></a>'
+                        }
+                    ],
+                    width: "50px"
+                },
+                {
+                    field: "KodeDriver",
+                    title: "Kode Driver"
+                },
+                {
+                    field: "NamaDriver",
+                    title: "Nama Sesuai KTP"
+                },
+                {
+                    field: "NamaPangilan",
+                    title: "Nama Panggilan"
+                },
+                {
+                    field: "TglLahir",
+                    title: "Tanggal Lahir",
+                    template: "#= kendo.toString(kendo.parseDate(TglLahir, 'yyyy-MM-dd'), 'MM/dd/yyyy') #"
+                },
+                {
+                    field: "Alamat",
+                    title: "Alamat"
+                }
+            ],
+        }).data("kendoGrid");
+
+        var dsMasterTruk = new kendo.data.DataSource({
+            transport: {
+                read: {
+                    url: '/DataTruck/BindingDetailAll',
+                    dataType: "json"
+                },
+            },
+            schema: {
+                total: "total",
+                data: "data",
+                model: {
+                    fields: {
+                        "Id": { type: "number" },
+                        "VehicleNo": { type: "string" },
+                        "Merk": { type: "string" },
+                        "JenisTruk": { type: "string" },
+                        "Pendingin": { type: "string" },
+                        "Lantai": { type: "string" },
+                        "Dinding": { type: "string" },
+                        "AlokasiPool": { type: "string" },
+                        "AlokasiUnit": { type: "string" },
+                    }
+                }
+            },
+            pageSize: 5,
+            pageable: true,
+            sortable: true,
+        });
+
+        $("#GridMasterTruk").kendoGrid({
+            dataSource: dsMasterTruk,
+            filterable: kendoGridFilterable,
+            sortable: true,
+            reorderable: true,
+            resizable: true,
+            pageable: true,
+            groupable: true,
+            columns: [
+                {
+                    command: [
+                        {
+                            name: "select",
+                            text: "Select",
+                            click: SelectTruk,
+                            imageClass: "glyphicon glyphicon-ok",
+                            template: '<a class="k-button-icon #=className#" #=attr# href="\\#"><span class="#=iconClass# #=imageClass#"></span></a>'
+                        }
+                    ],
+                    width: "50px"
+                },
+                { field: "VehicleNo", title: "Vehicle Number" },
+                { field: "Merk", title: "Merk" },
+                { field: "JenisTruk", title: "Jenis Truk" },
+                { field: "Pendingin", title: "Pendingin" },
+                { field: "Lantai", title: "Lantai" },
+                { field: "Dinding", title: "Dinding" },
+                { field: "AlokasiPool", title: "Alokasi Pool" },
+                { field: "AlokasiUnit", title: "Alokasi Unit" },
+            ],
+        }).data("kendoGrid");
+
+        var dsUser = new kendo.data.DataSource({
+            transport: {
+                read: {
+                    url: '@Url.Action("getUser","User")',
+                    dataType: "json"
+                },
+            },
+        });
+
+        var dsHistory = new kendo.data.DataSource({
+            transport: {
+                read: {
+                    url: '@Url.Action("BindingHistory")?id=' + '@Model.Id',
+                    dataType: "json"
+                },
+            },
+            schema: {
+                model: {
+                    fields: {
+                        Driver1: { type: "string" },
+                        Driver2: { type: "string" },
+                        CreatedBy: { type: "string" },
+                        ModifiedBy: { type: "string" },
+                        ModifiedDate: { type: "string" }
+                    }
+                }
+            },
+        });
+
+        $("#gridHistory").kendoGrid({
+            dataSource: dsHistory,
+            columns: [
+                {
+                    field: "ModifiedDate",
+                    title: "Tanggal",
+                    template: "#= kendo.toString(kendo.parseDate(ModifiedDate, 'yyyy-MM-dd'), 'MM/dd/yyyy HH:mm') #"
+                },
+                {
+                    field: "Driver1",
+                    title: "Driver1",
+                },
+                {
+                    field: "Driver2",
+                    title: "Driver2",
+                },
+                {
+                    field: "CreatedBy",
+                    title: "Ditetapkan oleh",
+                },
+                {
+                    field: "ModifiedBy",
+                    title: "Updated by",
+                }
+            ],
+        }).data("kendoGrid");
+    });
+
+    function clearDriver2() {
+        $('#IdDriver2').val("");
+        $('#Kode2').val("");
+        $('#Nama2').val("");
+        $('#Panggilan2').val("");
+        $('#NoHp1Driver2').val("");
+        $('#NoHp2Driver2').val("");
+        $('#Sim2').val("");
+        $('#BerlakuSim2').val("");
+        $('#IdDitetapkanOleh2').data('kendoComboBox').value(-1);
+        $('#IdDitetapkanOleh2').data('kendoComboBox').text("");
+    }
+    </script>
+}

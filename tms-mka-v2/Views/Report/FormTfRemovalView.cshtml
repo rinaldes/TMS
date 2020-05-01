@@ -1,0 +1,403 @@
+﻿@using tms_mka_v2.Models;
+
+@model tms_mka_v2.Models.RemovalAUJ
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    string currentController = (string)ViewContext.RouteData.Values["controller"];
+    string currentAction = ViewBag.postData == null ? (string)ViewContext.RouteData.Values["action"] : ViewBag.postData;
+    string backLink = Url.Action("IndexTf");
+    int idxBor = Model.ModelListBorongan.Count();
+}
+<div class="portlet light">
+    <div class="portlet-title">
+        <div class="caption">
+            <span class="caption-subject font-dark sbold uppercase">@ViewBag.Title</span>
+        </div>
+    </div>
+    <div class="portlet-body form">
+        @using (@Html.BeginForm(currentAction, currentController, FormMethod.Post, new { @class = "form-horizontal form-label-left input_mask", @id = "formsubmit" }))
+        {
+            @Html.ValidationSummary(true)
+            @Html.HiddenFor(model => model.Id)
+            @Html.HiddenFor(model => model.IdSO)
+            <div class="portlet light">
+                <div class="portlet-title">
+                    <div class="caption font-green-sharp">
+                        <span class="caption-subject"> Basic Info</span>
+                    </div>
+                    <div class="tools">
+                        <a href="" class="collapse"> </a>
+                    </div>
+                </div>
+                <div class="portlet-body">
+                    @if (Model.ModelOncall != null)
+                    {
+                        @Html.Partial("SalesOrderOncall/_PartialFormReadOnly", Model.ModelOncall)
+                    }
+                    else if (Model.ModelPickup != null)
+                    {
+                        @Html.Partial("SalesOrderPickup/_PartialFormReadOnly", Model.ModelPickup)
+                    }
+                    else if (Model.ModelKonsolidasi != null)
+                    {
+                        @Html.Partial("SalesOrderProsesKonsolidasi/_PartialFormReadOnly", Model.ModelKonsolidasi)
+                    }
+                </div>
+            </div>
+            <div class="portlet light">
+                <div class="portlet-title">
+                    <div class="caption font-green-sharp">
+                        <span class="caption-subject"> Biaya Perjalanan</span>
+                    </div>
+                    <div class="tools">
+                        <a href="" class="collapse"> </a>
+                    </div>
+                </div>
+                <div class="portlet-body">
+                    @Html.HiddenFor(model => model.StrUang)
+                    <div id="gridTf"></div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-md-8">
+                    <a href="@backLink" class="btn btn-link">Back To List</a>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+@*Modal Detail Transfer*@
+<div id="ModalDetailTf" class="modal fade bs-modal-full" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-full">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                <h4 id="judulTf" class="modal-title"></h4>
+            </div>
+            <div class="modal-body">
+                <form id="modalForm" class="form-horizontal">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="control-label col-md-3">Jumlah Transfer</label>
+                                <div class="col-md-9">
+                                    <input type="text" id="_JmlTf" name="_JmlTf" required data-required-msg="Jumlah Transfer harus diisi." class="form-control-numeric-idr" disabled/>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-3">Tanggal</label>
+                                <div class="col-md-9">
+                                    <input type="text" id="_Tgl" name="_Tgl" class="form-control input-sm" disabled />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-3"> Rekening</label>
+                                <div class="col-md-9">
+                                    <input type="text" id="_noRek" name="_noRek" class="form-control input-sm" required data-required-msg="Rekening harus diisi." readonly />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-3">Atas Nama</label>
+                                <div class="col-md-9">
+                                    <input type="text" id="_namaRek" name="_namaRek" class="form-control input-sm" disabled />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-3">Nama Bank</label>
+                                <div class="col-md-9">
+                                    <input type="text" id="_namaBank" name="_namaBank" class="form-control input-sm" disabled />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-3">Keterangan Admin</label>
+                                <div class="col-md-9">
+                                    <textarea type="text" id="_ketAdmin" name="_ketAdmin" class="form-control input-sm" disabled></textarea>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="control-label col-md-3">Tanggal Aktual</label>
+                                <div class="col-md-6">
+                                    <input type="text" id="_TglAktual" name="_TglAktual" class="form-control input-sm" required data-required-msg="Tanggal Aktual harus diisi." disabled/>
+                                </div>
+                                <div class="col-md-3">
+                                    <input type="text" id="_JamAktual" name="_JamAktual" required data-required-msg="Jam Aktual harus diisi." class="form-control input-sm timepicker timepicker-24" disabled />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-3">Keterangan</label>
+                                <div class="col-md-9">
+                                    <textarea type="text" id="_ket" name="_ket" class="form-control input-sm" disabled></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+
+            </div>
+        </div>
+    </div>
+</div>
+@*Modal Rekening*@
+<div id="ModalMasterRekening" class="modal fade bs-modal-full" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-full">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+            </div>
+            <div class="modal-body">
+                <div id="GridMasterRekening"></div>
+            </div>
+        </div>
+    </div>
+</div>
+@section scripts{
+    <script type="text/javascript">
+    var dsGrid = [];
+    var gridTf;
+    var validatorTf;
+    var currData;
+    @{
+            var _tunai = Model.ModelListTf.Where(t => t.Nama == "Tunai").FirstOrDefault().Value;
+
+            foreach (var item in Model.ModelListTf.Where(t => t.Nama != "Tunai").OrderBy(i => i.Id))
+	        {
+                _tunai = _tunai + item.Value;
+                <text>
+    dsGrid.push({
+        Id : @item.Id,
+        Nama : '@item.Nama',
+        Value : @item.Value,
+        Balance : @_tunai,
+        Tanggal : '@item.Tanggal',
+        JumlahTransfer : @item.JumlahTransfer,
+        idRekening : '@item.idRekening',
+        NoRekening : '@item.NoRekening',
+        AtasNama : '@item.AtasNama',
+        NamaBank : '@item.NamaBank',
+        TanggalAktual : '@item.TanggalAktual',
+        JamAktual : '@item.JamAktual',
+        KeteranganTf : '@item.KeteranganTf',
+        KeteranganAdmin : '@item.KeteranganAdmin',
+        isTf : @item.isTf.ToString().ToLower(),
+    });
+    </text>
+	        }
+        }
+
+    function editItem(e) {
+        e.preventDefault();
+        currData = this.dataItem(getDataRowGrid(e));
+        $("#ModalDetailTf").modal('show');
+        $("#judulTf").text(currData.Nama);
+        $("#_JmlTf").data("kendoNumericTextBox").value(currData.JumlahTransfer);
+        $("#_Tgl").val(kendo.toString(kendo.parseDate(currData.Tanggal, 'yyyy-MM-dd'), 'dd/MM/yyyy'));
+        $("#_idRek").val(currData.idRekening);
+        $("#_noRek").val(currData.NoRekening);
+        $("#_namaRek").val(currData.AtasNama);
+        $("#_namaBank").val(currData.NamaBank);
+        $("#_ketAdmin").val(currData.KeteranganAdmin);
+        $("#_TglAktual").val(kendo.toString(kendo.parseDate(currData.TanggalAktual, 'yyyy-MM-dd'), 'dd/MM/yyyy'));
+        $("#_JamAktual").val(currData.JamAktual);
+        $("#_ket").val(currData.KeteranganTf);
+    }
+
+    function saveTf()
+    {
+        if (validatorTf.validate())
+        {
+            currData.set("JumlahTransfer", $("#_JmlTf").data("kendoNumericTextBox").value());
+            currData.set("Tanggal",$("#_Tgl").val());
+            currData.set("idRekening",$("#_idRek").val());
+            currData.set("NoRekening", $("#_noRek").val());
+            currData.set("AtasNama", $("#_namaRek").val());
+            currData.set("NamaBank", $("#_namaBank").val());
+            currData.set("KeteranganAdmin", $("#_ketAdmin").val());
+            currData.set("TanggalAktual", $("#_TglAktual").val());
+            currData.set("JamAktual", $("#_JamAktual").val());
+            currData.set("KeteranganTf", $("#_ket").val());
+            $("#ModalDetailTf").modal('hide');
+        }
+    }
+
+    function SelectRek(e) {
+        e.preventDefault();
+        var data = this.dataItem(getDataRowGrid(e));
+
+        $("#_idRek").val(data.Id);
+        $("#_noRek").val(data.NoRekening);
+        $("#_namaRek").val(data.NamaRekening);
+        $("#_namaBank").val(data.StrBank);
+
+        //$('#RekeningId').val(data.Id);
+        //$('#StrRekening').val(data.NoRekening);
+        //$('#AtasNamaRek').val(data.NamaRekening);
+        //$('#Bank').val(data.StrBank);
+
+        $('#ModalMasterRekening').modal('hide');
+    }
+
+    $(document).ready(function () {
+        validatorTf = $("#modalForm").kendoValidator({
+            rules: {
+                datepicker: function(input) {
+                    if (input.is("[data-role=datepicker]")) {
+                        return input.data("kendoDatePicker").value();
+                    } else {
+                        return true;
+                    }
+                }
+            },
+            messages: {
+                //Define your custom validation massages
+                datepicker: "Format tanggal salah."
+            }
+        }).data("kendoValidator");
+
+        gridTf = $("#gridTf").kendoGrid({
+            dataSource: {
+                data: dsGrid,
+                schema: {
+                    model: {
+                        fields: {
+                            Tanggal: { type: "Date" },
+                            TanggalAktual: { type: "Date" },
+                        }
+                    }
+                },
+            },
+            resizable: true,
+            columns: [
+                {
+                    command: [
+                        {
+                            name: "edit",
+                            text: "edit",
+                            click: editItem,
+                            imageClass: "glyphicon glyphicon-edit",
+                            template: '<a class="k-button-icon #=className#" #=attr# href="\\#"><span class="#=imageClass#"></span></a>'
+                        },
+                    ],
+                    width: "50px"
+                },
+                { field: "Nama", title: "Transfer" },
+                { field: "Value", title: "Transfer" , template: 'Rp #: Value == null ? kendo.format("{0:n}", 0) : kendo.format("{0:n}", Value)#',},
+                { field: "Balance", title: "Balance" , template: 'Rp #: Balance == null ? kendo.format("{0:n}", 0) : kendo.format("{0:n}", Balance)#',},
+                { field: "Tanggal", title: "Date" ,template: "#= Tanggal != null ? kendo.toString(kendo.parseDate(Tanggal, 'yyyy-MM-dd'), 'dd/MM/yyyy') : ''#",},
+                { field: "JumlahTransfer", title: "Jumlah Transfer" , template: 'Rp #: JumlahTransfer == null ? kendo.format("{0:n}", 0) : kendo.format("{0:n}", JumlahTransfer)#',},
+                { field: "TanggalAktual", title: "Tanggal Transfer" ,template: "#= TanggalAktual != null ? kendo.toString(kendo.parseDate(TanggalAktual, 'yyyy-MM-dd'), 'dd/MM/yyyy') : ''#",},
+            ],
+        }).data("kendoGrid");
+
+        var ds = new kendo.data.DataSource({
+            transport: {
+                read: {
+                    url: '/Rekening/Binding',
+                    dataType: "json"
+                },
+                parameterMap: function (options, operation) {
+                    if (operation !== "read" && options != '') {
+                        return kendo.stringify(options);
+                    }
+                    else if (operation == "read") {
+                        if (options.filter) {
+                            filter = options.filter.filters;
+                            for (var i in filter) {
+                                if (filter[i].field == "Type_") {
+                                    filter[i].field = "Type";
+                                }
+                                if (filter[i].field == "StrBank") {
+                                    filter[i].field = "LookupCodeBank.Nama";
+                                }
+                            }
+                        }
+
+                        if (options.sort) {
+                            sort = options.sort;
+                            for (var i in sort) {
+                                if (sort[i].field == "Type_") {
+                                    sort[i].field = "Type";
+                                }
+                                if (sort[i].field == "StrBank") {
+                                    sort[i].field = "LookupCodeBank.Nama";
+                                }
+                            }
+                        }
+                        return options;
+                    }
+                }
+            },
+            schema: {
+                total: "total",
+                data: "data",
+                model: {
+                    fields: {
+                        "Id": { type: "number" },
+                        "NamaRekening": { type: "string" },
+                        "NoRekening": { type: "string" },
+                        "StrBank": { type: "string" },
+                        "Type_": { type: "string" },
+                    }
+                }
+            },
+            pageSize: 10,
+            pageable: true,
+            serverFiltering: true,
+            serverPaging: true,
+            serverSorting: true,
+            sortable: true,
+        });
+
+        GridMasterRekening = $("#GridMasterRekening").kendoGrid({
+            dataSource: ds,
+            filterable: kendoGridFilterable,
+            sortable: true,
+            reorderable: true,
+            resizable: true,
+            pageable: true,
+            groupable: true,
+            //height: "615",
+            columns: [
+                {
+                    command: [
+                        {
+                            name: "select",
+                            text: "Select",
+                            click: SelectRek,
+                            imageClass: "glyphicon glyphicon-ok",
+                            template: '<a class="k-button-icon #=className#" #=attr# href="\\#"><span class="#=iconClass# #=imageClass#"></span></a>'
+                        }
+                    ],
+                    width: "50px"
+                },
+                {
+                    field: "StrBank",
+                    title: "Bank"
+                },
+                {
+                    field: "NoRekening",
+                    title: "No Rekening"
+                },
+                {
+                    field: "NamaRekening",
+                    title: "Nama Rekening"
+                },
+                {
+                    field: "Type_",
+                    title: "Type",
+                    filterable: { multi: true, dataSource: [{ Type_: "PPN" }, { Type_: "Non PPN" }] }
+                }
+            ],
+        }).data("kendoGrid");
+    })
+
+
+    $('#formsubmit').submit(function (e) {
+        $('#StrUang').val(JSON.stringify(gridTf.dataSource.data()));
+    })
+    </script>
+}

@@ -1,0 +1,299 @@
+﻿@using tms_mka_v2.Models;
+
+@model tms_mka_v2.Models.Dokumen
+@{
+    //ViewBag.Title = "View Dokumen";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    string currentController = (string)ViewContext.RouteData.Values["controller"];
+    string currentAction = (string)ViewContext.RouteData.Values["action"];
+    string backLink = Url.Action("Index", new { caller = ViewBag.caller });
+}
+<div class="portlet light">
+    <div class="portlet-title">
+        <div class="caption">
+            <span class="caption-subject font-dark sbold uppercase">@ViewBag.Title</span>
+        </div>
+    </div>
+    <div class="portlet-body form">
+        @using (@Html.BeginForm(currentAction, currentController, FormMethod.Post, new { @class = "form-horizontal form-label-left input_mask", @id = "formsubmit" }))
+        {
+            @Html.ValidationSummary(true)
+            @Html.HiddenFor(model => model.Id)
+            <input type="hidden" name="caller" value="@ViewBag.caller" />
+            <div class="portlet light">
+                <div class="portlet-title">
+                    <div class="caption font-green-sharp">
+                        <span class="caption-subject"> Basic Info</span>
+                    </div>
+                    <div class="tools">
+                        <a href="" class="collapse"> </a>
+                    </div>
+                </div>
+                <div class="portlet-body">
+                    @if (Model.ModelOncall != null)
+                    {
+                        @Html.Partial("SalesOrderOncall/_PartialFormReadOnly", Model.ModelOncall)
+                    }
+                    else if (Model.ModelPickup != null)
+                    {
+                        @Html.Partial("SalesOrderPickup/_PartialFormReadOnly", Model.ModelPickup)
+                    }
+                    else if (Model.ModelKonsolidasi != null)
+                    {
+                        @Html.Partial("SalesOrderProsesKonsolidasi/_PartialFormReadOnly", Model.ModelKonsolidasi)
+                    }
+                    else
+                    {
+                        <div id="PartialSo" class="row">
+                            @Html.HiddenFor(model => model.ListIdSo)
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="control-label col-md-3"> NO SO</label>
+                                    <label class="control-label col-md-9">: @string.Join(", ", Model.ModelKontrak.ListValueModelSOKontrak.Select(d => d.NoSo).ToList())</label>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-md-3"> Kode Customer</label>
+                                    <label class="control-label col-md-9">: @Model.ModelKontrak.KodeCustomer</label>
+                                    @Html.HiddenFor(model => model.ModelKontrak.KodeCustomer)
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-md-3"> Nama Customer</label>
+                                    <label class="control-label col-md-9">: @Model.ModelKontrak.NamaCustomer</label>
+                                    @Html.HiddenFor(model => model.ModelKontrak.NamaCustomer)
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-md-3"> Status Kredit</label>
+                                    <label class="control-label col-md-9">: @Model.ModelKontrak.StatusKredit</label>
+                                    @Html.HiddenFor(model => model.ModelKontrak.StatusKredit)
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-md-3"> Jenis Barang</label>
+                                    <label class="control-label col-md-9">: @Model.ModelKontrak.StrProduct</label>
+                                    @Html.HiddenFor(model => model.ModelKontrak.StrProduct)
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-md-3"> Suhu</label>
+                                    <label class="control-label col-md-9">: @Model.ModelKontrak.Suhu <sup>o</sup>C</label>
+                                    @Html.HiddenFor(model => model.ModelKontrak.Suhu)
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="control-label col-md-3">Periode</label>
+                                    @Html.TextBoxFor(model => model.ModelKontrak.PeriodStr, new { @class = "form-control input-sm hidden" })
+                                    @Html.ValidationMessageFor(model => model.ModelKontrak.PeriodStr)
+
+                                    @Html.TextBoxFor(model => model.ModelKontrak.PeriodEnd, new { @class = "form-control input-sm hidden" })
+                                    @Html.ValidationMessageFor(model => model.ModelKontrak.PeriodEnd)
+                                    <div class="col-md-9 col-sm-9 col-xs-12">
+                                        <label class="control-label col-md-4">: @Model.ModelKontrak.PeriodStr.Value.ToShortDateString()</label>
+                                        <label class="control-label col-md-2">s.d.</label>
+                                        <label class="control-label col-md-4">@Model.ModelKontrak.PeriodEnd.Value.ToShortDateString()</label>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-md-3">Jam Muat</label>
+                                    <div class="col-md-3 col-sm-9 col-xs-12">
+                                        <label class="control-label col-md-9">: @Model.ModelKontrak.JamMuat</label>
+                                        @Html.HiddenFor(model => model.ModelKontrak.JamMuat)
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-md-3">Truk</label>
+                                    <div class="col-md-3 col-sm-9 col-xs-12">
+                                        <label class="control-label col-md-9">: @Model.ModelKontrak.ListModelSOKontrak.FirstOrDefault().Nopol</label>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-md-3">Jenis Truk</label>
+                                    <div class="col-md-3 col-sm-9 col-xs-12">
+                                        <label class="control-label col-md-9">: @Model.ModelKontrak.ListModelSOKontrak.FirstOrDefault().NamaJenisTruck</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.HiddenFor(model => model.strDokumen)
+                <div id="GridDokumen"></div>
+            </div>
+
+
+            <div class="portlet light">
+                <div class="portlet-title">
+                    <div class="caption font-green-sharp">
+                        <span class="caption-subject"> History</span>
+                    </div>
+                    <div class="tools">
+                        <a href="" class="collapse"> </a>
+                    </div>
+                </div>
+                <div class="portlet-body">
+                    <div id="GridHistory"></div>
+                </div>
+            </div>
+
+            <div class="ln_solid"></div>
+            <div class="form-group">
+                <a href="@Url.Action("Print", new { id = Model.Id})" class="btn">Print</a>
+                <a href="@backLink" class="btn btn-link">Back To List</a>
+            </div>
+        }
+    </div>
+</div>
+
+@section scripts{
+    <script type="text/javascript">
+        var dsDokumen = [];
+        var dsHistory = [];
+        var gridDokumen;
+        @foreach (var item in Model.ListDokumen)
+	    {
+        <text>
+        dsDokumen.push({
+            Id : @item.Id,
+            IdCustomer : @item.IdCustomer,
+            IdBilling : @item.IdBilling,
+            Nama : '@item.Nama',
+            Jml : @item.Jml,
+            Warna : '@item.Warna',
+            Stempel : @item.Stempel.ToString().ToLower(),
+            Lengkap : @item.Lengkap.ToString().ToLower(),
+            KeteranganAdmin : '@item.KeteranganAdmin',
+            KeteranganBilling : '@item.KeteranganBilling',
+            IsEdit : false,
+        });
+        </text>
+	    }
+        @foreach (var item in Model.ListHistory)
+        {
+            <text>
+        dsHistory.push({
+            Id : @item.Id,
+            Nama : '@item.Nama',
+            Jml : @item.Jml,
+            Warna : '@item.Warna',
+            Stempel : @item.Stempel.ToString().ToLower(),
+            Lengkap : @item.Lengkap.ToString().ToLower(),
+            KeteranganAdmin : '@item.KeteranganAdmin',
+            KeteranganBilling : '@item.KeteranganBilling',
+            Tanggal : '@item.Tanggal'
+        });
+        </text>
+        }
+
+        $(document).ready(function () {
+            gridDokumen = $("#GridDokumen").kendoGrid({
+                dataSource: {
+                    data: dsDokumen,
+                    batch: true,
+                    schema: {
+                        model: {
+                            fields: {
+                                Id : { type: "number", editable: false },
+                                IdCustomer : { type: "number", editable: false },
+                                IdBilling : { type: "number", editable: false },
+                                Nama : { type: "string", editable: false },
+                                Jml : { type: "number", editable: false },
+                                Warna : { type: "string", editable: false },
+                                Stempel : { type: "boolean", editable: false },
+                                Lengkap : { type: "boolean" },
+                                @{
+            if (ViewBag.caller == "admin")
+            {
+                <text>
+                                KeteranganAdmin : { type: "string" },
+                                KeteranganBilling : { type: "string" , editable: false},
+                                </text>
+            }
+            else if (ViewBag.caller == "billing")
+            {
+                <text>
+                                KeteranganAdmin : { type: "string" , editable: false},
+                                KeteranganBilling : { type: "string" },
+                                </text>
+            }
+                                }
+                                IsEdit : { type: "boolean" },
+                            }
+                        }
+                    },
+                    change: function(e){
+                        if (e.action == "itemchange"){
+                            var model = e.items[0];
+                            dummyData = jQuery.grep(dsDokumen, function( DataModel ) {
+                                return DataModel.Id == model.Id;
+                            });
+                            if(dummyData[0].Lengkap == model.Lengkap && dummyData[0].KeteranganAdmin == model.KeteranganAdmin && dummyData[0].KeteranganBilling == model.KeteranganBilling)
+                            {
+                                model.IsEdit = false;
+                            }
+                            else
+                            {
+                                model.IsEdit = true;
+                            }
+                        }
+                    },
+                },
+                resizable: true,
+                //editable: true,
+                columns: [
+                    { field: "Nama", title: "Nama"},
+                    { field: "Jml", title: "Jumlah"},
+                    { field: "Warna", title: "Warna"},
+                    { field: "Stempel", title: "Stempel", template:"#= Stempel ? 'Ya' : 'Tidak' #"},
+                    { field: "Lengkap", title: "Lengkap", template:"#= Lengkap ? 'Ya' : 'Tidak' #"},
+                    { field: "KeteranganAdmin", title: "Keterangan Admin"},
+                    { field: "KeteranganBilling", title: "Keterangan Billing"},
+                ],
+            }).data("kendoGrid");
+
+            $("#GridHistory").kendoGrid({
+                dataSource: {
+                    data: dsHistory,
+                    batch: true,
+                    schema: {
+                        model: {
+                            fields: {
+                                Id : { type: "number"},
+                                Nama : { type: "string"},
+                                Jml : { type: "number"},
+                                Warna : { type: "string"},
+                                Stempel : { type: "boolean"},
+                                Lengkap : { type: "boolean" },
+                                KeteranganAdmin : { type: "string" },
+                                KeteranganBilling : { type: "string"},
+                                Tanggal : { type: "date"},
+                            }
+                        }
+                    },
+                    pageSize: 10,
+                    pageable: true,
+                    sortable: true,
+                },
+                filterable: kendoGridFilterable,
+                sortable: true,
+                reorderable: true,
+                resizable: true,
+                pageable: true,
+                resizable: true,
+                columns: [
+                    { field: "Tanggal", title: "Tanggal", template: "#= kendo.toString(kendo.parseDate(Tanggal, 'yyyy-MM-dd HH:mm:ss'), 'dd/MM/yyyy HH:mm') #",},
+                    { field: "Nama", title: "Nama"},
+                    { field: "Jml", title: "Jumlah"},
+                    { field: "Warna", title: "Warna"},
+                    { field: "Stempel", title: "Stempel", template:"#= Stempel ? 'Ya' : 'Tidak' #"},
+                    { field: "Lengkap", title: "Lengkap", template:"#= Lengkap ? 'Ya' : 'Tidak' #"},
+                    { field: "KeteranganAdmin", title: "Keterangan Admin"},
+                    { field: "KeteranganBilling", title: "Keterangan Billing"},
+                ],
+            }).data("kendoGrid");
+        });
+
+        $('#formsubmit').submit(function (e) {
+            $('#strDokumen').val(JSON.stringify(gridDokumen.dataSource.data()));
+        })
+    </script>
+}

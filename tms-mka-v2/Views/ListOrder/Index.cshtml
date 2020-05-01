@@ -1,0 +1,478 @@
+﻿@* --- # region initial capital # --- *@
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "List Order";
+    string currentController = "ListOrder";
+    string currentAction = "Index";
+}
+@* --- # endregion initial capital # --- *@
+
+@* --- # region main theme # --- *@
+<div class="portlet light ">
+    <div class="portlet-title">
+        <div class="caption">
+            <span class="caption-subject font-dark sbold uppercase">@ViewBag.Title</span>
+        </div>
+    </div>
+    <div class="portlet-body form">
+        <div class="portlet box blue ">
+            <div class="portlet-title">
+                <div class="caption">
+                    Hide Colomn :
+                </div>
+                <div class="tools">
+                    <a href="" class="expand"> </a>
+                </div>
+            </div>
+            <div class="portlet-body form" style="display: none;">
+                <form role="form">
+                    <div class="form-body">
+                        <div id="content-col" class="md-checkbox-inline" style="margin-left:10px"></div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div id="grid"></div>
+    </div>
+</div>
+@* --- # endregion main theme # --- *@
+
+@* --- # region section script # --- *@
+@section scripts
+{
+    <script id="rute" type="text/x-kendo-template">
+        # if(RuteRevised) { #
+        <label style="color:red">#=Rute#</label>
+        # } else { #
+        <label>#=Rute#</label>
+        # } #
+    </script>
+    <script id="jns-truck" type="text/x-kendo-template">
+        # if(IsBatalTruk) { #
+        <label style="color:red">#=StrJenisTruck#</label>
+        # } else { #
+        <label>#=StrJenisTruck#</label>
+        # } #
+    </script>
+    <script id="jenisOrder-template" type="text/x-kendo-template">
+        # if(TypeSo == "Konsolidasi") { #
+        <a class="k-button-icon k-grid-edit" href="\\#" data-toggle="modal" data-target="\\#ModalDetailKonsoldasi" onclick="RefreshDetail(#:IdChild#)">Konsolidasi</a>
+        # } else { #
+        #: TypeSo #
+        # } #
+    </script>
+    <script id="action-template" type="text/x-kendo-template">
+        # if(JenisOrder != "Kontrak") { #
+        <input class="combobox" />
+        # } else { #
+        <input class="combobox-kontrak" />
+        # } #
+    </script>
+    <script id="dok-template" type="text/x-kendo-template">
+        # if(DateRevised) { #
+        <label style="color:red">#= TanggalMuat != null ? kendo.toString(kendo.parseDate(TanggalMuat, 'yyyy-MM-dd'), 'dd/MM/yyyy') : ''#</label>
+        # } else { #
+        <label>#= TanggalMuat != null ? kendo.toString(kendo.parseDate(TanggalMuat, 'yyyy-MM-dd'), 'dd/MM/yyyy') : ''#</label>
+        # } #
+    </script>
+    <script type="text/javascript">
+    function FilterStatus(element) {
+        element.kendoDropDownList({
+            dataSource: ["On call", "Kontrak", "Konsolidasi", "Pickup", "Batal"],
+            optionLabel: "--Select Value--",
+        });
+    }
+    function FilterStatusFlow(element) {
+        element.kendoDropDownList({
+            dataSource: ["Draft", "Planning", "Konfirmasi", "Admin Uang Jalan", "Kasir", "Settlement", "Batal Order"],
+            optionLabel: "--Select Value--",
+        });
+    }
+
+    // --- # region action warning message # ---
+    $(document).ready(function () {
+        @if (TempData["errorMsgListOrder"] != null)
+            {
+                <text>
+        swal({
+            title: "Error",
+            type: 'error',
+            text: '@TempData["errorMsgListOrder"]',
+            showCloseButton: true,
+        })
+        </text>
+            }
+    })
+    // --- # endregion action warning message # ---
+
+    // --- # region grid # ---
+    $(document).ready(function () {
+
+        currController = '@currentController';
+        currAction = '@currentAction';
+
+        var ds = new kendo.data.DataSource({
+            transport: {
+                read: {
+                    url: '@Url.Action("Binding")',
+                    dataType: "json"
+                },
+                parameterMap: function (options, operation) {
+                    if (operation !== "read" && options != '') {
+                        return kendo.stringify(options);
+                    }
+                    else if (operation == "read") {
+                        if (options.filter) {
+                            filter = options.filter.filters;
+                            for (var i in filter) {
+                                if (filter[i].field == "TanggalMuat") {
+                                    filter[i].field = "OrderTanggalMuat";
+                                    Date.prototype.yyyymmdd = function() {
+                                        var mm = this.getMonth() + 1; // getMonth() is zero-based
+                                        var dd = this.getDate();
+
+                                        return [this.getFullYear(),
+                                                (mm>9 ? '' : '0') + mm,
+                                                (dd>9 ? '' : '0') + dd
+                                        ].join('-');
+                                    };
+                                    filter[i].value = filter[i].value.yyyymmdd()
+                                }
+                                if (filter[i].field == "TanggalOrder") {
+                                    filter[i].field = "SalesOrderOncall.TanggalOrder";
+                                    Date.prototype.yyyymmdd = function() {
+                                        var mm = this.getMonth() + 1; // getMonth() is zero-based
+                                        var dd = this.getDate();
+
+                                        return [this.getFullYear(),
+                                                (mm>9 ? '' : '0') + mm,
+                                                (dd>9 ? '' : '0') + dd
+                                        ].join('-');
+                                    };
+                                    filter[i].value = filter[i].value.yyyymmdd()
+                                }
+                                if (filter[i].field == "NamaCustomer")
+                                    filter[i].field = "Customer.CustomerNama";
+                                if (filter[i].field == "KodeNama")
+                                    filter[i].field = "Customer.CustomerCodeOld";
+                                if (filter[i].field == "VehicleNo")
+                                    filter[i].field = "DataTruck.VehicleNo";
+                                if (filter[i].field == "Driver1")
+                                    filter[i].field = "Driver.NamaDriver";
+                                if (filter[i].field == "Keterangan")
+                                    filter[i].field = "SalesOrderOncall.Keterangan";
+                                if (filter[i].field == "StrJenisTruck")
+                                    filter[i].field = "DataTruck.JenisTrucks.StrJenisTruck";
+                                if (filter[i].field == "MktJenisTruck")
+                                    filter[i].field = "JenisTruck.StrJenisTruck";
+                            }
+                        }
+
+                        if (options.sort) {
+                            sort = options.sort;
+                            for (var i in sort) {
+                                if (sort[i].field == "TanggalMuat") {
+                                    sort[i].field = "OrderTanggalMuat";
+                                    sort[i].value = sort[i].value.toJSON().split('T')[0]
+                                }
+                                if (sort[i].field == "NamaCustomer")
+                                    sort[i].field = "SalesOrderOncall.Customer.CustomerNama";
+                                if (sort[i].field == "Rute")
+                                    sort[i].field = "SalesOrderOncall.StrDaftarHargaItem";
+                                if (sort[i].field == "VehicleNo")
+                                    sort[i].field = "SalesOrderOncall.DataTruck.VehicleNo";
+                                if (sort[i].field == "Driver1")
+                                    sort[i].field = "SalesOrderOncall.Driver1.NamaDriver";
+                                if (sort[i].field == "Keterangan")
+                                    sort[i].field = "SalesOrderOncall.Keterangan";
+                                if (sort[i].field == "StrJenisTruck")
+                                    sort[i].field = "SalesOrderOncall.JenisTrucks.StrJenisTruck";
+                                if (sort[i].field == "JamOrder")
+                                    sort[i].field = "SalesOrderOncall.JamOrder";
+                                if (sort[i].field == "JamMuat")
+                                    sort[i].field = "SalesOrderOncall.JamMuat";
+                            }
+                        }
+                        return options;
+                    }
+                }
+            },
+            schema: {
+                total: "total", data: "data", model: {
+                    fields: {
+                        "Id": { type: "number" },
+                        "IdSoKontrak": { type: "number" },
+                        "DN": { type: "string" },
+                        "JenisOrder": { type: "string" },
+                        "SONumber": { type: "string" },
+                        "TanggalOrder": { type: "date" },
+                        "TanggalMuat": { type: "date" },
+                        "NamaCustomer": { type: "string" },
+                        "StrProduct": { type: "string" },
+                        "Suhu": { type: "number" },
+                        "Rute": { type: "string" },
+                        "StrMultidrop": { type: "string" },
+                        "StrJenisTruck": { type: "string" },
+                        "StatusFlow": { type: "string" },
+                        "FlowDate": { type: "date" },
+                        "StatusBatal": { type: "string" },
+                        "StatusDokumen": { type: "string" },
+                        "PenanganKhusus": { type: "string" },
+                        "VehicleNo": { type: "string" },
+                        "Driver1": { type: "string" },
+                        "Keterangan": { type: "string" },
+                        "KeteranganBatal": { type: "string" },
+                        "DateRevised": {type: "boolean"}
+                    }
+                }
+            },
+            pageSize: 10,
+            pageable: true,
+            sortable: true,
+            serverFiltering: true,
+            serverPaging: true,
+            serverSorting: true,
+            sort: { field: "SONumber", dir: "desc" },
+        });
+
+        gridIndex = $("#grid").kendoGrid({
+            dataSource: ds, filterable: kendoGridFilterable, sortable: true, reorderable: true, resizable: true, scrollable: true, pageable: true, groupable: true,
+            columns: [
+                {
+                    field: "JenisOrder", title: "Jenis Order", template: kendo.template($("#jenisOrder-template").html()), width: "63px",
+                    filterable: {ui: FilterStatus, operators: {string: {eq: "Sama Dengan"}}, extra: false}
+                },
+                {field: "DN", width: "119px"}, {field: "SONumber", title: "No SO", width: "105px"},
+                {
+                    field: "TanggalOrder", title: "Tgl Order",
+                    template: "#= TanggalOrder != null ? kendo.toString(kendo.parseDate(TanggalOrder, 'yyyy-MM-dd'), 'dd/MM/yyyy') : ''#", width: "91px",
+                    groupHeaderTemplate: "Tgl Order : #= value != null ? kendo.toString(kendo.parseDate(value, 'yyyy-MM-dd'), 'dd/MM//yyyy') : '' #"
+                },
+                {
+                    field: "JamOrder", title: "Jam Order",
+                    template: "#= JamOrder != null ? kendo.toString(new Date(1, 1, 1, JamOrder.Hours, JamOrder.Minutes), 'HH : mm') : ''#", width: "70px", filterable:false
+                },
+                {field: "TanggalMuat", title: "Tgl Muat", width: "91px", template: kendo.template($("#dok-template").html())},
+                {
+                    field: "JamMuat", title: "Jam Muat", width: "63px",
+                    template: "#= JamMuat != null ? kendo.toString(new Date(1, 1, 1, JamMuat.Hours, JamMuat.Minutes), 'HH : mm') : ''#", filterable: false
+                },
+                {field: "KodeNama", title: "Kode Nama", width: "63px"}, {field: "NamaCustomer", title: "Customer", width: "259px"},
+                {field: "StrProduct", title: "Jenis Barang", width: "150px"}, {field: "Suhu", title: "Target Suhu", width: "100px"},
+                {field: "Rute", template: kendo.template($("#rute").html()), width: "231px"}, {field: "StrMultidrop", title: "Multidrop", width: "150px"},
+                {field: "MktJenisTruck", title: "Jenis Truck Awal", width: "100px"}, 
+                {field: "StrJenisTruck", title: "Jenis Truck Real", template: kendo.template($("#jns-truck").html()), width: "119px"},
+                {field: "StatusFlow", title: "Status Flow", width: "77px"},
+                {
+                    field: "FlowDate", title: "Flow Date", width: "91px",
+                    template: "#= FlowDate != null ? kendo.toString(kendo.parseDate(FlowDate, 'yyyy-MM-dd'), 'dd/MM/yyyy') : ''#"
+                },
+                {width: "150px", field: "VehicleNo", title: "Vehicle No"}, {field: "StatusBatal", title: "Status Batal", width: "63px"},
+                {field: "StatusDokumen", title: "Status Dokumen", width: "150px"}, {field: "PenanganKhusus", title: "Penangan Khusus", width: "300px"}, 
+                {width: "150px", field: "Driver1", title: "Driver"}, {width: "150px", field: "Keterangan"}, {width: "150px", field: "KeteranganBatal", title: "Keterangan Batal"},
+                {width: "150px", title: "Action", template: kendo.template($("#action-template").html())},
+            ],
+            dataBound: function (e) {
+                var data = gridIndex.dataSource.data();
+                var order_action = [];
+                @if (User.HasMenuAccess("Batal Truck")){
+                    <text>
+                order_action.push({ text: "Batal Truk", value: "Batal Truk" })
+                </text>
+                }
+                @if (User.HasMenuAccess("Batal Order")){
+                    <text>
+                order_action.push({ text: "Batal Order", value: "Batal Order" })
+                </text>
+                }
+                @if (User.HasMenuAccess("Revisi Rute")){
+                    <text>
+                order_action.push({ text: "Revisi Rute", value: "Revisi Rute" })
+                </text>
+                }
+                @if (User.HasMenuAccess("Revisi Tanggal")){
+                    <text>
+                order_action.push({ text: "Revisi Tanggal", value: "Revisi Tanggal" })
+                </text>
+                }
+                @if (User.HasMenuAccess("Revisi Jenis Truck")){
+                    <text>
+                order_action.push({ text: "Revisi Jenis Truk", value: "Revisi Jenis Truk" })
+                </text>
+                }
+                @if (User.HasMenuAccess("Removal")){
+                    <text>
+                order_action.push({ text: "Removal", value: "Removal" })
+                </text>
+                }
+                @if (User.HasMenuAccess("Klaim")){
+                    <text>
+                order_action.push({ text: "Klaim", value: "Klaim" })
+                </text>
+                }
+                @if (User.HasMenuAccess("Revisi Tanggal BP")){
+                    <text>
+                order_action.push({ text: "Revisi Tanggal BP", value: "Revisi Tanggal BP" })
+                    </text>
+                }
+                order_action.push({ text: "Revisi Keterangan", value: "Keterangan" })
+
+                $.each(data, function (i, row) {
+                    $('tr[data-uid="' + row.uid + '"]').find(".combobox").kendoDropDownList({
+                        optionLabel: "Select Action",
+                        dataTextField: "text",
+                        dataValueField: "value",
+                        dataSource: order_action,
+                        change: function dropDownChange() {
+                            if (this.value() == "Batal Order") {
+                                if (data[i].StatusFlow == "BATAL ORDER" || data[i].StatusFlow == "SETTLEMENT") {
+                                    swal("", "Tidak dapat melakukan batal order.", "warning")
+                                }
+                                else {
+                                    window.location.href = "@Url.Action("Edit", "BatalOrder")" + "?id=" + data[i].Id;
+                                }
+                            }
+                            else if (this.value() == "Revisi Tanggal") {
+                                if (data[i].StatusFlow == "BATAL ORDER" || data[i].StatusFlow == "SETTLEMENT") {
+                                    swal("", "Tidak dapat melakukan revisi tanggal.", "warning")
+                                }
+                                else {
+                                    window.location.href = "@Url.Action("Edit", "RevisiTanggal")" + "?idSo=" + data[i].Id;
+                                }
+                            }
+                            else if (this.value() == "Revisi Rute") {
+                                if (data[i].StatusFlow == "BATAL ORDER" || data[i].StatusFlow == "SETTLEMENT") {
+                                    swal("", "Tidak dapat melakukan revisi rute.", "warning")
+                                }
+                                else {
+                                    window.location.href = "@Url.Action("Edit", "RevisiRute")" + "?idSo=" + data[i].Id;
+                                }
+                            }
+                            else if (this.value() == "Revisi Jenis Truk") {
+                                if (data[i].StatusFlow == "batal order" || data[i].StatusFlow == "settlement") {
+                                    swal("", "Tidak dapat melakukan revisi jenis truk.", "warning")
+                                }
+                                else {
+                                    window.location.href = "@Url.Action("Edit", "RevisiJenisTruk")" + "?idSo=" + data[i].Id;
+                                }
+                            }
+                            else if (this.value() == "Input DP") {
+                                if (data[i].StatusFlow.toLowerCase() != "batal order" && data[i].StatusFlow.toLowerCase() != "settlement")
+                                    window.location.href = "@Url.Action("InputDp")" + "?id=" + data[i].Id;
+                            }else if (this.value() == "Klaim") {
+                                window.location.href = "@Url.Action("Klaim")" + "?id=" + data[i].Id;
+                            } else if (this.value() == "Batal Truk") {
+                                window.location.href = "@Url.Action("Edit", "BatalTruk")" + "?id=" + data[i].Id;
+                            } else if (this.value() == "View Detail") {
+                                window.location.href = "@Url.Action("View", "ListOrder")" + "?id=" + data[i].Id;
+                            } else if (this.value() == "Removal") {
+                                if (data[i].StatusFlow != "DISPATCHED" && data[i].StatusFlow != "TRANSFER" && data[i].StatusFlow != "CASH" && data[i].StatusFlow.toLowerCase() == "batal order" && data[i].StatusFlow.toLowerCase() == "settlement") {
+                                    swal("", "Tidak dapat melakukan removal.", "warning")
+                                }
+                                else {
+                                    window.location.href = "@Url.Action("Edit", "Removal")" + "?idSo=" + data[i].Id;
+                                }
+                            } else if (this.value() == "Keterangan") {
+                                window.location.href = "@Url.Action("Edit", "RevisiKeterangan")" + "?idSo=" + data[i].Id;
+                            } else if (this.value() == "Revisi Tanggal BP") {
+                                window.location.href = "@Url.Action("EditBP", "RevisiTanggal")" + "?idSo=" + data[i].Id;
+                            }
+                        }
+                    })
+
+                    $('tr[data-uid="' + row.uid + '"]').find(".combobox-kontrak").kendoDropDownList({
+                        optionLabel: "Select Action",
+                        dataTextField: "text",
+                        dataValueField: "value",
+                        dataSource: [
+                            { text: "Batal Truk", value: "Batal Truk" },
+                        ],
+                        change: function dropDownChange() {
+                            if (this.value() == "Batal Truk")window.location.href = "@Url.Action("EditKontrak", "BatalTruk")" + "?id=" + data[i].Id + "&idsokontrak=" + data[i].IdSoKontrak;
+                        }
+                    })
+                });
+            },
+        }).data("kendoGrid");
+        @foreach (tms_mka_v2.Context.UserReference item in (List<tms_mka_v2.Context.UserReference>)ViewBag.listKolom)
+                {
+                    <text>
+        listKolom.push('@item.Coloumn');
+        </text>
+                }
+
+        GetColomnData(gridIndex);
+    });
+
+
+    function RefreshDetail(Id) {
+        var dsDetail = new kendo.data.DataSource({
+            transport: {
+                read: {
+                    url: '@Url.Action("FindDetailSo", "SalesOrderProsesKonsolidasi")?id=' + Id,
+                    dataType: "json"
+                },
+            },
+            schema: {
+                total: "total",
+                data: "data",
+                model: {
+                    fields: {
+                        "NamaCustomer": { type: "string" },
+                        "StrProduct": { type: "string" },
+                        "Rute": { type: "string" },
+                        "Tonase": { type: "number" , defaultValue: 0},
+                        "karton": { type: "number" , defaultValue: 0},
+                        "Pallet": { type: "number" , defaultValue: 0},
+                        "Container": { type: "number" , defaultValue: 0},
+                        "m3": { type: "number" , defaultValue: 0},
+                    }
+                }
+            },
+            aggregate: [
+                { field: "Tonase", aggregate: "sum" },
+                { field: "karton", aggregate: "sum" },
+                { field: "Pallet", aggregate: "sum" },
+                { field: "Container", aggregate: "sum" },
+                { field: "m3", aggregate: "sum" }],
+            pageSize: 10,
+            pageable: true,
+            sortable: true,
+        });
+
+        $("#GridDetailKonsoldasi").kendoGrid({
+            dataSource: dsDetail,
+            filterable: kendoGridFilterable,
+            sortable: true,
+            reorderable: true,
+            resizable: true,
+            pageable: true,
+            columns: [
+            { field: "SONumber", title: "SO Number" }, { field: "KodeNama", title: "Kode Supplier" }, { field: "SupplierName", title: "Supplier" },
+            { field: "NamaCustomer", title: "Customer" }, { field: "KodeCustomerTagihan", title: "Kode Ditagihkan" }, { field: "NamaCustomerTagihan", title: "Nama Ditagihkan" },
+            { field: "StrProduct", title: "Jenis Barang" }, { field: "Rute", title: "Tujuan" },
+            { field: "Tonase", title: "Tonase", template: "#= Tonase != null ? Tonase : 0 #", footerTemplate: '<div>totaal: #= kendo.toString(sum, "n") #</div>' },
+            { field: "karton", title: "Karton", template: "#= karton != null ? karton    : 0 #", footerTemplate: "Total : #=sum#" },
+            { field: "Pallet", title: "Pallet", template: "#= Pallet != null ? Pallet : 0 #", footerTemplate: "Total : #=sum#" },
+            { field: "Container", title: "Container", template: "#= Container != null ? Container : 0 #", footerTemplate: "Total : #=sum#" },
+            { field: "m3", title: "m3", template: "#= m3 != null ? m3 : 0 #", footerTemplate: "Total : #=sum#" }
+            ],
+        });
+    }
+    // --- # endregion grid # ---
+</script>
+}
+@* --- # region section script # --- *@
+@*Modal Detail Konsoldasi*@
+<div id="ModalDetailKonsoldasi" class="modal fade bs-modal-full" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-full">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+            </div>
+            <div class="modal-body">
+                <div id="GridDetailKonsoldasi"></div>
+            </div>
+        </div>
+    </div>
+</div>

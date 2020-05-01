@@ -1,0 +1,89 @@
+﻿@using tms_mka_v2.Models
+<link rel="stylesheet" href="~/Content/metronic/bootstrap.min.css" />
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-6 col-md-6">
+                <div class="row">
+                    <h3 class="control-label col-xs-3 col-md-3" style="font-size: 9px !important">sKIATANANDA</h3>
+                </div>
+                <div class="row">
+                    <label class="col-xs-3 col-md-3" style="font-size: 9px !important">No Bukti</label>
+                    <label class="col-xs-9 col-md-9" style="font-size: 9px !important">: @ViewBag.noBukti</label>
+                </div>
+                <div class="row">
+                    <label class="col-xs-3 col-md-3" style="font-size: 9px !important">Tanggal</label>
+                    <label class="col-xs-9 col-md-9" style="font-size: 9px !important">: @ViewBag.tanggal</label>
+                </div>
+                <div class="row">
+                    <label class="control-label col-xs-3 col-md-3" style="font-size: 9px !important">Kontak</label>
+                    <label class="control-label col-xs-9 col-md-9" style="font-size: 9px !important">: @ViewBag.kontak</label>
+                </div>
+            </div>
+            <div class="col-xs-6 col-md-6">
+                <div class="row">
+                    <h2 class="control-label col-xs-12 col-md-12" style="text-align:right !important; font-size: 9px !important"><u>Bukti Kas Keluar</u></h2>
+                </div>
+                <div class="row">
+                    <label class="control-label col-xs-12 col-md-12" style="text-align:right !important;font-size: 9px !important">Kas Besar</label>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <td>No</td>
+                        <td>Keterangan</td>
+                        <td>Jumlah</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    @{ int idx = 1; }
+                    @foreach (var item in ViewBag.item)
+                    {
+                        <tr>
+                            <td style="font-size: 9px !important">@idx</td>
+                            <td style="font-size: 9px !important">@item.Nama</td>
+                            <td style="text-align:right;  font-size: 9px !important">@item.JumlahTransfer.ToString("N2")</td>
+                        </tr>
+                        idx++;
+                    }
+                </tbody>
+            </table>
+        </div>
+        <div class="row" style="margin-top: -35px">
+            <div class="col-xs-8 col-md-8">
+                <div class="row">
+                    <label class="control-label col-xs-12 col-md-12" style="font-size: 9px !important">Terbilang : # @ViewBag.terbilang # </label>
+                </div>
+            </div>
+            <div class="col-xs-4 col-md-4">
+                <div class="row">
+                    <label class="control-label col-xs-6 col-md-6">Total</label>
+                    <label class="control-label col-xs-6 col-md-6" style="text-align:right !important; font-size: 9px !important">@ViewBag.total.ToString("N2")</label>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-8 col-md-8">
+
+            </div>
+            <div class="col-xs-4 col-md-4">
+                <div class="row">
+                    <label class="control-label col-xs-12 col-md-12" style="font-size: 9px !important">@DateTime.Now.ToLongDateString() @DateTime.Now.ToShortTimeString()</label>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-8 col-md-8">
+
+            </div>
+            <div class="col-xs-4 col-md-4">
+                <div class="row">
+                    <label class="control-label col-xs-6 col-md-6" style="text-align:center;font-size: 9px !important">Diterima</label>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>

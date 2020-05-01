@@ -1,0 +1,728 @@
+﻿@using tms_mka_v2.Models;
+@model tms_mka_v2.Models.MasterPool
+@{
+    ViewBag.Title = "Form";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    string currentController = (string)ViewContext.RouteData.Values["controller"];
+    string currentAction = (string)ViewContext.RouteData.Values["action"];
+    string backLink = Url.Action("Index");
+    if (currentAction == "Add")
+    {
+        ViewBag.Title = "Tambah Master Pool";
+    }
+    else
+    {
+        ViewBag.Title = ViewBag.name + " | Edit";
+    }
+}
+<script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?sensor=false&key=AIzaSyBfPWT55ybzPawdPYh58Y85LICkYHQe27U"></script>
+<div class="portlet light">
+    <div class="portlet-title">
+        <div class="caption">
+            <span class="caption-subject font-dark sbold uppercase">@ViewBag.Title</span>
+        </div>
+    </div>
+    <div class="portlet-body form">
+        @using (@Html.BeginForm(currentAction, currentController, FormMethod.Post, new { @class = "form-horizontal", @id = "formsubmit" }))
+        {
+            @Html.ValidationSummary(true)
+            @Html.HiddenFor(model => model.Id)
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.IsActive, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                        <div class="col-md-6 col-sm-9 col-xs-12">
+                            @Html.CheckBoxFor(model => model.IsActive, new { @class = "checkbox" })
+                            <label class="radio-inline">
+                            </label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.NamePool, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                        <div class="col-md-7 col-sm-9 col-xs-12">
+                            @Html.TextBoxFor(model => model.NamePool, new { @class = "form-control input-sm focus" })
+                            @Html.ValidationMessageFor(model => model.NamePool)
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Capacity, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                        <div class="col-md-6 col-sm-9 col-xs-12">
+                            @Html.TextBoxFor(model => model.Capacity, new { @class = "form-control-numeric-ns" })
+                            @Html.ValidationMessageFor(model => model.Capacity)
+                        </div>
+                        <label class="control-label" style="text-align:left">Truk</label>
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Address, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                        <div class="col-md-7 col-sm-9 col-xs-12">
+                            @Html.TextBoxFor(model => model.Address, new { @class = "form-control input-sm" })
+                            @Html.ValidationMessageFor(model => model.Address)
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.IdKel, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                        <div class="col-md-7 col-sm-9 col-xs-12">
+                            @Html.TextBoxFor(model => model.IdKel, new { @class = "form-control input-sm" })
+                            @Html.ValidationMessageFor(model => model.IdKel)
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.IdKec, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                        <div class="col-md-7 col-sm-9 col-xs-12">
+                            @Html.TextBoxFor(model => model.IdKec, new { @class = "form-control input-sm" })
+                            @Html.ValidationMessageFor(model => model.IdKec)
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.IdKabKota, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                        <div class="col-md-7 col-sm-9 col-xs-12">
+                            @Html.TextBoxFor(model => model.IdKabKota, new { @class = "form-control input-sm" })
+                            @Html.ValidationMessageFor(model => model.IdKabKota)
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.IdProvinsi, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                        <div class="col-md-7 col-sm-9 col-xs-12">
+                            @Html.TextBoxFor(model => model.IdProvinsi, new { @class = "form-control input-sm" })
+                            @Html.ValidationMessageFor(model => model.IdProvinsi)
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Latitude, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                        <div class="col-md-6 col-sm-9 col-xs-12">
+                            <div class="input-group input-group-sm">
+                                @Html.TextBoxFor(model => model.Latitude, new { @class = "form-control-numeric-latlong" })
+                                <span class="input-group-btn">
+                                    <button type="button" class="btn green" id="btnviewmap" title="View Map" data-toggle="modal" data-target="#modalviewmap"
+                                            onclick="getMapByLatLong($('#Longitude').val(), $('#Latitude').val(), cboKec.text(), $('#Radius').val(), document.getElementById('viewmap'), $('#modalviewmap'))">
+                                        Map
+                                    </button>
+                                </span>
+                            </div>
+                            @Html.ValidationMessageFor(model => model.Latitude)
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Longitude, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                        <div class="col-md-6 col-sm-9 col-xs-12">
+                            @Html.TextBoxFor(model => model.Longitude, new { @class = "form-control-numeric-latlong" })
+                            @Html.ValidationMessageFor(model => model.Longitude)
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Radius, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                        <div class="col-md-5 col-sm-9 col-xs-12">
+                            @Html.TextBoxFor(model => model.Radius, new { @class = "form-control-numeric-ns" })
+                            @Html.ValidationMessageFor(model => model.Radius)
+                        </div>
+                        <div class="col-md-2" style="padding:0px">
+                            <label class="control-label">Meter</label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.KodeTelp, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                        <div class="col-md-2 col-sm-9 col-xs-12">
+                            @Html.TextBoxFor(model => model.KodeTelp, new { @class = "form-control-tel" })
+                            @Html.ValidationMessageFor(model => model.KodeTelp)
+                        </div>
+                        <div class="col-md-4 col-sm-9 col-xs-12">
+                            @Html.TextBoxFor(model => model.Telp, new { @class = "form-control-tel" })
+                            @Html.ValidationMessageFor(model => model.Telp)
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Pic, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                        <div class="col-md-6 col-sm-9 col-xs-12">
+                            @Html.TextBoxFor(model => model.Pic, new { @class = "form-control input-sm" })
+                            @Html.ValidationMessageFor(model => model.Pic)
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Handphone, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                        <div class="col-md-6 col-sm-9 col-xs-12">
+                            @Html.TextBoxFor(model => model.Handphone, new { @class = "form-control-hp" })
+                            @Html.ValidationMessageFor(model => model.Handphone)
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.IpAddress, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                        <div class="col-md-6 col-sm-9 col-xs-12">
+                            @Html.TextBoxFor(model => model.IpAddress, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.IpAddress)
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-md-3">Cash Account</label>
+                        <div class="col-md-4 col-sm-2 col-xs-12">
+                            <div class="input-group input-group-sm">
+                                <input data-val="true" data-val-number="Nilai IdCreditCash harus berupa angka." id="_IdCreditCash" name="_IdCreditCash" type="hidden">
+                                @Html.HiddenFor(model => model.IdCreditCash)
+                                @Html.TextBoxFor(model => model.CodeCreditCash, new { @class = "form-control", @readonly = true })
+                                <span class="input-group-btn">
+                                    <button type="button" class="btn btn-success" data-toggle="modal" data-target="#modalGridBk" onclick="caller = 'creditcash';">Browse</button>
+                                </span>
+                            </div>
+                            <span class="k-invalid-msg" data-for="_CashAccount" id="val-cashAccount" style='color: red'>Cash Account Harus Diisi</span>
+                        </div>
+                        <div class="col-md-5">
+                            @Html.TextBoxFor(model => model.NamaCreditCash, new { @class = "form-control", @readonly = true })
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-5">
+                    <div class="form-group">
+                        <div id="gridZone"></div>
+                        @Html.HiddenFor(model => model.strPool)
+                    </div>
+                </div>
+            </div>
+
+            <div class="ln_solid"></div>
+            <div class="form-group">
+                <button type="submit" class="btn btn-success">Submit</button>
+                <a href="@backLink" class="btn btn-link">Cancel</a>
+            </div>
+        }
+    </div>
+</div>
+<div id="modalviewmap" class="modal fade bs-modal-lg" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                <h4 class="modal-title">View Map</h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-horizontal">
+                    <div class="form-group">
+                        <div class="col-md-12">
+                            <div id="viewmap" style="height:400px; width:800px; margin: auto"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn green" onclick="addMapLatLongAdd()">Submit</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="modalGridBk" class="modal fade bs-modal-full" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-full">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+            </div>
+            <div class="modal-body">
+                <div id="GridBk"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts{
+    <script type="text/javascript">
+    var dsGrid = [];
+    var cboProvinsi, cboKota, cboKec, cboKel;
+    @foreach(ZoneParkir item in Model.ListZoneParkir)
+       {
+        <text>
+    dsGrid.push({
+        IdZone: parseInt('@item.IdZone'),
+        Pit: parseInt('@item.Pit'),
+        NameZone: '@item.NameZone',
+    })
+    </text>
+       }
+
+    var dsZone = new kendo.data.DataSource({
+        transport: {
+            read: {
+                url: '@Url.Action("GetZone")',
+                dataType: "json"
+            },
+        },
+    });
+
+    var newLong;
+    var newLat;
+    var dsBk = new kendo.data.DataSource({
+        transport: {
+            read: {
+                url: '/ERPConfig/BindingBk',
+                dataType: "json"
+            },
+        },
+        schema: {
+            total: "total",
+            data: "data",
+            model: {
+                fields: {
+                    "id": { type: "number" },
+                    "bk_ac_id": { type: "number" },
+                    "bk_code": { type: "string" },
+                    "bk_name": { type: "string" },
+                }
+            }
+        },
+        pageSize: 10,
+        pageable: true,
+        sortable: true,
+    });
+
+    gridBk = $("#GridBk").kendoGrid({
+        dataSource: dsBk,
+        filterable: kendoGridFilterable,
+        sortable: true,
+        resizable: true,
+        pageable: true,
+        columns: [
+            {
+                command: [
+                 {
+                     name: "select",
+                     text: "Select",
+                     click: SelectBk,
+                     imageClass: "glyphicon glyphicon-ok",
+                     template: '<a class="k-button-icon #=className#" #=attr# href="\\#"><span class="#=iconClass# #=imageClass#"></span></a>'
+                 }
+                ],
+                width: "50px"
+            },
+            { field: "bk_code", title: "Code Account" },
+            { field: "bk_name", title: "Nama Account" },
+        ]
+    });
+
+    function getMapByLatLong(long, lat, kec, rad, elMap, MapModal) {
+        var marker;
+        MapModal.on('shown.bs.modal', function () {
+            var gmarkers = [];
+            if (long != "" && lat != "") {
+                var addLatLng = { lat: parseFloat(lat.replace(',', '.')), lng: parseFloat(long.replace(',', '.')) };
+                var map = new google.maps.Map(elMap, {
+                    zoom: 14,
+                    center: addLatLng
+                });
+            }
+            else if (kec != '') {
+                var map = new google.maps.Map(elMap, {
+                    zoom: 14
+                });
+                var geocoder = new google.maps.Geocoder;
+                geocoder.geocode({ 'address': kec }, function (results, status) {
+                    if (status === 'OK') {
+                        map.setCenter(results[0].geometry.location);
+                    }
+                });
+            } else {
+                //longlat default jakarta
+                long = 106.8451300;
+                lat = -6.2146200;
+                var addLatLng = { lat: parseFloat(lat), lng: parseFloat(long) };
+                var map = new google.maps.Map(elMap, {
+                    zoom: 14,
+                    center: addLatLng
+                });
+            }
+            marker = new google.maps.Marker({
+                position: addLatLng,
+                map: map,
+                //draggable: true,
+                travelMode: google.maps.TravelMode.DRIVING
+            });
+            var circle = new google.maps.Circle({
+                map: map,
+                radius: parseFloat(rad),    // 10 miles in metres
+                fillColor: '#AA0000'
+            });
+            circle.bindTo('center', marker, 'position');
+            gmarkers.push(marker);
+            map.addListener('click', function (e) {
+                var lat = e.latLng.lat();
+                var long = e.latLng.lng();
+                removeMarkers(gmarkers);
+                marker = new google.maps.Marker(
+                 {
+                     map: map,
+                     draggable: true,
+                     animation: google.maps.Animation.DROP,
+                     position: new google.maps.LatLng(lat, long),
+                 });
+                gmarkers.push(marker);
+                newLong = long;
+                newLat = lat;
+                google.maps.event.addListener(marker, 'dragend', function () {
+                    newLong = this.position.lng();
+                    newLat = this.position.lat();
+                });
+            });
+        })
+    }
+
+    function removeMarkers(gmarkers) {
+        for (i = 0; i < gmarkers.length; i++) {
+            gmarkers[i].setMap(null);
+        }
+    }
+
+    function addMapLatLongAdd() {
+        $('#Latitude').data("kendoNumericTextBox").value(newLat);
+        $('#Longitude').data("kendoNumericTextBox").value(newLong);
+        $('#modalviewmap').modal('hide');
+    }
+
+    $(document).ready(function () {
+        //location
+        dsProvinsi = new kendo.data.DataSource({
+            transport: {
+                read: {
+                    url: '@Url.Action("GetProvinsi", "Customer")?type=Provinsi',
+                    dataType: "json"
+                },
+            },
+        });
+        cboProvinsi = $("#IdProvinsi").kendoComboBox({
+            dataSource: {
+                serverFiltering: true,
+                transport: {
+                    read: {
+                        url: '/Location/BindingComboType?type=Provinsi',
+                        dataType: "json"
+                    },
+                },
+            },
+            dataTextField: "Nama",
+            dataValueField: "Id",
+            filter: "contains",
+            suggest: true,
+            minLength: 3,
+            autoBind: false,
+            //change: OnProvChange,
+        }).data("kendoComboBox");
+        cboProvinsi.text('@Model.NameProv')
+
+        cboKota = $("#IdKabKota").kendoComboBox({
+            dataSource: {
+                serverFiltering: true,
+                transport: {
+                    read: {
+                        url: '/Location/BindingComboType?type=Kab/Kota',
+                        dataType: "json"
+                    },
+                },
+            },
+            dataTextField: "Nama",
+            dataValueField: "Id",
+            filter: "contains",
+            suggest: true,
+            minLength: 3,
+            autoBind: false,
+            //change: OnKotaChange,
+        }).data("kendoComboBox");
+        cboKota.text('@Model.NameKabKot')
+
+        cboKec = $("#IdKec").kendoComboBox({
+            dataSource: {
+                serverFiltering: true,
+                transport: {
+                    read: {
+                        url: '/Location/BindingComboType?type=Kecamatan',
+                        dataType: "json"
+                    },
+                },
+            },
+            dataTextField: "Nama",
+            dataValueField: "Id",
+            filter: "contains",
+            suggest: true,
+            minLength: 3,
+            autoBind: false,
+            //change: OnKecamatanChange,
+        }).data("kendoComboBox");
+        cboKec.text('@Model.NameKec')
+
+        cboKel = $("#IdKel").kendoComboBox({
+            dataSource: {
+                serverFiltering: true,
+                transport: {
+                    read: {
+                        url: '/Location/BindingComboType?type=Kelurahan',
+                        dataType: "json"
+                    },
+                },
+            },
+            dataTextField: "Nama",
+            dataValueField: "Id",
+            filter: "contains",
+            suggest: true,
+            minLength: 3,
+            autoBind: false,
+        }).data("kendoComboBox");
+        cboKel.text('@Model.NameKel')
+
+        @*@if(Model.Id != 0)
+            {
+                <Text>
+        cboProvinsi.trigger("change");
+        cboKota.value(@Model.IdKabKota);
+        cboKota.trigger("change");
+        cboKec.value(@Model.IdKec);
+        cboKec.trigger("change");
+        cboKel.value(@Model.IdKel);
+        </Text>
+            }*@
+
+        @*@if (Model.IdProvinsi.HasValue)
+            {
+            <Text>
+        cboProvinsi.trigger("change");
+        cboKota.value(@Model.IdKabKota);
+        </Text>
+            }
+        @if (Model.IdKabKota.HasValue)
+            {
+            <Text>
+            cboKota.trigger("change");
+            cboKec.value(@Model.IdKec);
+            </Text>
+            }
+        @if (Model.IdKabKota.HasValue)
+            {
+            <Text>
+        cboKec.trigger("change");
+        cboKel.value(@Model.IdKel);
+        </Text>
+            }*@
+
+        $("#gridZone").kendoGrid({
+            dataSource: {
+                data: dsGrid,
+                schema: {
+                    model: {
+                        fields: {
+                            IdZone: { type: "number" },
+                            Pit: { type: "number" },
+                            NameZone: {
+                                type: "string", validation: {
+                                    required: { message: "Zona harus diisi." },
+                                    comboreq: function (input) {
+                                        if ($(input).data("kendoComboBox")) {
+                                            if ($(input).data("kendoComboBox").selectedIndex == -1) {
+                                                return false;
+                                            }
+                                        }
+
+                                        return true;
+                                    },
+                                }
+                            },
+                        }
+                    }
+                },
+            },
+            editable: { mode: "inline", confirmation: "Anda yakin menghapus data?" },
+            toolbar: [{ name: "create", text: "Tambah" }],
+            columns: [
+                {
+                    command: [
+                        {
+                            name: "edit",
+                            text: "Edit",
+                            imageClass: "glyphicon glyphicon-edit",
+                            template: '<a class="k-button-icon #=className#" #=attr# title="edit" href="\\#"><span class="#=imageClass#"></span></a>'
+                        },
+                        {
+                            name: "destroy",
+                            text: "Hapus",
+                            imageClass: "glyphicon glyphicon-remove",
+                            template: '<a class="k-button-icon #=className#" #=attr# href="\\#" title="#=text#"><span class="#=imageClass#"></span></a>'
+                        }
+                    ],
+                    width: 90
+                },
+                {
+                    field: "NameZone",
+                    title: "Zone",
+                    editor: kodeEditor
+                },
+                {
+                    field: "Pit",
+                    title: "PIT",
+                    editor: numericTemp
+                }
+            ],
+            edit: function (e) {
+                var detailCell = e.container.find("td:first");
+                detailCell.html('');
+                var commandCell = e.container.find("td:nth-child(1)");
+                commandCell.html('<a class="k-button-icon k-grid-update form-inline" href="\\#" title="Simpan"><span class="glyphicon glyphicon-floppy-saved"></span></a> <a class="k-button-icon k-grid-cancel form-inline" href="\\#" title="Batal"><span class="glyphicon glyphicon-remove"></span></a>');
+                var commandGroupCell = e.container.find("td:nth-child(0)");
+                commandGroupCell.html('');
+            }
+        }).data("kendoGrid");
+    });
+
+    function kodeEditor(container, options) {
+        $('<input required data-comboreq-msg="Nama harus diisi." data-required-msg="Nama harus diisi." data-text-field="Nama" data-value-field="Nama" data-bind="value:' + options.field + '" name="' + options.field + '"/>')
+               .appendTo(container)
+               .kendoComboBox({
+                   dataSource: dsZone,
+                   dataTextField: "Nama",
+                   dataValueField: "Id",
+                   filter: "contains",
+                   suggest: true,
+                   change: function (e) {
+                       var grid = $("#gridZone").data("kendoGrid"), model = grid.dataItem(this.element.closest("tr"));
+                       var val = this.text();
+                       $.ajax({
+                           url: '@Url.Action("GetLookUpByName", "LookUpCode")?nama=' + val,
+                           type: 'GET',
+                           dataType: 'Json',
+                           cache: false,
+                           success: function (obj) {
+                               model.set("IdZone", obj.Id);
+                               model.set("NameZone", obj.Nama);
+                           }
+                       })
+                   },
+               });
+        $("<span class='k-invalid-msg' data-for='" + options.field + "'></span>").appendTo(container);
+    }
+
+    function numericTemp(container, options) {
+        $('<input required data-required-msg="' + options.field + ' harus diisi." required name="' + options.field + '"/>')
+            .appendTo(container)
+            .kendoNumericTextBox({
+                format: 'n0',
+                spinners: false
+            });
+        $("<span class='k-invalid-msg' data-for='" + options.field + "'></span>").appendTo(container);
+    }
+
+    //function OnProvChange(e) {
+    //    if (this.value() != "") {
+    //        setKota(this.value());
+    //    }
+    //    else {
+    //        cboKota.text('');
+    //        cboKota.value();
+    //        cboKota.setDataSource();
+    //        cboKec.text('');
+    //        cboKec.value();
+    //        cboKec.setDataSource();
+    //        cboKel.text('');
+    //        cboKel.value();
+    //        cboKel.setDataSource();
+    //    }
+    //}
+
+    //function setKota(idParent) {
+    //    dsKota = new kendo.data.DataSource({
+    //        transport: {
+    //            read: {
+    //                url: '/Customer/GetChildLoc?idParent=' + idParent,
+    //                dataType: "json"
+    //            },
+    //        },
+    //    });
+    //    cboKota.text('');
+    //    cboKota.value();
+    //    cboKota.setDataSource(dsKota);
+    //    cboKec.text('');
+    //    cboKec.value();
+    //    cboKec.setDataSource();
+    //    cboKel.text('');
+    //    cboKel.value();
+    //    cboKel.setDataSource();
+    //}
+
+    //function OnKotaChange(e) {
+    //    if (this.value() != "") {
+    //        setKecamatan(this.value());
+    //    }
+    //    else {
+    //        cboKec.text('');
+    //        cboKec.value();
+    //        cboKec.setDataSource();
+    //        cboKel.text('');
+    //        cboKel.value();
+    //        cboKel.setDataSource();
+    //    }
+    //}
+
+    //function setKecamatan(idParent) {
+    //    dsKec = new kendo.data.DataSource({
+    //        transport: {
+    //            read: {
+    //                url: '/Customer/GetChildLoc?idParent=' + idParent,
+    //                dataType: "json"
+    //            },
+    //        },
+    //    });
+    //    cboKec.text('');
+    //    cboKec.value();
+    //    cboKec.setDataSource(dsKec);
+    //    cboKel.text('');
+    //    cboKel.value();
+    //    cboKel.setDataSource();
+    //}
+
+    //function OnKecamatanChange(e) {
+    //    if (this.value() != "") {
+    //        setKelurahan(this.value());
+    //    }
+    //    else {
+    //        //kosongkan semua
+    //        cboKel.text('');
+    //        cboKel.value();
+    //        cboKel.setDataSource();
+    //    }
+    //}
+
+    //function setKelurahan(idParent) {
+    //    dsKel = new kendo.data.DataSource({
+    //        transport: {
+    //            read: {
+    //                url: '/Customer/GetChildLoc?idParent=' + idParent,
+    //                dataType: "json"
+    //            },
+    //        },
+    //    });
+    //    cboKel.text('');
+    //    cboKel.value();
+    //    cboKel.setDataSource(dsKel);
+    //}
+
+    $('#formsubmit').submit(function (e) {
+        var grid = $('#gridZone').data('kendoGrid');
+        grid.saveRow();
+        var data = grid.dataSource.data();
+        $('#strPool').val(JSON.stringify(data));
+
+        if (isNaN(cboProvinsi.value()))
+            $('#IdProvinsi').val('@Model.IdProvinsi');
+        if (isNaN(cboKota.value()))
+            $('#IdKabKota').val('@Model.IdKabKota');
+        if (isNaN(cboKec.value()))
+            $('#IdKec').val('@Model.IdKec');
+        if (isNaN(cboKel.value()))
+            $('#IdKel').val('@Model.IdKel');
+    })
+
+    function SelectBk(e) {
+        e.preventDefault();
+        var data = this.dataItem(getDataRowGrid(e));
+        $('#IdCreditCash').val(data.bk_ac_id);
+        $('#CodeCreditCash').val(data.bk_code);
+        $('#NamaCreditCash').val(data.bk_name);
+        $('#modalGridBk').modal('hide');
+        $('#val-bankAccount').hide()
+    }
+</script>
+}

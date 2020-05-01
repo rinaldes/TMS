@@ -1,0 +1,32 @@
+﻿@using tms_mka_v2.Models
+@model tms_mka_v2.Models.Driver
+@{
+    string currentController = (string)ViewContext.RouteData.Values["controller"];
+    string currentAction = (string)ViewContext.RouteData.Values["action"];
+}
+<div class="portlet light">
+    <div class="portlet-body form">
+        @Html.ValidationSummary(true)
+        @Html.HiddenFor(model => model.Id)
+        <div class="form-horizontal">
+            <div class="portlet-body">
+                <ul class="nav nav-tabs" id="wtab">
+                    <li class="active"><a href="#tab_AllHis" data-toggle="tab"> All </a></li>
+                    <li><a href="#tab_OntimeHis" data-toggle="tab"> On-Time </a></li>
+                    <li><a href="#tab_OntempHis" data-toggle="tab"> On-Temp </a></li>
+                    <li><a href="#tab_KlaimHis" data-toggle="tab"> Klaim </a></li>
+                    <li><a href="#tab_TransHis" data-toggle="tab"> POK </a></li>
+                    <li><a href="#tab_SrtJlnHis" data-toggle="tab"> Surat Jalan </a></li>
+                </ul>
+            </div>
+            <div class="tab-content">
+                <div class="tab-pane fade active in" id="tab_AllHis">@Html.Partial("_HistorycalAll", Model)</div>
+                <div class="tab-pane fade" id="tab_OntimeHis">@Html.Partial("_HistorycalOntime", Model)</div>
+                <div class="tab-pane fade" id="tab_OntempHis">@Html.Partial("_HistorycalOntemp", Model)</div>
+                <div class="tab-pane fade" id="tab_KlaimHis">@Html.Partial("_HistorycalKlaim", Model)</div>
+                <div class="tab-pane fade" id="tab_TransHis">@Html.Partial("_HistorycalTrans", Model)</div>
+                <div class="tab-pane fade" id="tab_SrtJlnHis">@Html.Partial("_HistorycalSrtJln", Model)</div>
+            </div>
+        </div>
+    </div>
+</div>

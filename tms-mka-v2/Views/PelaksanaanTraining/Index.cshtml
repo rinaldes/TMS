@@ -1,0 +1,163 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "Master Pelaksanaan Training";
+    string currentController = "PelaksanaanTraining";
+    string currentAction = "Index";
+}
+<div class="portlet light ">
+    <div class="portlet-title">
+        <div class="caption">
+            <span class="caption-subject font-dark sbold uppercase">@ViewBag.Title</span>
+        </div>
+        <div class="actions">
+            <a class="btn btn-sm green dropdown-toggle" href="@Url.Action("Add", "PelaksanaanTraining")">
+                <i class="fa fa-plus"></i>Add
+            </a>
+        </div>
+    </div>
+    <div class="portlet-body form">
+        <div class="portlet box blue ">
+            <div class="portlet-title">
+                <div class="caption">
+                    Hide Colomn :
+                </div>
+                <div class="tools">
+                    <a href="" class="expand"> </a>
+                </div>
+            </div>
+            <div class="portlet-body form" style="display: none;">
+                <form role="form">
+                    <div class="form-body">
+                        <div id="content-col" class="md-checkbox-inline" style="margin-left:10px"></div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div id="grid"></div>
+    </div>
+</div>
+
+@section scripts
+{
+<script type="text/javascript">
+    function deleteItem(e) {
+        e.preventDefault();
+        var data = this.dataItem(getDataRowGrid(e));
+        goToDeletePage('@Url.Action("Delete")' + "?id=" + data.Id, this.dataSource);
+    }
+
+    function editItem(e) {
+        e.preventDefault();
+        var data = this.dataItem(getDataRowGrid(e));
+        window.location.href = "@Url.Action("Edit")" + "?id=" + data.Id;
+    }
+
+    $(document).ready(function () {
+        currController = '@currentController';
+        currAction = '@currentAction';
+
+        var ds = new kendo.data.DataSource({
+            transport: {
+                read: {
+                    url: '@Url.Action("Binding")',
+                    dataType: "json"
+                },
+            },
+            schema: {
+                total: "total",
+                data: "data",
+                model: {
+                    fields: {
+                        "Id": { type: "number" },
+                        "Tanggal": { type: "date" },
+                        //"WaktuPelaksanaan": { type: "string" },
+                        //"WaktuSelesai": { type: "string" },
+                        "StrTrainingSetting": { type: "string" },
+                        "StrTrainingMateri": { type: "string" },
+                        "StrLokasi": { type: "string" },
+                        "Trainer": { type: "string" },
+                        "JumlahPeserta": { type: "number" },
+                        "Keterangan": { type: "string" }
+                    }
+                }
+            },
+            pageSize: 10,
+            pageable: true,
+            sortable: true,
+        });
+
+        gridIndex = $("#grid").kendoGrid({
+            dataSource: ds,
+            filterable: kendoGridFilterable,
+            sortable: true,
+            reorderable: true,
+            resizable: true,
+            pageable: true,
+            groupable: true,
+            columns: [
+                {
+                    command: [
+                        {
+                            name: "edit",
+                            text: "edit",
+                            click: editItem,
+                            imageClass: "glyphicon glyphicon-edit",
+                            template: '<a class="k-button-icon #=className#" #=attr# href="\\#"><span class="#=imageClass#"></span></a>'
+                        },
+                        {
+                            name: "delete",
+                            text: "delete",
+                            click: deleteItem,
+                            imageClass: "glyphicon glyphicon-remove",
+                            template: '<a class="k-button-icon #=className#" #=attr# href="\\#"><span class="#=iconClass# #=imageClass#"></span></a>'
+                        }
+                    ],
+                    width: "90px"
+                },
+                {
+                    field: "Tanggal",
+                    title: "Tanggal Training",
+                    template: "#= Tanggal != null ? kendo.toString(kendo.parseDate(Tanggal, 'yyyy-MM-dd'), 'dd/MM/yyyy') : ''#",
+                },
+                {
+                    title: "Jam Training",
+                    template: "#= kendo.toString(new Date(1, 1, 1, WaktuPelaksanaan.Hours, WaktuPelaksanaan.Minutes), 'HH : mm') + ' - ' + kendo.toString(new Date(1, 1, 1, WaktuSelesai.Hours, WaktuSelesai.Minutes), 'HH : mm') #",
+                },
+                {
+                    field: "StrTrainingSetting",
+                    title: "Training"
+                },
+                {
+                    field: "StrTrainingMateri",
+                    title: "Materi"
+                },
+                {
+                    field: "StrLokasi",
+                    title: "Lokasi"
+                },
+                {
+                    field: "Trainer",
+                    title: "Trainer"
+                },
+                {
+                    field: "JumlahPeserta",
+                    title: "Jumlah Peserta",
+                },
+                {
+                    field: "Keterangan",
+                    title: "Keterangan"
+                }
+            ],
+        }).data("kendoGrid");
+
+        @foreach (tms_mka_v2.Context.UserReference item in (List<tms_mka_v2.Context.UserReference>)ViewBag.listKolom)
+            {
+                <text>
+        listKolom.push('@item.Coloumn');
+        </text>
+            }
+
+        GetColomnData(gridIndex);
+    })
+</script>
+}

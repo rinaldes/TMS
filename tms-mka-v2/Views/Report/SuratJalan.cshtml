@@ -1,0 +1,221 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    //ViewBag.Title = "DOKUMEN";
+    string currentController = "Dokumen";
+    string currentAction = "Index";
+}
+@if (User.HasMenuAccess("Dokumen Billing") || User.HasMenuAccess("Dokumen Surat Jalan"))
+{
+<div class="portlet light ">
+    <div class="portlet-title">
+        <div class="caption">
+            <span class="caption-subject font-dark sbold uppercase">@ViewBag.Title</span>
+        </div>
+        <div class="actions">
+            <a class="btn btn-sm green dropdown-toggle" href="/Report/ExportSuratJalan" id="export">
+                <i class="fa fa-upload"></i>Export
+            </a>
+        </div>
+    </div>
+    <div class="portlet-body form">
+        <div class="portlet box blue ">
+            <div class="portlet-title">
+                <div class="caption">
+                    Hide Column :
+                </div>
+                <div class="tools">
+                    <a href="" class="expand"> </a>
+                </div>
+            </div>
+            <div class="portlet-body form" style="display: none;">
+                <form role="form">
+                    <div class="form-body">
+                        <div id="content-col" class="md-checkbox-inline" style="margin-left:10px"></div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div id="grid"></div>
+    </div>
+</div>
+
+@section scripts
+{
+    <script id="command-template" type="text/x-kendo-template">
+        # if("@ViewBag.caller" == "admin") { #
+            # if(IsAdmin) { #
+        <a class="k-button-icon k-grid-edit" href="\\#" title="Edit" onclick="editItem(#=Id#)"><span class="glyphicon glyphicon-edit"></span></a>
+            # } else { #
+        <a class="k-button-icon k-grid-edit" href="\\#" title="View" onclick="viewItem(#=Id#)"><span class="glyphicon glyphicon-eye-open"></span></a>
+            # } #
+        # } else if("@ViewBag.caller" == "billing") { #
+            # if(Status == "Open") { #
+        <a class="k-button-icon k-grid-edit" href="\\#" title="Edit" onclick="editItem(#=Id#)"><span class="glyphicon glyphicon-edit"></span></a>
+            # } else { #
+        <a class="k-button-icon k-grid-edit" href="\\#" title="View" onclick="viewItem(#=Id#)"><span class="glyphicon glyphicon-eye-open"></span></a>
+            # } #    
+        # } #
+        <a class="k-button-icon k-grid-edit" href="\\#" title="Print" onclick="printItem(#=Id#)"><span class="glyphicon glyphicon-print"></span></a>
+    </script>
+    <script id="dok-template" type="text/x-kendo-template">
+        # if(IsReturn) { #
+        <label style="color:red">#=NoSo#</label>
+        # } else { #
+        <label>#=NoSo#</label>
+        # } #
+    </script>
+    <script type="text/javascript">
+
+        function printItem(id) {
+            window.open("/Dokumen/ShowPrint?id=" + id, '_blank', 'location=yes,scrollbars=yes,status=yes');
+        }
+
+        function viewItem(id) {
+            window.location.href = "@Url.Action("ViewSuratJalan")" + "?id=" + id + "&caller=" + '@ViewBag.caller';
+        }
+
+        function editItem(id) {
+            window.location.href = "@Url.Action("Edit")" + "?id=" + id + "&caller=" + '@ViewBag.caller';
+        }
+
+        $(document).ready(function () {
+            currController = '@currentController';
+            currAction = '@currentAction';
+            var ds = new kendo.data.DataSource({
+                transport: {
+                    read: {
+                        url: '@Url.Action("BindingSJ")?caller=' + '@ViewBag.caller', dataType: "json"
+                    },
+                    parameterMap: function (options, operation) {
+                        if (operation !== "read" && options != '') {
+                            return kendo.stringify(options);
+                        }
+                        else if (operation == "read") {
+                            if (options.filter) {
+                                filter = options.filter.filters;
+                                for (var i in filter) {
+                                    if (filter[i].field == "LastUpdate") {
+                                        filter[i].field = "ModifiedDate";
+                                    }
+                                    if (filter[i].field == "NoSo") {
+                                        filter[i].field = "SONumber";
+                                    }
+                                    if (filter[i].field == "IKSNo") {
+                                        filter[i].field = "SalesOrder.SalesOrderKonsolidasi.IKSNo";
+                                    }
+                                    if (filter[i].field == "TanggalMuat") {
+                                        filter[i].field = "SalesOrder.OrderTanggalMuat";
+                                        Date.prototype.yyyymmdd = function() {
+                                            var mm = this.getMonth() + 1; // getMonth() is zero-based
+                                            var dd = this.getDate();
+
+                                            return [this.getFullYear(),
+                                                    (mm>9 ? '' : '0') + mm,
+                                                    (dd>9 ? '' : '0') + dd
+                                            ].join('-');
+                                        };
+                                        filter[i].value = filter[i].value.yyyymmdd()
+                                    }
+                                    if (filter[i].field == "ReceivedDate") {
+                                        Date.prototype.yyyymmdd = function() {
+                                            var mm = this.getMonth() + 1; // getMonth() is zero-based
+                                            var dd = this.getDate();
+
+                                            return [this.getFullYear(),
+                                                    (mm>9 ? '' : '0') + mm,
+                                                    (dd>9 ? '' : '0') + dd
+                                            ].join('-');
+                                        };
+                                        filter[i].value = filter[i].value.yyyymmdd()
+                                    }
+                                    if (filter[i].field == "Customer") {
+                                        filter[i].field = "Customer.CustomerNama";
+                                    }
+                                    if (filter[i].field == "KodeNama") {
+                                        filter[i].field = "Customer.CustomerCodeOld";
+                                    }
+                                    if (filter[i].field == "Rute") {
+                                        filter[i].field = "SalesOrder.SalesOrderOncall.StrDaftarHargaItem";
+                                    }
+                                    if (filter[i].field == "VehicleNo") {
+                                        filter[i].field = "SalesOrder.DataTruck.VehicleNo";
+                                    }
+                                    if (filter[i].field == "NamaDriver") {
+                                        filter[i].field = "SalesOrder.SalesOrderOncall.Driver1.NamaDriver";
+                                    }
+                                }
+                            }
+                            if (options.sort) {
+                                sort = options.sort;
+                                for (var i in sort) {
+                                    if (sort[i].field == "LastUpdate") {
+                                        sort[i].field = "ModifiedDate";
+                                    }
+                                    if (sort[i].field == "NoSo") {
+                                        sort[i].field = "SalesOrder.SONumber";
+                                    }
+                                    if (sort[i].field == "TanggalMuat") {
+                                        sort[i].field = "SalesOrder.OrderTanggalMuat";
+                                        sort[i].value = sort[i].value.toJSON().split('T')[0]
+                                    }
+                                    if (sort[i].field == "Customer") {
+                                        sort[i].field = "SalesOrder.CustomerNama";
+                                    }
+                                    if (sort[i].field == "Rute") {
+                                        sort[i].field = "SalesOrder.SalesOrderOncall.StrDaftarHargaItem";
+                                    }
+                                    if (sort[i].field == "VehicleNo") {
+                                        sort[i].field = "SalesOrder.DataTruck.VehicleNo";
+                                    }
+                                    if (sort[i].field == "NamaDriver") {
+                                        sort[i].field = "SalesOrder.Driver1.NamaDriver";
+                                    }
+                                    if (sort[i].field == "ReceivedDate") {
+                                        sort[i].value = sort[i].value.toJSON().split('T')[0]
+                                    }
+                                }
+                            }
+                        }
+                        console.log(jQuery.param(JSON.stringify(options)))
+                        $('#export').attr('href', "/Report/ExportSuratJalan?" + jQuery.param(options).replace('take=10', 'take=100000000'))
+                        return options;
+                    }
+                },
+                schema: {
+                    total: "total", data: "data",
+                    model: {
+                        fields: {
+                            "Id": {type: "number"}, "Status": {type: "string"}, "NoSo": {type: "string"}, "NoKSo": {type: "string"}, "Tonase": {type: "string"}, "VehicleNo": {type: "string"}, "KodeNama": {type: "string"}, "Customer": {type: "string"}, "Rute": {type: "string"},
+                            "TanggalMuat": {type: "date"}, "LastUpdate": {type: "date"}, "Delay": {type: "number"}, "AktualKembali": {type: "string"}, "IsAdmin": {type: "boolean"},
+                            "ReceivedDate": {type: "date"}, "IsReturn": {type: "boolean"}, "IsLengkap": {type: "boolean"}
+                        }
+                    }
+                },
+                pageSize: 10, pageable: true, sortable: true, serverFiltering: true, serverPaging: true, serverSorting: true, sort: { field: "LastUpdate", dir: "desc" },
+            });
+            gridIndex = $("#grid").kendoGrid({
+                dataSource: ds, filterable: kendoGridFilterable, sortable: true, reorderable: true, resizable: true, pageable: true, groupable: true, serverFiltering: true, serverPaging: true, serverSorting: true,
+                columns: [
+                    {template: kendo.template($("#command-template").html()), width: 60}, {field: "Status"}, {field: "NoSo", title: "SO No", template: kendo.template($("#dok-template").html())},
+                    {field: "Tonase"}, {field: "VehicleNo", title: "Vehicle No"}, {field: "KodeNama", title: "Kode Nama"}, {field: "Customer"}, {field: "Rute"}, {field: "NamaDriver", title: "Nama Driver"},
+                    {field: "TanggalMuat", title: "Tanggal Muat", template: "#= kendo.toString(kendo.parseDate(TanggalMuat, 'yyyy-MM-dd'), 'dd/MM/yyyy') #"}, {field: "Delay"}, {field: "Lengkap"},
+                    {field: "LastUpdate", title: "Last Update", template: "#= kendo.toString(kendo.parseDate(LastUpdate, 'yyyy-MM-dd'), 'dd/MM/yyyy') #"}
+                ],
+            }).data("kendoGrid");
+
+            @foreach (tms_mka_v2.Context.UserReference item in (List<tms_mka_v2.Context.UserReference>)ViewBag.listKolom)
+            {
+                <text>
+            listKolom.push('@item.Coloumn');
+            </text>
+            }
+            GetColomnData(gridIndex);
+        })
+</script>
+}
+}
+else{
+    ViewBag.Title = "AccessDenied";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    <h1>Maaf, anda tidak memiliki hak akses yang cukup untuk mengakses halaman ini</h1>
+}

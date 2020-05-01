@@ -1,0 +1,316 @@
+﻿@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "Penetapan Driver";
+    string currentController = (string)ViewContext.RouteData.Values["controller"];
+    string currentAction = "Index";
+}
+<div class="portlet light ">
+    <div class="portlet-title">
+        <div class="caption">
+            <span class="caption-subject font-dark sbold uppercase">@ViewBag.Title</span>
+        </div>
+        <div class="actions">
+            <a class="btn btn-sm green dropdown-toggle"
+               href="@Url.Action("Add","PenetapanDriver")">
+                <i class="fa fa-plus"></i>Add
+            </a>
+            <a class="btn btn-sm green dropdown-toggle" href="~/Content/Template/TemplatePenetapanDriver.xlsx" target="_blank">
+                <i class="fa fa-file-excel-o"></i>Download template
+            </a>
+            <a class="btn btn-sm green dropdown-toggle" data-toggle="modal" href="#ModalPenetapanDriver">
+                <i class="fa fa-download"></i>Import
+            </a>
+            <a class="btn btn-sm green dropdown-toggle" href="@Url.Action("Export")">
+                <i class="fa fa-upload"></i>Export
+            </a>
+        </div>
+    </div>
+    <div class="portlet-body form">
+        <div class="portlet box blue ">
+            <div class="portlet-title">
+                <div class="caption">
+                    Hide Column :
+                </div>
+                <div class="tools">
+                    <a href="" class="expand"> </a>
+                </div>
+            </div>
+            <div class="portlet-body form" style="display: none;">
+                <form role="form">
+                    <div class="form-body">
+                        <div id="content-col" class="md-checkbox-inline" style="margin-left:10px"></div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div id="grid"></div>
+    </div>
+</div>
+
+<!-- /.modal -->
+<div class="modal fade bs-modal-sm" id="ModalPenetapanDriver" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                <h4 class="modal-title">Import Data Penetapan Driver</h4>
+            </div>
+            <div class="modal-body">
+                <input name="filesPenetapanDriver" id="filesPenetapanDriver" type="file" />
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn dark btn-outline" data-dismiss="modal" onclick="upload()">Import</button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<!-- /.modal -->
+@section scripts
+{
+    <script type="text/javascript">
+        var kendoUploadButtonExim;
+
+        function deleteItem(e) {
+            e.preventDefault();
+            var data = this.dataItem(getDataRowGrid(e));
+            goToDeletePage('@Url.Action("Delete")' + "?id=" + data.Id, this.dataSource);
+        }
+
+        function editItem(e) {
+            e.preventDefault();
+            var data = this.dataItem(getDataRowGrid(e));
+            window.location.href = "@Url.Action("Edit")" + "?id=" + data.Id;
+        }
+
+        function upload() {
+            if (kendoUploadButtonExim)
+                totalFile = 0;
+            kendoUploadButtonExim.click();
+        }
+
+        function onSelectFile(e) {
+            var flagExtension = 0;
+            var allowedExtension = [".xlsx", ".xls"];
+            $.each(e.files, function (index, value) {
+                if ($.inArray((value.extension).toLowerCase(), allowedExtension) === -1) {
+                    flagExtension = 1;
+                }
+            });
+            if (flagExtension == 1) {
+                alert("File yang diperbolehkan hanya berupa Excell");
+                e.preventDefault();
+            }
+
+            setTimeout(function () {
+                kendoUploadButtonExim = $(".k-upload-selected");
+                kendoUploadButtonExim.hide();
+            }, 1);
+        }
+
+        $(document).ready(function () {
+            CreateUploaderExim($("#filesPenetapanDriver"), "@Url.Action("Upload")", $("#grid"));
+
+            currController = '@currentController';
+            currAction = '@currentAction';
+
+
+            var ds = new kendo.data.DataSource({
+                transport: {
+                    read: {
+                        url: '@Url.Action("Binding")',
+                        dataType: "json"
+                    },
+                    parameterMap: function (options, operation) {
+                        if (operation !== "read" && options != '') {
+                            return kendo.stringify(options);
+                        }
+                        else if (operation == "read") {
+                            if (options.filter) {
+                                filter = options.filter.filters;
+                                for (var i in filter) {
+                                    if (filter[i].field == "VehicleNo") {
+                                        filter[i].field = "DataTruck.VehicleNo";
+                                    }
+                                    if (filter[i].field == "JenisTruck") {
+                                        filter[i].field = "DataTruck.JenisTrucks.StrJenisTruck";
+                                    }
+                                    if (filter[i].field == "Kode1") {
+                                        filter[i].field = "Driver1.KodeDriver";
+                                    }
+                                    if (filter[i].field == "Panggilan1") {
+                                        filter[i].field = "Driver1.NamaPangilan";
+                                    }
+                                    if (filter[i].field == "NoHp1Driver1") {
+                                        filter[i].field = "Driver1.NoHp1";
+                                    }
+                                    if (filter[i].field == "Kode2") {
+                                        filter[i].field = "Driver2.KodeDriver";
+                                    }
+                                    if (filter[i].field == "Panggilan2") {
+                                        filter[i].field = "Driver2.NamaPangilan";
+                                    }
+                                    if (filter[i].field == "NoHp1Driver2") {
+                                        filter[i].field = "Driver2.NoHp1";
+                                    }
+                                }
+                            }
+
+                            if (options.sort) {
+                                sort = options.sort;
+                                for (var i in sort) {
+                                    if (sort[i].field == "VehicleNo") {
+                                        sort[i].field = "DataTruck.VehicleNo";
+                                    }
+                                    if (sort[i].field == "JenisTruck") {
+                                        sort[i].field = "DataTruck.JenisTruck.strJenisTruck";
+                                    }
+                                    if (sort[i].field == "Kode1") {
+                                        sort[i].field = "Driver1.KodeDriver";
+                                    }
+                                    if (sort[i].field == "Panggilan1") {
+                                        sort[i].field = "Driver1.NamaPangilan";
+                                    }
+                                    if (sort[i].field == "NoHp1Driver1") {
+                                        sort[i].field = "Driver1.NoHp1";
+                                    }
+                                    if (sort[i].field == "Kode2") {
+                                        sort[i].field = "Driver2.KodeDriver";
+                                    }
+                                    if (sort[i].field == "Panggilan2") {
+                                        sort[i].field = "Driver2.NamaPangilan";
+                                    }
+                                    if (sort[i].field == "NoHp1Driver2") {
+                                        sort[i].field = "Driver2.NoHp1";
+                                    }
+                                }
+                            }
+                            return options;
+                        }
+                    }
+                },
+                schema: {
+                    total: "total",
+                    data: "data",
+                    model: {
+                        fields: {
+                            "Id": { type: "number" },
+                            "VehicleNo": { type: "string" },
+                            "JenisTruck": { type: "string" },
+                            "Kode1": { type: "string" },
+                            "Nama1": { type: "string" },
+                            "Panggilan1": { type: "string" },
+                            "NoHp1Driver1": { type: "string" },
+                            "Kode2": { type: "string" },
+                            "Nama2": { type: "string" },
+                            "Panggilan2": { type: "string" },
+                            "NoHp1Driver2": { type: "string" },
+                        }
+                    }
+                },
+                pageSize: 10,
+                pageable: true,
+                //serverFiltering: true,
+                //serverPaging: true,
+                //serverSorting: true,
+                sortable: true,
+            });
+
+            gridIndex = $("#grid").kendoGrid({
+                dataSource: ds,
+                filterable: kendoGridFilterable,
+                sortable: true,
+                reorderable: true,
+                resizable: true,
+                pageable: true,
+                groupable: true,
+                scrollable: true,
+                //height: "615",
+                columns: [
+                    {
+                        command: [
+                            {
+                                name: "edit",
+                                text: "edit",
+                                click: editItem,
+                                imageClass: "glyphicon glyphicon-edit",
+                                template: '<a class="k-button-icon #=className#" #=attr# href="\\#"><span class="#=imageClass#"></span></a>'
+                            },
+                            {
+                                name: "delete",
+                                text: "delete",
+                                click: deleteItem,
+                                imageClass: "glyphicon glyphicon-remove",
+                                template: '<a class="k-button-icon #=className#" #=attr# href="\\#"><span class="#=iconClass# #=imageClass#"></span></a>'
+                            }
+                        ],
+                        width: "60px"
+                    },
+                    {
+                        field: "VehicleNo",
+                        title: "Vehicle No",
+                        width: "150px"
+                    },
+                    {
+                        field: "JenisTruck",
+                        title: "Jenis Truk",
+                        width: "200px"
+                    },
+                    {
+                        field: "Kode1",
+                        title: "Driver 1",
+                        width: "150px"
+                    },
+                    {
+                        field: "Nama1",
+                        title: "Nama",
+                        width: "150px"
+                    },
+                    {
+                        field: "Panggilan1",
+                        title: "Panggilan",
+                        width: "150px"
+                    },
+                    {
+                        field: "NoHp1Driver1",
+                        title: "No Hp",
+                        width: "130px"
+                    },
+                    {
+                        field: "Kode2",
+                        title: "Driver 2",
+                        width: "130px"
+                    },
+                    {
+                        field: "Nama2",
+                        title: "Nama",
+                        width: "150px"
+                    },
+                    {
+                        field: "Panggilan2",
+                        title: "Panggilan",
+                        width: "150px"
+                    },
+                    {
+                        field: "NoHp1Driver2",
+                        title: "No Hp",
+                        width: "170px"
+                    },
+                ],
+            }).data("kendoGrid");
+
+            @foreach (tms_mka_v2.Context.UserReference item in (List<tms_mka_v2.Context.UserReference>)ViewBag.listKolom)
+            {
+                <text>
+            listKolom.push('@item.Coloumn');
+            </text>
+            }
+
+            GetColomnData(gridIndex);
+        })
+    </script>
+}
+
+

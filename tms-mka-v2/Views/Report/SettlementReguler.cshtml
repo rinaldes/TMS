@@ -1,0 +1,248 @@
+﻿@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "Settlement Regular";
+    string currentController = (string)ViewContext.RouteData.Values["controller"];
+    string currentAction = "Index";
+}
+<div class="portlet light ">
+    <div class="portlet-title">
+        <div class="caption">
+            <span class="caption-subject font-dark sbold uppercase">@ViewBag.Title</span>
+        </div>
+        <div class="actions">
+            <div class="actions">
+                <a class="btn btn-sm green dropdown-toggle" href="/Report/ExportSettlementReguler" id="export">
+                    <i class="fa fa-upload"></i>Export
+                </a>
+            </div>
+        </div>
+    </div>
+    <div class="portlet-body form">
+        <div class="portlet box blue ">
+            <div class="portlet-title">
+                <div class="caption">Hide Column :</div>
+                <div class="tools">
+                    <a href="" class="expand"> </a>
+                </div>
+            </div>
+            <div class="portlet-body form" style="display: none;">
+                <form role="form">
+                    <div class="form-body">
+                        <div id="content-col" class="md-checkbox-inline" style="margin-left:10px"></div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div id="grid"></div>
+    </div>
+</div>
+
+@section scripts
+{
+    <script type="text/javascript">
+        function deleteItem(e) {
+            e.preventDefault();
+            var data = this.dataItem(getDataRowGrid(e));
+            goToDeletePage('@Url.Action("Delete")' + "?id=" + data.Id, this.dataSource);
+        }
+
+        function printItem(e) {
+            e.preventDefault();
+            var data = this.dataItem(getDataRowGrid(e));
+            terbilang = update(""+data.TotalCash+"");
+            window.open("@Url.Action("ShowPrintKas")" + "?id=" + data.IdSalesOrder + "&Terbilang=" + terbilang + "&aujId="+data.IdAdminUangJalan+"&total="+data.TotalCash, '_blank', 'location=yes,scrollbars=yes,status=yes');
+        }
+
+        function editItem(e) {
+            e.preventDefault();
+            var data = this.dataItem(getDataRowGrid(e));
+            window.location.href = "@Url.Action("Edit")" + "?id=" + data.Id;
+        }
+
+        function update(numString){
+            var bigNumArry = new Array('', ' RIBU', ' JUTA', ' MILYAR', ' TRILIUN', ' QUADRALIUN', ' QUINTIILIUN');
+
+            var output = '';
+            var finlOutPut = new Array();
+
+            if (numString == '0') {
+                console.log('Zero');
+                return;
+            }
+
+            if (numString == 0) {
+                console.log('messeg tell to enter numbers');
+                return;
+            }
+
+            var i = numString.length;
+            i = i - 1;
+
+            //cut the number to grups of three digits and add them to the Arry
+            while (numString.length > 3) {
+                var triDig = new Array(3);
+                triDig[2] = numString.charAt(numString.length - 1);
+                triDig[1] = numString.charAt(numString.length - 2);
+                triDig[0] = numString.charAt(numString.length - 3);
+
+                var varToAdd = triDig[0] + triDig[1] + triDig[2];
+                finlOutPut.push(varToAdd);
+                i--;
+                numString = numString.substring(0, numString.length - 3);
+            }
+            finlOutPut.push(numString);
+            finlOutPut.reverse();
+
+            //conver each grup of three digits to english word
+            //if all digits are zero the triConvert
+            //function return the string "dontAddBigSufix"
+            for (j = 0; j < finlOutPut.length; j++) {
+                finlOutPut[j] = triConvert(parseInt(finlOutPut[j]));
+            }
+
+            var bigScalCntr = 0; //this int mark the million billion trillion... Arry
+
+            for (b = finlOutPut.length - 1; b >= 0; b--) {
+                if (finlOutPut[b] != "dontAddBigSufix") {
+                    finlOutPut[b] = finlOutPut[b] + bigNumArry[bigScalCntr] + ' RP';
+                    bigScalCntr++;
+                }
+                else {
+                    //replace the string at finlOP[b] from "dontAddBigSufix" to empty String.
+                    finlOutPut[b] = ' ';
+                    bigScalCntr++; //advance the counter  
+                }
+            }
+
+            //convert The output Arry to , more printable string 
+            for(n = 0; n<finlOutPut.length; n++){
+                output +=finlOutPut[n];
+            }
+            return output.replace('SE ', 'SE');//print the output
+        }
+
+        //simple function to convert from numbers to words from 1 to 999
+        function triConvert(num){
+            var ones = new Array('', ' SE', ' DUA', ' TIGA', ' EMPAT', ' LIMA', ' ENAM', ' TUJUH', ' DELAPAN', ' SEMBILAN', ' SEPULUH', ' SEBELAS', ' DUA BELAS', ' TIGA BELAS', ' EMPAT BELAS', ' LIMA BELAS', ' ENAM BELAS', ' TUJUH BELAS', ' DELAPAN BELAS', ' SEMBILAN BELAS');
+            var tens = new Array('', '', ' DUA PULUH', ' TIGA PULUH', ' EMPAT PULUH', ' LIMA PULUH', ' ENAM PULUH', ' TUJUH PULUH', ' DELAPAN PULUH', ' SEMBILAN PULUH');
+            var hundred = ' RATUS';
+            var output = '';
+            var numString = num.toString();
+
+            if (num == 0) {
+                return 'dontAddBigSufix';
+            }
+            //the case of 10, 11, 12 ,13, .... 19 
+            if (num < 20) {
+                output = ones[num];
+                return output;
+            }
+
+            //100 and more
+            if (numString.length == 3) {
+                output = ones[parseInt(numString.charAt(0))] + hundred;
+                output += tens[parseInt(numString.charAt(1))];
+                output += ones[parseInt(numString.charAt(2))];
+                return output;
+            }
+
+            output += tens[parseInt(numString.charAt(0))];
+            output += ones[parseInt(numString.charAt(1))];
+
+            return output;
+        }
+
+        $(document).ready(function () {
+            currController = '@currentController';
+            currAction = '@currentAction';
+
+            var ds = new kendo.data.DataSource({
+                transport: {
+                    read: {
+                        url: '@Url.Action("BindingSR")',
+                        dataType: "json"
+                    },
+                    parameterMap: function (options, operation) {
+                        if (operation !== "read" && options != '') {
+                            return kendo.stringify(options);
+                        }
+                        else if (operation == "read") {
+                            if (options.filter) {
+                                filter = options.filter.filters;
+                                for (var i in filter) {
+                                    if (filter[i].field == "NoSo")
+                                        filter[i].field = "AdminUangJalan.SONumber";
+                                    if (filter[i].field == "KodeNama")
+                                        filter[i].field = "AdminUangJalan.Customer.CustomerCodeOld";
+                                    if (filter[i].field == "VehicleNo")
+                                        filter[i].field = "AdminUangJalan.DataTruck.VehicleNo";
+                                    if (filter[i].field == "Driver")
+                                        filter[i].field = "AdminUangJalan.Driver1.NamaDriver";
+                                    if (filter[i].field == "TanggalMuat") {
+                                        filter[i].field = "OrderTanggalMuat";
+                                        filter[i].field = "AdminUangJalan.AUJTanggalMuat";
+                                        Date.prototype.yyyymmdd = function () {
+                                            var mm = this.getMonth() + 1; // getMonth() is zero-based
+                                            var dd = this.getDate();
+
+                                            return [this.getFullYear(),
+                                                    (mm > 9 ? '' : '0') + mm,
+                                                    (dd > 9 ? '' : '0') + dd
+                                            ].join('-');
+                                        };
+                                        filter[i].value = filter[i].value.yyyymmdd()
+                                    }
+                                }
+                            }
+                        }
+                        $('#export').attr('href', "/Report/ExportSettlementReguler?" + jQuery.param(options).replace('take=10', 'take=100000000'))
+                        return options;
+                    }
+                },
+                schema: {
+                    total: "total",
+                    data: "data",
+                    model: {
+                        fields: {
+                            "Id": { type: "number" }, "JenisOrder": { type: "string" }, "NoSo": { type: "string" }, "Customer": { type: "string" }, "VehicleNo": { type: "string" }, "Driver": { type: "string" },
+                            "TanggalMuat": {type: "date"}, "TotalTambahan": {type: "number"},
+                        }
+                    }
+                },
+                pageSize: 10, pageable: true, serverFiltering: true, serverPaging: true, serverSorting: true, sortable: true, sort: { field: "ModifiedDate", dir: "desc" }
+            });
+
+            gridIndex = $("#grid").kendoGrid({
+                serverPaging: true, serverSorting: true, sortable: true, dataSource: ds, filterable: kendoGridFilterable, sortable: true, reorderable: true, resizable: true, pageable: true, groupable: true,
+                columns: [
+                    {
+                        command: [
+                            {
+                                name: "edit", text: "edit", click: editItem, imageClass: "glyphicon glyphicon-edit",
+                                template: '<a class="k-button-icon #=className#" #=attr# href="\\#"><span class="#=imageClass#"></span></a>'
+                            },
+                            {
+                                name: "print", text: "print", click: printItem, imageClass: "glyphicon glyphicon-print",
+                                template: '<a class="k-button-icon #=className#" #=attr# href="\\#"><span class="#=imageClass#"></span></a>'
+                            },
+                       ],
+                        width: "70px"
+                    },
+                    { field: "JenisOrder", title: "Jenis Order" }, { field: "NoSo", title: "No.SO/DN" }, { field: "KodeNama", title: "Kode Nama" }, { field: "Customer" },
+                    { field: "VehicleNo", title: "No.Polisi" }, { field: "DriverCode" }, { field: "Driver" }, { field: "TanggalMuat", title: "Tanggal Muat", template: "#= TanggalMuat != null ? kendo.toString(kendo.parseDate(TanggalMuat, 'yyyy-MM-dd'), 'dd/MM/yyyy') : ''#" },
+                    {field: "TotalTambahan", title: "Total Tambahan", template: 'Rp #: TotalTambahan == null ? 0 : kendo.format("{0:n}", TotalTambahan)#'},
+                ],
+            }).data("kendoGrid");
+
+            @foreach (tms_mka_v2.Context.UserReference item in (List<tms_mka_v2.Context.UserReference>)ViewBag.listKolom)
+            {
+                <text>
+            listKolom.push('@item.Coloumn');
+            </text>
+            }
+
+            GetColomnData(gridIndex);
+        })
+    </script>
+}

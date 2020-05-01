@@ -1,0 +1,639 @@
+﻿@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "Calendar View";
+    string currentController = (string)ViewContext.RouteData.Values["controller"];
+    string currentAction = "Index";
+}
+@if (User.HasMenuAccess("Calendar View"))
+{
+<div class="portlet light ">
+    <div class="portlet-title">
+        <div class="caption">
+            <span class="caption-subject font-dark sbold uppercase">@ViewBag.Title</span>
+        </div>
+    </div>
+    <div class="portlet-body form">
+        @*Filter*@
+        <div class="col-md-2">
+            <div class="form-group">
+                <label class="control-label col-md-3">From :</label>
+                <div class="col-md-7">
+                    <input id="TanggalFrom" name="TanggalFrom" />
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="form-group">
+                <label class="control-label col-md-3">To :</label>
+                <div class="col-md-7">
+                    <input id="TanggalTo" name="TanggalTo" />
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                <label class="control-label col-md-3">Type :</label>
+                <div class="col-md-7">
+                    <select id="TypeCalender" name="TypeCalender" class="form-control input-sm">
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                <label class="control-label col-md-3">Area :</label>
+                <div class="col-md-7">
+                    <select id="AreaCalender" name="AreaCalender" class="form-control input-sm">
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="actions">
+            <button class="btn btn-sm green dropdown-toggle" id="btnView">
+                View
+            </button>
+        </div>
+        <br />
+        @*Filter*@
+        <div id="grid" style="width:16.5%; float: left;"></div>
+        <div id="grid1" style="width:16.5%; float: left;"></div>
+        <div id="grid2" style="width:16.5%; float: left;"></div>
+        <div id="grid3" style="width:16.5%; float: left;"></div>
+        <div id="grid4" style="width:16.5%; float: left;"></div>
+        <div id="grid5" style="width:16.5%; float: left;"></div>
+    </div>
+</div>
+@section scripts
+{
+    <script type="text/javascript">
+
+        //#region combobox Jenis Truck
+        var dsJnsTruck = new kendo.data.DataSource({
+                transport: {
+                    read: {
+                        url: '@Url.Action("GetJnsTruck","JenisTruck")',
+                        dataType: "json"
+                    },
+                },
+        });
+
+        $("#TypeCalender").kendoComboBox({
+            dataTextField: "StrJenisTruck",
+            dataValueField: "Id",
+            dataSource: dsJnsTruck,
+            filter: "contains",
+            suggest: true,
+            change: function (e) {
+                localStorage['typeCalenderViewCalender'] = this.value();
+            },
+        });
+
+        if (localStorage['typeCalenderViewCalender']) {
+            if (localStorage['cekDateViewCalender'])
+            {
+                $('#TypeCalender').data('kendoComboBox').value(localStorage['typeCalenderViewCalender']);
+            }
+            else
+            {
+                $('#TypeCalender').data('kendoComboBox').value(localStorage['typeCalenderViewCalender']);
+                localStorage.removeItem('typeCalenderViewCalender');
+            }
+        }
+        else {
+            localStorage['typeCalenderViewCalender'] = 10;
+            $('#TypeCalender').data('kendoComboBox').value(10);
+        }
+
+        var comboboxTypeCalender = $("#TypeCalender").data("kendoComboBox");
+        //#endregion combobox Jenis Truck
+
+        //#region combobox Area
+        //#region change combobox
+        //$("#AreaCalender").change(function () {
+        //    alert($(this).val());
+        //});
+        //#endregion change combobox
+
+        var itemsAreaCalender = [{ text: "Oustanding order", value: "outOrder" },
+            { text: "Current Unit Ready", value: "dispatched" },
+            { text: "Current Unit Available", value: "available" },
+            { text: "Estimate Unit From On Duty", value: "duty" },
+            { text: "Estimate Unit From Service", value: "service" },
+        ];
+
+        $("#AreaCalender").kendoComboBox({
+            dataTextField: "text",
+            dataValueField: "value",
+            dataSource: itemsAreaCalender,
+            change: function (e) {
+                localStorage['areaCalenderViewCalender'] = this.value();
+            },
+        });
+
+        if (localStorage['areaCalenderViewCalender']) {
+            if (localStorage['cekDateViewCalender']) {
+                $('#AreaCalender').data('kendoComboBox').value(localStorage['areaCalenderViewCalender']);
+            }
+            else {
+                $('#AreaCalender').data('kendoComboBox').value(localStorage['areaCalenderViewCalender']);
+                localStorage.removeItem('areaCalenderViewCalender');
+            }
+        }
+        else {
+            localStorage['areaCalenderViewCalender'] = "outOrder";
+            $('#AreaCalender').data('kendoComboBox').value("outOrder");
+        }
+
+        var comboboxAreaCalender = $("#AreaCalender").data("kendoComboBox");
+        //#endregion combobox Area
+
+        //#region action btnView
+
+        $("#btnView").kendoButton({
+            click: onViewCalender
+        })
+
+        function onViewCalender() {
+            window.location.reload(); return false;
+        }
+        //#endregion action btnView
+
+        //#region change Date View Calender
+        if ((localStorage['dateViewCalender']) && (localStorage['countDateViewCalender']))
+        {
+            if (localStorage['cekDateViewCalender'] == localStorage['countDateViewCalender'])
+            {
+                var dateM = new Date();
+                dateM.setDate(dateM.getDate() - 3);
+                localStorage.removeItem('cekDateViewCalender');
+                localStorage.removeItem('dateViewCalender');
+                localStorage.removeItem('countDateViewCalender');
+                localStorage['typeCalenderViewCalender'] = localStorage['typeCalenderViewCalender'] ? localStorage['typeCalenderViewCalender'] : 10;
+                localStorage['areaCalenderViewCalender'] = localStorage['areaCalenderViewCalender'] ? localStorage['areaCalenderViewCalender'] : "outOrder";
+            }
+            else
+            {
+                var dateM = localStorage['dateViewCalender'];
+                localStorage['cekDateViewCalender'] = localStorage['countDateViewCalender'];
+                localStorage['dateViewCalender'] = localStorage['dateViewCalender'];
+                localStorage['countDateViewCalender'] = localStorage['countDateViewCalender'];
+            }
+        }
+        else
+        {
+            var dateM = new Date();
+            dateM.setDate(dateM.getDate() - 3);
+        }
+
+        var dateP = new Date(dateM);
+        dateP.setDate(dateP.getDate() + 5);
+
+        $("#TanggalFrom").kendoDatePicker({
+            format: "dd/MM/yyyy",
+            value: new Date(dateM),
+            change: function () {
+                var dateP = new Date(this.value());
+                localStorage['dateViewCalender'] = new Date(this.value());
+                localStorage['cekDateViewCalender'] = localStorage['cekDateViewCalender'] ? 2 : 1;
+                localStorage['countDateViewCalender'] = localStorage['countDateViewCalender'] ? 1 : 2;
+
+                dateP.setDate(dateP.getDate() + 5);
+                $("#TanggalTo").data('kendoDatePicker').value(dateP);
+            }
+        });
+        var TanggalFromDp = $("#TanggalFrom").data("kendoDatePicker");
+
+        $("#TanggalTo").kendoDatePicker({
+            format: "dd/MM/yyyy",
+            value: new Date(dateP),
+        });
+        var TanggalToDp = $("#TanggalTo").data("kendoDatePicker");
+        TanggalToDp.enable(false);
+
+        function setTglCalnderView(tgl, y) {
+            var tglset = new Date(tgl);
+                tglset.setDate(tgl.getDate() + y);
+
+            var tglsetNow = tglset.toJSON(),
+                strThn = tglsetNow.slice(0, 10),
+                strBln = strThn.slice(5, -3),
+                strTgl = strThn.slice(8),
+                strThn = strThn.slice(0, 4);
+
+            return tgl = strTgl + "/" + strBln + "/" + strThn;
+        }
+
+        function setTglCalnderViewCtrl(tgl, y) {
+            var tglset = new Date(tgl);
+            tglset.setDate(tgl.getDate() + y);
+
+            var tglsetNow = tglset.toJSON(),
+                strThn = tglsetNow.slice(0, 10),
+                strBln = strThn.slice(5, -3),
+                strTgl = strThn.slice(8),
+                strThn = strThn.slice(0, 4);
+
+            return tgl = strBln + "/" + strTgl + "/" + strThn;
+            //return tgl = strTgl + "/" + strBln + "/" + strThn;
+        }
+
+        function dateViewCalnder(x, y) {
+            var dateViewCalender = new Date(TanggalFromDp.value());
+
+            if (x == "m") {
+                dateViewCalender.setDate(dateViewCalender.getDate() - y);
+            }
+            else if (x == "p") {
+                dateViewCalender.setDate(dateViewCalender.getDate() + y);
+            }
+
+            //var objToday = new Date(),
+            var objToday = dateViewCalender,
+                weekday = new Array('Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'),
+                dayOfWeek = weekday[objToday.getDay()],
+                domEnder = function () { var a = objToday; if (/1/.test(parseInt((a + "").charAt(0)))) return "th"; a = parseInt((a + "").charAt(1)); return 1 == a ? "st" : 2 == a ? "nd" : 3 == a ? "rd" : "th" }(),
+                //dayOfMonth = today + (objToday.getDate() < 10) ? '0' + objToday.getDate() + domEnder : objToday.getDate() + domEnder,
+                dayOfMonth = datetime + (objToday.getDate() < 10) ? '0' + objToday.getDate() : objToday.getDate(),
+                months = new Array('Januari', 'Februari', 'Maret', 'April', 'Mey', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'),
+                curMonth = months[objToday.getMonth()],
+                curYear = objToday.getFullYear(),
+                curHour = objToday.getHours() > 12 ? objToday.getHours() - 12 : (objToday.getHours() < 10 ? "0" + objToday.getHours() : objToday.getHours()),
+                curMinute = objToday.getMinutes() < 10 ? "0" + objToday.getMinutes() : objToday.getMinutes(),
+                curSeconds = objToday.getSeconds() < 10 ? "0" + objToday.getSeconds() : objToday.getSeconds(),
+                curMeridiem = objToday.getHours() > 12 ? "PM" : "AM";
+
+            var datetime = curHour + ":" + curMinute + "." + curSeconds + curMeridiem + " " + dayOfWeek + " " + dayOfMonth + " of " + curMonth + ", " + curYear;
+            var date = dayOfWeek + ", " + dayOfMonth + " " + curMonth + " " + curYear;
+
+            return date;
+        }
+
+        function getHeader(x, y) {
+            return dateViewCalnder(x, y);
+        }
+        //#endregion change Date View Calender
+
+        $(document).ready(function () {
+            currController = '@currentController';
+            currAction = '@currentAction';
+
+            var calenderViewItemModel = kendo.data.Model.define({
+                fields: {
+                    "Id": { type: "string" },
+                    "NoTruck": { type: "string" },
+                    "VehicleNo": { type: "string" },
+                    "StrJenisTruck": { type: "string" },
+                    "Status": { type: "string" },
+                    "Alamat": { type: "string" },
+                    "Long": { type: "string" },
+                    "Lat": { type: "string" },
+                    "Kecepatan": { type: "string" },
+                    "CreatedDate": { type: "string" },
+                    "KM": { type: "string" },
+                    "HM": { type: "string" },
+                    "StatusOrder": { type: "string" },
+                    "zone": { type: "string" },
+                    "Suhu": { type: "string" },
+                    "AreaAsal": { type: "string" },
+                    "AreaTujuan": { type: "string" },
+                    "timePosition": { type: "string" },
+                    "CustomerNama": { type: "string" },
+                }
+            });
+
+
+            if (comboboxAreaCalender.value() == "outOrder" ){
+                var calenderViewItemColoumn = [
+                    {
+                        field: "AreaAsal",
+                        title: "Area",
+                        headerAttributes: {
+                            style: "text-align: center"
+                        }
+                    },
+                    {
+                        field: "CustomerNama",
+                        title: "Customer",
+                        headerAttributes: {
+                            style: "text-align: center"
+                        }
+                    },
+                    {
+                        field: "AreaTujuan",
+                        title: "To",
+                        headerAttributes: {
+                            style: "text-align: center"
+                        }
+                    },
+                    {
+                        field: "StrJenisTruck",
+                        title: "Type",
+                        headerAttributes: {
+                            style: "text-align: center"
+                        }
+                    },
+                ];
+            }
+            else if (comboboxAreaCalender.value() == "service" ){
+                var calenderViewItemColoumn = [
+                    {
+                        field: "AreaAsal",
+                        title: "Area",
+                        headerAttributes: {
+                            style: "text-align: center"
+                        }
+                    },
+                    {
+                        field: "timePosition",
+                        title: "Time",
+                        headerAttributes: {
+                            style: "text-align: center"
+                        }
+                    },
+                    {
+                        field: "VehicleNo",
+                        title: "Vehicle",
+                        headerAttributes: {
+                            style: "text-align: center"
+                        }
+                    },
+                    {
+                        field: "StrJenisTruck",
+                        title: "Type",
+                        headerAttributes: {
+                            style: "text-align: center"
+                        }
+                    },
+                ];
+            }
+            else {
+                var calenderViewItemColoumn = [
+                    {
+                        field: "AreaAsal",
+                        title: "Area",
+                        headerAttributes: {
+                            style: "text-align: center"
+                        }
+                    },
+                    {
+                        //field: "Alamat",
+                        title: "Position",
+                        headerAttributes: {
+                            style: "text-align: center"
+                        }
+                    },
+                    {
+                        field: "VehicleNo",
+                        title: "Vehicle",
+                        headerAttributes: {
+                            style: "text-align: center"
+                        }
+                    },
+                    {
+                        field: "StrJenisTruck",
+                        title: "Type",
+                        headerAttributes: {
+                            style: "text-align: center"
+                        }
+                    },
+                ];
+            }
+
+            var ds = new kendo.data.DataSource({
+                transport: {
+                    read: {
+                        url: '@Url.Action("Binding")?dateAwal=' + setTglCalnderViewCtrl(TanggalFromDp.value(), 0) + '&dateAkhir=' + setTglCalnderViewCtrl(TanggalFromDp.value(), 0) + '&jnsTruck=' + comboboxTypeCalender.value() + '&areaViewCalender=' + comboboxAreaCalender.value(),
+                        dataType: "json"
+                    },
+                },
+                schema: {
+                    total: "total",
+                    data: "data",
+                    model: calenderViewItemModel,
+                },
+                pageSize: 10,
+                pageable: true,
+                sortable: true,
+                //filter: { field: "CreatedDate", operator: "contains", value: setTglCalnderView(TanggalFromDp.value(), 0) }
+            });
+
+            var ds1 = new kendo.data.DataSource({
+                transport: {
+                    read: {
+                        url: '@Url.Action("Binding")?dateAwal=' + setTglCalnderViewCtrl(TanggalFromDp.value(), 1) + '&dateAkhir=' + setTglCalnderViewCtrl(TanggalFromDp.value(), 1) + '&jnsTruck=' + comboboxTypeCalender.value() + '&areaViewCalender=' + comboboxAreaCalender.value(),
+                        dataType: "json"
+                    },
+                },
+                schema: {
+                    total: "total",
+                    data: "data",
+                    model: calenderViewItemModel,
+                },
+                pageSize: 10,
+                pageable: true,
+                sortable: true,
+                //filter: { field: "CreatedDate", operator: "contains", value: setTglCalnderView(TanggalFromDp.value(), 1) }
+            });
+
+            var ds2 = new kendo.data.DataSource({
+                transport: {
+                    read: {
+                        url: '@Url.Action("Binding")?dateAwal=' + setTglCalnderViewCtrl(TanggalFromDp.value(), 2) + '&dateAkhir=' + setTglCalnderViewCtrl(TanggalFromDp.value(), 2) + '&jnsTruck=' + comboboxTypeCalender.value() + '&areaViewCalender=' + comboboxAreaCalender.value(),
+                        dataType: "json"
+                    },
+                },
+                schema: {
+                    total: "total",
+                    data: "data",
+                    model: calenderViewItemModel,
+                },
+                pageSize: 10,
+                pageable: true,
+                sortable: true,
+                //filter: { field: "CreatedDate", operator: "contains", value: setTglCalnderView(TanggalFromDp.value(), 2) }
+            });
+
+            var ds3 = new kendo.data.DataSource({
+                transport: {
+                    read: {
+                        url: '@Url.Action("Binding")?dateAwal=' + setTglCalnderViewCtrl(TanggalFromDp.value(), 3) + '&dateAkhir=' + setTglCalnderViewCtrl(TanggalFromDp.value(), 3) + '&jnsTruck=' + comboboxTypeCalender.value() + '&areaViewCalender=' + comboboxAreaCalender.value(),
+                        dataType: "json"
+                    },
+                },
+                schema: {
+                    total: "total",
+                    data: "data",
+                    model: calenderViewItemModel,
+                },
+                pageSize: 10,
+                pageable: true,
+                sortable: true,
+                //filter: { field: "CreatedDate", operator: "contains", value: setTglCalnderView(TanggalFromDp.value(), 3) }
+            });
+
+            var ds4 = new kendo.data.DataSource({
+                transport: {
+                    read: {
+                        url: '@Url.Action("Binding")?dateAwal=' + setTglCalnderViewCtrl(TanggalFromDp.value(), 4) + '&dateAkhir=' + setTglCalnderViewCtrl(TanggalFromDp.value(), 4) + '&jnsTruck=' + comboboxTypeCalender.value() + '&areaViewCalender=' + comboboxAreaCalender.value(),
+                        dataType: "json"
+                    },
+                },
+                schema: {
+                    total: "total",
+                    data: "data",
+                    model: calenderViewItemModel,
+                },
+                pageSize: 10,
+                pageable: true,
+                sortable: true,
+                //filter: { field: "CreatedDate", operator: "contains", value: setTglCalnderView(TanggalFromDp.value(), 4) }
+            });
+
+            var ds5 = new kendo.data.DataSource({
+                transport: {
+                    read: {
+                        url: '@Url.Action("Binding")?dateAwal=' + setTglCalnderViewCtrl(TanggalFromDp.value(), 5) + '&dateAkhir=' + setTglCalnderViewCtrl(TanggalFromDp.value(), 5) + '&jnsTruck=' + comboboxTypeCalender.value() + '&areaViewCalender=' + comboboxAreaCalender.value(),
+                        dataType: "json"
+                    },
+                },
+                schema: {
+                    total: "total",
+                    data: "data",
+                    model: calenderViewItemModel,
+                },
+                pageSize: 10,
+                pageable: true,
+                sortable: true,
+                //filter: { field: "CreatedDate", operator: "contains", value: setTglCalnderView(TanggalFromDp.value(), 5) }
+            });
+
+            gridIndex = $("#grid").kendoGrid({
+                dataSource: ds,
+                filterable: kendoGridFilterable,
+                sortable: true,
+                reorderable: true,
+                resizable: true,
+                pageable: true,
+                groupable: false,
+                height: "625",
+                columns: [
+                    {
+                        headerTemplate: getHeader("p", 0),
+                        headerAttributes: {
+                            style: "text-align: center"
+                        },
+                        columns: calenderViewItemColoumn
+                    },
+                ],
+            }).data("kendoGrid");
+
+            gridIndex = $("#grid1").kendoGrid({
+                dataSource: ds1,
+                filterable: kendoGridFilterable,
+                sortable: true,
+                reorderable: true,
+                resizable: true,
+                pageable: true,
+                groupable: false,
+                height: "625",
+                columns: [
+                    {
+                        headerTemplate: getHeader("p", 1),
+                        headerAttributes: {
+                            style: "text-align: center"
+                        },
+                        columns: calenderViewItemColoumn
+                    },
+                ],
+            }).data("kendoGrid");
+
+            gridIndex = $("#grid2").kendoGrid({
+                dataSource: ds2,
+                filterable: kendoGridFilterable,
+                sortable: true,
+                reorderable: true,
+                resizable: true,
+                pageable: true,
+                groupable: false,
+                height: "625",
+                columns: [
+                    {
+                        headerTemplate: getHeader("p", 2),
+                        headerAttributes: {
+                            style: "text-align: center"
+                        },
+                        columns: calenderViewItemColoumn
+                    },
+                ],
+            }).data("kendoGrid");
+
+            gridIndex = $("#grid3").kendoGrid({
+                dataSource: ds3,
+                filterable: kendoGridFilterable,
+                sortable: true,
+                reorderable: true,
+                resizable: true,
+                pageable: true,
+                groupable: false,
+                height: "625",
+                columns: [
+                    {
+                        headerTemplate: getHeader("p", 3),
+                        headerAttributes: {
+                            style: "text-align: center"
+                        },
+                        columns: calenderViewItemColoumn
+                    },
+                ],
+            }).data("kendoGrid");
+
+            gridIndex = $("#grid4").kendoGrid({
+                dataSource: ds4,
+                filterable: kendoGridFilterable,
+                sortable: true,
+                reorderable: true,
+                resizable: true,
+                pageable: true,
+                groupable: false,
+                height: "625",
+                columns: [
+                    {
+                        headerTemplate: getHeader("p", 4),
+                        headerAttributes: {
+                            style: "text-align: center"
+                        },
+                        columns: calenderViewItemColoumn
+                    },
+                ],
+            }).data("kendoGrid");
+
+            gridIndex = $("#grid5").kendoGrid({
+                dataSource: ds5,
+                filterable: kendoGridFilterable,
+                sortable: true,
+                reorderable: true,
+                resizable: true,
+                pageable: true,
+                groupable: false,
+                height: "625",
+                columns: [
+                    {
+                        headerTemplate: getHeader("p", 5),
+                        headerAttributes: {
+                            style: "text-align: center"
+                        },
+                        columns: calenderViewItemColoumn
+                    },
+                ],
+            }).data("kendoGrid");
+
+        })
+    </script>
+}
+}
+else{
+    ViewBag.Title = "AccessDenied";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    <h1>Maaf, anda tidak memiliki hak akses yang cukup untuk mengakses halaman ini</h1>
+}

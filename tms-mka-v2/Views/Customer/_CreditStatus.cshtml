@@ -1,0 +1,197 @@
+﻿@using tms_mka_v2.Models
+@model tms_mka_v2.Models.Customer
+@{
+    string currentController = (string)ViewContext.RouteData.Values["controller"];
+    string currentAction = (string)ViewContext.RouteData.Values["action"];
+    ViewBag.SubTitle = "Customer Basic Data";
+}
+<style>
+    .k-formatted-value .form-control-numeric .k-input .k-valid {
+        background-color: red;
+    }
+</style>
+<h2>Customer PPN</h2>
+
+@using (Html.BeginForm("UpdateCS", currentController, FormMethod.Post, new { @id = "formCSHead" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(model => model.Id)
+    @Html.HiddenFor(model => model.IdCreditStatus)
+    <div class="form-horizontal">
+        @Html.ValidationSummary(true)
+        <div class="panel panel-default">
+            <div class="panel-body">
+                <div class="col-md-6">
+                    <label class="control-label col-md-3">Status System</label>
+                    <div class="col-md-9">
+                        <input class="form-control input-sm" style="background-color:red" />
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <label class="control-label col-md-3">Status Manual</label>
+                    <div class="col-md-9">
+                        <div class="input-group input-group-sm">
+                            @if (Model.StatusOveride != null)
+                            {
+                                <input id="resOverride" disabled class="form-control" style="background-color:@Model.StatusOveride.ToLower()" />
+                            }
+                            else
+                            {
+                                <input id="resOverride" disabled class="form-control" style="background-color:green" />
+                            }
+
+                            <span class="input-group-btn">
+                                <button type="button" class="btn btn-sm btn-success" data-toggle="modal" data-target="#modalStatusCS" onclick="refeshStat()">Override</button>
+                            </span>
+                            @Html.HiddenFor(model => model.KeteranganCS)
+                            @Html.HiddenFor(model => model.StatusOveride)
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel panel-default">
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <span class="k-invalid-msg" data-for="ConditionCS"></span>
+                    </div>
+                </div>
+                <div class="col-md-7">
+                    <div class="radio">
+                        <label>@Html.RadioButtonFor(model => model.ConditionCS, "OVERDUE", new { @class = "rdCs", @required = "required", @validationmessage = "Kredit limit harus dipilih" }) Is Overdue</label>
+                    </div>
+                    <div class="panel panel-default">
+                        <div class="panel-body">
+                            <table class="table table-bordered table-hover">
+                                <thead>
+                                    <tr>
+                                        <td width="40%">Overdue</td>
+                                        <td width="40%">Term of payment</td>
+                                        <td width="30%">Credit Status</td>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            <label class="control-label"> >=&nbsp;Rp.&nbsp;&nbsp;1.000.000</label><label class="control-label" style="float:right">AND</label>
+                                        </td>
+                                        <td>
+                                            <label>
+                                                >= @Html.TextBoxFor(model => model.MinTOPOverdue1, new { @class = "form-control-numeric", @style = "width:30%", @disabled = "disabled", @data_overduereq_msg = "Hari harus diisi" }) AND
+                                                <= @Html.TextBoxFor(model => model.MaxTOPOverdue1, new { @class = "form-control-numeric", @style = "width:30%", @disabled = "disabled" })
+                                            </label>
+                                            <br />
+                                            <label class="control-label">
+                                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                                > &nbsp;&nbsp;7 hari
+                                            </label>
+                                            <span class="k-invalid-msg" data-for="MinTOPOverdue1"></span>
+                                        </td>
+                                        <td>
+                                            <input style="background-color:yellow" disabled="disabled" />
+                                            <br />
+                                            <input style="background-color:red;margin-top:8px;margin-top:20px" disabled="disabled" />
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <label class="control-label"> >=&nbsp;Rp.</label> @Html.TextBoxFor(model => model.ValueOverdue2, new { @class = "form-control-numeric", @style = "width:50%", @disabled = "disabled", @data_overduereq_msg = "Nilai harus diisi" }) <label class="control-label" style="float:right">AND</label>
+                                            <span class="k-invalid-msg" data-for="ValueOverdue2"></span>
+                                        </td>
+                                        <td>
+                                            >=  @Html.TextBoxFor(model => model.TOPOverdue2, new { @class = "form-control-numeric", @style = "width:30%", @disabled = "disabled", @data_overduereq_msg = "Hari harus diisi" }) Hari
+                                            <span class="k-invalid-msg" data-for="TOPOverdue2"></span>
+                                        </td>
+                                        <td>
+                                            <input style="background-color:red;margin-top:5px" disabled="disabled" />
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-5">
+                    <div class="radio">
+                        <label>@Html.RadioButtonFor(model => model.ConditionCS, "SHIPMENT", new { @class = "rdCs", @required = "required", @validationmessage = "Kredit limit harus dipilih" }) Is Shipment</label>
+                    </div>
+                    <div class="panel panel-default">
+                        <div class="panel-body">
+                            Shipment belum dibayar
+                            <div class="form-group">
+                                <label class="control-label col-md-2"> Jumlah >= </label>
+                                <div class="col-md-5">
+                                    @Html.TextBoxFor(model => model.ShipmentDay1, new { @class = "form-control-numeric", @disabled = "disabled", @data_shipmentreq_msg = "Hari harus diisi" })
+                                    <span class="k-invalid-msg" data-for="ShipmentDay1"></span>
+                                </div>
+                                <div class="col-md-5">
+                                    <input style="background-color:yellow" disabled="disabled" />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-2"> Jumlah >= </label>
+                                <div class="col-md-5">
+                                    @Html.TextBoxFor(model => model.ShipmentDay2, new { @class = "form-control-numeric", @disabled = "disabled", @data_shipmentreq_msg = "Hari harus diisi" })
+                                    <span class="k-invalid-msg" data-for="ShipmentDay2"></span>
+                                </div>
+                                <div class="col-md-5">
+                                    <input style="background-color:red" disabled="disabled" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel panel-default">
+            <div class="panel-body">
+                <div id="gridhistrycs"></div>
+            </div>
+        </div>
+
+
+        <div class="form-group">
+            <input type="submit" name="submitCS" value="Update" class="btn btn-default" />
+            <input type="submit" name="submitCS" value="Update and Next" class="btn btn-default" />
+        </div>
+    </div>
+}
+<div id="modalStatusCS" class="modal fade" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+        <div id="modalForm" class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+            </div>
+            <div class="modal-body">
+                <form class="form-horizontal" id="frmStat">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label class="control-label col-md-2">Status</label>
+                                <div class="col-md-10">
+                                    <input id="cboStatusOveride" name="cboStatusOveride" data-comboreq-msg="Status harus diisi">
+                                    <span class="k-invalid-msg" data-for="cboStatusOveride"></span>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-2">Keterangan</label>
+                                <div class="col-md-10">
+                                    <textarea id="ketCS" class="form-control input-sm"></textarea>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-md-2 col-md-offset-2">
+                                    <button type="button" class="btn btn-sm" onclick="overideStatus()">Submit</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

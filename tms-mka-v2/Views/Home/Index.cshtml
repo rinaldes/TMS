@@ -1,0 +1,743 @@
+﻿<script src="~/Content/highcharts.js"></script>
+<script src="~/Content/exporting.js"></script>
+@{
+    ViewBag.Title = "Dashboard";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="row">
+    @if (User.HasMenuAccess("Sales Graph")){
+        <div class="col-md-6">
+            <div id="container" style="min-width: 210px; height: 400px; margin: 0 auto"></div>
+        </div>
+    }
+    <div class="col-md-6 col-sm-12 col-xs-12">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="row">
+                @if (User.HasMenuAccess("Approval Needed")){
+                <div class="col-lg-4 col-xs-12 col-sm-12">
+                    <div class="portlet light bordered">
+                        <div class="portlet-title"><div class="caption"><i class="icon-share font-dark hide"></i><span class="caption-subject font-dark bold uppercase">Approval Needed</span></div></div>
+                        <div class="portlet-body">
+                            <div class="slimScrollDiv" style="position: relative; overflow: hidden; width: auto; height: 300px;">
+                                <ul class="feeds">
+                                    <li>
+                                        <div class="col1" onclick="window.open('/SalesOrderOnCall', '_blank')">
+                                            <div class="cont">
+                                                <div class="cont-col1">
+                                                    <div class="label label-sm label-info" style="color: @ViewBag.MarketingApprovalNeedColour"><i>(@ViewBag.MarketingApprovalNeed)</i></div>
+                                                </div>
+                                                <div class="cont-col2"><div class="desc"> Marketing</div></div>
+                                            </div>
+                                        </div>
+                                    </li>
+                                    <li>
+                                        <div class="col1" onclick="window.open('/PlanningOnCall', '_blank')">
+                                            <div class="cont">
+                                                <div class="cont-col1">
+                                                    <div class="label label-sm label-info" style="color: @ViewBag.PlanningApprovalNeedColour"><i>(@ViewBag.PlanningApprovalNeed)</i></div>
+                                                </div>
+                                                <div class="cont-col2"><div class="desc"> Planning</div></div>
+                                            </div>
+                                        </div>
+                                    </li>
+                                    <li>
+                                        <div class="col1">
+                                            <div class="cont">
+                                                <div class="cont-col1">
+                                                    <div class="label label-sm label-info" style="color: @ViewBag.KonfirmasiApprovalNeedColour"><i>(@ViewBag.KonfirmasiApprovalNeed)</i></div>
+                                                </div>
+                                                <div class="cont-col2"><div class="desc"> Konfirmasi</div></div>
+                                            </div>
+                                        </div>
+                                    </li>
+                                    <li>
+                                        <div class="col1">
+                                            <div class="cont">
+                                                <div class="cont-col1"><div class="label label-sm label-info" style="color: @ViewBag.AUJApprovalNeedColour"><i>(@ViewBag.AUJApprovalNeed)</i></div></div>
+                                                <div class="cont-col2"><div class="desc"> Admin UJ</div></div>
+                                            </div>
+                                        </div>
+                                    </li>
+                                    <li>
+                                        <div class="col1">
+                                            <div class="cont">
+                                                <div class="cont-col1"><div class="label label-sm label-info" style="color: @ViewBag.KasirApprovalNeedColour"><i>(@ViewBag.KasirApprovalNeed)</i></div></div>
+                                                <div class="cont-col2"><div class="desc"> Kasir</div></div>
+                                            </div>
+                                        </div>
+                                    </li>
+                                    <li>
+                                        <div class="col1">
+                                            <div class="cont">
+                                                <div class="cont-col1">
+                                                    <div class="label label-sm label-info">
+                                                        <i>(7)</i>
+                                                    </div>
+                                                </div>
+                                                <div class="cont-col2"><div class="desc"> Workshop</div></div>
+                                            </div>
+                                        </div>
+                                    </li>
+                                    <li>
+                                        <div class="col1">
+                                            <div class="cont">
+                                                <div class="cont-col1"><div class="label label-sm label-info"><i>(7)</i></div></div><div class="cont-col2"><div class="desc"> GA</div></div>
+                                            </div>
+                                        </div>
+                                    </li>
+                                    <li>
+                                        <div class="col1">
+                                            <div class="cont">
+                                                <div class="cont-col1"><div class="label label-sm label-info"><i>(7)</i></div></div><div class="cont-col2"><div class="desc"> HRD</div></div>
+                                            </div>
+                                        </div>
+                                    <li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                }
+                @if (User.HasMenuAccess("SALES (bulan berjalan)")){
+                <div class="col-lg-8 col-xs-12 col-sm-12">
+                    <div class="portlet light tasks-widget bordered">
+                        <div class="portlet-body">
+                            <div class="task-content" id="salesBulanBerjalan">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+@if (User.HasMenuAccess("PLANNING")){
+<div class="row">
+    <div class="col-lg-6 col-xs-12 col-sm-12">
+        <div class="portlet light ">
+            <div class="portlet-title">
+                <div class="caption caption-md">
+                    <i class="icon-bar-chart font-dark hide"></i>
+                    <span class="caption-subject font-dark bold uppercase">PLANNING</span>
+                </div>
+            </div>
+            <div class="portlet-body">
+                <div class="table-scrollable table-scrollable-borderless">
+                    <table class="table table-hover table-light">
+                        <thead>
+                            <tr class="uppercase">
+                                <th> Kontrak </th>
+                                <th> Oncall </th>
+                                <th> Waktu Proses (Bulan Berjalan) </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><div id='gridPlanningKontrak'></div></td>
+                                <td><div id='gridPlanningOncall'></div></td>
+                                <td><div id='gridPlanningWaktuProses'></div></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6 col-xs-12 col-sm-12"><div id="containerPlanning" class="col-lg-12 col-xs-12 col-sm-12" style="width: 100%; height: 330px; margin: 0 auto"></div></div>
+</div>
+}
+@if (User.HasMenuAccess("KONFIRMASI")){
+<div class="row">
+    <div class="col-lg-6 col-xs-12 col-sm-12">
+        <div class="portlet light ">
+            <div class="portlet-title">
+                <div class="caption caption-md">
+                    <i class="icon-bar-chart font-dark hide"></i>
+                    <span class="caption-subject font-dark bold uppercase">KONFIRMASI</span>
+                </div>
+            </div>
+            <div class="portlet-body">
+                <div class="table-scrollable table-scrollable-borderless">
+                    <table class="table table-hover table-light">
+                        <thead>
+                            <tr class="uppercase">
+                                <th> Kontrak </th>
+                                <th> Oncall </th>
+                                <th> Waktu Proses (Bulan Berjalan) </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><div id='gridKonfirmasiKontrak'></div></td>
+                                <td><div id='gridKonfirmasiOncall'></div></td>
+                                <td><div id='gridKonfirmasiWaktuProses'></div></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6 col-xs-12 col-sm-12"><div id="containerKonfirmasi" class="col-lg-12 col-xs-12 col-sm-12" style="width: 100%; height: 330px; margin: 0 auto"></div></div>
+</div>
+}
+@if (User.HasMenuAccess("ADMIN UANG JALAN")){
+<div class="row">
+    <div class="col-lg-6 col-xs-12 col-sm-12">
+        <div class="portlet light ">
+            <div class="portlet-title">
+                <div class="caption caption-md">
+                    <i class="icon-bar-chart font-dark hide"></i>
+                    <span class="caption-subject font-dark bold uppercase">ADMIN UANG JALAN</span>
+                </div>
+            </div>
+            <div class="portlet-body">
+                <div class="table-scrollable table-scrollable-borderless">
+                    <table class="table table-hover table-light">
+                        <thead>
+                            <tr class="uppercase">
+                                <th> Kontrak </th>
+                                <th> Oncall </th>
+                                <th> Waktu Proses (Bulan Berjalan) </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><div id='gridAUJKontrak'></div></td>
+                                <td><div id='gridAUJOncall'></div></td>
+                                <td><div id='gridAUJWaktuProses'></div></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6 col-xs-12 col-sm-12"><div id="containerAUJ" class="col-lg-12 col-xs-12 col-sm-12" style="width: 100%; height: 330px; margin: 0 auto"></div></div>
+</div>
+}
+@if (User.HasMenuAccess("KASIR")){
+<div class="row">
+    <div class="col-lg-6 col-xs-12 col-sm-12">
+        <div class="portlet light ">
+            <div class="portlet-title">
+                <div class="caption caption-md">
+                    <i class="icon-bar-chart font-dark hide"></i>
+                    <span class="caption-subject font-dark bold uppercase">KASIR</span>
+                </div>
+            </div>
+            <div class="portlet-body">
+                <div class="table-scrollable table-scrollable-borderless">
+                    <table class="table table-hover table-light">
+                        <thead>
+                            <tr class="uppercase">
+                                <th> Kas </th>
+                                <th> Transfer </th>
+                                <th> Waktu Proses (Bulan Berjalan) </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><div id='gridKasirKas'></div></td>
+                                <td><div id='gridKasirTransfer'></div></td>
+                                <td><div id='gridKasirWaktuProses'></div></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6 col-xs-12 col-sm-12"><div id="containerKasir" class="col-lg-12 col-xs-12 col-sm-12" style="width: 100%; height: 330px; margin: 0 auto"></div></div>
+</div>
+}
+@if (User.HasMenuAccess("DELIVERY QUALITY (on-call)")){
+<div class="row">
+    <div class="col-lg-6 col-xs-12 col-sm-12">
+        <div class="portlet light ">
+            <div class="portlet-title">
+                <div class="caption caption-md">
+                    <i class="icon-bar-chart font-dark hide"></i>
+                    <span class="caption-subject font-dark bold uppercase">DELIVERY QUALITY (on-call)</span>
+                </div>
+            </div>
+            <div class="portlet-body">
+                <div class="table-scrollable table-scrollable-borderless">
+                    <div id='gridDeliveryQuanlity'></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6 col-xs-12 col-sm-12"><div id="containerDelivery" class="col-lg-12 col-xs-12 col-sm-12" style="width: 100%; height: 330px; margin: 0 auto"></div></div>
+</div>
+}
+@if (User.HasMenuAccess("SURAT JALAN OUTSTANDING")){
+<div class="row">
+    <div class="col-lg-6 col-xs-12 col-sm-12">
+        <div class="portlet light ">
+            <div class="portlet-title">
+                <div class="caption caption-md">
+                    <i class="icon-bar-chart font-dark hide"></i>
+                    <span class="caption-subject font-dark bold uppercase">SURAT JALAN OUTSTANDING</span>
+                </div>
+            </div>
+            <div class="portlet-body">
+                <div class="table-scrollable table-scrollable-borderless">
+                    <table class="table table-hover table-light">
+                        <thead>
+                            <tr class="uppercase">
+                                <th colspan="2">Kontrak</th>
+                                <th colspan="2">On Call</th>
+                                <th colspan="3">Kontrak (Bulanan)</th>
+                                <th colspan="3">On Call (Bulanan)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="fit"><img class="user-pic rounded" src="../assets/pages/media/users/avatar4.jpg"> </td>
+                                <td>> 1 bulan</td>
+                                <td>7 SJ</td>
+                                <td>> 1 bulan</td>
+                                <td>7 SJ</td>
+                                <td>Outstanding</td>
+                                <td>7 SJ (10%)</td>
+                                <td>Outstanding</td>
+                                <td>7 SJ (10%)</td>
+                            </tr>
+                            <tr>
+                                <td class="fit"><img class="user-pic rounded" src="../assets/pages/media/users/avatar4.jpg"> </td>
+                                <td>> 2 minggu</td>
+                                <td>7 SJ</td>
+                                <td>> 2 minggu</td>
+                                <td>7 SJ</td>
+                                <td>> 1 bulan</td>
+                                <td>7 SJ (10%)</td>
+                                <td>> 1 bulan</td>
+                                <td>7 SJ (10%)</td>
+                            </tr>
+                            <tr>
+                                <td class="fit"><img class="user-pic rounded" src="../assets/pages/media/users/avatar4.jpg"> </td>
+                                <td>> 1 minggu</td>
+                                <td>7 SJ</td>
+                                <td>> 1 minggu</td>
+                                <td>7 SJ</td>
+                                <td>> 2 minggu</td>
+                                <td>7 SJ (10%)</td>
+                                <td>> 2 minggu</td>
+                                <td>7 SJ (10%)</td>
+                            </tr>
+                            <tr>
+                                <td class="fit"><img class="user-pic rounded" src="../assets/pages/media/users/avatar4.jpg"> </td>
+                                <td>< 1 minggu</td>
+                                <td>7 SJ</td>
+                                <td>< 1 minggu</td>
+                                <td>7 SJ</td>
+                                <td>> 1 minggu</td>
+                                <td>7 SJ (10%)</td>
+                                <td>> 1 minggu</td>
+                                <td>7 SJ (10%)</td>
+                            </tr>
+                            <tr>
+                                <td class="fit"><img class="user-pic rounded" src="../assets/pages/media/users/avatar4.jpg"> </td>
+                                <td>TOTAL</td>
+                                <td>7 SJ</td>
+                                <td>AVERAGE</td>
+                                <td>4 Hari</td>
+                                <td>< 1 minggu</td>
+                                <td>7 SJ (10%)</td>
+                                <td>< 1 minggu</td>
+                                <td>7 SJ (10%)</td>
+                            </tr>
+                            <tr>
+                                <td colspan=4></td>
+                                <td>TOTAL</td>
+                                <td>500 (avg 5 hari)</td>
+                                <td>T O T A L</td>
+                                <td>500 (avg 5 hari)</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6 col-xs-12 col-sm-12"><div id="containerSuratJalan" class="col-lg-12 col-xs-12 col-sm-12" style="width: 100%; height: 330px; margin: 0 auto"></div></div>
+</div>
+}
+@if (User.HasMenuAccess("REPAIR MAINTENANCE")){
+<div class="row">
+    <div class="col-lg-6 col-xs-12 col-sm-12">
+        <div class="portlet light ">
+            <div class="portlet-title">
+                <div class="caption caption-md">
+                    <i class="icon-bar-chart font-dark hide"></i>
+                    <span class="caption-subject font-dark bold uppercase">REPAIR MAINTENANCE</span>
+                </div>
+            </div>
+            <div class="portlet-body">
+                <div class="table-scrollable table-scrollable-borderless">
+                    <div id='gridRepairMaintenance'></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-lg-6 col-xs-12 col-sm-12">
+        <div class="portlet light ">
+            <div class="portlet-body">
+                <div class="table-scrollable table-scrollable-borderless">
+                    <div id='gridRepairMaintenanceTime'></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6 col-xs-12 col-sm-12"><div id="containerRepair" class="col-lg-12 col-xs-12 col-sm-12" style="width: 100%; height: 330px; margin: 0 auto"></div></div>
+</div>
+}
+@if (User.HasMenuAccess("MAINTENANCE OVERDUE")){
+<div class="row">
+    <div class="col-lg-6 col-xs-12 col-sm-12">
+        <div class="portlet light ">
+            <div class="portlet-title">
+                <div class="caption caption-md">
+                    <i class="icon-bar-chart font-dark hide"></i>
+                    <span class="caption-subject font-dark bold uppercase">MAINTENANCE OVERDUE</span>
+                </div>
+            </div>
+            <div class="portlet-body">
+                <div class="table-scrollable table-scrollable-borderless">
+                    <table class="table table-hover table-light">
+                        <thead>
+                            <tr class="uppercase">
+                                <th colspan="2">LIGHT TRUCK (6.000 KM/3 BLN)</th>
+                                <th colspan="2">HEAVY TRUCK (10.000 KM/3 BLN)</th>
+                                <th colspan="2">PENDINGIN (500 HM/3 BLN)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="fit"><img class="user-pic rounded" src="../assets/pages/media/users/avatar4.jpg"> </td>
+                                <td>> 120%</td>
+                                <td>3 Unit</td>
+                                <td>> 120%</td>
+                                <td>3 Unit</td>
+                                <td>> 120%</td>
+                                <td>3 Unit</td>
+                            </tr>
+                            <tr>
+                                <td class="fit"><img class="user-pic rounded" src="../assets/pages/media/users/avatar4.jpg"> </td>
+                                <td>> 110%</td>
+                                <td>3 Unit</td>
+                                <td>> 110%</td>
+                                <td>3 Unit</td>
+                                <td>> 110%</td>
+                                <td>3 Unit</td>
+                            </tr>
+                            <tr>
+                                <td class="fit"><img class="user-pic rounded" src="../assets/pages/media/users/avatar4.jpg"> </td>
+                                <td>> 100%</td>
+                                <td>3 Unit</td>
+                                <td>> 100%</td>
+                                <td>3 Unit</td>
+                                <td>> 100%</td>
+                                <td>3 Unit</td>
+                            </tr>
+                            <tr>
+                                <td class="fit"><img class="user-pic rounded" src="../assets/pages/media/users/avatar4.jpg"> </td>
+                                <td>> 90%</td>
+                                <td>3 Unit</td>
+                                <td>> 90%</td>
+                                <td>3 Unit</td>
+                                <td>> 90%</td>
+                                <td>3 Unit</td>
+                            </tr>
+                            <tr>
+                                <td class="fit"><img class="user-pic rounded" src="../assets/pages/media/users/avatar4.jpg"> </td>
+                                <td>> 80%</td>
+                                <td>3 Unit</td>
+                                <td>> 80%</td>
+                                <td>3 Unit</td>
+                                <td>> 80%</td>
+                                <td>3 Unit</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6 col-xs-12 col-sm-12"><div id="containerOverdue" class="col-lg-12 col-xs-12 col-sm-12" style="width: 100%; height: 330px; margin: 0 auto"></div></div>
+</div>
+}
+@if (User.HasMenuAccess("GPS ERROR") || User.HasMenuAccess("Sensor Error")){
+<div class="row">
+    <div class="col-lg-12 col-xs-12 col-sm-12">
+        <div class="portlet light ">
+            <div class="portlet-body">
+                <div class="table-scrollable table-scrollable-borderless">
+                    <table class="table table-hover table-light">
+                        <tbody>
+                            <tr>
+                                @if (User.HasMenuAccess("GPS ERROR")){
+                                <td><div id='gridGPSError'></div></td>
+                                }
+                                @if (User.HasMenuAccess("Sensor Error")){
+                                <td><div id='gridSensorError'></div></td>
+                                }
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+}
+@if (User.HasMenuAccess("DOCUMENT EXPIRED")){
+<div class="row">
+    <div class="col-lg-6 col-xs-12 col-sm-12">
+        <div class="portlet light ">
+            <div class="portlet-title">
+                <div class="caption caption-md">
+                    <i class="icon-bar-chart font-dark hide"></i>
+                    <span class="caption-subject font-dark bold uppercase">DOCUMENT EXPIRED</span>
+                </div>
+            </div>
+            <div class="portlet-body">
+                <div class="table-scrollable table-scrollable-borderless">
+                    <div id='gridDocumentExpired'></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6 col-xs-12 col-sm-12"><div id="containerDoc" class="col-lg-12 col-xs-12 col-sm-12" style="width: 100%; height: 330px; margin: 0 auto"></div></div>
+</div>
+}
+@if (User.HasMenuAccess("DOCUMENT EXPIRED")){
+<div class="row">
+    <div class="col-lg-12 col-xs-12 col-sm-12">
+        <div class="portlet light ">
+            <div class="portlet-title">
+                <div class="caption caption-md">
+                    <i class="icon-bar-chart font-dark hide"></i>
+                    <span class="caption-subject font-dark bold uppercase">DRIVER</span>
+                </div>
+            </div>
+            <div class="portlet-body">
+                <div class="table-scrollable table-scrollable-borderless">
+                    <table class="table table-hover table-light">
+                        <tbody>
+                            <tr>
+                                <td width=50%><div id='gridKekuranganDriver'></div></td>
+                                <td width=25%><div id='gridTrainingPertama'></div></td>
+                                <td width=25%><div id='gridTrainingUlangan'></div></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-12 col-xs-12 col-sm-12"><div id="containerDriver" class="col-lg-12 col-xs-12 col-sm-12" style="width: 100%; height: 330px; margin: 0 auto"></div></div>
+</div>
+}
+@section scripts
+{
+<script type="text/javascript">
+    $(document).ready(function () {
+        var ds = new kendo.data.DataSource({
+            transport: {
+                read: {url: '/Home/BindingSalesBulanBerjalan', dataType: "json"},
+                parameterMap: function (options, operation) {
+                    if (operation !== "read" && options != '')
+                        return kendo.stringify(options);
+                    else if (operation == "read")
+                        return options;
+                }
+            }, pageSize: 100, pageable: true
+        });
+        gridIndex = $("#salesBulanBerjalan").kendoGrid({
+            dataSource: ds,
+            columns: [
+                {field: "JenisTruck", title: "Sales (Bulan Berjalan)", width: "35px"},
+                {field: "Nominal", width: "21px", template: 'Rp. #: kendo.format("{0:n2}", Nominal)#', attributes: { style: "text-align:right;" }},
+                {field: "Percentage", title: "%", width: "9px", template: '#= Percentage + "%"#', attributes: { style: "text-align:right;" }},
+                {field: "Total", width: "21px", template: 'Rp. #: kendo.format("{0:n2}", Total)#', attributes: { style: "text-align:right;" }}
+            ],
+        }).data("kendoGrid");
+        var dsPlanningKontrak = new kendo.data.DataSource({transport: {read: {url: '/Home/BindingPlanningKontrak', dataType: "json"}}, pageSize: 100, pageable: true});
+        $("#gridPlanningKontrak").kendoGrid({
+            dataSource: dsPlanningKontrak, columns: [{field: "Tanggal"}, {field: "OrderCount", title: " ", template: '#= OrderCount + " Order"#', attributes: {style: "text-align:right;"}}]
+        }).data("kendoGrid");
+        var dsPlanningOncall = new kendo.data.DataSource({transport: {read: {url: '/Home/BindingPlanningOncall', dataType: "json"}}, pageSize: 100, pageable: true});
+        $("#gridPlanningOncall").kendoGrid({
+            dataSource: dsPlanningOncall, columns: [{field: "Tanggal"}, {field: "OrderCount", title: " ", template: '#= OrderCount + " Order"#', attributes: {style: "text-align:right;"}}]
+        }).data("kendoGrid");
+        var dsPlanningWaktuProses = new kendo.data.DataSource({transport: {read: {url: '/Home/BindingPlanningWaktuProses', dataType: "json"}}, pageSize: 100, pageable: true});
+        $("#gridPlanningWaktuProses").kendoGrid({
+            dataSource: dsPlanningWaktuProses, columns: [{field: "Waktu"}, {field: "OrderCount", title: " ", template: '#= OrderCount + " Order"#', attributes: {style: "text-align:right;"}}]
+        }).data("kendoGrid");
+        var dsKonfirmasiKontrak = new kendo.data.DataSource({transport: {read: {url: '/Home/BindingKonfirmasiKontrak', dataType: "json"}}, pageSize: 100, pageable: true});
+        $("#gridKonfirmasiKontrak").kendoGrid({
+            dataSource: dsKonfirmasiKontrak, columns: [{field: "Tanggal"}, {field: "OrderCount", title: " ", template: '#= OrderCount + " Order"#', attributes: {style: "text-align:right;"}}]
+        }).data("kendoGrid");
+        var dsKonfirmasiOncall = new kendo.data.DataSource({transport: {read: {url: '/Home/BindingKonfirmasiOncall', dataType: "json"}}, pageSize: 100, pageable: true});
+        $("#gridKonfirmasiOncall").kendoGrid({
+            dataSource: dsKonfirmasiOncall, columns: [{field: "Tanggal"}, {field: "OrderCount", title: " ", template: '#= OrderCount + " Order"#', attributes: {style: "text-align:right;"}}]
+        }).data("kendoGrid");
+        var dsKonfirmasiWaktuProses = new kendo.data.DataSource({transport: {read: {url: '/Home/BindingKonfirmasiWaktuProses', dataType: "json"}}, pageSize: 100, pageable: true});
+        $("#gridKonfirmasiWaktuProses").kendoGrid({
+            dataSource: dsKonfirmasiWaktuProses, columns: [{field: "Waktu"}, {field: "OrderCount", title: " ", template: '#= OrderCount + " Order"#', attributes: {style: "text-align:right;"}}]
+        }).data("kendoGrid");
+        var dsAUJKontrak = new kendo.data.DataSource({transport: {read: {url: '/Home/BindingAUJKontrak', dataType: "json"}}, pageSize: 100, pageable: true});
+        $("#gridAUJKontrak").kendoGrid({
+            dataSource: dsAUJKontrak, columns: [{field: "Tanggal"}, {field: "OrderCount", title: " ", template: '#= OrderCount + " Order"#', attributes: {style: "text-align:right;"}}]}).data("kendoGrid");
+        var dsAUJOncall = new kendo.data.DataSource({transport: {read: {url: '/Home/BindingAUJOncall', dataType: "json"}}, pageSize: 100, pageable: true});
+        $("#gridAUJOncall").kendoGrid({
+            dataSource: dsAUJOncall, columns: [{field: "Tanggal"}, {field: "OrderCount", title: " ", template: '#= OrderCount + " Order"#', attributes: {style: "text-align:right;"}}]}).data("kendoGrid");
+        var dsAUJWaktuProses = new kendo.data.DataSource({transport: {read: {url: '/Home/BindingAUJWaktuProses', dataType: "json"}}, pageSize: 100, pageable: true});
+        $("#gridAUJWaktuProses").kendoGrid({
+            dataSource: dsAUJWaktuProses, columns: [{field: "Waktu"}, {field: "OrderCount", title: " ", template: '#= OrderCount + " Order"#', attributes: {style: "text-align:right;"}}]
+        }).data("kendoGrid");
+        var dsKasirKas = new kendo.data.DataSource({transport: {read: {url: '/Home/BindingKasirKas', dataType: "json"}}, pageSize: 100, pageable: true});
+        gridIndex = $("#gridKasirKas").kendoGrid({dataSource: dsKasirKas, columns: [{field: "Tanggal"}, {field: "OrderCount", title: " "}],}).data("kendoGrid");
+        var dsKasirTransfer = new kendo.data.DataSource({transport: {read: {url: '/Home/BindingKasirTransfer', dataType: "json"}}, pageSize: 100, pageable: true});
+        gridIndex = $("#gridKasirTransfer").kendoGrid({dataSource: dsKasirTransfer, columns: [{field: "Tanggal"}, {field: "OrderCount", title: " "}]}).data("kendoGrid");
+        var dsKasirWaktuProses = new kendo.data.DataSource({transport: {read: {url: '/Home/BindingKasirWaktuProses', dataType: "json"}}, pageSize: 100, pageable: true});
+        $("#gridKasirWaktuProses").kendoGrid({dataSource: ds, columns: [{field: "Waktu"}, {field: "OrderCount", title: " "}]}).data("kendoGrid");
+        var dsRepairMaintenance = new kendo.data.DataSource({transport: {read: {url: '/Home/BindingRepairMaintenance', dataType: "json"}}, pageSize: 100, pageable: true});
+        $("#gridRepairMaintenance").kendoGrid({
+            dataSource: dsRepairMaintenance, columns: [
+                {field: "State"}, {field: "Truk", template: '#= Pendingin + " Unit"#'}, {field: "Pendingin", template: '#= Pendingin + " Unit"#'}, {field: "Box", template: '#= Box + " Unit"#'},
+                {field: "Ban", template: '#= Ban + " Unit"#'}, {field: "GPS", template: '#= GPS + " Unit"#'}
+            ]
+        }).data("kendoGrid");
+        var dsRepairMaintenanceTime = new kendo.data.DataSource({transport: {read: {url: '/Home/BindingRepairMaintenanceTime', dataType: "json"}}, pageSize: 100, pageable: true});
+        $("#gridRepairMaintenanceTime").kendoGrid({
+            dataSource: dsRepairMaintenanceTime, columns: [
+                {field: "State", template: kendo.template($("#repairMaintenance-template").html())}, {field: "Truk", template: '#= Pendingin + " Unit"#'},
+                {field: "Pendingin", template: '#= Pendingin + " Unit"#'}, {field: "Box", template: '#= Box + " Unit"#'}, {field: "Ban", template: '#= Ban + " Unit"#'},
+                {field: "GPS", template: '#= GPS + " Unit"#'}
+            ]
+        }).data("kendoGrid");
+        var dsDocumentExpired = new kendo.data.DataSource({transport: {read: {url: '/Home/BindingDocumentExpired', dataType: "json"}}, pageSize: 100, pageable: true});
+        $("#gridDocumentExpired").kendoGrid({
+            dataSource: dsDocumentExpired, columns: [
+                {field: "Waktu", title: " ", template: kendo.template($("#documentExpired-template").html())}, {field: "STNK", template: '#= STNK + " Unit"#'},
+                {field: "KIR", template: '#= KIR + " Unit"#'}, {field: "KIU", template: '#= KIU + " Unit"#'}, {field: "IBM", template: '#= IBM + " Unit"#'}
+            ]
+        }).data("kendoGrid");
+        var dsKekuranganDriver = new kendo.data.DataSource({transport: {read: {url: '/Home/BindingKekuranganDriver', dataType: "json"}}, pageSize: 100, pageable: true});
+        $("#gridKekuranganDriver").kendoGrid({
+            dataSource: dsKekuranganDriver, columns: [
+                {field: "JenisTruck", title: "KEKURANGAN ", width: "19px"},
+                {field: "JumlahKurang", title: " ", width: "14px", template: '#= "-" + JumlahKurang + " Orang"#', attributes: { style: "text-align:right;" }},
+                {field: "Percentage", title: " ", width: "11px", template: '#= Percentage + "%"#', attributes: { style: "text-align:right;" }},
+                {field: "LamaKurang", title: " ", width: "42px", template: kendo.template($("#kekuranganDriver-template").html())}
+            ],
+        }).data("kendoGrid");
+        var dsTrainingPertama = new kendo.data.DataSource({transport: {read: {url: '/Home/BindingTrainingPertama', dataType: "json"}}, pageSize: 100, pageable: true});
+        var dsDeliveryQuanlity = new kendo.data.DataSource({transport: {read: {url: '/Home/BindingDeliveryQuanlity', dataType: "json"}}, pageSize: 100, pageable: true});
+        $("#gridTrainingPertama").kendoGrid({
+            dataSource: dsTrainingPertama, columns: [
+                {field: "NamaTraining", title: "Training Pertama", width: "14px"},
+                {field: "KekuranganPeserta", title: " ", width: "14px", template: '#= "-" + KekuranganPeserta + " Orang"#', attributes: { style: "text-align:right;" }}
+            ],
+        }).data("kendoGrid");
+        $("#gridTrainingUlangan").kendoGrid({
+            dataSource: dsTrainingPertama, columns: [
+                {field: "NamaTraining", title: "Training Ulangan", width: "14px"},
+                {field: "KekuranganPeserta", title: " ", width: "14px", template: '#= "-" + KekuranganPeserta + " Orang"#', attributes: { style: "text-align:right;" }}
+            ],
+        }).data("kendoGrid");
+        var dsGPSOff = new kendo.data.DataSource({transport: {read: {url: '/Home/BindingGPSOff', dataType: "json"}}, pageSize: 100, pageable: true});
+        $("#gridGPSError").kendoGrid({dataSource: dsGPSOff, columns: [
+            {field: "Waktu", title: "GPS Error", width: "14px"}, {field: "Trekq", width: "14px", attributes: { style: "text-align:right;" }},
+            {field: "Intellitrac", width: "14px", attributes: { style: "text-align:right;" }}, {field: "Solofleet", width: "14px", attributes: { style: "text-align:right;" }}
+        ]}).data("kendoGrid");
+        $("#gridSensorError").kendoGrid({dataSource: dsGPSOff, columns: [
+            {field: "Waktu", title: "Sensor Error", width: "14px"}, {field: "Trekq", width: "14px", attributes: { style: "text-align:right;" }},
+            {field: "Intellitrac", width: "14px", attributes: { style: "text-align:right;" }}, {field: "Solofleet", width: "14px", attributes: { style: "text-align:right;" }}
+        ]}).data("kendoGrid");
+        $("#gridDeliveryQuanlity").kendoGrid({
+            dataSource: dsDeliveryQuanlity, columns: [
+                {field: "Category", title: " ", width: "14px"}, {field: "OnTimeMuat", title: "On Time Muat", width: "14px", attributes: {style: "text-align:right;"}},
+                {field: "OnTimePerjalanan", title: "On Time Perjalanan", width: "14px", attributes: {style: "text-align:right;"}},
+                {field: "OnTemp", title: "On Temp", width: "14px", attributes: {style: "text-align:right;"}}
+            ],
+        }).data("kendoGrid");
+
+        $.ajax({
+            url: '/Home/GetSales', type: 'GET', dataType: 'Json', cache: false,
+            success: function (res) {
+                Highcharts.chart('container', {
+                    lang: {thousandsSep: ','}, chart: {type: 'column'}, title: {text: 'Monthly Sales Performance 2017'}, subtitle: {text: 'in million Rp'}, xAxis: {type: 'category'},
+                    yAxis: {title: {text: 'Sales'}}, legend: {enabled: false}, plotOptions: {series: {borderWidth: 0, dataLabels: {enabled: true}}},
+                    tooltip: {headerFormat: '<span style="font-size:11px">{series.name}</span><br>', pointFormat: '<span style="color:{point.color}">{point.name}</span>: <b>{point.y}</b><br/>'},
+                    series: [{name: 'Bulan', colorByPoint: true, data: res.data}]
+                });
+            }
+        })
+        chartBar('containerPlanning', 'BindingPlanningChart', ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agt', 'AVG'])
+        chartBar('containerKonfirmasi', 'BindingKonfirmasiChart', ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agt', 'AVG'])
+        chartBar('containerAUJ', 'BindingAUJChart', ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agt', 'AVG'])
+        chartBar('containerKasir', 'BindingAUJChart', ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agt', 'AVG'])
+        chartBar('containerDelivery', 'BindingAUJChart', ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agt', 'AVG'])
+        chartBar('containerSuratJalan', 'BindingAUJChart', ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agt', 'AVG'])
+        chartBar('containerRepair', 'BindingAUJChart', ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agt', 'AVG'])
+        chartBar('containerOverdue', 'BindingAUJChart', ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agt', 'AVG'])
+        chartBar('containerDoc', 'BindingDocumentExpiredChart', ['STNK', 'KIR', 'KIU', 'IBM'])
+        chartBar('containerDriver', 'BindingKekuranganDriverChart', ['CDE', 'CDD', 'TRONTON', 'JUMBO', 'BUILT UP', 'CONTAINER', 'WING BOX', 'CONTAINER TKS', 'TRAILER', 'FUSO', 'CDE LONG'])
+    })
+    function chartBar(container, binding, months){
+        var series = []
+        $.ajax({
+            url: '/Home/'+binding, type: 'GET', dataType: 'Json', cache: false,
+            success: function (res) {
+                for (z = 0; z < res.data.length; z++){
+                    series.push({name: res.data[z].MonthName, data: res.data[z].Values})
+                }
+                Highcharts.chart(container, {
+                    chart: {type: 'column'}, title: {text: ''}, xAxis: {categories: months}, yAxis: {min: 0, title: {text: ''}, stackLabels: {
+                        enabled: true, style: {fontWeight: 'bold', color: (Highcharts.theme && Highcharts.theme.textColor) || 'gray'}
+                    }}, legend: {
+                        align: 'right', x: -30, verticalAlign: 'top', y: 25, floating: true, backgroundColor: (Highcharts.theme && Highcharts.theme.background2) || 'white', borderColor: '#CCC',
+                        borderWidth: 1, shadow: false
+                    }, tooltip: {headerFormat: '<b>{point.x}</b><br/>', pointFormat: '{series.name}: {point.y}<br/>Total: {point.stackTotal}'}, plotOptions: {
+                        column: {stacking: 'normal', dataLabels: {enabled: true, color: (Highcharts.theme && Highcharts.theme.dataLabelsColor) || 'white'}}
+                    }, series: series
+                });
+           }
+        })
+    }
+</script>
+<script id="documentExpired-template" type="text/x-kendo-template">
+    # if(Waktu == '> 2 Minggu') { #
+    <label style="color:red; font-weight: bold">#= Waktu #</label>
+    # } else if(Waktu == '> 1 minggu' || Waktu == '> 1 hari') { #
+    <label style="color:red;">#= Waktu #</label>
+    # } else { #
+    <label style="color:orange;">#= Waktu #</label>
+    # } #
+</script>
+<script id="repairMaintenance-template" type="text/x-kendo-template">
+    # if(State == '> 7 hari') { #
+    <label style="color:red; font-weight: bold">#= State #</label>
+    # } else if(State == '> 3 hari' || State == '> 1 hari') { #
+    <label style="color:red;">#= State #</label>
+    # } else if(State == '> 4 jam') { #
+    <label style="color:orange;">#= State #</label>
+    # } else { #
+    <label style="color:green;">#= State #</label>
+    # } #
+</script>
+<script id="kekuranganDriver-template" type="text/x-kendo-template">
+    # if(LamaKurang.indexOf('Hari') > -1) { #
+    <label style="color:orange;">#= LamaKurang #</label>
+    # } else { #
+    #= LamaKurang #
+    # } #
+</script>
+}

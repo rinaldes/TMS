@@ -1,0 +1,96 @@
+﻿@using tms_mka_v2.Models;
+
+@model tms_mka_v2.Models.Rekening
+@{
+    ViewBag.Title = "Form";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    string currentController = (string)ViewContext.RouteData.Values["controller"];
+    string currentAction = (string)ViewContext.RouteData.Values["action"];
+    string backLink = Url.Action("Index");
+    if (currentAction == "Add")
+    {
+        ViewBag.Title = "Tambah Rekening";
+    }
+    else
+    {
+        ViewBag.Title = ViewBag.name + " | Edit";
+    }
+}
+<div class="portlet light">
+    <div class="portlet-title">
+        <div class="caption">
+            <span class="caption-subject font-dark sbold uppercase">@ViewBag.Title</span>
+        </div>
+    </div>
+    <div class="portlet-body form">
+        @using (@Html.BeginForm(currentAction, currentController, FormMethod.Post, new { @class = "form-horizontal", @id = "formsubmit" }))
+        {
+            @Html.ValidationSummary(true)
+            @Html.HiddenFor(model => model.Id)
+            <div class="form-group">
+                @Html.LabelFor(model => model.SetAsDefault, new { @class = "control-label col-md-2 col-sm-3 col-xs-12" })
+                <div class="col-md-6 col-sm-9 col-xs-12">
+                    @Html.CheckBoxFor(model => model.SetAsDefault)
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.IdBank, new { @class = "control-label col-md-2 col-sm-3 col-xs-12" })
+                <div class="col-md-6 col-sm-9 col-xs-12">
+                    @Html.TextBoxFor(model => model.IdBank)
+                    @Html.ValidationMessageFor(model => model.IdBank)
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.NoRekening, new { @class = "control-label col-md-2 col-sm-3 col-xs-12" })
+                <div class="col-md-6 col-sm-9 col-xs-12">
+                    @Html.TextBoxFor(model => model.NoRekening, new { @class = "form-control input-sm focus" })
+                    @Html.ValidationMessageFor(model => model.NoRekening)
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.NamaRekening, new { @class = "control-label col-md-2 col-sm-3 col-xs-12" })
+                <div class="col-md-6 col-sm-9 col-xs-12">
+                    @Html.TextBoxFor(model => model.NamaRekening, new { @class = "form-control input-sm" })
+                    @Html.ValidationMessageFor(model => model.NamaRekening)
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.Type_, new { @class = "control-label col-md-2 col-sm-3 col-xs-12" })
+                <div class="col-md-6 col-sm-9 col-xs-12">
+                    <label class="radio-inline">@Html.RadioButtonFor(model => model.Type_, "PPN") PPN</label>
+                    <label class="radio-inline">@Html.RadioButtonFor(model => model.Type_, "NON PPN") NON PPN</label>
+                    <div class="row">
+                        <div class="col-md-6 col-sm-9 col-xs-12">
+                            @Html.ValidationMessageFor(model => model.Type_)
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="ln_solid"></div>
+            <div class="form-group">
+                <div class="col-md-9 col-sm-9 col-xs-12 col-md-offset-2">
+                    <button type="submit" class="btn btn-success">Submit</button>
+                    <a href="@backLink" class="btn btn-link">Cancel</a>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+@section scripts{
+    <script>
+        $(document).ready(function () {
+            var ds = new kendo.data.DataSource({
+                transport: {
+                    read: {
+                        url: '@Url.Action("GetBank")',
+                        dataType: "json"
+                    },
+                },
+            });
+
+            InitLookUp($("#IdBank"), ds);
+        })
+    </script>
+}
+
+

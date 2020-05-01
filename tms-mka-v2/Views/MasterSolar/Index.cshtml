@@ -1,0 +1,225 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "Master Solar";
+    string currentController = "MasterSolar";
+    string currentAction = "Index";
+}
+<div class="portlet light ">
+    <div class="portlet-title">
+        <div class="caption">
+            <span class="caption-subject font-dark sbold uppercase">@ViewBag.Title</span>
+        </div>
+        <div class="actions">
+        </div>
+    </div>
+    <div class="portlet-body form">
+        <div class="portlet box blue ">
+            <div class="portlet-title">
+                <div class="caption">
+                    Hide Column :
+                </div>
+                <div class="tools">
+                    <a href="" class="expand"> </a>
+                </div>
+            </div>
+            <div class="portlet-body form" style="display: none;">
+                <form role="form">
+                    <div class="form-body">
+                        <div id="content-col" class="md-checkbox-inline" style="margin-left:10px"></div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div id="grid"></div>
+    </div>
+</div>
+@section scripts
+{
+    <script type="text/javascript">
+        $(document).ready(function () {
+            currController = '@currentController';
+            currAction = '@currentAction';
+
+            gridIndex = $("#grid").kendoGrid({
+                batch: true,
+                dataSource: {
+                    sync: function (e) {
+                        this.read();
+                    },
+                    transport: {
+                        read: {
+                            url: '@Url.Action("Binding")',
+                            dataType: "json"
+                        },
+                        destroy: {
+                            url: '@Url.Action("Delete")',
+                            dataType: "json",
+                            type: "POST",
+                        },
+                        create: {
+                            url: '@Url.Action("Add")',
+                            dataType: "json",
+                            type: "POST",
+                        },
+                        parameterMap: function (options, operation) {
+                            if (operation !== "read" && operation !== "destroy") {
+                                var d = new Date(options.models[0].Start);
+                                options.models[0].Start = kendo.toString(new Date(d), "dd/MM/yyyy");
+                                var d = new Date(options.models[0].End);
+                                options.models[0].End = kendo.toString(new Date(d), "dd/MM/yyyy");
+
+                                var data = gridIndex.dataSource.data();
+                                if (data[1] == null)
+                                    options.models[0].Selisih = 0;
+                                else
+                                    options.models[0].Selisih = options.models[0].Harga - data[1].Harga;
+                            }
+
+                            return options;
+                        }
+                    },
+                    schema: {
+                        total: "total",
+                        data: "data",
+                        model: {
+                            id: "Id",
+                            fields: {
+                                "Id": { type: "number" },
+                                "Harga": {
+                                    type: "number", validation: {
+                                        required: { message: "Harga harus diisi." },
+                                        min: 1
+                                    }
+                                },
+                                "Start": {
+                                    type: "date", validation: {
+                                        required: { message: "Tanggal mulai harus diisi." },
+                                        startValidation: function (input) {
+                                            var row = input.closest("tr");
+                                            var grid = row.closest("[data-role=grid]").data("kendoGrid");
+                                            var dataItem = grid.dataItem(row);
+                                            if (input.is("[name='Start']") && input.val() != "") {
+                                                var data = grid.dataSource.data();
+                                                if (data.length > 1) {
+                                                    input.attr("data-startValidation-msg", "Tanggal mulai harus lebih besar dari tanggal sampai sebelumnya.");
+                                                    return kendo.parseDate($.trim(input.val()).toString(), "dd/MM/yyyy") > data[1].End;
+                                                }
+                                            }
+                                            return true;
+                                        }
+                                    }
+                                },
+                                "End": {
+                                    type: "date", validation: {
+                                        required: { message: "Tanggal sampai harus diisi." },
+                                        greaterthan: function (input) {
+                                            var row = input.closest("tr");
+                                            var grid = row.closest("[data-role=grid]").data("kendoGrid");
+                                            var dataItem = grid.dataItem(row);
+                                            if (input.is("[name='End']") && input.val() != "") {
+                                                input.attr("data-greaterthan-msg", "Tanggal sampai harus lebih besar dari tanggal mulai.");
+                                                return kendo.parseDate($.trim(input.val()).toString(), "dd/MM/yyyy") > dataItem.Start;
+                                            }
+                                            return true;
+                                        }
+                                    }
+                                },
+                                "Selisih": { type: "number", editable: false },
+                            }
+                        }
+                    },
+                    pageSize: 10,
+                    pageable: true,
+                    serverFiltering: true,
+                    serverPaging: true,
+                    serverSorting: true,
+                    sortable: true,
+                    batch: true,
+                    sort: { field: "End", dir: "desc" }
+                },
+                //filterable: kendoGridFilterable,
+                //sortable: true,
+                //reorderable: true,
+                //resizable: true,
+                //pageable: true,
+                //groupable: true,
+                //scrollable: false,
+                dataBound : function (e) {
+                    var gridData = gridIndex.dataSource.view();
+ 
+                    console.log(gridData)
+                    for (var i = 0; i < gridData.length; i++) {
+                        var currentUid = gridData[i].uid;
+                        if (i != 0) {
+                            var currenRow = gridIndex.table.find("tr[data-uid='" + currentUid + "']");
+                            var editButton = $(currenRow).find(".k-grid-delete");
+                            console.log(editButton)
+                            editButton.hide();
+                        }
+                    }
+                },
+                editable: { mode: "inline", confirmation: "Anda yakin menghapus data?" },
+                toolbar: [{ name: "create", text: "Tambah" }],
+                columns: [
+                    {
+                        command: [
+                    {
+                        name: "destroy",
+                        text: "Hapus",
+                        imageClass: "glyphicon glyphicon-remove",
+                        template: '<a class="k-button-icon #=className#" #=attr# href="\\#" title="#=text#"><span class="#=imageClass#"></span></a>'
+                    }
+                        ],
+                        width: 70
+                    },
+                    {
+                        field: "Harga",
+                        title: "Harga",
+                        template: 'Rp #: kendo.format("{0:n}", Harga)#',
+                        width: "320px"
+                    },
+                    {
+                        field: "Start",
+                        title: "Mulai",
+                        format: "{0: dd/MM/yyyy}",
+                        width: "280px"
+                        //template: "#=kendo.toString(kendo.parseDate(Start, 'yyyy-MM-dd'), 'dd/MM/yyyy') #"
+                    },
+                    {
+                        field: "End",
+                        title: "Sampai",
+                        format: "{0: dd/MM/yyyy}",
+                        width: "270px"
+                        //template: "#=kendo.toString(kendo.parseDate(End, 'yyyy-MM-dd'), 'dd/MM/yyyy') #"
+                    },
+                    {
+                        field: "Selisih",
+                        title: "Selisih",
+                        template: '<label style="color: #: Selisih < 0 ? "red" : "black" #"  > Rp #: kendo.format("{0:n}", Selisih)# </label>',
+                        width: "350px",
+                        //template: 'Rp #: kendo.format("{0:n}", Selisih)#'
+                    }
+                ],
+                edit: function (e) {
+                    var detailCell = e.container.find("td:first");
+                    detailCell.html('');
+                    var commandCell = e.container.find("td:nth-child(1)");
+                    commandCell.html('<a class="k-button-icon k-grid-update form-inline" href="\\#" title="Simpan"><span class="glyphicon glyphicon-floppy-saved"></span></a> <a class="k-button-icon k-grid-cancel form-inline" href="\\#" title="Batal"><span class="glyphicon glyphicon-remove"></span></a>');
+                    var commandGroupCell = e.container.find("td:nth-child(0)");
+                    commandGroupCell.html('');
+                },
+            }).data("kendoGrid");
+
+            @foreach (tms_mka_v2.Context.UserReference item in (List<tms_mka_v2.Context.UserReference>)ViewBag.listKolom)
+            {
+                <text>
+            listKolom.push('@item.Coloumn');
+            </text>
+            }
+
+            GetColomnData(gridIndex);
+        })
+    </script>
+}
+
+

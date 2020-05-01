@@ -1,0 +1,672 @@
+﻿@using tms_mka_v2.Models
+@model tms_mka_v2.Models.Driver
+@{
+    string currentController = (string)ViewContext.RouteData.Values["controller"];
+    string currentAction = (string)ViewContext.RouteData.Values["action"];
+}
+<div class="form-group">
+    <label class="control-label">Dokumen Pelengkap</label>
+</div>
+<div class="form-group">
+    <div class="col-md-3">
+        <label class="mt-checkbox-outline">
+            @Html.CheckBoxFor(model => model.IsKemitraan, new { @OnClick = "ShowHide(this,'IsKemitraanAsli', $('#btnUploadKemitraan'))" }) Surat Pernyataan Kemitraan
+            <span></span>
+            @if (Model.UrlKemitraan != null)
+            {
+                <label class="mt-radio-outline">
+                    <a href="@("/Uploads/Driver/" + @Model.UrlKemitraan)" target="_blank"> View </a>
+                </label>
+            }
+        </label>
+    </div>
+    <div class="col-md-1">
+        <label class="mt-radio-outline">
+            @if (Model.IsKemitraan)
+            {
+                <text>
+            @Html.RadioButtonFor(model => model.IsKemitraanAsli, true) Asli
+                </text>
+            }
+            else
+            {
+                <text>
+            @Html.RadioButtonFor(model => model.IsKemitraanAsli, true, new { @disabled = "disabled" }) Asli
+                </text>
+            }
+            <span></span>
+        </label>
+    </div>
+    <div class="col-md-1">
+        <label class="mt-radio-outline">
+            @if (Model.IsKemitraan)
+            {
+                <text>
+            @Html.RadioButtonFor(model => model.IsKemitraanAsli, false) Fotokopi
+                </text>
+            }
+            else
+            {
+                <text>
+            @Html.RadioButtonFor(model => model.IsKemitraanAsli, false, new { @disabled = "disabled" }) Fotokopi
+                </text>
+            }
+            <span></span>
+        </label>
+    </div>
+    <div class="col-md-2">
+        @if (Model.IsKemitraan)
+        {
+            <text>
+        <a id="btnUploadKemitraan" data-toggle="modal" href="#ModalUploadKemitraan" class="btn btn-sm default"> Upload</a>
+            </text>
+        }
+        else
+        {
+            <text>
+        <a id="btnUploadKemitraan" style="display:none" data-toggle="modal" href="#ModalUploadKemitraan" class="btn btn-sm default"> Upload</a>
+            </text>
+        }
+        @Html.HiddenFor(model => model.UrlKemitraan)
+    </div>
+    <div class="modal fade " id="ModalUploadKemitraan" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog ">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                    <h4 class="modal-title">Upload Kemitraan</h4>
+                </div>
+                <div class="modal-body">
+                    <input name="files" id="filesKemitraan" class="upload" type="file" />
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="form-group">
+    <div class="col-md-3">
+        <label class="mt-checkbox-outline">
+            @Html.CheckBoxFor(model => model.IsJaminanKel, new { @OnClick = "ShowHide(this,'IsJaminanKelAsli', $('#btnUploadJaminan'))" }) Surat Pernyataan Jaminan Keluarga
+            <span></span>
+            @if (Model.UrlJaminanKel != null)
+            {
+                <label class="mt-radio-outline">
+                    <a href="@("/Uploads/Driver/" + @Model.UrlJaminanKel)" target="_blank"> View </a>
+                </label>
+            }
+        </label>
+    </div>
+    <div class="col-md-1">
+        <label class="mt-radio-outline">
+            @if (Model.IsJaminanKel)
+            {
+                <text>
+            @Html.RadioButtonFor(model => model.IsJaminanKelAsli, true) Asli
+                </text>
+            }
+            else
+            {
+                <text>
+            @Html.RadioButtonFor(model => model.IsJaminanKelAsli, true, new { @disabled = "disabled" }) Asli
+                </text>
+            }
+            <span></span>
+        </label>
+    </div>
+    <div class="col-md-1">
+        <label class="mt-radio-outline">
+            @if (Model.IsJaminanKel)
+            {
+                <text>
+            @Html.RadioButtonFor(model => model.IsJaminanKelAsli, false) Fotokopi
+                </text>
+            }
+            else
+            {
+                <text>
+            @Html.RadioButtonFor(model => model.IsJaminanKelAsli, false, new { @disabled = "disabled" }) Fotokopi
+                </text>
+            }
+            <span></span>
+        </label>
+    </div>
+    <div class="col-md-2">
+        @if (Model.IsJaminanKel)
+        {
+            <text>
+        <a id="btnUploadJaminan" data-toggle="modal" href="#ModalUploadJaminan" class="btn btn-sm default"> Upload</a>
+            </text>
+        }
+        else
+        {
+            <text>
+        <a id="btnUploadJaminan" style="display:none" data-toggle="modal" href="#ModalUploadJaminan" class="btn btn-sm default"> Upload</a>
+            </text>
+        }
+        @Html.HiddenFor(model => model.UrlJaminanKel)
+    </div>
+    <div class="modal fade " id="ModalUploadJaminan" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog ">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                    <h4 class="modal-title">Upload Jaminan Keluarga</h4>
+                </div>
+                <div class="modal-body">
+                    <input name="files" id="filesJaminanKel" class="upload" type="file" />
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="form-group">
+    <div class="col-md-3">
+        <label class="mt-checkbox-outline">
+            @Html.CheckBoxFor(model => model.IsIjazah, new { @OnClick = "ShowHide(this,'IsIjazahAsli', $('#btnUploadIjazah'))" }) Ijazah
+        </label>
+        @if (Model.UrlIjazah != null)
+        {
+            <label class="mt-radio-outline">
+                <a href="@("/Uploads/Driver/" + @Model.UrlIjazah)" target="_blank"> View </a>
+            </label>
+        }
+    </div>
+    <div class="col-md-1">
+        <label class="mt-radio-outline">
+            @if (Model.IsIjazah)
+            {
+                <text>
+                    @Html.RadioButtonFor(model => model.IsIjazahAsli, true) Asli
+                </text>
+            }
+            else
+            {
+                <text>
+                    @Html.RadioButtonFor(model => model.IsIjazahAsli, true, new { @disabled = "disabled" }) Asli
+                </text>
+            }
+        </label>
+    </div>
+    <div class="col-md-1">
+        <label class="mt-radio-outline">
+            @if (Model.IsIjazah)
+            {
+                <text>
+                    @Html.RadioButtonFor(model => model.IsIjazahAsli, false) Fotokopi
+                </text>
+            }
+            else
+            {
+                <text>
+                    @Html.RadioButtonFor(model => model.IsIjazahAsli, false, new { @disabled = "disabled" }) Fotokopi
+                </text>
+            }
+        </label>
+    </div>
+    <div class="col-md-2">
+        @if (Model.IsIjazah)
+        {
+            <text>
+        <a id="btnUploadIjazah" data-toggle="modal" href="#ModalUploadIjazah" class="btn btn-sm default"> Upload</a>
+            </text>
+        }
+        else
+        {
+            <text>
+        <a id="btnUploadIjazah" style="display:none" data-toggle="modal" href="#ModalUploadIjazah" class="btn btn-sm default"> Upload</a>
+            </text>
+        }
+        @Html.HiddenFor(model => model.UrlIjazah)
+    </div>
+    <div class="modal fade " id="ModalUploadIjazah" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog ">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                    <h4 class="modal-title">Upload Ijazah</h4>
+                </div>
+                <div class="modal-body">
+                    <input name="files" id="filesIjazah" class="upload" type="file" />
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="form-group">
+    <div class="col-md-3">
+        <label class="mt-checkbox-outline">
+            @Html.CheckBoxFor(model => model.IsBukuNikah, new { @OnClick = "ShowHide(this,'IsBukuNikahAsli', $('#btnUploadBukuNikah'))" }) Surat / Buku Nikah
+        </label>
+        @if (Model.UrlBukuNikah != null)
+        {
+            <label class="mt-radio-outline">
+                <a href="@("/Uploads/Driver/" + @Model.UrlBukuNikah)" target="_blank"> View </a>
+            </label>
+        }
+    </div>
+    <div class="col-md-1">
+        <label class="mt-radio-outline">
+            @if (Model.IsBukuNikah)
+            {
+                <text>
+                    @Html.RadioButtonFor(model => model.IsBukuNikahAsli, true) Asli
+                </text>
+            }
+            else
+            {
+                <text>
+                    @Html.RadioButtonFor(model => model.IsBukuNikahAsli, true, new { @disabled = "disabled" }) Asli
+                </text>
+            }
+        </label>
+    </div>
+    <div class="col-md-1">
+        <label class="mt-radio-outline">
+            @if (Model.IsBukuNikah)
+            {
+                <text>
+                    @Html.RadioButtonFor(model => model.IsBukuNikahAsli, false) Fotokopi
+                </text>
+            }
+            else
+            {
+                <text>
+                    @Html.RadioButtonFor(model => model.IsBukuNikahAsli, false, new { @disabled = "disabled" }) Fotokopi
+                </text>
+            }
+        </label>
+    </div>
+    <div class="col-md-2">
+        @if (Model.IsBukuNikah)
+        {
+            <text>
+        <a id="btnUploadBukuNikah" data-toggle="modal" href="#ModalUploadBukuNikah" class="btn btn-sm default"> Upload</a>
+            </text>
+        }
+        else
+        {
+            <text>
+        <a id="btnUploadBukuNikah" style="display:none" data-toggle="modal" href="#ModalUploadBukuNikah" class="btn btn-sm default"> Upload</a>
+            </text>
+        }
+        @Html.HiddenFor(model => model.UrlBukuNikah)
+    </div>
+    <div class="modal fade " id="ModalUploadBukuNikah" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog ">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                    <h4 class="modal-title">Upload Surat / Buku Nikah</h4>
+                </div>
+                <div class="modal-body">
+                    <input name="files" id="filesBukuNikah" class="upload" type="file" />
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="form-group">
+    <div class="col-md-3">
+        <label class="mt-checkbox-outline">
+            @Html.CheckBoxFor(model => model.IsSKCK, new { @OnClick = "ShowHide(this,'IsSKCKAsli', $('#btnUploadSkck'))" }) SKCK
+        </label>
+        @if (Model.UrlSKCK != null)
+        {
+            <label class="mt-radio-outline">
+                <a href="@("/Uploads/Driver/" + @Model.UrlSKCK)" target="_blank"> View </a>
+            </label>
+        }
+    </div>
+    <div class="col-md-1">
+        <label class="mt-radio-outline">
+            @if (Model.IsSKCK)
+            {
+                <text>
+                    @Html.RadioButtonFor(model => model.IsSKCKAsli, true) Asli
+                </text>
+            }
+            else
+            {
+                <text>
+                    @Html.RadioButtonFor(model => model.IsSKCKAsli, true, new { @disabled = "disabled" }) Asli
+                </text>
+            }
+        </label>
+    </div>
+    <div class="col-md-1">
+        <label class="mt-radio-outline">
+            @if (Model.IsSKCK)
+            {
+                <text>
+                    @Html.RadioButtonFor(model => model.IsSKCKAsli, false) Fotokopi
+                </text>
+            }
+            else
+            {
+                <text>
+                    @Html.RadioButtonFor(model => model.IsSKCKAsli, false, new { @disabled = "disabled" }) Fotokopi
+                </text>
+            }
+        </label>
+    </div>
+    <div class="col-md-2">
+        @if (Model.IsSKCK)
+        {
+            <text>
+        <a id="btnUploadSkck" data-toggle="modal" href="#ModalUploadSKCK" class="btn btn-sm default"> Upload</a>
+            </text>
+        }
+        else
+        {
+            <text>
+        <a id="btnUploadSkck" style="display:none" data-toggle="modal" href="#ModalUploadSKCK" class="btn btn-sm default"> Upload</a>
+            </text>
+        }
+        @Html.HiddenFor(model => model.UrlSKCK)
+    </div>
+    <div class="modal fade " id="ModalUploadSKCK" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog ">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                    <h4 class="modal-title">Upload SKCK</h4>
+                </div>
+                <div class="modal-body">
+                    <input name="files" id="filesSKCK" class="upload" type="file" />
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="form-group">
+    <div class="col-md-3">
+        <label class="mt-checkbox-outline">
+            @Html.CheckBoxFor(model => model.IsDomisili, new { @OnClick = "ShowHide(this,'IsDomisiliAsli', $('#btnUploadDomisili'))" }) Domisili
+        </label>
+        @if (Model.UrlDomisili != null)
+        {
+            <label class="mt-radio-outline">
+                <a href="@("/Uploads/Driver/" + @Model.UrlDomisili)" target="_blank"> View </a>
+            </label>
+        }
+    </div>
+    <div class="col-md-1">
+        <label class="mt-radio-outline">
+            @if (Model.IsDomisili)
+            {
+                <text>
+                    @Html.RadioButtonFor(model => model.IsDomisiliAsli, true) Asli
+                </text>
+            }
+            else
+            {
+                <text>
+                    @Html.RadioButtonFor(model => model.IsDomisiliAsli, true, new { @disabled = "disabled" }) Asli
+                </text>
+            }
+        </label>
+    </div>
+    <div class="col-md-1">
+        <label class="mt-radio-outline">
+            @if (Model.IsDomisili)
+            {
+                <text>
+                    @Html.RadioButtonFor(model => model.IsDomisiliAsli, false) Fotokopi
+                </text>
+            }
+            else
+            {
+                <text>
+                    @Html.RadioButtonFor(model => model.IsDomisiliAsli, false, new { @disabled = "disabled" }) Fotokopi
+                </text>
+            }
+        </label>
+    </div>
+    <div class="col-md-2">
+        @if (Model.IsDomisili)
+        {
+            <text>
+        <a id="btnUploadDomisili" data-toggle="modal" href="#ModalUploadDomisili" class="btn btn-sm default"> Upload</a>
+            </text>
+        }
+        else
+        {
+            <text>
+        <a id="btnUploadDomisili" style="display:none" data-toggle="modal" href="#ModalUploadDomisili" class="btn btn-sm default"> Upload</a>
+            </text>
+        }
+        @Html.HiddenFor(model => model.UrlDomisili)
+    </div>
+    <div class="modal fade " id="ModalUploadDomisili" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog ">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                    <h4 class="modal-title">Upload Domisili</h4>
+                </div>
+                <div class="modal-body">
+                    <input name="files" id="filesDomisili" class="upload" type="file" />
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="form-group">
+    <div class="col-md-3">
+        <label class="mt-checkbox-outline">
+            @Html.CheckBoxFor(model => model.IsKK, new { @OnClick = "ShowHide(this,'IsKKAsli', $('#btnUploadKK'))" }) KK
+        </label>
+        @if (Model.UrlKK != null)
+        {
+            <label class="mt-radio-outline">
+                <a href="@("/Uploads/Driver/" + @Model.UrlKK)" target="_blank"> View </a>
+            </label>
+        }
+    </div>
+    <div class="col-md-1">
+        <label class="mt-radio-outline">
+            @if (Model.IsKK)
+            {
+                <text>
+            @Html.RadioButtonFor(model => model.IsKKAsli, true) Asli
+                </text>
+            }
+            else
+            {
+                <text>
+            @Html.RadioButtonFor(model => model.IsKKAsli, true, new { @disabled = "disabled" }) Asli
+                </text>
+            }
+        </label>
+    </div>
+    <div class="col-md-1">
+        <label class="mt-radio-outline">
+            @if (Model.IsKK)
+            {
+                <text>
+            @Html.RadioButtonFor(model => model.IsKKAsli, false) Fotokopi
+                </text>
+            }
+            else
+            {
+                <text>
+            @Html.RadioButtonFor(model => model.IsKKAsli, false, new { @disabled = "disabled" }) Fotokopi
+                </text>
+            }
+        </label>
+    </div>
+    <div class="col-md-2">
+        @if (Model.IsKK)
+        {
+            <text>
+        <a id="btnUploadKK" data-toggle="modal" href="#ModalUploadKK" class="btn btn-sm default"> Upload</a>
+            </text>
+        }
+        else
+        {
+            <text>
+        <a id="btnUploadKK" style="display:none" data-toggle="modal" href="#ModalUploadKK" class="btn btn-sm default"> Upload</a>
+            </text>
+        }
+        @Html.HiddenFor(model => model.UrlKK)
+    </div>
+    <div class="modal fade " id="ModalUploadKK" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog ">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                    <h4 class="modal-title">Upload KK</h4>
+                </div>
+                <div class="modal-body">
+                    <input name="files" id="filesKK" class="upload" type="file" />
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="form-group">
+    <div class="col-md-3">
+        <label class="mt-checkbox-outline">
+            @Html.CheckBoxFor(model => model.IsKTP, new { @OnClick = "ShowHide(this,'IsKTPAsli', $('#btnUploadKtp'))" }) KTP
+        </label>
+        @if (Model.UrlKTP != null)
+        {
+            <label class="mt-radio-outline">
+                <a href="@("/Uploads/Driver/" + @Model.UrlKTP)" target="_blank"> View </a>
+            </label>
+        }
+    </div>
+    <div class="col-md-1">
+        <label class="mt-radio-outline">
+            @if (Model.IsKTP)
+            {
+                <text>
+                    @Html.RadioButtonFor(model => model.IsKTPAsli, true) Asli
+                </text>
+            }
+            else
+            {
+                <text>
+                    @Html.RadioButtonFor(model => model.IsKTPAsli, true, new { @disabled = "disabled" }) Asli
+                </text>
+            }
+        </label>
+    </div>
+    <div class="col-md-1">
+        <label class="mt-radio-outline">
+            @if (Model.IsKTP)
+            {
+                <text>
+            @Html.RadioButtonFor(model => model.IsKTPAsli, false) Fotokopi
+                </text>
+            }
+            else
+            {
+                <text>
+            @Html.RadioButtonFor(model => model.IsKTPAsli, false, new { @disabled = "disabled" }) Fotokopi
+                </text>
+            }
+        </label>
+    </div>
+    <div class="col-md-2">
+        @if (Model.IsKTP)
+        {
+            <text>
+        <a id="btnUploadKtp" data-toggle="modal" href="#ModalUploadKTP" class="btn btn-sm default"> Upload</a>
+            </text>
+        }
+        else
+        {
+            <text>
+        <a id="btnUploadKtp" style="display:none" data-toggle="modal" href="#ModalUploadKTP" class="btn btn-sm default"> Upload</a>
+            </text>
+        }
+        @Html.HiddenFor(model => model.UrlKTP)
+    </div>
+    <div class="modal fade " id="ModalUploadKTP" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog ">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                    <h4 class="modal-title">Upload KTP</h4>
+                </div>
+                <div class="modal-body">
+                    <input name="files" id="filesKTP" class="upload" type="file" />
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="form-group">
+    <div class="col-md-3">
+        <label class="mt-checkbox-outline">
+            @Html.CheckBoxFor(model => model.IsSIM, new { @OnClick = "ShowHide(this,'IsSIMAsli', $('#btnUploadSim'))" }) SIM
+        </label>
+        @if (Model.UrlSIM != null)
+        {
+            <label class="mt-radio-outline">
+                <a href="@("/Uploads/Driver/" + @Model.UrlSIM)" target="_blank"> View </a>
+            </label>
+        }
+    </div>
+    <div class="col-md-1">
+        <label class="mt-radio-outline">
+            @if (Model.IsSIM)
+            {
+                <text>
+            @Html.RadioButtonFor(model => model.IsSIMAsli, true) Asli
+                </text>
+            }
+            else
+            {
+                <text>
+            @Html.RadioButtonFor(model => model.IsSIMAsli, true, new { @disabled = "disabled" }) Asli
+                </text>
+            }
+        </label>
+    </div>
+    <div class="col-md-1">
+        <label class="mt-radio-outline">
+            @if (Model.IsSIM)
+            {
+                <text>
+            @Html.RadioButtonFor(model => model.IsSIMAsli, false) Fotokopi
+                </text>
+            }
+            else
+            {
+                <text>
+            @Html.RadioButtonFor(model => model.IsSIMAsli, false, new { @disabled = "disabled" }) Fotokopi
+                </text>
+            }
+        </label>
+    </div>
+    <div class="col-md-2">
+        @if (Model.IsSIM)
+        {
+            <text>
+        <a id="btnUploadSim" data-toggle="modal" href="#ModalUploadSIM" class="btn btn-sm default"> Upload</a>
+            </text>
+        }
+        else
+        {
+            <text>
+        <a id="btnUploadSim" style="display:none" data-toggle="modal" href="#ModalUploadSIM" class="btn btn-sm default"> Upload</a>
+            </text>
+        }
+        @Html.HiddenFor(model => model.UrlSIM)
+    </div>
+    <div class="modal fade " id="ModalUploadSIM" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog ">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                    <h4 class="modal-title">Upload SIM</h4>
+                </div>
+                <div class="modal-body">
+                    <input name="files" id="filesSIM" class="upload" type="file" />
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,105 @@
+﻿@using tms_mka_v2.Models;
+
+@model tms_mka_v2.Models.Product
+@{
+    ViewBag.Title = "Form";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    string currentController = (string)ViewContext.RouteData.Values["controller"];
+    string currentAction = (string)ViewContext.RouteData.Values["action"];
+    string backLink = Url.Action("Index");
+    if (currentAction == "Add")
+    {
+        ViewBag.Title = "Tambah Product";
+    }
+    else
+    {
+        ViewBag.Title = ViewBag.name + " | Edit";
+    }
+}
+<div class="portlet light">
+    <div class="portlet-title">
+        <div class="caption">
+            <span class="caption-subject font-dark sbold uppercase">@ViewBag.Title</span>
+        </div>
+    </div>
+    <div class="portlet-body form">
+        @using (@Html.BeginForm(currentAction, currentController, FormMethod.Post, new { @class = "form-horizontal" }))
+        {
+            @Html.ValidationSummary(true)
+            @Html.HiddenFor(model => model.Id)
+            <div class="form-group">
+                @Html.LabelFor(model => model.NamaProduk, new { @class = "control-label col-md-2 col-sm-3 col-xs-12" })
+                <div class="col-md-6 col-sm-9 col-xs-12">
+                    @Html.TextBoxFor(model => model.NamaProduk, new { @class = "form-control input-sm focus" })
+                    @Html.ValidationMessageFor(model => model.NamaProduk)
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.IdKategori, new { @class = "control-label col-md-2 col-sm-3 col-xs-12" })
+                <div class="col-md-6 col-sm-9 col-xs-12">
+                    @Html.TextBoxFor(model => model.IdKategori, new { @class = "form-control input-sm" })
+                    @Html.ValidationMessageFor(model => model.IdKategori)
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.TargetSuhu, new { @class = "control-label col-md-2 col-sm-3 col-xs-12" })
+                <div class="col-md-6 col-sm-9 col-xs-12">
+                    @Html.TextBoxFor(model => model.TargetSuhu, new { @class = "form-control-numeric-suhu" })
+                    @Html.ValidationMessageFor(model => model.TargetSuhu)
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.MaxTemps, new { @class = "control-label col-md-2 col-sm-3 col-xs-12" })
+                <div class="col-md-6 col-sm-9 col-xs-12">
+                    @Html.TextBoxFor(model => model.MaxTemps, new { @class = "form-control-numeric-suhu" })
+                    @Html.ValidationMessageFor(model => model.MaxTemps)
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.MinTemps, new { @class = "control-label col-md-2 col-sm-3 col-xs-12" })
+                <div class="col-md-6 col-sm-9 col-xs-12">
+                    @Html.TextBoxFor(model => model.MinTemps, new { @class = "form-control-numeric-suhu" })
+                    @Html.ValidationMessageFor(model => model.MinTemps)
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.Treshold, new { @class = "control-label col-md-2 col-sm-3 col-xs-12" })
+                <div class="col-md-6 col-sm-9 col-xs-12">
+                    @Html.TextBoxFor(model => model.Treshold, new { @class = "form-control-numeric-minute" })
+                    @Html.ValidationMessageFor(model => model.Treshold)
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.Remarks, new { @class = "control-label col-md-2 col-sm-3 col-xs-12" })
+                <div class="col-md-6 col-sm-9 col-xs-12">
+                    @Html.TextAreaFor(model => model.Remarks, new { @class = "form-control input-sm" })
+                </div>
+            </div>
+            <div class="ln_solid"></div>
+            <div class="form-group">
+                <div class="col-md-9 col-sm-9 col-xs-12 col-md-offset-2">
+                    <button type="submit" class="btn btn-success">Submit</button>
+                    <a href="@backLink" class="btn btn-link">Cancel</a>
+                </div>
+            </div>
+
+        }
+    </div>
+</div>
+
+@section scripts{
+    <script type="text/javascript">
+        $(document).ready(function () {
+            var ds = new kendo.data.DataSource({
+                transport: {
+                    read: {
+                        url: '@Url.Action("GetProductKategori")',
+                        dataType: "json"
+                    },
+                },
+            });
+
+            InitLookUp($("#IdKategori"), ds);
+        })
+    </script>
+}

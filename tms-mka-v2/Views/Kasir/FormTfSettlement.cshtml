@@ -1,0 +1,969 @@
+﻿@using tms_mka_v2.Models;
+
+@model tms_mka_v2.Models.SettlementReg
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    string currentController = (string)ViewContext.RouteData.Values["controller"];
+    string currentAction = "PostEditTfSettlement";
+    string backLink = Url.Action("Index");
+    if (currentAction == "Add")
+    {
+        ViewBag.Title = "Tambah Settlement Regular";
+    }
+    else
+    {
+        ViewBag.Title = ViewBag.name + " | Edit";
+    }
+}
+<div class="portlet light">
+    <div class="portlet-title">
+        <div class="caption">
+            <span class="caption-subject font-dark sbold uppercase">@ViewBag.Title</span>
+        </div>
+    </div>
+    <div class="portlet-body form">
+        @using (@Html.BeginForm(currentAction, currentController, FormMethod.Post, new { @class = "form-horizontal form-label-left input_mask", @id = "formsubmit" }))
+        {
+            @Html.ValidationSummary(true)
+            @Html.HiddenFor(model => model.Id)
+            @Html.HiddenFor(model => model.IdSalesOrder)
+            @Html.HiddenFor(model => model.listIdSoKontrak)
+            
+            <div class="portlet light">
+                <div class="portlet-title">
+                    <div class="caption font-green-sharp">
+                        <span class="caption-subject"> Basic Info</span>
+                    </div>
+                    <div class="tools">
+                        <a href="" class="collapse"> </a>
+                    </div>
+                </div>
+                <div class="portlet-body">
+                    @if (Model.Id == 0)
+                    {
+                        <button type="button" class="btn btn-sm" data-toggle="modal" data-target="#modalSo">Browse Sales Order</button>
+                    }
+
+                    @Html.ValidationMessageFor(model => model.IdSalesOrder)
+                    <div class="form-group">
+                        <div class="col-md-12">
+                            <div id="PartialSo"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="portlet light">
+                <div class="portlet-title">
+                    <div class="caption font-green-sharp">
+                        <span class="caption-subject"> Biaya Tambahan</span>
+                    </div>
+                    <div class="tools">
+                        <a href="" class="collapse"> </a>
+                    </div>
+                </div>
+                <div class="portlet-body">
+                    <div class="form-group">
+                        <div class="col-md-12">
+                            @Html.HiddenFor(model => model.StrBiayaTambahan)
+                            <div id="GridTambahan"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="portlet light" hidden>
+                <div class="portlet-title">
+                    <div class="caption font-green-sharp">
+                        <span class="caption-subject"> TOE Revisi Rute</span>
+                    </div>
+                    <div class="tools">
+                        <a href="" class="collapse"> </a>
+                    </div>
+                </div>
+                <div class="portlet-body">
+                    <div class="form-group">
+                        <label class="control-label col-md-1"></label>
+                        <label class="control-label col-md-2">Kas</label>
+                        <label class="control-label col-md-2">Transfer</label>
+                        <label class="control-label col-md-2">Voucher Solar</label>
+                        <label class="control-label col-md-2">Voucher Kapal</label>
+                        <label class="control-label col-md-3">Keterangan</label>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-md-1">Yang Diterima</label>
+                        <div class="col-md-2">@Html.TextBoxFor(model => model.KasDiterima, new { @class = "form-control-numeric-idr", @readonly = true })</div>
+                        <div class="col-md-2">@Html.TextBoxFor(model => model.TransferDiterima, new { @class = "form-control-numeric-idr", @readonly = true })</div>
+                        <div class="col-md-2">@Html.TextBoxFor(model => model.SolarDiterima, new { @class = "form-control-numeric-idr", @readonly = true })</div>
+                        <div class="col-md-2">@Html.TextBoxFor(model => model.KapalDiterima, new { @class = "form-control-numeric-idr", @readonly = true })</div>
+                        <div class="col-md-3">@Html.TextBoxFor(model => model.KeteranganDiterima, new { @class = "form-control input-sm" })</div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-md-1">Diakui Biaya</label>
+                        <div class="col-md-2">@Html.TextBoxFor(model => model.KasDiakui, new { @class = "form-control-numeric-idr" })</div>
+                        <div class="col-md-2">@Html.TextBoxFor(model => model.TransferDiakui, new { @class = "form-control-numeric-idr" })</div>
+                        <div class="col-md-2">@Html.TextBoxFor(model => model.SolarDiakui, new { @class = "form-control-numeric-idr" })</div>
+                        <div class="col-md-2">@Html.TextBoxFor(model => model.KapalDiakui, new { @class = "form-control-numeric-idr" })</div>
+                        <div class="col-md-3">@Html.TextBoxFor(model => model.KeteranganDiakui, new { @class = "form-control input-sm" })</div>
+                    </div>
+                    <hr />
+                    <div class="form-group">
+                        <label class="control-label col-md-1">Harus Kembali</label>
+                        <div class="col-md-2">@Html.TextBoxFor(model => model.KasKembali, new { @class = "form-control-numeric-idr", @readonly = true })</div>
+                        <div class="col-md-2">@Html.TextBoxFor(model => model.TransferKembali, new { @class = "form-control-numeric-idr", @readonly = true })</div>
+                        <div class="col-md-2">@Html.TextBoxFor(model => model.SolarKembali, new { @class = "form-control-numeric-idr", @readonly = true })</div>
+                        <div class="col-md-2">@Html.TextBoxFor(model => model.KapalKembali, new { @class = "form-control-numeric-idr", @readonly = true })</div>
+                        <div class="col-md-3">@Html.TextBoxFor(model => model.KeteranganKembali, new { @class = "form-control input-sm" })</div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-md-1">Aktual Kembali</label>
+                        <div class="col-md-2">@Html.TextBoxFor(model => model.KasAktual, new { @class = "form-control-numeric-idr" })</div>
+                        <div class="col-md-2">@Html.TextBoxFor(model => model.TransferAktual, new { @class = "form-control-numeric-idr" })</div>
+                        <div class="col-md-2">@Html.TextBoxFor(model => model.SolarAktual, new { @class = "form-control-numeric-idr" })</div>
+                        <div class="col-md-2">@Html.TextBoxFor(model => model.KapalAktual, new { @class = "form-control-numeric-idr" })</div>
+                        <div class="col-md-3">@Html.TextBoxFor(model => model.KeteranganAktual, new { @class = "form-control input-sm" })</div>
+                    </div>
+                    <hr />
+                    <div class="form-group">
+                        <label class="control-label col-md-1">Selisih kembali</label>
+                        <div class="col-md-2">@Html.TextBoxFor(model => model.KasSelisih, new { @class = "form-control-numeric-idr", @readonly = true })</div>
+                        <div class="col-md-2">@Html.TextBoxFor(model => model.TransferSelisih, new { @class = "form-control-numeric-idr", @readonly = true })</div>
+                        <div class="col-md-2">@Html.TextBoxFor(model => model.SolarSelisih, new { @class = "form-control-numeric-idr", @readonly = true })</div>
+                        <div class="col-md-2">@Html.TextBoxFor(model => model.KapalSelisih, new { @class = "form-control-numeric-idr", @readonly = true })</div>
+                        <div class="col-md-3">@Html.TextBoxFor(model => model.KeteranganSelisih, new { @class = "form-control input-sm" })</div>
+                    </div>
+                </div>
+            </div>
+            <div class="portlet light">
+                <div class="portlet-title">
+                    <div class="caption font-green-sharp">
+                        <span class="caption-subject"> Pembayaran</span>
+                    </div>
+                    <div class="tools">
+                        <a href="" class="collapse"> </a>
+                    </div>
+                </div>
+                <div class="portlet-body">
+                    <div class="form-group">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="control-label col-md-3"> Total Bayar</label>
+                                <div class="col-md-9">
+                                    @Html.TextBoxFor(model => model.TotalBayar, new { @class = "form-control-numeric-idr", @readonly = true })
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-3"> Transfer</label>
+                                <div class="col-md-5">
+                                    @Html.TextBoxFor(model => model.TotalTf, new { @class = "form-control-numeric-idr" })
+                                </div>
+                                <div class="col-md-4">
+                                    @Html.TextBoxFor(model => model.TanggalTf, new { @class = "form-control-datepicker" })
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-3">Bank Account</label>
+                                <div class="col-md-4 col-sm-2 col-xs-12">
+                                    <div class="input-group input-group-sm">
+                                        <input data-val="true" data-val-number="Nilai IdCreditCash harus berupa angka." id="_IdCreditTf" name="_IdCreditTf" type="hidden">
+                                        <input class="form-control" id="_CodeCreditTf" name="_CodeCreditTf" readonly="True" type="text">
+                                        <span class="input-group-btn">
+                                            <button type="button" class="btn btn-success" data-toggle="modal" data-target="#modalGridBk" onclick="caller = 'credittf';">Browse</button>
+                                        </span>
+                                    </div>
+                                    <span class="k-invalid-msg" data-for="_BankAccount" id="val-bankAccount" style='color: red'>Bank Account Harus Diisi</span>
+                                </div>
+                                <div class="col-md-5">
+                                    <input class="form-control" id="_NamaCreditTf" name="_NamaCreditTf" readonly="True" type="text">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-3"> Diberikan untuk</label>
+                                <div class="col-md-9">
+                                    <div class="input-group input-group-sm">
+                                        @Html.HiddenFor(model => model.IdAtm)
+                                        @Html.TextBoxFor(model => model.NoRekening, new { @class = "form-control", @readonly = true })
+                                        <span class="input-group-btn">
+                                            <button id="btnbrowserek" type="button" class="btn btn-success" data-toggle="modal" data-target="#ModalMasterRekening">Browse</button>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-3"> Atas nama</label>
+                                <div class="col-md-9">
+                                    @Html.TextBoxFor(model => model.AtasNamaRek, new { @class = "form-control", @readonly = true })
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-3"> Bank</label>
+                                <div class="col-md-9">
+                                    @Html.TextBoxFor(model => model.Bank, new { @class = "form-control", @readonly = true })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="control-label col-md-3"> Keterangan</label>
+                                <div class="col-md-9">
+                                    @Html.TextAreaFor(model => model.KeteranganPembayaran, new { @class = "form-control" })
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <br />
+            <div class="form-group">
+                <div class="col-md-8">
+                    <button type="submit" class="btn btn-success">Submit</button>
+                    <a href="@backLink" class="btn btn-link">Cancel</a>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+<div id="modalGridBk" class="modal fade bs-modal-full" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-full">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+            </div>
+            <div class="modal-body">
+                <div id="GridBk"></div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="modalSo" class="modal fade bs-modal-full" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-full">
+        <div id="modalForm" class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                <h4 class="modal-title">List Sales Order</h4>
+            </div>
+            <div class="modal-body">
+                <div id="GridSo"></div>
+            </div>
+        </div>
+    </div>
+</div>
+@*Modal Rekening*@
+<div id="ModalMasterRekening" class="modal fade bs-modal-full" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-full">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+            </div>
+            <div class="modal-body">
+                <div id="GridMasterRekening"></div>
+            </div>
+        </div>
+    </div>
+</div>
+@*Modal Driver*@
+<div id="ModalMasterDriver" class="modal fade bs-modal-full" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-full">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+            </div>
+            <div class="modal-body">
+                <div id="GridMasterDriver"></div>
+            </div>
+        </div>
+    </div>
+</div>
+@*Modal Driver*@
+<div id="ModalMasterDriver" class="modal fade bs-modal-full" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-full">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+            </div>
+            <div class="modal-body">
+                <div id="GridMasterDriver"></div>
+            </div>
+        </div>
+    </div>
+</div>
+@*Modal Detail Konsoldasi*@
+<div id="ModalDetailKonsoldasi" class="modal fade bs-modal-full" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-full">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+            </div>
+            <div class="modal-body">
+                <div id="GridDetailKonsoldasi"></div>
+            </div>
+        </div>
+    </div>
+</div>
+@section scripts{
+    <script id="typeso-template" type="text/x-kendo-template">
+        # if(JenisOrder == "Konsolidasi") { #
+        <a class="k-button-icon k-grid-edit" href="\\#" data-toggle="modal" data-target="\\#ModalDetailKonsoldasi" onclick="RefreshDetail(#:IdChild#)">Konsolidasi</a>
+        # } else { #
+        #: JenisOrder #
+        # } #
+    </script>
+    <script type="text/javascript">
+        var dsSo = [] , dsGridTambahan = [];
+        var gridIndex, GridTambahan;
+        var tydriver = "";
+        var IdSo = 0;
+        @foreach(SettlementRegTambahanBiaya item in Model.ListBiayaTambahan)
+        {
+      <text>
+        dsGridTambahan.push({
+            Id: parseInt('@item.Id'),
+            Value: @item.Value,
+            Keterangan: '@item.Keterangan'
+        })
+        </text>
+        }
+        function selectSo(e) {
+            e.preventDefault();
+            var data = this.dataItem(getDataRowGrid(e));
+
+            $.ajax({
+                url: '/SettlementReg/GetPartialSo?idSo='+data.IdSalesOrder+'&ListIdSo='+data.ListIdSo,
+                contentType:'application/html; charset=utf-8',
+                type:'GET',
+                dataType:'html'
+            }).success( function (res){
+                $("#IdSalesOrder").val(data.IdSalesOrder);
+                $("#listIdSoKontrak").val(data.ListIdSo);
+                $('#PartialSo').html(res);
+            })
+
+
+            $.ajax({
+                url: 'GetDetailSo?idSo='+data.IdSalesOrder+'&ListIdSo='+data.ListIdSo,
+                type: "POST",
+                success: function (res) {
+                    
+                    var data = jQuery.parseJSON(res);
+                    console.log(data)
+                    var TotalSpbu = 0;
+                    var TotalKapal = 0;
+                    var TotalTf = 0;
+                    var TotalUang = 0;
+
+
+                    for( var i = 0 ; i < data.ModelListSpbu.length ; i++)
+                    {
+                        TotalSpbu = TotalSpbu + data.ModelListSpbu[i].Value;
+                    }
+                    for( var i = 0 ; i < data.ModelListKapal.length ; i++)
+                    {
+                        TotalKapal = TotalKapal + data.ModelListKapal[i].Value;
+                    }
+                    for( var i = 0 ; i < data.ModelListTf.length ; i++)
+                    {
+                        if(data.ModelListTf[i].Nama != "Tunai")
+                            TotalTf = TotalTf + data.ModelListTf[i].JumlahTransfer;
+                        else
+                            TotalUang = TotalUang + data.ModelListTf[i].JumlahTransfer;
+                    }
+                    $("#KasDiterima").data("kendoNumericTextBox").value(TotalUang);
+                    $("#TransferDiterima").data("kendoNumericTextBox").value(TotalTf);
+                    $("#SolarDiterima").data("kendoNumericTextBox").value(TotalSpbu);
+                    $("#KapalDiterima").data("kendoNumericTextBox").value(TotalKapal);
+                    $("#IdDriverTujuan").val(data.IdDriver1);
+                    $("#NamaDriverTujuan").val(data.NamaDriver1);
+
+                    if(data.DummyAtm != null)
+                    {
+                        $("#IdAtm").val(data.DummyAtm.Id);
+                        $("#NoRekening").val(data.DummyAtm.NoRekening);
+                        $("#AtasNamaRek").val(data.DummyAtm.AtasNama);
+                        $("#Bank").val(data.DummyAtm.NamaBank);
+                    }
+                    else
+                    {
+                        $("#IdAtm").val('');
+                        $("#NoRekening").val('');
+                        $("#AtasNamaRek").val('');
+                        $("#Bank").val('');
+                    }
+                },
+                error:function(){
+
+                }
+            });
+
+            $('#modalSo').modal('hide');
+        }
+
+        function SelectRek(e) {
+            e.preventDefault();
+            var data = this.dataItem(getDataRowGrid(e));
+            
+            $("#IdAtm").val(data.Id);
+            $("#NoRekening").val(data.NoRekening);
+            $("#AtasNamaRek").val(data.AtasNama);
+            $("#Bank").val(data.NamaBank);
+
+            $('#ModalMasterRekening').modal('hide');
+        }
+
+        function SelectDriver(e) {
+            e.preventDefault();
+            var data = this.dataItem(getDataRowGrid(e));
+            if (tydriver == "tujuan") {
+                $('#IdDriverTujuan').val(data.Id);
+                $('#NamaDriverTujuan').val(data.KodeDriver + ' - ' + data.NamaDriver);
+            }
+            else if (tydriver == "titip") {
+                $('#IdDriverTitip').val(data.Id);
+                $('#NamaDriverTitip').val(data.KodeDriver + ' - ' + data.NamaDriver);
+            }
+            $('#ModalMasterDriver').modal('hide');
+        }
+
+        function CalculateTotal() {
+            //var total = $("#KasSelisih").data("kendoNumericTextBox").value() + $("#SolarSelisih").data("kendoNumericTextBox").value() + $("#KapalSelisih").data("kendoNumericTextBox").value();
+            var total = 0;
+            var dataTambahan = GridTambahan.dataSource.data();
+
+            for (var i = 0; i < dataTambahan.length; i++) {
+                total = total + dataTambahan[i].Value;
+            }
+
+            $("#TotalBayar").data("kendoNumericTextBox").value(total);
+        }
+
+        function RefreshDetail(Id)
+        {
+            event.preventDefault();
+            var dsDetail = new kendo.data.DataSource({
+                transport: {
+                    read: {
+                        url: '@Url.Action("FindDetailSo", "SalesOrderProsesKonsolidasi")?id=' + Id,
+                        dataType: "json"
+                    },
+                },
+                schema: {
+                    total: "total",
+                    data: "data",
+                    model: {
+                        fields: {
+                            "NamaCustomer": { type: "string" },
+                            "StrProduct": { type: "string" },
+                            "Rute": { type: "string" },
+                            "Tonase": { type: "number" , defaultValue: 0},
+                            "karton": { type: "number" , defaultValue: 0},
+                            "Pallet": { type: "number" , defaultValue: 0},
+                            "Container": { type: "number" , defaultValue: 0},
+                            "m3": { type: "number" , defaultValue: 0},
+                        }
+                    }
+                },
+                aggregate: [
+                    { field: "Tonase", aggregate: "sum" },
+                    { field: "karton", aggregate: "sum" },
+                    { field: "Pallet", aggregate: "sum" },
+                    { field: "Container", aggregate: "sum" },
+                    { field: "m3", aggregate: "sum" }],
+                pageSize: 10,
+                pageable: true,
+                sortable: true,
+            });
+
+            $("#GridDetailKonsoldasi").kendoGrid({
+                dataSource: dsDetail,
+                filterable: kendoGridFilterable,
+                sortable: true,
+                reorderable: true,
+                resizable: true,
+                pageable: true,
+                columns: [
+                { field: "NamaCustomer", title: "Customer" },
+                { field: "StrProduct", title: "Jenis Barang" },
+                { field: "Rute", title: "Tujuan" },
+                { field: "Tonase", title: "Tonase", template: "#= Tonase != null ? Tonase : 0 #", footerTemplate: "Total : #=sum#" },
+                { field: "karton", title: "Karton", template: "#= karton != null ? karton    : 0 #", footerTemplate: "Total : #=sum#" },
+                { field: "Pallet", title: "Pallet", template: "#= Pallet != null ? Pallet : 0 #", footerTemplate: "Total : #=sum#" },
+                { field: "Container", title: "Container", template: "#= Container != null ? Container : 0 #", footerTemplate: "Total : #=sum#" },
+                { field: "m3", title: "m3", template: "#= m3 != null ? m3 : 0 #", footerTemplate: "Total : #=sum#" }
+                ],
+            });
+        }
+
+        $(document).ready(function () {
+            if(@Model.Id != 0)
+            {
+                $.ajax({
+                    url: 'GetPartialSo?idSo=' + '@Model.IdSalesOrder' + '&ListIdSo=' + '@Model.listIdSoKontrak',
+                    contentType:'application/html; charset=utf-8',
+                    type:'GET',
+                    dataType:'html'
+                }).success( function (res){
+                    $('#PartialSo').html(res);
+                })
+            }
+
+            $("#KasDiakui").data("kendoNumericTextBox").bind("change", function (e) {
+                var kasKembali = $("#KasDiterima").data("kendoNumericTextBox").value() - this.value();
+                kasKembali = kasKembali > 0 ? kasKembali : 0;
+                $("#KasKembali").data("kendoNumericTextBox").value(kasKembali);
+                if(kasKembali > 0)
+                    $("#KasKembali").data("kendoNumericTextBox").wrapper.find("input").css("color", "red");
+                else
+                    $("#KasKembali").data("kendoNumericTextBox").wrapper.find("input").css("color", "black");
+                var KasSelisih = kasKembali - $("#KasAktual").data("kendoNumericTextBox").value();
+                KasSelisih = KasSelisih > 0 ? KasSelisih : 0;
+                $("#KasSelisih").data("kendoNumericTextBox").value(KasSelisih);
+                if(KasSelisih > 0)
+                    $("#KasSelisih").data("kendoNumericTextBox").wrapper.find("input").css("color", "red");
+                else
+                    $("#KasSelisih").data("kendoNumericTextBox").wrapper.find("input").css("color", "black");
+                CalculateTotal();
+            });
+            $("#TransferDiakui").data("kendoNumericTextBox").bind("change", function (e) {
+                var TransferKembali = $("#TransferDiterima").data("kendoNumericTextBox").value() - this.value();
+                TransferKembali = TransferKembali > 0 ? TransferKembali : 0;
+                $("#TransferKembali").data("kendoNumericTextBox").value(TransferKembali);
+                if(TransferKembali > 0)
+                    $("#TransferKembali").data("kendoNumericTextBox").wrapper.find("input").css("color", "red");
+                else
+                    $("#TransferKembali").data("kendoNumericTextBox").wrapper.find("input").css("color", "black");
+                var TransferSelisih = TransferKembali - $("#TransferAktual").data("kendoNumericTextBox").value();
+                TransferSelisih = TransferSelisih > 0 ? TransferSelisih : 0;
+                $("#TransferSelisih").data("kendoNumericTextBox").value(TransferSelisih);
+                if(TransferSelisih > 0)
+                    $("#TransferSelisih").data("kendoNumericTextBox").wrapper.find("input").css("color", "red");
+                else
+                    $("#TransferSelisih").data("kendoNumericTextBox").wrapper.find("input").css("color", "black");
+                CalculateTotal();
+            });
+            $("#SolarDiakui").data("kendoNumericTextBox").bind("change", function (e) {
+                var SolarKembali = $("#SolarDiterima").data("kendoNumericTextBox").value() - this.value();
+                SolarKembali = SolarKembali > 0 ? SolarKembali : 0;
+                $("#SolarKembali").data("kendoNumericTextBox").value(SolarKembali);
+                if(SolarKembali > 0)
+                    $("#SolarKembali").data("kendoNumericTextBox").wrapper.find("input").css("color", "red");
+                else
+                    $("#SolarKembali").data("kendoNumericTextBox").wrapper.find("input").css("color", "black");
+                var SolarSelisih = SolarKembali - $("#SolarAktual").data("kendoNumericTextBox").value();
+                SolarSelisih = SolarSelisih > 0 ? SolarSelisih : 0;
+                $("#SolarSelisih").data("kendoNumericTextBox").value(SolarSelisih);
+                if(SolarSelisih > 0)
+                    $("#SolarSelisih").data("kendoNumericTextBox").wrapper.find("input").css("color", "red");
+                else
+                    $("#SolarSelisih").data("kendoNumericTextBox").wrapper.find("input").css("color", "black");
+                CalculateTotal();
+            });
+            $("#KapalDiakui").data("kendoNumericTextBox").bind("change", function (e) {
+                var KapalKembali = $("#KapalDiterima").data("kendoNumericTextBox").value() - this.value();
+                KapalKembali = KapalKembali > 0 ? KapalKembali : 0;
+                $("#KapalKembali").data("kendoNumericTextBox").value(KapalKembali);
+                if(KapalKembali > 0)
+                    $("#KapalKembali").data("kendoNumericTextBox").wrapper.find("input").css("color", "red");
+                else
+                    $("#KapalKembali").data("kendoNumericTextBox").wrapper.find("input").css("color", "black");
+                var KapalSelisih = KapalKembali - $("#KapalAktual").data("kendoNumericTextBox").value();
+                KapalSelisih = KapalSelisih > 0 ? KapalSelisih : 0;
+                $("#KapalSelisih").data("kendoNumericTextBox").value(KapalSelisih);
+                if(KapalSelisih > 0)
+                    $("#KapalSelisih").data("kendoNumericTextBox").wrapper.find("input").css("color", "red");
+                else
+                    $("#KapalSelisih").data("kendoNumericTextBox").wrapper.find("input").css("color", "black");
+                CalculateTotal();
+            });
+            $("#KasAktual").data("kendoNumericTextBox").bind("change", function (e) {
+                var KasSelisih = $("#KasKembali").data("kendoNumericTextBox").value() - this.value();
+                KasSelisih = KasSelisih > 0 ? KasSelisih : 0;
+                $("#KasSelisih").data("kendoNumericTextBox").value(KasSelisih);
+                if(KasSelisih > 0)
+                    $("#KasSelisih").data("kendoNumericTextBox").wrapper.find("input").css("color", "red");
+                else
+                    $("#KasSelisih").data("kendoNumericTextBox").wrapper.find("input").css("color", "black");
+                CalculateTotal();
+            });
+            $("#TransferAktual").data("kendoNumericTextBox").bind("change", function (e) {
+                var TransferSelisih = $("#TransferKembali").data("kendoNumericTextBox").value() - this.value();
+                TransferSelisih = TransferSelisih > 0 ? TransferSelisih : 0;
+                $("#TransferSelisih").data("kendoNumericTextBox").value(TransferSelisih);
+                if(TransferSelisih > 0)
+                    $("#TransferSelisih").data("kendoNumericTextBox").wrapper.find("input").css("color", "red");
+                else
+                    $("#TransferSelisih").data("kendoNumericTextBox").wrapper.find("input").css("color", "black");
+                CalculateTotal();
+            });
+            $("#SolarAktual").data("kendoNumericTextBox").bind("change", function (e) {
+                var SolarSelisih = $("#SolarKembali").data("kendoNumericTextBox").value() - this.value();
+                SolarSelisih = SolarSelisih > 0 ? SolarSelisih : 0;
+                $("#SolarSelisih").data("kendoNumericTextBox").value(SolarSelisih);
+                if(SolarSelisih > 0)
+                    $("#SolarSelisih").data("kendoNumericTextBox").wrapper.find("input").css("color", "red");
+                else
+                    $("#SolarSelisih").data("kendoNumericTextBox").wrapper.find("input").css("color", "black");
+                CalculateTotal();
+            });
+            $("#KapalAktual").data("kendoNumericTextBox").bind("change", function (e) {
+                var KapalSelisih = $("#KapalKembali").data("kendoNumericTextBox").value() - this.value();
+                KapalSelisih = KapalSelisih > 0 ? KapalSelisih : 0;
+                $("#KapalSelisih").data("kendoNumericTextBox").value(KapalSelisih);
+                if(KapalSelisih > 0)
+                    $("#KapalSelisih").data("kendoNumericTextBox").wrapper.find("input").css("color", "red");
+                else
+                    $("#KapalSelisih").data("kendoNumericTextBox").wrapper.find("input").css("color", "black");
+                CalculateTotal();
+            });
+
+            dsSo = new kendo.data.DataSource({
+                transport: {
+                    read: {
+                        url: '@Url.Action("BindingSo")',
+                        dataType: "json"
+                    },
+                },
+                schema: {
+                    total: "total",
+                    data: "data",
+                    model: {
+                        fields: {
+                            "Id": { type: "number" },
+                            "IdSalesOrder": { type: "number" },
+                            "Status": { type: "string" },
+                            "JenisOrder": { type: "string" },
+                            "NoSo": { type: "string" },
+                            "Customer": { type: "string" },
+                            "VehicleNo": { type: "string" },
+                            "JenisTruk": { type: "string" },
+                            "IDDriver": { type: "string" },
+                            "Driver": { type: "string" },
+                            "Rute": { type: "string" },
+                            "JumlahRit": { type: "number" },
+                            "KeteranganPenggatian": { type: "string" },
+                            "ListIdSo":{ type: "string" },
+                            "TanggalMuat":{ type: "string" },
+                        }
+                    }
+                },
+                pageSize: 10,
+                pageable: true,
+                sortable: true,
+            });
+
+            gridIndex = $("#GridSo").kendoGrid({
+                dataSource: dsSo,
+                filterable: kendoGridFilterable,
+                sortable: true,
+                reorderable: true,
+                resizable: true,
+                pageable: true,
+                groupable: true,
+                columns: [
+                    {
+                        command: [
+                            {
+                                name: "select",
+                                text: "Select",
+                                click: selectSo,
+                                imageClass: "glyphicon glyphicon-ok",
+                                template: '<a class="k-button-icon #=className#" #=attr# href="\\#"><span class="#=iconClass# #=imageClass#"></span></a>'
+                            }
+                        ],
+                        width: "50px"
+                    },
+                    {
+                        field: "JenisOrder",
+                        title: "Jenis Order",
+                        template: kendo.template($("#typeso-template").html()),
+                    },
+                    {
+                        field: "NoSo",
+                        title: "SO Number"
+                    },
+                    {
+                        field: "Customer",
+                        title: "Customer"
+                    },
+                    {
+                        field: "VehicleNo",
+                        title: "Vehicle No"
+                    },
+                    {
+                        field: "JenisTruk",
+                        title: "Vehicle No"
+                    },
+                    {
+                        field: "IDDriver",
+                        title: "ID Driver"
+                    },
+                    {
+                        field: "Driver",
+                        title: "Driver"
+                    },
+                    {
+                        field: "Rute",
+                        title: "Rute"
+                    },
+                    {
+                        field: "TanggalMuat",
+                        title: "Tanggal Muat",
+                        template: "#= kendo.toString(kendo.parseDate(TanggalMuat, 'yyyy-MM-dd'), 'dd/MM/yyyy') #",
+                    },
+                    {
+                        field: "JamMuat",
+                        title: "Jam Muat",
+                        template: "#= JamMuat != null ? kendo.toString(new Date(1, 1, 1, JamMuat.Hours, JamMuat.Minutes), 'HH : mm') : ''#",
+                    },
+                    {
+                        field: "JumlahRit",
+                        title: "Jumlah Rit"
+                    },
+                    {
+                        field: "KeteranganPenggatian",
+                        title: "Keterangan Penggatian"
+                    },
+                ],
+            }).data("kendoGrid");
+
+            GridTambahan = $("#GridTambahan").kendoGrid({
+                dataSource: {
+                    data: dsGridTambahan,
+                    schema: {
+                        model: {
+                            fields: {
+                                Id: {type: "number" },
+                                Value: { type: "number" },
+                                Keterangan: { type: "string" }
+                            }
+                        }
+                    },
+                },
+                filterable: kendoGridFilterable,
+                sortable: true,
+                resizable: true,
+                columns: [
+                    {
+                        field: "Value",
+                        title: "Biaya",
+                        template: 'Rp #: Value == null ? 0 : kendo.format("{0:n}", Value)#',
+                    },
+                    {
+                        field: "Keterangan",
+                        title: "Keterangan"
+                    },
+                ],
+                edit: function (e) {
+                    var detailCell = e.container.find("td:first");
+                    detailCell.html('');
+                    var commandCell = e.container.find("td:nth-child(1)");
+                    commandCell.html('<a class="k-button-icon k-grid-update form-inline" href="\\#" title="Simpan"><span class="glyphicon glyphicon-floppy-saved"></span></a> <a class="k-button-icon k-grid-cancel form-inline" href="\\#" title="Batal"><span class="glyphicon glyphicon-remove"></span></a>');
+                    var commandGroupCell = e.container.find("td:nth-child(0)");
+                    commandGroupCell.html('');
+                },
+                save: function(e) {
+                    CalculateTotal();
+                },
+                remove: function(e) {
+                    setTimeout(function () {
+                        CalculateTotal();
+                    }, 1000);
+                }
+            }).data("kendoGrid");
+
+            var dsBk = new kendo.data.DataSource({
+                transport: {
+                    read: {
+                        url: '/ERPConfig/BindingBk',
+                        dataType: "json"
+                    },
+                },
+                schema: {
+                    total: "total",
+                    data: "data",
+                    model: {
+                        fields: {
+                            "id": { type: "number" },
+                            "bk_ac_id": { type: "number" },
+                            "bk_code": { type: "string" },
+                            "bk_name": { type: "string" },
+                        }
+                    }
+                },
+                pageSize: 10,
+                pageable: true,
+                sortable: true,
+            });
+
+            gridBk = $("#GridBk").kendoGrid({
+                dataSource: dsBk,
+                filterable: kendoGridFilterable,
+                sortable: true,
+                resizable: true,
+                pageable: true,
+                columns: [
+                    {
+                        command: [
+                         {
+                             name: "select",
+                             text: "Select",
+                             click: SelectBk,
+                             imageClass: "glyphicon glyphicon-ok",
+                             template: '<a class="k-button-icon #=className#" #=attr# href="\\#"><span class="#=iconClass# #=imageClass#"></span></a>'
+                         }
+                        ],
+                        width: "50px"
+                    },
+                    { field: "bk_code", title: "Code Account" },
+                    { field: "bk_name", title: "Nama Account" },
+                ]
+            });
+
+            var ds = new kendo.data.DataSource({
+                transport: {
+                    read: {
+                        url: '/atm/binding',
+                        dataType: "json"
+                    },
+                    parameterMap: function (options, operation) {
+                        if (operation !== "read" && options != '') {
+                            return kendo.stringify(options);
+                        }
+                        else if (operation == "read") {
+                            if (options.filter) {
+                                filter = options.filter.filters;
+                                for (var i in filter) {
+                                    if (filter[i].field == "NamaBank") {
+                                        filter[i].field = "LookupCodeBank.Nama";
+                                    }
+                                    if (filter[i].field == "KodeDriver") {
+                                        filter[i].field = "Driver.KodeDriver";
+                                    }
+                                    if (filter[i].field == "NamaDriver") {
+                                        filter[i].field = "Driver.NamaDriver";
+                                    }
+                                    if (filter[i].field == "Panggilan") {
+                                        filter[i].field = "Driver.NamaPangilan";
+                                    }
+                                }
+                            }
+
+                            if (options.sort) {
+                                sort = options.sort;
+                                for (var i in sort) {
+                                    if (sort[i].field == "NamaBank") {
+                                        sort[i].field = "LookupCodeBank.Nama";
+                                    }
+                                    if (sort[i].field == "KodeDriver") {
+                                        sort[i].field = "Driver.KodeDriver";
+                                    }
+                                    if (sort[i].field == "NamaDriver") {
+                                        sort[i].field = "Driver.NamaDriver";
+                                    }
+                                    if (sort[i].field == "Panggilan") {
+                                        sort[i].field = "Driver.NamaPangilan";
+                                    }
+                                }
+                            }
+                            return options;
+                        }
+                    }
+                },
+                schema: {
+                    total: "total",
+                    data: "data",
+                    model: {
+                        fields: {
+                            "Id": { type: "number" },
+                            "NoKartu": { type: "string" },
+                            "NamaBank": { type: "string" },
+                            "NoRekening": { type: "string" },
+                            "AtasNama": { type: "string" },
+                            "KodeDriver": { type: "string" },
+                            "NamaDriver": { type: "string" },
+                            "Panggilan": { type: "string" }
+                        }
+                    }
+                },
+                pageSize: 10,
+                pageable: true,
+                serverFiltering: true,
+                serverPaging: true,
+                serverSorting: true,
+                sortable: true,
+            });
+
+            GridMasterRekening = $("#GridMasterRekening").kendoGrid({
+                dataSource: ds,
+                filterable: kendoGridFilterable,
+                sortable: true,
+                reorderable: true,
+                resizable: true,
+                pageable: true,
+                groupable: true,
+                //height: "615",
+                columns: [
+                    {
+                        command: [
+                            {
+                                name: "select",
+                                text: "Select",
+                                click: SelectRek,
+                                imageClass: "glyphicon glyphicon-ok",
+                                template: '<a class="k-button-icon #=className#" #=attr# href="\\#"><span class="#=iconClass# #=imageClass#"></span></a>'
+                            }
+                        ],
+                        width: "50px"
+                    },
+                    {
+                        field: "NoKartu",
+                        title: "No Kartu",
+                        width: "150px",
+                    },
+                    {
+                        field: "NamaBank",
+                        title: "Nama Bank",
+                        width: "150px",
+                    },
+                    {
+                        field: "NoRekening",
+                        title: "No Rekening",
+                        width: "150px",
+                    },
+                    {
+                        field: "AtasNama",
+                        title: "Atas Nama",
+                        width: "150px",
+                    },
+                    {
+                        field: "KodeDriver",
+                        title: "Kode Driver",
+                        width: "150px",
+                    },
+                    {
+                        field: "NamaDriver",
+                        title: "Nama Driver",
+                        width: "250px",
+                    },
+                    {
+                        field: "Panggilan",
+                        title: "Nama Panggilan",
+                        width: "230px",
+                    }
+                ],
+            }).data("kendoGrid");
+        })
+
+        $('#formsubmit').submit(function (e) {
+            GridTambahan.saveRow();
+            $('#StrBiayaTambahan').val(JSON.stringify(GridTambahan.dataSource.data()));
+        })
+
+        function SelectBk(e) {
+            e.preventDefault();
+            var data = this.dataItem(getDataRowGrid(e));
+            $('#_IdCreditTf').val(data.bk_ac_id);
+            $('#_CodeCreditTf').val(data.bk_code);
+            $('#_NamaCreditTf').val(data.bk_name);
+            $('#modalGridBk').modal('hide');
+            $('#val-bankAccount').hide()
+        }
+    </script>
+    <script type="text/javascript" src="~/Content/Driver/InitialGridSo.js"></script>
+}

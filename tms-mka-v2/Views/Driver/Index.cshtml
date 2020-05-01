@@ -1,0 +1,186 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "Data Driver";
+    string currentController = "Driver";
+    string currentAction = "Index";
+}
+<div class="portlet light ">
+    <div class="portlet-title">
+        <div class="caption">
+            <span class="caption-subject font-dark sbold uppercase">@ViewBag.Title</span>
+        </div>
+        <div class="actions">
+            <a class="btn btn-sm green dropdown-toggle" href="@Url.Action("Add", "Driver")">
+                <i class="fa fa-plus"></i>Add
+            </a>
+            <a class="btn btn-sm green dropdown-toggle" href="~/Content/Template/TemplateDriver.xlsx" target="_blank">
+                <i class="fa fa-file-excel-o"></i>Download template
+            </a>
+            <a class="btn btn-sm green dropdown-toggle" data-toggle="modal" href="#ModalUpload">
+                <i class="fa fa-download"></i>Import
+            </a>
+            <a class="btn btn-sm green dropdown-toggle" href="@Url.Action("Export")">
+                <i class="fa fa-upload"></i>Export
+            </a>
+        </div>
+    </div>
+    <div class="portlet-body form">
+        <div class="portlet box blue ">
+            <div class="portlet-title">
+                <div class="caption">
+                    Hide Column :
+                </div>
+                <div class="tools">
+                    <a href="" class="expand"> </a>
+                </div>
+            </div>
+            <div class="portlet-body form" style="display: none;">
+                <form role="form">
+                    <div class="form-body">
+                        <div id="content-col" class="md-checkbox-inline" style="margin-left:10px"></div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div id="grid"></div>
+    </div>
+</div>
+<div class="modal fade bs-modal-sm" id="ModalUpload" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                <h4 class="modal-title">Import Driver</h4>
+            </div>
+            <div class="modal-body">
+                <input name="files" id="files" type="file" />
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn dark btn-outline" data-dismiss="modal" onclick="upload()">Import</button>
+            </div>
+        </div>
+    </div>
+</div>
+@section scripts
+{
+    <script type="text/javascript">
+        var kendoUploadButtonExim;
+
+        function deleteItem(e) {
+            e.preventDefault();
+            var data = this.dataItem(getDataRowGrid(e));
+            goToDeletePage('@Url.Action("Delete")' + "?id=" + data.Id, this.dataSource);
+        }
+
+        function viewItem(e) {
+            e.preventDefault();
+            var data = this.dataItem(getDataRowGrid(e));
+            window.location.href = "@Url.Action("View")" + "?id=" + data.Id;
+        }
+
+        function editItem(e) {
+            e.preventDefault();
+            var data = this.dataItem(getDataRowGrid(e));
+            window.location.href = "@Url.Action("Edit")" + "?id=" + data.Id;
+        }
+
+        function upload() {
+            if (kendoUploadButtonExim)
+                totalFile = 0;
+            kendoUploadButtonExim.click();
+        }
+
+        function onSelectFile(e) {
+            var flagExtension = 0;
+            var allowedExtension = [".xlsx", ".xls"];
+            $.each(e.files, function (index, value) {
+                if ($.inArray((value.extension).toLowerCase(), allowedExtension) === -1) {
+                    flagExtension = 1;
+                }
+            });
+            if (flagExtension == 1) {
+                alert("File yang diperbolehkan hanya berupa Excell");
+                e.preventDefault();
+            }
+
+            setTimeout(function () {
+                kendoUploadButtonExim = $(".k-upload-selected");
+                kendoUploadButtonExim.hide();
+            }, 1);
+        }
+
+        $(document).ready(function () {
+            CreateUploaderExim($("#files"), "@Url.Action("Upload")", $("#grid"));
+
+            currController = '@currentController';
+            currAction = '@currentAction';
+
+            var ds = new kendo.data.DataSource({
+                transport: {
+                    read: {
+                        url: '@Url.Action("Binding")',
+                        dataType: "json"
+                    },
+                },
+                schema: {
+                    total: "total",
+                    data: "data",
+                    model: {
+                        fields: {
+                            "Id": { type: "number" }, "KodeDriver": { type: "string" }, "KodeDriverOld": { type: "string" }, "NamaDriver": { type: "string" },
+                            "NamaPangilan": { type: "string" }, "TglLahir": { type: "date" }, "Alamat": { type: "string" }, "LevelDriver": { type: "string" },
+                            "StrJenisSim": { type: "string" }, "TglBerlakuSim": { type: "date" }, "NoHp1": { type: "string" }, "NoHp2": { type: "string" }
+                        }
+                    }
+                },
+                pageSize: 10, pageable: true, sortable: true, sort: { field: "ModifiedDate", dir: "desc" },
+            });
+
+            gridIndex = $("#grid").kendoGrid({
+                dataSource: ds, filterable: kendoGridFilterable, sortable: true, reorderable: true, resizable: true, pageable: true, groupable: true,
+                columns: [
+                    {
+                        command: [
+                            {
+                                name: "view", text: "view", click: viewItem, imageClass: "glyphicon glyphicon-eye-open",
+                                template: '<a class="k-button-icon #=className#" #=attr# href="\\#"><span class="#=imageClass#"></span></a>'
+                            },
+                            {
+                                name: "edit", text: "edit", click: editItem, imageClass: "glyphicon glyphicon-edit",
+                                template: '<a class="k-button-icon #=className#" #=attr# href="\\#"><span class="#=imageClass#"></span></a>'
+                            },
+                            {
+                                name: "delete", text: "delete", click: deleteItem, imageClass: "glyphicon glyphicon-remove",
+                                template: '<a class="k-button-icon #=className#" #=attr# href="\\#"><span class="#=iconClass# #=imageClass#"></span></a>'
+                            }
+                        ],
+                        width: "60px"
+                    },
+                    { field: "KodeDriver", title: "ID Driver", width: "105px" }, { field: "KodeDriverOld", title: "ID Driver Lama", width: "63px" },
+                    { field: "NamaDriver", title: "Nama Sesuai KTP", width: "133px" }, { field: "NamaPangilan", title: "Nama Panggilan", width: "91px" },
+                    {
+                        field: "TglLahir", title: "Tanggal Lahir",
+                        template: "#= TglLahir != null ? kendo.toString(kendo.parseDate(TglLahir, 'yyyy-MM-dd'), 'MM/dd/yyyy') : '' #", width: "91px",
+                        groupHeaderTemplate: "Tanggal Lahir : #= value != null ? kendo.toString(kendo.parseDate(value, 'yyyy-MM-dd'), 'MM/dd/yyyy') : '' #"
+                    },
+                    { field: "Alamat", width: "301px" }, { field: "LevelDriver", title: "Level Driver", width: "77px" }, { field: "NoKtp", title: "No KTP", width: "133px" },
+                    { field: "NoSim", title: "No SIM", width: "133px" }, { field: "StrJenisSim", title: "Jenis SIM", width: "91px" },
+                    {field: "TglBerlakuSim", title: "Tanggal Berlaku SIM",
+                        template: "#= TglBerlakuSim != null ? kendo.toString(kendo.parseDate(TglBerlakuSim, 'yyyy-MM-dd'), 'MM/dd/yyyy') : '' #",
+                        width: "91px", groupHeaderTemplate: "Tanggal Berlaku SIM : #= value != null ? kendo.toString(kendo.parseDate(value, 'yyyy-MM-dd'), 'MM/dd/yyyy') : '' #"
+                    },
+                    { field: "NoHp1", title: "No Hp 1", width: "119px" }, { field: "NoHp2", title: "NoHp2", width: "119px" }
+                ],
+            }).data("kendoGrid");
+
+            @foreach (tms_mka_v2.Context.UserReference item in (List<tms_mka_v2.Context.UserReference>)ViewBag.listKolom)
+            {
+                <text>f
+            listKolom.push('@item.Coloumn');
+            </text>
+            }
+
+            GetColomnData(gridIndex);
+        })
+    </script>
+}

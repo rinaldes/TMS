@@ -1,0 +1,145 @@
+﻿@using tms_mka_v2.Models
+@model tms_mka_v2.Models.Customer
+@{
+    string currentController = (string)ViewContext.RouteData.Values["controller"];
+    string currentAction = (string)ViewContext.RouteData.Values["action"];
+    ViewBag.SubTitle = "Customer Basic Data";
+}
+
+<h2>@ViewBag.SubTitle</h2>
+
+@using (Html.BeginForm(currentAction, currentController, FormMethod.Post))
+{
+    @Html.AntiForgeryToken()
+
+    <div class="form-horizontal">
+        @Html.ValidationSummary(true)
+        <div class="form-group">
+            @Html.LabelFor(model => model.CustomerCode, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-5">
+                @Html.TextBoxFor(model => model.CustomerCode, new { @class = "form-control input-sm", @readonly = "readonly" })
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(model => model.CustomerCodeOld, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-5">
+                @Html.TextBoxFor(model => model.CustomerCodeOld, new { @class = "form-control input-sm"})
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(model => model.CustomerNama, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-5">
+                @Html.TextBoxFor(model => model.CustomerNama, new { @class = "form-control input-sm focus" })
+                @Html.ValidationMessageFor(model => model.CustomerNama)
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.PrioritasId, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-5">
+                @Html.TextBoxFor(model => model.PrioritasId, new { @class = "form-control input-sm" })
+                @Html.ValidationMessageFor(model => model.PrioritasId)
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.WajibPO, new { @class = "control-label col-md-2" })
+            <div class="col-md-5">
+                <label class="mt-checkbox mt-checkbox-outline">@Html.CheckBoxFor(model => model.WajibPO) Ya <span></span></label>
+                @Html.ValidationMessageFor(model => model.WajibPO)
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.WajibGPS, new { @class = "control-label col-md-2" })
+            <div class="col-md-5">
+                <label class="mt-checkbox mt-checkbox-outline">@Html.CheckBoxFor(model => model.WajibGPS) Ya <span></span></label>
+                @Html.ValidationMessageFor(model => model.WajibGPS)
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.IsVendor, new { @class = "control-label col-md-2" })
+            <div class="col-md-5">
+                <label class="mt-checkbox mt-checkbox-outline">@Html.CheckBoxFor(model => model.IsVendor) Ya <span></span></label>
+                @Html.ValidationMessageFor(model => model.IsVendor)
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.SpecialTreatment, new { @class = "control-label col-md-2" })
+            <div class="col-md-5">
+                @Html.TextBoxFor(model => model.SpecialTreatment, new { @class = "form-control input-sm" })
+                @Html.ValidationMessageFor(model => model.SpecialTreatment)
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Keterangan, new { @class = "control-label col-md-2" })
+            <div class="col-md-5">
+                @Html.TextAreaFor(model => model.Keterangan, new { @class = "form-control input-sm" })
+                @Html.ValidationMessageFor(model => model.Keterangan)
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.HiddenFor(model => model.CustomerPicId)
+            <button type="button" class="btn btn-sm btn-success" data-toggle="modal" data-target="#modalGridPic" onclick="showPic('basisdata')">Browse PIC</button>
+            <div id="gridmainpic"></div>
+        </div>
+
+        <div class="form-group">
+                @{
+    if (Model.Id == 0)
+    {
+        <text>
+            <input type="submit" name="submitBasicData" value="Create" class="btn btn-default" />
+            <input type="submit" name="submitBasicData" value="Create and Next" class="btn btn-default" />
+        </text>
+    }
+    else
+    {
+        <text>
+            <input type="submit" name="submitBasicData" value="Update" class="btn btn-default" />
+            <input type="submit" name="submitBasicData" value="Update and Next" class="btn btn-default" />
+        </text>
+    }
+                }
+        </div>
+    </div>
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

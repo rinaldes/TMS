@@ -1,0 +1,1063 @@
+﻿@using tms_mka_v2.Models;
+@model tms_mka_v2.Models.SalesOrderProsesKonsolidasi
+@{
+    ViewBag.Title = "Form";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    string currentController = (string)ViewContext.RouteData.Values["controller"];
+    string currentAction = (string)ViewContext.RouteData.Values["action"];
+    string backLink = Url.Action("Index");
+    if (currentAction == "Add")
+    {
+        ViewBag.Title = "Proses Konsolidasi";
+    }
+    else
+    {
+        ViewBag.Title = ViewBag.name + " | Edit";
+    }
+}
+<div class="portlet light">
+    <div class="portlet-title">
+        <div class="caption">
+            <span class="caption-subject font-dark sbold uppercase">@ViewBag.Title</span>
+        </div>
+    </div>
+    <div class="portlet-body form">
+        @using (@Html.BeginForm(currentAction, currentController, FormMethod.Post, new { @class = "form-horizontal", @id = "formsubmit" }))
+        {
+            @Html.ValidationSummary(true)
+            @Html.HiddenFor(model => model.SalesOrderId)
+            @Html.HiddenFor(model => model.SalesOrderProsesKonsolidasiId)
+            @Html.HiddenFor(model => model.Status)
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.TanggalProses, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                        <div class="col-md-9 col-sm-9 col-xs-12">
+                            @Html.TextBoxFor(model => model.TanggalProses, new { @class = "form-control input-sm", @readonly = "true" })
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.SONumber, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                        <div class="col-md-9 col-sm-9 col-xs-12">
+                            @Html.TextBoxFor(model => model.SONumber, new { @class = "form-control input-sm", @readonly = "true" })
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.TanggalMuat, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                        <div class="col-md-5 col-sm-9 col-xs-12">
+                            @Html.TextBoxFor(model => model.TanggalMuat, new { @class = "form-control-datepicker" })
+                            @Html.ValidationMessageFor(model => model.TanggalMuat)
+                        </div>
+                        <div class="col-md-4 col-sm-9 col-xs-12">
+                            <div class="input-group input-group-sm">
+                                @Html.TextBoxFor(model => model.JamMuat, new { @class = "form-control input-sm timepicker timepicker-24" })
+                                <span class="input-group-btn">
+                                    <button class="btn btn-sm default" type="button">
+                                        <i class="fa fa-clock-o"></i>
+                                    </button>
+                                </span>
+                            </div>
+                            @Html.ValidationMessageFor(model => model.JamMuat)
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.IdJnsTruck, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                        <div class="col-md-9 col-sm-9 col-xs-12">
+                            @Html.TextBoxFor(model => model.IdJnsTruck, new { @class = "form-control input-sm" })
+                            @Html.ValidationMessageFor(model => model.IdJnsTruck)
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.RuteId, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                        <div class="col-md-9 col-sm-9 col-xs-12">
+                            <div class="input-group input-group-sm">
+                                @Html.HiddenFor(model => model.RuteId)
+                                @Html.TextBoxFor(model => model.Rute, new { @class = "form-control", @readonly = "true" })
+                                <span class="input-group-btn">
+                                    <button type="button" class="btn btn-success" data-toggle="modal" data-target="#modalGridRute">Browse</button>
+                                </span>
+                            </div>
+                            @Html.ValidationMessageFor(model => model.RuteId)
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Multidrop, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                        <div class="col-md-9 col-sm-9 col-xs-12">
+                            @Html.TextAreaFor(model => model.Multidrop, new { @class = "form-control input-sm", @readonly = "readonly" })
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="portlet light">
+                    <div class="portlet-title">
+                        <div class="caption font-green-sharp">
+                            <span class="caption-subject"> Customer</span>
+                        </div>
+                        <div class="tools">
+                            <a href="" class="collapse"> </a>
+                        </div>
+                    </div>
+                    <div class="portlet-body">
+                        @Html.ValidationMessageFor(model => model.StrListSo)
+                        <br />
+                        <button type="button" class="btn btn-success" data-toggle="modal" data-target="#modalGridSo">Add</button>
+                        <div id="GridKonsolidasi"></div>
+                        @Html.HiddenFor(model => model.StrListSo)
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="portlet light">
+                    <div class="portlet-title">
+                        <div class="caption font-green-sharp">
+                            <span class="caption-subject"> Alamat Muat</span>
+                        </div>
+                        <div class="tools">
+                            <a href="" class="collapse"> </a>
+                        </div>
+                    </div>
+                    <div class="portlet-body">
+                        @Html.ValidationMessageFor(model => model.StrLoad)
+                        <div id="gridmuat"></div>
+                        @Html.HiddenFor(model => model.StrLoad)
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="portlet light">
+                    <div class="portlet-title">
+                        <div class="caption font-green-sharp">
+                            <span class="caption-subject"> Alamat Bongkar</span>
+                        </div>
+                        <div class="tools">
+                            <a href="" class="collapse"> </a>
+                        </div>
+                    </div>
+                    <div class="portlet-body">
+                        @Html.ValidationMessageFor(model => model.StrUnload)
+                        <div id="gridbongkar"></div>
+                        @Html.HiddenFor(model => model.StrUnload)
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="form-group">
+                    <div class="col-md-12">
+                        <button type="button" name="btnsave" value="save" class="btn btn-success" onclick="notifSave($('#formsubmit'),$(this).val());">Submit</button>
+                        <button type="submit" name="btnsave" value="draft" class="btn btn-success">Save As Draft</button>
+                        <a href="@backLink" class="btn btn-link">Cancel</a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+<div id="modalGridRute" class="modal fade bs-modal-lg" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div id="modalForm" class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                <h4 class="modal-title">List Rute</h4>
+            </div>
+            <div class="modal-body">
+                <div id="GridRute"></div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="modalGridSo" class="modal fade bs-modal-full" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-full">
+        <div id="modalForm" class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                <h4 class="modal-title">List Customer</h4>
+            </div>
+            <div class="modal-body">
+                <div id="GridSo"></div>
+            </div>
+        </div>
+    </div>
+</div>
+@section scripts{
+    <script type="text/javascript">
+    var cboTruck, cboDari, cboTujuan, cboMultidrop;
+    var dsGridKonsolidasi, dsGridSo;
+    var dsGridLoad = [], dsGridUnLoad = [];
+    var GridKonsolidasi, GridSo, GridCustLoad, GridCustUnLoad;
+    var checkedIdLoad = {}, checkedIdUnoad = {};
+    var listCustomer = [];
+    var errorSo = "";
+    //cek error so
+    @if (ViewBag.ErrorSo != null)
+        {
+            List<string> errorSo = (List<string>)ViewBag.ErrorSo;
+            if (errorSo.Count > 0)
+            {
+                foreach (string item in errorSo)
+                {
+	        <text>
+    errorSo = errorSo + "<label style='font-size:small'>" + '@item' + "</label>";
+    </text>
+                }
+	        <text>
+    swal({
+        title: "Error",
+        type: 'error',
+        text: errorSo,
+        html: errorSo,
+        showCloseButton: true,
+        //showCancelButton: true,
+    })
+    //swal({text : errorSo})
+    //swal(errorSo,errorSo,"error");
+    </text>
+            }
+        }
+
+    //list so
+    @if (Model.StrListSo != null && Model.StrListSo != "")
+    {
+        foreach (string item in Model.StrListSo.Split(','))
+            {
+	        <text>
+    GenerateSo(@item);
+    </text>
+        }
+    }
+
+    @if (Model.ListLoad != null)
+    {
+        foreach (SalesOrderLoadUnload item in Model.ListLoad)
+        {
+            if (item.IsSelect)
+        {
+                <text>
+    checkedIdLoad[@item.Id] = true;
+    </text>
+    }
+    <text>
+    dsGridLoad.push({Id: @item.Id,
+        CustId: '@item.CustId',
+        SalesOrderKonsolidasiId: '@item.SalesOrderKonsolidasiId',
+        Alamat: '@item.Alamat',
+        Provinsi: '@item.Provinsi',
+        Kota: '@item.Kota',
+        Zona: '@item.Zona',
+        Telp: '@item.Telp',
+        Fax: '@item.Fax',
+        urutan: '@item.urutan',
+        IsSelect : '@item.IsSelect'});
+    </text>
+    }
+    }
+
+    @if (Model.ListUnload != null)
+        {
+            foreach (SalesOrderLoadUnload item in Model.ListUnload)
+            {
+                if (item.IsSelect)
+            {
+                    <text>
+    checkedIdUnoad[@item.Id] = true;
+    </text>
+        }
+    <text>
+    dsGridUnLoad.push({Id: @item.Id,
+        CustId: '@item.CustId',
+            SalesOrderKonsolidasiId: '@item.SalesOrderKonsolidasiId',
+            Alamat: '@item.Alamat',
+        Provinsi: '@item.Provinsi',
+        Kota: '@item.Kota',
+        Zona: '@item.Zona',
+        Telp: '@item.Telp',
+        Fax: '@item.Fax',
+        urutan: '@item.urutan',
+        IsSelect : '@item.IsSelect'});
+    </text>
+    }
+    }
+
+    function SelectSo(e) {
+        e.preventDefault();
+        $("#modalGridSo").modal('hide');
+        var data = this.dataItem(getDataRowGrid(e));
+        var ds = GridKonsolidasi.dataSource.data();
+        var valid = true;
+
+        if (ds.length > 0) {
+            for (var i = 0; i < ds.length; i++) {
+                if (ds[i].IdSo == data.SalesOrderKonsolidasiId) {
+                    valid = false;
+                    swal('Warning', 'No so sudah dipilih.', 'warning');
+                }
+            };
+        }
+
+        if (valid) {
+            listCustomer.push(data.SalesOrderKonsolidasiId);
+
+            GridKonsolidasi.dataSource.add({
+                Id: data.CustomerId,
+                IdSo: data.SalesOrderKonsolidasiId,
+                NoSO: data.SONumber,
+                KodeNama: data.KodeNama,
+                Custumer: data.NamaCustomer,
+                SupplierName: data.SupplierName,
+                NamaCustomer: data.NamaCustomer,
+                KodeCustomerTagihan: data.KodeCustomerTagihan,
+                NamaCustomerTagihan: data.NamaCustomerTagihan,
+                JenisBarang: data.StrProduct,
+                Tonase: data.Tonase == null ? 0 : data.Tonase,
+                m3: data.m3 == null ? 0 : data.m3,
+                Rute: data.Rute,
+                TanggalTiba: "",
+                Keterangan: data.Keterangan,
+                IsOld: false,
+                TanggalProses: data.TanggalProses,
+            });
+            //ambil data item location
+            $.ajax({
+                url: '@Url.Action("GetListRute", "DaftarHargaKonsolidasi")',
+                type: 'POST',
+                dataType: 'Json',
+                data: {
+                    idItem: data.RuteId,
+                },
+                cache: false,
+                success: function (res) {
+                    if (res != null && res != "") {
+                        var listIdRuteLoad = [];
+                        var listIdRuteUnload = [];
+                        var promises = [];
+
+                        var datarute = res.split(',');
+                        for (var i = 0 ; i < datarute.length ; i++) {
+                            var request = $.ajax({
+                                url: '@Url.Action("GetDataForSo", "Rute")',
+                                type: 'POST',
+                                dataType: 'Json',
+                                data: {
+                                    id: datarute[i],
+                                },
+                                cache: false,
+                                success: function (res) {
+                                    listIdRuteLoad.push(res.data.IdAsal)
+                                    listIdRuteUnload.push(res.data.IdTujuan)
+                                },
+                            })
+                            promises.push(request)
+                        }
+
+                        $.when.apply(null, promises).done(function () {
+                            var request = $.ajax({
+                                url: '@Url.Action("GetSpecLocation", "Customer")',
+                                type: 'POST',
+                                dataType: 'Json',
+                                data: {
+                                    id: data.CustomerId,
+                                    idLoad: listIdRuteLoad,
+                                    idUnload: listIdRuteUnload
+                                },
+                                cache: false,
+                                success: function (res) {
+                                    res.dataLoad.forEach(function (item) {
+                                        //cek geus aya can id loading address na, mun geus aya tambahan id so na
+                                        var ada = false;
+                                        dsGridLoad.forEach(function (itemLoad) {
+                                            if(itemLoad.Id == item.Id)
+                                            {
+                                                ada = true;
+                                                itemLoad.SalesOrderKonsolidasiId = itemLoad.SalesOrderKonsolidasiId + ',' +  data.SalesOrderKonsolidasiId
+                                            }
+                                        });
+                                        if(!ada)
+                                        {
+                                            dsGridLoad.push({
+                                                Id: item.Id,
+                                                CustId: item.CustomerId,
+                                                SalesOrderKonsolidasiId: data.SalesOrderKonsolidasiId,
+                                                Alamat: item.Alamat,
+                                                Provinsi: item.Provinsi,
+                                                Kota: item.Kota,
+                                                Zona: item.Zona,
+                                                Telp: item.Telp,
+                                                Fax: item.Fax,
+                                                urutan: 0
+                                            })
+                                        }
+                                    });
+                                    GridCustLoad.dataSource.data(dsGridLoad);
+
+                                    res.dataUnload.forEach(function (item) {
+                                        var ada = false;
+                                        dsGridUnLoad.forEach(function (itemUnLoad) {
+                                            if(itemUnLoad.Id == item.Id)
+                                            {
+                                                ada = true;
+                                                itemUnLoad.SalesOrderKonsolidasiId = itemUnLoad.SalesOrderKonsolidasiId + ',' +  data.SalesOrderKonsolidasiId
+                                            }
+                                        })
+                                        if(!ada)
+                                        {
+                                            dsGridUnLoad.push({
+                                                Id: item.Id,
+                                                CustId: item.CustomerId,
+                                                SalesOrderKonsolidasiId: data.SalesOrderKonsolidasiId,
+                                                Alamat: item.Alamat,
+                                                Provinsi: item.Provinsi,
+                                                Kota: item.Kota,
+                                                Zona: item.Zona,
+                                                Telp: item.Telp,
+                                                Fax: item.Fax,
+                                                urutan: 0
+                                            })
+                                        }
+                                    });
+                                    GridCustUnLoad.dataSource.data(dsGridUnLoad);
+                                },
+                            })
+                        })
+                    }
+                }
+            })
+        }
+    }
+
+    function GenerateSo(id) {
+        //panggil lewat ajax
+        $.ajax({
+            url: '@Url.Action("FindById", "SalesOrderKonsolidasi")',
+            type: 'POST',
+            dataType: 'Json',
+            data: {
+                id: id,
+            },
+            success: function (res) {
+                listCustomer.push(res.SalesOrderKonsolidasiId);
+                GridKonsolidasi.dataSource.add({
+                    Id: res.CustomerId, IdSo: res.SalesOrderKonsolidasiId, Custumer: res.NamaCustomer, SupplierName: res.SupplierName, KodeNama: res.KodeNama, NoSO: res.SONumber, JenisBarang: res.StrProduct,
+                    KodeCustomerTagihan: res.KodeCustomerTagihan, NamaCustomerTagihan: res.NamaCustomerTagihan, Tonase: res.Tonase == null ? 0 : res.Tonase, m3: res.m3 == null ? 0 : res.m3, Rute: res.Rute,
+                    TanggalTiba: "", IsOld: res.IsOld, TanggalProses: res.TanggalProses,
+                });
+            }
+        });
+    }
+
+    function selectLoad() {
+        var checked = this.checked,
+        row = $(this).closest("tr"),
+        dataItem = GridCustLoad.dataItem(row);
+
+        GridCustLoad.closeCell();
+
+        checkedIdLoad[dataItem.Id] = checked;
+        if (checked) {
+            //-select the row
+            row.addClass("k-state-selected");
+            dataItem.IsSelect = true;
+        } else {
+            //-remove selection
+            row.removeClass("k-state-selected");
+            dataItem.IsSelect = false;
+            dataItem.set("urutan", 0);
+        }
+    }
+
+    function onDataBoundLoad(e) {
+        var view = this.dataSource.view();
+        for (var i = 0; i < view.length; i++) {
+            if (checkedIdLoad[view[i].Id]) {
+                this.tbody.find("tr[data-uid='" + view[i].uid + "']")
+                .addClass("k-state-selected")
+                .find(".checkbox")
+                .attr("checked", "checked");
+                var urut = $.map(dsGridLoad, function (itemLoad) {
+                    if (itemLoad.Id == view[i].Id)
+                        return itemLoad.urutan;
+                });
+                view[i].set("urutan", urut[0])
+            }
+        }
+    }
+
+    function selectUnload() {
+        var checked = this.checked,
+        row = $(this).closest("tr"),
+        dataItem = GridCustUnLoad.dataItem(row);
+
+        GridCustUnLoad.closeCell();
+
+        checkedIdUnoad[dataItem.Id] = checked;
+        if (checked) {
+            //-select the row
+            row.addClass("k-state-selected");
+            dataItem.IsSelect = true;
+        } else {
+            //-remove selection
+            row.removeClass("k-state-selected");
+            dataItem.IsSelect = false;
+            dataItem.set("urutan", 0);
+        }
+    }
+
+    function onDataBoundUnload(e) {
+        var view = this.dataSource.view();
+        for (var i = 0; i < view.length; i++) {
+            if (checkedIdUnoad[view[i].Id]) {
+                this.tbody.find("tr[data-uid='" + view[i].uid + "']")
+                .addClass("k-state-selected")
+                .find(".checkbox")
+                .attr("checked", "checked");
+                var urut = $.map(dsGridUnLoad, function (itemLoad) {
+                    if (itemLoad.Id == view[i].Id)
+                        return itemLoad.urutan;
+                });
+                view[i].set("urutan", urut[0])
+            }
+        }
+    }
+
+    function hapusso(e) {
+        e.preventDefault();
+        var data = this.dataItem(getDataRowGrid(e));
+        if (data.IsOld){
+            alert("Data Tidak Bisa Dihapus")
+        }
+        else{
+            var idCust = data.Id;
+
+            listCustomer = $.grep(listCustomer, function (v) {
+                return v !== data.IdSo;
+            });
+            GridKonsolidasi.dataSource.remove(data);
+
+            //hapus item load dan unload
+            var item, i;
+
+            var dataLoad = GridCustLoad.dataSource.data();
+            for (i = dataLoad.length - 1; i >= 0; i--) {
+                item = dataLoad[i];
+                if (item.CustId == idCust) {
+                    var listso = item.SalesOrderKonsolidasiId.toString().split(',');
+                    var NewListSo = [];
+                    if(listso.length > 0)
+                    {
+                        for(var idx = 0 ; idx < listso.length ; idx++)
+                        {
+                            if(listso[idx] != data.IdSo)
+                            {
+                                NewListSo.push(listso[idx]);
+                            }
+                        }
+                    }
+                    if(NewListSo.length == 0)
+                    {
+                        checkedIdLoad[item.Id] = false;
+                        GridCustLoad.dataSource.remove(item);
+                    }
+                    else
+                    {
+                        item.SalesOrderKonsolidasiId = NewListSo.join(',');
+                    }
+                }
+            }
+
+            dsGridLoad = GridCustLoad.dataSource.data();
+
+            var dataUnload = GridCustUnLoad.dataSource.data();
+            for (i = dataUnload.length - 1; i >= 0; i--) {
+                item = dataUnload[i];
+                if (item.CustId == idCust) {
+                    var listso = item.SalesOrderKonsolidasiId.toString().split(',');
+                    var NewListSo = [];
+                    if(listso.length > 0)
+                    {
+                        for(var idx = 0 ; idx < listso.length ; idx++)
+                        {
+                            if(listso[idx] != data.IdSo)
+                            {
+                                NewListSo.push(listso[idx]);
+                            }
+                        }
+                    }
+                    if(NewListSo.length == 0)
+                    {
+                        checkedIdUnoad[item.Id] = false;
+                        GridCustUnLoad.dataSource.remove(item);
+                    }
+                    else
+                    {
+                        item.SalesOrderKonsolidasiId = NewListSo.join(',');
+                    }
+                }
+            }
+
+            dsGridUnLoad = GridCustUnLoad.dataSource.data();
+        }
+    }
+
+    function selectRute(e) {
+        e.preventDefault();
+        var data = this.dataItem(getDataRowGrid(e));
+        $("#RuteId").val(data.Id);
+        $("#Rute").val(data.Nama);
+        $("#modalGridRute").modal('hide');
+    }
+
+    $(document).ready(function () {
+        cboTruck = $("#IdJnsTruck").kendoComboBox({
+            dataSource: {
+                transport: {
+                    read: {
+                        url: '@Url.Action("GetJnsTruck","JenisTruck")',
+                        dataType: "json"
+                    },
+                },
+            },
+            dataTextField: "StrJenisTruck",
+            dataValueField: "Id",
+            filter: "contains",
+            suggest: true,
+        });
+
+        GridKonsolidasi = $("#GridKonsolidasi").kendoGrid({
+            dataSource: {
+                data: dsGridKonsolidasi,
+                schema: {
+                    model: {
+                        id: "Id",
+                        fields: {
+                            Id: { type: "number", defaultValue: 0 },
+                            IdSo: { type: "number", defaultValue: 0 },
+                            Custumer: { type: "string" },
+                            NoSO: { type: "string" },
+                            JenisBarang: { type: "string" },
+                            Tonase: { type: "number", defaultValue: 0 },
+                            m3: { type: "number", defaultValue: 0 },
+                            Rute: { type: "string" },
+                            TanggalTiba: { type: "string" },
+                            IsOld: { type: "boolean" },
+                        }
+                    }
+                },
+                aggregate: [{ field: "Tonase", aggregate: "sum" }, { field: "m3", aggregate: "sum" }],
+                pageSize: 5,
+                pageable: true,
+                sortable: true,
+            },
+            filterable: kendoGridFilterable,
+            sortable: true,
+            reorderable: true,
+            resizable: true,
+            pageable: true,
+            columns: [
+                {
+                    command: [
+                        {
+                            name: "hapus",
+                            text: "Hapus",
+                            click: hapusso,
+                            imageClass: "glyphicon glyphicon-remove",
+                            template: '<a class="k-button-icon #=className#" #=attr# href="\\#" title="#=text#"><span class="#=imageClass#"></span></a>'
+                        }
+                    ],
+                    width: 50
+                },
+                {field: "KodeNama", title: "Kode Supplier"}, {field: "SupplierName", title: "Supplier"}, { field: "Custumer"}, 
+                {field: "KodeCustomerTagihan", title: "Kode Ditagihkan"}, {field: "NamaCustomerTagihan", title: "Nama Ditagihkan"}, {field: "NoSO", title: "No SO"},
+                {field: "JenisBarang", title: "Jenis Barang"}, {field: "Tonase", title: "Berat (Kg)", footerTemplate: '<div>totaal: #= kendo.toString(sum, "n") #</div>'},
+                {field: "m3", title: "Volume (m3)", footerTemplate: "Total : #=sum#"}, {field: "Rute", title: "Tujuan"}, {field: "Keterangan"}, 
+                {field: "TanggalProses", title: "Tanggal Proses", template: "#= TanggalProses != null ? kendo.toString(kendo.parseDate(TanggalProses, 'yyyy-MM-dd'), 'dd/MM/yyyy HH:mm') : ''#"}
+            ],
+        }).data("kendoGrid");
+
+        dsGridSo = new kendo.data.DataSource({
+            transport: {
+                read: {
+                    url: '@Url.Action("GetDataForProses", "SalesOrderKonsolidasi")',
+                    dataType: "json"
+                },
+            },
+            schema: {
+                total: "total",
+                data: "data",
+                model: {
+                    fields: {
+                        "SalesOrderId": { type: "number" },
+                        "SalesOrderKonsolidasiId": { type: "number" },
+                        "SONumber": { type: "string" },
+                        "Urutan": { type: "number" },
+                        "TanggalOrder": { type: "date" },
+                        "TanggalMasuk": { type: "date" },
+                        "SONumberCust": { type: "date" },
+                        "CustomerId": { type: "number" },
+                        "KodeCustomer": { type: "string" },
+                        "KodeNama": { type: "string" },
+                        "NamaCustomer": { type: "string" },
+                        "SupplierId": { type: "number" },
+                        "SupplierName": { type: "string" },
+                        "NamaTagihan": { type: "string" },
+                        "Keterangan": { type: "string" },
+                        "ProductId": { type: "number" },
+                        "StrProduct": { type: "string" },
+                        "Suhu": { type: "number" },
+                        "RuteId": { type: "number" },
+                        "Rute": { type: "string" },
+                        "TypeId": { type: "number" },
+                        "StrType": { type: "string" },
+                        "Tonase": { type: "number" },
+                        "karton": { type: "number" },
+                        "Pallet": { type: "number" },
+                        "Container": { type: "number" },
+                        "m3": { type: "number" },
+                        "isMinimumBerat": { type: "boolean" },
+                        "BeratMinimum": { type: "number" },
+                        "PerhitunganDasar": { type: "string" },
+                        "Harga": { type: "number" },
+                        "TotalHarga": { type: "number" },
+                        "CaraBayar": { type: "string" },
+                        "IsOld": { type: "boolean" },
+                        "Status": { type: "string" }
+                    }
+                }
+            },
+            pageSize: 5,
+            pageable: true,
+            sortable: true,
+        })
+
+        GridSo = $("#GridSo").kendoGrid({
+            dataSource: dsGridSo,
+            filterable: kendoGridFilterable, sortable: true, reorderable: true, resizable: true, pageable: true,
+            columns: [
+                {
+                    command: [
+                        {
+                            name: "select", text: "Select", click: SelectSo, imageClass: "glyphicon glyphicon-ok",
+                            template: '<a class="k-button-icon #=className#" #=attr# href="\\#"><span class="#=iconClass# #=imageClass#"></span></a>'
+                        }
+                    ],
+                    width: "50px"
+                },
+                { field: "KodeNama", title: "Kode Nama" }, { field: "SupplierName", title: "Supplier" }, { field: "NamaCustomer", title: "Customer" }, { field: "KodeCustomerTagihan", title: "Kode Ditagihkan" },
+                { field: "NamaCustomerTagihan", title: "Nama Ditagihkan" }, { field: "SONumber", title: "No SO" }, { field: "StrProduct", title: "Jenis Barang" }, { field: "Rute", title: "Rute" },
+                { field: "PerhitunganDasar", title: "Perhitungan Dasar" }, { field: "Keterangan"}
+            ],
+        }).data("kendoGrid");
+
+        var dsRute = new kendo.data.DataSource({
+            transport: {
+                read: {
+                    url: '/Rute/Binding', dataType: "json"
+                },
+                parameterMap: function (options, operation) {
+                    if (operation !== "read" && options != '') {
+                        return kendo.stringify(options);
+                    }
+                    else if (operation == "read") {
+                        if (options.filter) {
+                            filter = options.filter.filters;
+                            for (var i in filter) {
+                                if (filter[i].field == "Asal") {
+                                    filter[i].field = "LocationAsal.Nama";
+                                }
+                                if (filter[i].field == "AreaAsal") {
+                                    filter[i].field = "AreaAsal.Nama";
+                                }
+                                if (filter[i].field == "Tujuan") {
+                                    filter[i].field = "LocationTujuan.Nama";
+                                }
+                                if (filter[i].field == "AreaTujuan") {
+                                    filter[i].field = "AreaTujuan.Nama";
+                                }
+                                if (filter[i].field == "MultiDrop") {
+                                    filter[i].field = "MultiDrop.tujuan";
+                                }
+                            }
+                        }
+
+                        if (options.sort) {
+                            sort = options.sort;
+                            for (var i in sort) {
+                                if (sort[i].field == "Asal") {
+                                    sort[i].field = "LocationAsal.Nama";
+                                }
+                                if (sort[i].field == "AreaAsal") {
+                                    sort[i].field = "AreaAsal.Nama";
+                                }
+                                if (sort[i].field == "Tujuan") {
+                                    sort[i].field = "LocationTujuan.Nama";
+                                }
+                                if (sort[i].field == "AreaTujuan") {
+                                    sort[i].field = "AreaTujuan.Nama";
+                                }
+                                if (sort[i].field == "MultiDrop") {
+                                    sort[i].field = "MultiDrop.tujuan";
+                                }
+                            }
+                        }
+                        return options;
+                    }
+                }
+            },
+            schema: {
+                total: "total",
+                data: "data",
+                model: {
+                    fields: {
+                        "Id": { type: "number" },
+                        "Kode": { type: "string" },
+                        "Nama": { type: "string" },
+                        "Asal": { type: "string" },
+                        "AreaAsal": { type: "string" },
+                        "Tujuan": { type: "string" },
+                        "AreaTujuan": { type: "string" },
+                        "MultiDrop": { type: "string" },
+                        "Jarak": { type: "number" },
+                        "WaktuKerja": { type: "number" },
+                        "WatkuTempuh": { type: "number" },
+                        "Toleransi": { type: "number" },
+                        "Keterangan": { type: "number" },
+                    }
+                }
+            },
+            pageSize: 10,
+            pageable: true,
+            serverFiltering: true,
+            serverPaging: true,
+            serverSorting: true,
+            sortable: true,
+        });
+
+        gridRute = $("#GridRute").kendoGrid({
+            dataSource: dsRute,
+            filterable: kendoGridFilterable,
+            sortable: true,
+            reorderable: true,
+            resizable: true,
+            pageable: true,
+            columns: [
+                {
+                    command: [
+                        {
+                            name: "select",
+                            text: "Select",
+                            click: selectRute,
+                            imageClass: "glyphicon glyphicon-ok",
+                            template: '<a class="k-button-icon #=className#" #=attr# href="\\#"><span class="#=iconClass# #=imageClass#"></span></a>'
+                        }
+                    ],
+                    width: "50px"
+                },
+                {
+                    field: "Nama",
+                    title: "Nama Rute"
+                },
+                {
+                    field: "Asal",
+                    title: "Dari"
+                },
+                {
+                    field: "Tujuan",
+                    title: "Tujuan"
+                },
+                {
+                    field: "MultiDrop",
+                    title: "MultiDrop"
+                },
+
+            ],
+        }).data("kendoGrid");
+
+        GridCustLoad = $("#gridmuat").kendoGrid({
+            editable: true,
+            dataSource: {
+                data: dsGridLoad,
+                batch: true,
+                schema: {
+                    model: {
+                        fields: {
+                            Id: { type: "number", editable: false },
+                            CustId: { type: "number", editable: false },
+                            SalesOrderKonsolidasiId : { type: "string", editable: false },
+                            Alamat: { type: "string", editable: false },
+                            Provinsi: { type: "string", editable: false },
+                            Kota: { type: "string", editable: false },
+                            Zona: { type: "string", editable: false },
+                            Telp: { type: "string", editable: false },
+                            Fax: { type: "string", editable: false },
+                            urutan: { type: "number" },
+                            IsSelect: { type: "boolean" }
+                        }
+                    },
+                },
+                change: function(e){
+                    if (e.action == "itemchange" && e.field == "urutan"){
+                        var model = e.items[0];
+                        if(model.urutan > 0)
+                        {
+                            $("#gridmuat").find("tr[data-uid='" + model.uid + "']").addClass("k-state-selected").find(".checkbox").attr("checked", "checked");
+                            //$("#gridmuat").find("tr[data-uid='" + model.uid + "'] td:eq(0)").find(".checkbox").attr("checked", "checked");
+                            model.IsSelect = true;
+                            checkedIdLoad[model.Id] = true;
+                        }
+                        else
+                        {
+                            $("#gridmuat").find("tr[data-uid='" + model.uid + "']").removeClass("k-state-selected").find(".checkbox").attr("checked", false);
+                            //$("#gridmuat").find("tr[data-uid='" + model.uid + "'] td:eq(0)").find(".checkbox").attr("checked", false);
+                            model.IsSelect = false;
+                            model.urutan = 0;
+                            checkedIdLoad[model.Id] = false;
+                        }
+                        dsGridLoad = $("#gridmuat").data("kendoGrid").dataSource.data();
+                    }
+                },
+                pageSize: 5,
+                pageable: true,
+                sortable: true,
+            },
+            filterable: kendoGridFilterable,
+            sortable: true,
+            reorderable: true,
+            resizable: true,
+            pageable: true,
+            dataBound: onDataBoundLoad,
+            columns: [
+                {
+                    template: "<input type='checkbox' class='checkbox' />",
+                    width: "50px"
+                },
+                {
+                    field: "urutan",
+                    title: "Urutan"
+                },
+                {
+                    field: "Zona",
+                    title: "Zona"
+                },
+                {
+                    field: "Alamat",
+                    title: "Alamat"
+                },
+                {
+                    field: "Kota",
+                    title: "Kabupaten/Kota"
+                },
+                {
+                    field: "Provinsi",
+                    title: "Provinsi"
+                },
+                {
+                    field: "Telp",
+                    title: "Telp"
+                },
+                {
+                    field: "Fax",
+                    title: "Fax"
+                }
+            ],
+        }).data("kendoGrid");
+        GridCustLoad.table.on("click", ".checkbox", selectLoad);
+
+        GridCustUnLoad = $("#gridbongkar").kendoGrid({
+            editable: true,
+            dataSource: {
+                data: dsGridUnLoad,
+                batch: true,
+                schema: {
+                    model: {
+                        fields: {
+                            Id: { type: "number", editable: false },
+                            CustId: { type: "number", editable: false },
+                            SalesOrderKonsolidasiId : { type: "string", editable: false },
+                            Alamat: { type: "string", editable: false },
+                            Provinsi: { type: "string", editable: false },
+                            Kota: { type: "string", editable: false },
+                            Zona: { type: "string", editable: false },
+                            Telp: { type: "string", editable: false },
+                            Fax: { type: "string", editable: false },
+                            urutan: { type: "number" },
+                            IsSelect: { type: "boolean" }
+                        }
+                    }
+                },
+                change: function(e){
+                    if (e.action == "itemchange" && e.field == "urutan"){
+                        var model = e.items[0];
+                        if(model.urutan > 0)
+                        {
+                            $("#gridbongkar").find("tr[data-uid='" + model.uid + "']").addClass("k-state-selected").find(".checkbox").attr("checked", true);
+                            //$("#gridbongkar").find("tr[data-uid='" + model.uid + "'] td:eq(0)").find(".checkbox").attr("checked", true);
+                            model.IsSelect = true;
+                            checkedIdUnoad[model.Id] = true;
+                        }
+                        else
+                        {
+                            $("#gridbongkar").find("tr[data-uid='" + model.uid + "']").removeClass("k-state-selected").find(".checkbox").attr("checked", false);
+                            //$("#gridbongkar").find("tr[data-uid='" + model.uid + "'] td:eq(0)").find(".checkbox").attr("checked", false);
+                            model.IsSelect = false;
+                            model.urutan = 0;
+                            checkedIdUnoad[model.Id] = false;
+                        }
+                        dsGridUnLoad = $("#gridbongkar").data("kendoGrid").dataSource.data();
+                    }
+                },
+                pageSize: 5,
+                pageable: true,
+                sortable: true,
+            },
+            filterable: kendoGridFilterable,
+            sortable: true,
+            reorderable: true,
+            resizable: true,
+            pageable: true,
+            dataBound: onDataBoundUnload,
+            columns: [
+                {
+                    template: "<input type='checkbox' class='checkbox' />",
+                    width: "50px"
+                },
+                {
+                    field: "urutan",
+                    title: "Urutan"
+                },
+                {
+                    field: "Zona",
+                    title: "Zona"
+                },
+                {
+                    field: "Alamat",
+                    title: "Alamat"
+                },
+                {
+                    field: "Kota",
+                    title: "Kabupaten/Kota"
+                },
+                {
+                    field: "Provinsi",
+                    title: "Provinsi"
+                },
+                {
+                    field: "Telp",
+                    title: "Telp"
+                },
+                {
+                    field: "Fax",
+                    title: "Fax"
+                }
+            ],
+        }).data("kendoGrid");
+        GridCustUnLoad.table.on("click", ".checkbox", selectUnload);
+    })
+
+    $('#formsubmit').submit(function (e) {
+        $('#StrListSo').val(listCustomer);
+        $('#StrLoad').val(JSON.stringify(GridCustLoad.dataSource.data()));
+        $('#StrUnload').val(JSON.stringify(GridCustUnLoad.dataSource.data()));
+    })
+    </script>
+}

@@ -1,0 +1,1238 @@
+﻿@using tms_mka_v2.Models;
+@model tms_mka_v2.Models.Rute
+@{
+    ViewBag.Title = "Form";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    string currentController = (string)ViewContext.RouteData.Values["controller"];
+    string currentAction = (string)ViewContext.RouteData.Values["action"];
+    string backLink = Url.Action("Index");
+    if (currentAction == "Add")
+    {
+        ViewBag.Title = "Tambah Rute";
+    }
+    else
+    {
+        ViewBag.Title = ViewBag.name + " | Edit";
+    }
+}
+<style>
+    .nopadding {
+        padding-left: 0;
+    }
+</style>
+<script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?sensor=false&key=AIzaSyBfPWT55ybzPawdPYh58Y85LICkYHQe27U"></script>
+<script src="https://cdn.rawgit.com/googlemaps/v3-utility-library/master/markerwithlabel/src/markerwithlabel.js"></script>
+<div class="portlet light">
+    <div class="portlet-title">
+        <div class="caption">
+            <span class="caption-subject font-dark sbold uppercase">@ViewBag.Title</span>
+        </div>
+    </div>
+    <div class="portlet-body form">
+        @using (@Html.BeginForm(currentAction, currentController, FormMethod.Post, new { @class = "form-horizontal", @id = "formSubmit" }))
+        {
+        @Html.ValidationSummary(true)
+        @Html.HiddenFor(model => model.Id)
+        <div class="row">
+            <div class="col-md-12">
+                <div id="map" style="width: 100%; height: 400px; margin-bottom: 10px"></div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Kode, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                    <div class="col-md-6 col-sm-9 col-xs-12">
+                        @Html.TextBoxFor(model => model.Kode, new { @class = "form-control input-sm", @readonly = "true" })
+                    </div>
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Nama, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                    <div class="col-md-6 col-sm-9 col-xs-12">
+                        @Html.TextBoxFor(model => model.Nama, new { @class = "form-control input-sm focus" })
+                        @Html.ValidationMessageFor(model => model.Nama)
+                    </div>
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(model => model.CustomerId, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                    <div class="col-md-6 col-sm-9 col-xs-12">
+                        @Html.TextBoxFor(model => model.CustomerId, new { @class = "form-control input-sm" })
+                        @Html.ValidationMessageFor(model => model.CustomerId)
+                    </div>
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(model => model.IdAsal, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                    <div class="col-md-6 col-sm-9 col-xs-12">
+                        @Html.TextBoxFor(model => model.IdAsal, new { @class = "form-control input-sm" })
+                        @Html.ValidationMessageFor(model => model.IdAsal)
+                    </div>
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(model => model.IdAreaAsal, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                    <div class="col-md-6 col-sm-9 col-xs-12">
+                        @Html.TextBoxFor(model => model.IdAreaAsal, new { @class = "form-control input-sm" })
+                        @Html.ValidationMessageFor(model => model.IdAreaAsal)
+                    </div>
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(model => model.IdTujuan, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                    <div class="col-md-6 col-sm-9 col-xs-12">
+                        @Html.TextBoxFor(model => model.IdTujuan, new { @class = "form-control input-sm" })
+                        @Html.ValidationMessageFor(model => model.IdTujuan)
+                    </div>
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(model => model.IdAreaTujuan, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                    <div class="col-md-6 col-sm-9 col-xs-12">
+                        @Html.TextBoxFor(model => model.IdAreaTujuan, new { @class = "form-control input-sm" })
+                        @Html.ValidationMessageFor(model => model.IdAreaTujuan)
+                    </div>
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(model => model.IdMultiDrop, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                    <div class="col-md-6 col-sm-9 col-xs-12">
+                        @Html.TextBoxFor(model => model.IdMultiDrop, new { @class = "form-control input-sm" })
+                        @Html.ValidationMessageFor(model => model.IdMultiDrop)
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Jarak, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                    <div class="col-md-6 col-sm-9 col-xs-12">
+                        @Html.TextBoxFor(model => model.Jarak, new { @class = "form-control-numeric-km", @readonly = "readonly" })
+                        @Html.ValidationMessageFor(model => model.Jarak)
+                    </div>
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(model => model.WaktuTempuhJam, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                    <div class="col-md-3">
+                        @Html.TextBoxFor(model => model.WaktuTempuhJam, new { @class = "form-control-numeric-jam" })
+                        @Html.ValidationMessageFor(model => model.WaktuTempuhJam)
+                    </div>
+                    <div class="col-md-3">
+                        @Html.TextBoxFor(model => model.WaktuTempuhMenit, new { @class = "form-control-numeric-menit" })
+                        @Html.ValidationMessageFor(model => model.WaktuTempuhMenit)
+                    </div>
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(model => model.WaktuKerja, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                    <div class="col-md-6 col-sm-9 col-xs-12">
+                        @Html.TextBoxFor(model => model.WaktuKerja, new { @class = "form-control-numeric-hari" })
+                        @Html.ValidationMessageFor(model => model.WaktuKerja)
+                    </div>
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Toleransi, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                    <div class="col-md-6 col-sm-9 col-xs-12">
+                        @Html.TextBoxFor(model => model.Toleransi, new { @class = "form-control-numeric-jam" })
+                        @Html.ValidationMessageFor(model => model.Toleransi)
+                    </div>
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(model => model.IsAreaPulang, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                    <div class="col-md-6 col-sm-9 col-xs-12">
+                        @Html.CheckBoxFor(model => model.IsAreaPulang)
+                    </div>
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(model => model.IsKotaKota, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                    <div class="col-md-6 col-sm-9 col-xs-12">
+                        @Html.CheckBoxFor(model => model.IsKotaKota)
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <button type="button" class="btn btn-sm" title="Add Check Point" data-toggle="modal" data-target="#modalForm" onclick="ShowModal()">Add Check Point</button>
+            <div id="GridCheckPoint"></div>
+            @Html.HiddenFor(model => model.StrListCheckPoint)
+        </div>
+        <div class="ln_solid"></div>
+        <div class="row">
+            <button type="submit" class="btn btn-success" onclick="cektabel()">Submit</button>
+            @*<button type="button" onclick="cektabel()" class="btn btn-success">test</button>*@
+            <a href="@backLink" class="btn btn-link">Cancel</a>
+        </div>
+        }
+    </div>
+</div>
+<div id="modalForm" class="modal fade bs-modal-lg" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                <h4 class="modal-title">Check Point</h4>
+            </div>
+            <div class="modal-body">
+                <form id="cpform">
+                    <div class="form-horizontal">
+                        <div class="form-group">
+                            <div class="col-md-12">
+                                @Html.Hidden("IdCheckPoint")
+                                <div class="form-group">
+                                    @Html.Label("Cek Point", new { @class = "control-label col-md-3" })
+                                    <div class="col-md-8">
+                                        <div class="input-group input-group-sm">
+                                            <input id="CheckPoint" name="CheckPoint" class="form-control" required validationmessage="Checkpoint harus diisi" />
+                                            <span class="input-group-btn">
+                                                <button type="button" class="btn green" id="btnviewmap" title="View Map" data-toggle="modal" data-target="#modalviewmap" onclick="generateMap('viewmap',true, $('#Latitude').val(), $('#Longitude').val(), $('#Radius').val())">View Map</button>
+                                            </span>
+                                        </div>
+                                        <span class="k-invalid-msg" data-for="CheckPoint"></span>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    @Html.Label("Longitude", new { @class = "control-label col-md-3" })
+                                    <div class="col-md-8">
+                                        @Html.Editor("Longitude", new { htmlAttributes = new { @class = "form-control input-sm", @readonly = true } })
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    @Html.Label("Latitude", new { @class = "control-label col-md-3" })
+                                    <div class="col-md-8">
+                                        @Html.Editor("Latitude", new { htmlAttributes = new { @class = "form-control input-sm", @readonly = true } })
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    @Html.Label("Radius", new { @class = "control-label col-md-3" })
+                                    <div class="col-md-8">
+                                        <input id="Radius" name="Radius" class="form-control-numeric-meter" required validationmessage="Radius harus diisi" />
+                                        <span class="k-invalid-msg" data-for="Radius"></span>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    @Html.Label("Alamat", new { @class = "control-label col-md-3" })
+                                    <div class="col-md-8">
+                                        @Html.TextArea("Alamat", new { @class = "form-control", @readonly = true })
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    @Html.Label("Waktu tempuh", new { @class = "control-label col-md-3" })
+                                    <div class="col-md-4">
+                                        <input id="WaktuJam" name="WaktuJam" class="form-control-numeric-jam" required validationmessage="Waktu jam harus diisi" />
+                                        <span class="k-invalid-msg" data-for="WaktuJam"></span>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <input id="WaktuMenit" name="WaktuMenit" class="form-control-numeric-minute" required validationmessage="Waktu menit harus diisi" />
+                                        <span class="k-invalid-msg" data-for="WaktuMenit"></span>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    @Html.Label("Toleransi Delay", new { @class = "control-label col-md-3" })
+                                    <div class="col-md-8">
+                                        @Html.Editor("ToleransiDelay", new { htmlAttributes = new { @class = "form-control-numeric-jam" } })
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn green" onclick="SaveCheckPoint();">Submit</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="modalviewmap" class="modal fade bs-modal-lg" data-backdrop="static" data-keyboard="false" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                <h4 class="modal-title">View Map</h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-horizontal">
+                    <div class="form-group">
+                        <div class="col-md-12">
+                            <div id="viewmap" style="height:400px; width:800px; margin: auto"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn green" onclick="addMap()">Submit</button>
+            </div>
+        </div>
+    </div>
+</div>
+@section scripts{
+    <script type="text/javascript">
+    var directionsService = new google.maps.DirectionsService();
+    var CheckPointAsal = [];
+    var infowindow = new google.maps.InfoWindow();
+    var renderer = new google.maps.DirectionsRenderer({
+        suppressPolylines: true,
+        infoWindow: infowindow,
+    });
+    //var polylines = [];
+    var dsCheckoint = [];
+    var GridCheckPoint;
+    var currData;
+
+    var longdummy;
+    var latdummy;
+    var alamatdummy;
+
+    var isnew = true;
+
+    var dsGridDummy = [];
+
+    var circleMap, circleRute;
+    var cbotujuan, cboasal;
+
+    @foreach(RuteCheckPoint item in Model.listCheckPoint)
+        {
+            <text>
+    dsCheckoint.push({
+        Id: parseInt(@item.Id),
+        code: '@item.code',
+        longitude: '@item.longitude',
+        langitude: '@item.langitude',
+        radius: '@item.radius',
+        alamat: '@item.alamat',
+        waktuJam: parseInt(@item.waktuJam),
+        waktuMenit: parseInt(@item.waktuMenit),
+        toleransi: parseInt(@item.toleransi),
+        hapus: '@item.hapus'
+    })
+    </text>
+        }
+
+    function OnAsalChange(e) {
+        if (this.value() != "") {
+            SetAreaAsal(this.value());
+            generateMap("map", true);
+        }
+        else {
+            var combobox;
+            combobox = $("#IdAreaAsal").data("kendoComboBox");
+            combobox.text('');
+            combobox.value();
+            combobox.setDataSource();
+        }
+    }
+
+    function SetAreaAsal(id) {
+        var ds = new kendo.data.DataSource({
+            transport: {
+                read: {
+                    url: '@Url.Action("GetAreaByLocation","Area")?idLoc=' + id,
+                    dataType: "json"
+                },
+            },
+        });
+        var combobox;
+        combobox = $("#IdAreaAsal").data("kendoComboBox");
+        combobox.text('');
+        combobox.value();
+        combobox.setDataSource(ds);
+    }
+
+    function OnTujuanChange(e) {
+        if (this.value() != "") {
+            SetAreaTujuan(this.value());
+            generateMap("map", true);
+        }
+        else {
+            var combobox;
+            combobox = $("#IdAreaTujuan").data("kendoComboBox");
+            combobox.text('');
+            combobox.value();
+            combobox.setDataSource();
+        }
+    }
+
+    function SetAreaTujuan(id) {
+        var ds = new kendo.data.DataSource({
+            transport: {
+                read: {
+                    url: '@Url.Action("GetAreaByLocation","Area")?idLoc=' + id,
+                    dataType: "json"
+                },
+            },
+        });
+        var combobox;
+        combobox = $("#IdAreaTujuan").data("kendoComboBox");
+        combobox.text('');
+        combobox.value();
+        combobox.setDataSource(ds);
+    }
+
+    function OnMultidropChange(e) {
+        generateMap("map", true);
+    }
+
+    //fungsi baru
+    function initMapRute() {
+        var map = new google.maps.Map(document.getElementById('map'), {
+            zoom: 10,
+            center: new google.maps.LatLng(-6.294996, 106.9973395),
+            mapTypeId: google.maps.MapTypeId.ROADMAP
+        });
+
+        var infowindow = new google.maps.InfoWindow();
+        marker = new google.maps.Marker({
+            position: new google.maps.LatLng(-6.294996, 106.9973395),
+            map: map
+        });
+        google.maps.event.addListener(marker, 'click', (function (marker) {
+            return function () {
+                infowindow.setContent("Narogong");
+                infowindow.open(map, marker);
+            }
+        })(marker));
+    }
+
+    function generateMap(elmap, override, lat, long, radius) {
+        var showLabel = false;
+        if (elmap == "map")
+            showLabel = true;
+        //init tujuan
+        var start;
+        var end;
+        if ($.isNumeric($("#IdAsal").data("kendoComboBox").text()) || $.isNumeric($("#IdTujuan").data("kendoComboBox").text())) {
+            Asal = '@Model.Asal';
+            Tujuan = '@Model.Tujuan';
+        }
+        else {
+            Asal = $("#IdAsal").data("kendoComboBox").text();
+            Tujuan = $("#IdTujuan").data("kendoComboBox").text();
+        }
+
+        //init wayspoint
+        var wypt = [];
+
+        //dari multi drop
+        var multidrop = '';
+        if ($.isNumeric($("#IdMultiDrop").data("kendoComboBox").text())) {
+            multidrop = '@Model.MultiDrop';
+        }
+        else {
+            multidrop = $("#IdMultiDrop").data("kendoComboBox").text();
+        }
+
+        if (multidrop != '') {
+            var resmultidrop = multidrop.split(' - ');
+            for (var i = 0; i < resmultidrop.length; i++) {
+                wypt.push({
+                    location: resmultidrop[i],
+                    stopover: true,
+                });
+            }
+        }
+
+        //panggil service gMaps
+        var request = {};
+        request = {
+            origin: Asal,
+            destination: Tujuan,
+            waypoints: wypt,
+            provideRouteAlternatives: true,
+            optimizeWaypoints: true,
+            //travelMode: google.maps.TravelMode.DRIVING,
+            travelMode: google.maps.DirectionsTravelMode.DRIVING,
+            unitSystem: google.maps.UnitSystem.METRIC,
+            //avoidTolls: true,
+        };
+
+        if (elmap == "map") {
+            MainMap(elmap, request, override);
+        }
+        else {
+            CheckpointMap(elmap, request, lat, long, radius);
+        }
+    }
+
+    function MainMap(elmap, request, override) {
+        var mapOptions = {
+            zoom: 7,
+        }
+        var map = new google.maps.Map(document.getElementById(elmap), mapOptions);
+
+        //directionsDisplay = new google.maps.DirectionsRenderer({
+        //    map: map,
+        //    //  suppressPolylines: true,
+        //});
+
+        directionsService.route(request, function (results, status) {
+            if (status == google.maps.DirectionsStatus.OK) {
+                //for (var i = 0, len = results.routes.length; i < len; i++) {
+                //    new google.maps.DirectionsRenderer({
+                //        map: map,
+                //        directions: results,
+                //        routeIndex: i
+                //    });
+                //}
+                renderer.setDirections(results);
+                renderer.setMap(map);
+                ReDraw(results, map, false);
+                //directionsDisplay.setDirections(results);
+
+                var distance = 0;
+                var duration = 0;
+                var route = results.routes[0];
+
+                for (var i = 0; i < route.legs.length; i++) {
+                    distance = parseFloat(distance) + parseFloat(route.legs[i].distance.value);
+                    duration = parseFloat(duration) + parseFloat(route.legs[i].duration.value);
+                }
+
+                distance = distance / 1000;
+                var date = new Date(duration * 1000)
+                if (override) {
+                    if (date.getUTCHours() == 0) {
+                        $('#WaktuTempuhJam').data("kendoNumericTextBox").value('');
+                        $('#WaktuTempuhMenit').data("kendoNumericTextBox").value(date.getUTCMinutes());
+                    }
+                    else {
+                        $('#WaktuTempuhJam').data("kendoNumericTextBox").value(date.getUTCHours());
+                        $('#WaktuTempuhMenit').data("kendoNumericTextBox").value(date.getUTCMinutes());
+                    }
+                }
+
+                $('#Jarak').data("kendoNumericTextBox").value(distance);
+
+                //ReDraw(results, map, false);
+            }
+        });
+
+        //list marker
+        $.each(dsCheckoint, function () {
+            var marker = new google.maps.Marker(
+            {
+                map: map,
+                draggable: false,
+                position: new google.maps.LatLng(this.langitude, this.longitude),
+                title: this.code
+            });
+            var circle = new google.maps.Circle({
+                map: map,
+                radius: parseFloat(this.radius),    // 10 miles in metres
+                fillColor: '#AA0000',
+                strokeColor: '#FF0000',
+                strokeOpacity: 0.8,
+                strokeWeight: 2,
+                fillColor: '#FF0000',
+                fillOpacity: 0.35,
+            });
+
+            circle.bindTo('center', marker, 'position');
+        })
+    }
+
+    function CheckpointMap(elmap, request, lat, long, radius) {
+        $('#modalviewmap').on('shown.bs.modal', function () {
+            var mapOptions = {
+                zoom: 7,
+            }
+            var map = new google.maps.Map(document.getElementById(elmap), mapOptions);
+
+            marker = new google.maps.Marker({
+                map: map,
+                draggable: true,
+                position: new google.maps.LatLng(lat, long),
+            });
+
+            google.maps.event.addListener(marker, 'dragend', function () {
+                longdummy = this.position.lng();
+                latdummy = this.position.lat();
+            });
+
+            if (radius != "") {
+                circleMap = new google.maps.Circle({
+                    map: map,
+                    radius: parseFloat(radius),    // 10 miles in metres
+                    fillColor: '#AA0000',
+                    strokeColor: '#FF0000',
+                    strokeOpacity: 0.8,
+                    strokeWeight: 2,
+                    fillColor: '#FF0000',
+                    fillOpacity: 0.35,
+                });
+
+                circleMap.bindTo('center', marker, 'position');
+            }
+
+            directionsService.route(request, function (results, status) {
+                if (status == google.maps.DirectionsStatus.OK) {
+                    renderer.setDirections(results);
+                    renderer.setMap(map);
+                    ReDraw(results, map, true, radius);
+                    //renderDirectionsPolylines(results, map)
+                }
+            });
+
+            map.addListener('click', function (e) {
+                var lat = e.latLng.lat();
+                var long = e.latLng.lng();
+                marker.setMap(null);
+                marker = new google.maps.Marker(
+                 {
+                     map: map,
+                     draggable: true,
+                     animation: google.maps.Animation.DROP,
+                     position: new google.maps.LatLng(lat, long),
+                 });
+                if (radius != "") {
+                    if (circleMap != null)
+                        circleMap.setMap(null);
+                    if (circleRute != null)
+                        circleRute.setMap(null);
+                    circleMap = new google.maps.Circle({
+                        map: map,
+                        radius: parseFloat(radius),    // 10 miles in metres
+                        fillColor: '#AA0000',
+                        strokeColor: '#FF0000',
+                        strokeOpacity: 0.8,
+                        strokeWeight: 2,
+                        fillColor: '#FF0000',
+                        fillOpacity: 0.35,
+                    });
+
+                    circleMap.bindTo('center', marker, 'position');
+                }
+                longdummy = e.latLng.lng();
+                latdummy = e.latLng.lat();
+                geocoder = new google.maps.Geocoder();
+                geocoder.geocode
+                    ({
+                        latLng: e.latLng
+                    },
+                        function (results, status) {
+                            if (status == google.maps.GeocoderStatus.OK) {
+                                alamatdummy = results[0].formatted_address;
+                            }
+                        }
+                    );
+                google.maps.event.addListener(marker, 'dragend', function () {
+                    longdummy = this.position.lng();
+                    latdummy = this.position.lat();
+                });
+            });
+
+            $.each(dsCheckoint, function () {
+                if (this.langitude != lat && this.longitude != long) {
+                    var markerStatic = new google.maps.Marker(
+                {
+                    map: map,
+                    draggable: false,
+                    position: new google.maps.LatLng(this.langitude, this.longitude),
+                    title: this.code,
+                    icon: "http://maps.google.com/mapfiles/ms/icons/blue-dot.png"
+                });
+                    var circleStatic = new google.maps.Circle({
+                        map: map,
+                        radius: parseFloat(this.radius),    // 10 miles in metres
+                        fillColor: '#AA0000',
+                        strokeColor: '#FF0000',
+                        strokeOpacity: 0.8,
+                        strokeWeight: 2,
+                        fillColor: '#FF0000',
+                        fillOpacity: 0.35,
+                    });
+
+                    circleStatic.bindTo('center', markerStatic, 'position');
+                }
+            })
+        })
+    }
+
+    function addMap() {
+        $("#Alamat").val(alamatdummy);
+        $('#Longitude').val(longdummy);
+        $('#Latitude').val(latdummy);
+
+        $('#modalviewmap').modal('hide');
+    }
+
+    function renderDirectionsPolylines(response, map) {
+        var polylineOptions = {
+            strokeColor: '#C83939',
+            strokeOpacity: 1,
+            strokeWeight: 4
+        };
+        var polylines = [];
+        for (var i = 0; i < polylines.length; i++) {
+            polylines[i].setMap(null);
+        }
+        var legs = response.routes[0].legs;
+        for (i = 0; i < legs.length; i++) {
+            var steps = legs[i].steps;
+            for (j = 0; j < steps.length; j++) {
+                var nextSegment = steps[j].path;
+                var stepPolyline = new google.maps.Polyline(polylineOptions);
+                for (k = 0; k < nextSegment.length; k++) {
+                    stepPolyline.getPath().push(nextSegment[k]);
+                }
+                polylines.push(stepPolyline);
+                stepPolyline.setMap(map);
+                // route click listeners, different one on each step
+                google.maps.event.addListener(stepPolyline, 'click', function (evt) {
+                    infowindow.setContent("you clicked on the route<br>" + evt.latLng.toUrlValue(6));
+                    infowindow.setPosition(evt.latLng);
+                    infowindow.open(map);
+                })
+            }
+        }
+    }
+
+    function ReDraw(results, map, clickable, radius) {
+        //var polylineOptions = {
+        //    strokeColor: '#4d4dff',
+        //    strokeOpacity: 1,
+        //    strokeWeight: 4
+        //};
+        var polylines = [];
+        var bounds = new google.maps.LatLngBounds();
+        // draw the lines in reverse orde, so the first one is on top (z-index)
+        for (var i = results.routes.length - 1; i >= 0; i--) {
+            // tentukan warna main rute dan aleternate rute;
+            if (i == 0) {
+                var color = '#4d4dff';
+                //var line = drawPolyline(results.routes[i].overview_path, color, map);
+                //polylines.push(line);
+                //bounds = line.getBounds(bounds);
+                //if (clickable) {
+                //    google.maps.event.addListener(line, 'click', function (e) {
+                //        var lat = e.latLng.lat();
+                //        var long = e.latLng.lng();
+                //        marker.setMap(null);
+                //        marker = new google.maps.Marker(
+                //        {
+                //            map: map,
+                //            draggable: true,
+                //            animation: google.maps.Animation.DROP,
+                //            position: new google.maps.LatLng(lat, long),
+                //        });
+                //        if (radius != "") {
+                //            if (circleMap != null)
+                //                circleMap.setMap(null);
+                //            if (circleRute != null)
+                //                circleRute.setMap(null);
+                //            circleRute = new google.maps.Circle({
+                //                map: map,
+                //                radius: parseFloat(radius),    // 10 miles in metres
+                //                fillColor: '#AA0000',
+                //                strokeColor: '#FF0000',
+                //                strokeOpacity: 0.8,
+                //                strokeWeight: 2,
+                //                fillColor: '#FF0000',
+                //                fillOpacity: 0.35,
+                //            });
+
+                //            circleRute.bindTo('center', marker, 'position');
+                //        }
+                //        longdummy = e.latLng.lng();
+                //        latdummy = e.latLng.lat();
+                //        geocoder = new google.maps.Geocoder();
+                //        geocoder.geocode
+                //            ({
+                //                latLng: e.latLng
+                //            },
+                //                function (results, status) {
+                //                    if (status == google.maps.GeocoderStatus.OK) {
+                //                        alamatdummy = results[0].formatted_address;
+                //                    }
+                //                }
+                //            );
+                //        google.maps.event.addListener(marker, 'dragend', function () {
+                //            longdummy = this.position.lng();
+                //            latdummy = this.position.lat();
+                //        });
+                //    });
+                //}
+            }
+            else {
+                //var color = '#ff751a';
+                var color = '#4d4dff';
+            }
+            var polylineOptions = {
+                strokeColor: color,
+                strokeOpacity: 1,
+                strokeWeight: 4
+            };
+            var legs = results.routes[i].legs;
+
+            for (j = 0; j < legs.length; j++) {
+                var steps = legs[j].steps;
+                for (k = 0; k < steps.length; k++) {
+                    var nextSegment = steps[k].path;
+                    var stepPolyline = new google.maps.Polyline(polylineOptions);
+                    for (l = 0; l < nextSegment.length; l++) {
+                        stepPolyline.getPath().push(nextSegment[l]);
+                    }
+                    polylines.push(stepPolyline);
+                    stepPolyline.setMap(map);
+                    //route click listeners, different one on each step
+                    if (clickable) {
+                        google.maps.event.addListener(stepPolyline, 'click', function (e) {
+                            var lat = e.latLng.lat();
+                            var long = e.latLng.lng();
+                            marker.setMap(null);
+                            marker = new google.maps.Marker(
+                            {
+                                map: map,
+                                draggable: true,
+                                animation: google.maps.Animation.DROP,
+                                position: new google.maps.LatLng(lat, long),
+                            });
+                            if (radius != "") {
+                                if (circleMap != null)
+                                    circleMap.setMap(null);
+                                if (circleRute != null)
+                                    circleRute.setMap(null);
+                                circleRute = new google.maps.Circle({
+                                    map: map,
+                                    radius: parseFloat(radius),    // 10 miles in metres
+                                    fillColor: '#AA0000',
+                                    strokeColor: '#FF0000',
+                                    strokeOpacity: 0.8,
+                                    strokeWeight: 2,
+                                    fillColor: '#FF0000',
+                                    fillOpacity: 0.35,
+                                });
+
+                                circleRute.bindTo('center', marker, 'position');
+                            }
+                            longdummy = e.latLng.lng();
+                            latdummy = e.latLng.lat();
+                            geocoder = new google.maps.Geocoder();
+                            geocoder.geocode
+                                ({
+                                    latLng: e.latLng
+                                },
+                                    function (results, status) {
+                                        if (status == google.maps.GeocoderStatus.OK) {
+                                            alamatdummy = results[0].formatted_address;
+                                        }
+                                    }
+                                );
+                            google.maps.event.addListener(marker, 'dragend', function () {
+                                longdummy = this.position.lng();
+                                latdummy = this.position.lat();
+                            });
+                        });
+                    }
+                    //google.maps.event.addListener(stepPolyline, 'click', function (evt) {
+                    //    infowindow.setContent("you clicked on the route<br>" + evt.latLng.toUrlValue(6));
+                    //    infowindow.setPosition(evt.latLng);
+                    //    infowindow.open(map);
+                    //})
+                }
+            }
+        }
+        //map.fitBounds(bounds);
+    }
+
+    function highlightRoute(index) {
+        for (var j in polylines) {
+            if (j == index) {
+                var color = '#0000ff';
+            }
+            else {
+                var color = '#999999';
+            }
+            polylines[j].setOptions({ strokeColor: color });
+        }
+    }
+
+    function drawPolyline(path, color, map) {
+        var line = new google.maps.Polyline({
+            path: path,
+            strokeColor: color,
+            strokeOpacity: 1,
+            strokeWeight: 5
+        });
+        line.setMap(map);
+        return line;
+    }
+    //end fungsi baru
+
+    function ShowModal() {
+        isnew = true;
+        $('#CheckPoint').val('');
+        $('#Longitude').val('');
+        $('#Latitude').val('');
+        $('#Radius').data("kendoNumericTextBox").value(' ');
+        $('#Alamat').val('');
+        $('#WaktuJam').data("kendoNumericTextBox").value(' ');
+        $('#WaktuMenit').data("kendoNumericTextBox").value(' ');
+        $('#ToleransiDelay').data("kendoNumericTextBox").value(' ');
+    }
+
+    function SaveCheckPoint() {
+        if (validatorFrm.validate()) {
+            //hapus baris terkahir
+            GridCheckPoint.dataSource.remove(GridCheckPoint.dataSource.data()[GridCheckPoint.dataSource.data().length - 1]);
+
+            if (isnew) {
+                GridCheckPoint.dataSource.add({
+                    code: $('#CheckPoint').val(),
+                    longitude: $('#Longitude').val(),
+                    langitude: $('#Latitude').val(),
+                    radius: parseInt($('#Radius').data("kendoNumericTextBox").value()),
+                    alamat: $('#Alamat').val(),
+                    waktuJam: parseInt($('#WaktuJam').data("kendoNumericTextBox").value()),
+                    waktuMenit: parseInt($('#WaktuMenit').data("kendoNumericTextBox").value()),
+                    toleransi: $('#ToleransiDelay').data("kendoNumericTextBox").value() == null ? 0 : $('#ToleransiDelay').data("kendoNumericTextBox").value(),
+                    hapus: ''
+                });
+            }
+            else {
+                //edit
+                currData.code = $('#CheckPoint').val();
+                currData.longitude = $('#Longitude').val();
+                currData.langitude = $('#Latitude').val();
+                currData.radius = parseInt($('#Radius').data("kendoNumericTextBox").value());
+                currData.alamat = $('#Alamat').val();
+                currData.waktuJam = parseInt($('#WaktuJam').data("kendoNumericTextBox").value()),
+                currData.waktuMenit = parseInt($('#WaktuMenit').data("kendoNumericTextBox").value()),
+                currData.toleransi = $('#ToleransiDelay').data("kendoNumericTextBox").value() == null ? 0 : $('#ToleransiDelay').data("kendoNumericTextBox").value();
+                hapus = '';
+            }
+
+            dsCheckoint = GridCheckPoint.dataSource.data();
+
+            generateMap('map', true);
+
+            var dummy = GridCheckPoint.dataSource.view()[GridCheckPoint.dataSource.data().length - 1];
+
+            GridCheckPoint.dataSource.add({
+                code: dummy.code + ' - ' + $("#IdTujuan").data("kendoComboBox").text(),
+                longitude: '-',
+                langitude: '-',
+                radius: 0,
+                alamat: $("#IdTujuan").data("kendoComboBox").text(),
+                waktuJam: 0,
+                waktuMenit: 0,
+                toleransi: 0,
+                hapus: 'hapus'
+            });
+
+            $('#modalForm').modal('hide');
+        }
+    }
+
+    function editCheckPoint(e) {
+        e.preventDefault();
+        //currData = dsCheckoint[getDataRowGrid(e).index()];
+        currData = this.dataItem(getDataRowGrid(e));
+
+        $('#CheckPoint').val(currData.code);
+        $('#Longitude').val(currData.longitude);
+        $('#Latitude').val(currData.langitude);
+        $('#Radius').data("kendoNumericTextBox").value(currData.radius);
+        $('#Alamat').val(currData.alamat);
+        $('#ToleransiDelay').data("kendoNumericTextBox").value(currData.toleransi);
+        $('#WaktuJam').data("kendoNumericTextBox").value(currData.waktuJam);
+        $('#WaktuMenit').data("kendoNumericTextBox").value(currData.waktuMenit);
+
+        isnew = false;
+        $('#modalForm').modal('show');
+    }
+
+    function deleteCheckPoint(e) {
+        e.preventDefault();
+        currData = this.dataItem(getDataRowGrid(e));
+
+        //if (dsCheckoint.length > 0)
+        //    dsCheckoint.pop();
+
+        dsCheckoint = jQuery.grep(dsCheckoint, function (a) {
+            return a.code !== currData.code;
+        });
+
+        generateMap('map', true);
+
+        dsCheckoint = jQuery.grep(dsCheckoint, function (n, i) {
+            return (n.hapus !== 'hapus');
+        });
+
+        GridCheckPoint.dataSource.data(dsCheckoint);
+
+        var dummy = GridCheckPoint.dataSource.view()[GridCheckPoint.dataSource.data().length - 1];
+
+        GridCheckPoint.dataSource.add({
+            code: dummy.code + ' - ' + $("#IdTujuan").data("kendoComboBox").text(),
+            longitude: '-',
+            langitude: '-',
+            radius: 0,
+            alamat: $("#IdTujuan").data("kendoComboBox").text(),
+            waktuJam: 0,
+            waktuMenit: 0,
+            toleransi: 0,
+            hapus: 'hapus'
+        });
+
+        //GridCheckPoint.dataSource.data(dsCheckoint);
+    }
+
+    function compare(a, b) {
+        if (a.code < b.code)
+            return -1;
+        if (a.code > b.code)
+            return 1;
+        return 0;
+    }
+
+    function SetLast() {
+        hapus
+    }
+    var validatorFrm;
+
+    $(document).ready(function () {
+        var dsCust = new kendo.data.DataSource({
+            serverFiltering: true,
+            transport: {
+                read: {
+                    url: '@Url.Action("Binding", "Customer")',
+                    dataType: "json"
+                },
+            },
+            schema: {
+                total: "total",
+                data: "data",
+                model: {
+                    fields: {
+                        "Id": { type: "number" },
+                        "CustomerNama": { type: "string" }
+                    }
+                }
+            },
+        });
+        $("#CustomerId").kendoComboBox({
+            dataSource: dsCust,
+            dataTextField: "CustomerNama",
+            dataValueField: "Id",
+            filter: "contains",
+            suggest: true,
+        });
+
+        google.maps.Polyline.prototype.getBounds = function (startBounds) {
+            if (startBounds) {
+                var bounds = startBounds;
+            }
+            else {
+                var bounds = new google.maps.LatLngBounds();
+            }
+
+            this.getPath().forEach(function (item, index) {
+                bounds.extend(new google.maps.LatLng(item.lat(), item.lng()));
+            });
+            return bounds;
+        };
+
+        initMapRute();
+
+        validatorFrm = $('#cpform').kendoValidator().data("kendoValidator");
+        GridCheckPoint = $("#GridCheckPoint").kendoGrid({
+            dataSource: {
+                data: dsCheckoint,
+                batch: true,
+                schema: {
+                    model: {
+                        fields: {
+                            Id: { type: "number", editable: false },
+                            code: { type: "string", editable: false },
+                            longitude: { type: "string", editable: false },
+                            langitude: { type: "string", editable: false },
+                            radius: { type: "string", editable: false },
+                            alamat: { type: "string", editable: false },
+                            waktuJam: { type: "number" },
+                            waktuMenit: { type: "number" },
+                            toleransi: { type: "number" },
+                            hapus: { type: "string", editable: false },
+                        }
+                    }
+                },
+                pageSize: 20,
+                sort: {
+                    field: "code",
+                    dir: "asc"
+                },
+            },
+            scrollable: false,
+            //navigatable: true,
+            editable: true,
+            dataBound: function (e) {
+                var gridData = this.dataSource.view();
+                if (gridData.length > 0) {
+                    var currentUid = gridData[gridData.length - 1].uid;
+                    var currenRow = this.table.find("tr[data-uid='" + currentUid + "']");
+                    var editButton = $(currenRow).find(".k-grid-edit");
+                    var deleteButton = $(currenRow).find(".k-grid-hapus");
+
+                    editButton.hide();
+                    deleteButton.hide();
+                }
+            },
+            columns: [
+                {
+                    command: [
+                        {
+                            name: "edit",
+                            text: "edit",
+                            click: editCheckPoint,
+                            imageClass: "glyphicon glyphicon-edit",
+                            template: '<a class="k-button-icon #=className#" #=attr# href="\\#"><span class="#=imageClass#"></span></a>'
+                        },
+                        {
+                            name: "hapus",
+                            text: "delete",
+                            click: deleteCheckPoint,
+                            imageClass: "glyphicon glyphicon-remove",
+                            template: '<a class="k-button-icon #=className#" #=attr# href="\\#"><span class="#=iconClass# #=imageClass#"></span></a>'
+                        }
+                    ],
+                    width: "60px"
+                },
+                {
+                    field: "code",
+                    title: "Check Point"
+                },
+                {
+                    field: "longitude",
+                    title: "Longitude"
+                },
+                {
+                    field: "langitude",
+                    title: "Langitude"
+                },
+                {
+                    field: "radius",
+                    title: "Radius",
+                    template: "#= radius# Meter"
+                },
+                {
+                    field: "alamat",
+                    title: "Alamat",
+                },
+                {
+                    field: "waktuJam",
+                    title: "Waktu ( Jam )"
+                },
+                {
+                    field: "waktuMenit",
+                    title: "Waktu ( Menit )"
+                },
+                {
+                    field: "toleransi",
+                    title: "Toleransi Delay ( Jam )",
+                },
+            ],
+        }).data("kendoGrid");
+
+        var dsLocationAsal = new kendo.data.DataSource({
+            serverFiltering: true,
+            transport: {
+                read: {
+                    url: '@Url.Action("BindingComboKotaKec", "Location")',
+                    dataType: "json"
+                },
+            },
+        });
+        var dsLocationTujuan = new kendo.data.DataSource({
+            serverFiltering: true,
+            transport: {
+                read: {
+                    url: '@Url.Action("BindingComboKotaKec", "Location")',
+                    dataType: "json"
+                },
+            },
+        });
+        var dsMultidrop = new kendo.data.DataSource({
+            transport: {
+                read: {
+                    url: '@Url.Action("GetMultidrop","Multidrop")',
+                    dataType: "json"
+                },
+            },
+        });
+
+        cboasal = $("#IdAsal").kendoComboBox({
+            dataTextField: "Nama",
+            dataValueField: "Id",
+            dataSource: dsLocationAsal,
+            filter: "contains",
+            suggest: true,
+            change: OnAsalChange,
+            autoBind: false,
+            minLength: 3,
+        }).data("kendoComboBox");
+        cboasal.text('@Model.Asal');
+        //cboasal.value('@Model.IdAsal');
+
+
+        $("#IdAreaAsal").kendoComboBox({
+            dataTextField: "Nama",
+            dataValueField: "Id",
+            filter: "contains",
+            suggest: true,
+        });
+        cbotujuan = $("#IdTujuan").kendoComboBox({
+            dataTextField: "Nama",
+            dataValueField: "Id",
+            dataSource: dsLocationTujuan,
+            filter: "contains",
+            suggest: true,
+            change: OnTujuanChange,
+            autoBind: false,
+            minLength: 3,
+        }).data("kendoComboBox");
+        cbotujuan.text('@Model.Tujuan');
+        //cbotujuan.value('@Model.IdTujuan');
+
+
+        $("#IdAreaTujuan").kendoComboBox({
+            dataTextField: "Nama",
+            dataValueField: "Id",
+            filter: "contains",
+            suggest: true,
+        });
+        $("#IdMultiDrop").kendoComboBox({
+            dataTextField: "tujuan",
+            dataValueField: "Id",
+            dataSource: dsMultidrop,
+            filter: "contains",
+            suggest: true,
+            change: OnMultidropChange
+        });
+
+        SetAreaAsal(@Model.IdAsal);
+        SetAreaTujuan(@Model.IdTujuan);
+        $("#IdAreaAsal").data("kendoComboBox").value(@Model.IdAreaAsal);
+        $("#IdAreaTujuan").data("kendoComboBox").value(@Model.IdAreaTujuan);
+        // map kodisi edit
+        @if (Model.Id != 0)
+        {
+            <text>
+        generateMap("map", false);
+        </text>
+        }
+        else {
+        <text>
+
+        </text>
+        }
+        //end map kodisi edit
+    })
+
+    function cektabel() {
+        var grid = $('#GridCheckPoint').data('kendoGrid');
+        grid.saveRow();
+        var data = grid.dataSource.data();
+
+        if (isNaN(cboasal.value())) {
+            $('#IdAsal').val('@Model.IdAsal');
+        }
+
+        if (isNaN(cbotujuan.value()))
+            $('#IdTujuan').val('@Model.IdTujuan');
+
+
+        $('#StrListCheckPoint').val(JSON.stringify(data));
+    }
+</script>
+}

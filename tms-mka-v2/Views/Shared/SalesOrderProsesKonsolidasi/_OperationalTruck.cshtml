@@ -1,0 +1,169 @@
+﻿@using tms_mka_v2.Models;
+@using System.Web.Mvc.Html;
+
+@model tms_mka_v2.Models.SalesOrderProsesKonsolidasi
+
+<div class="portlet light">
+    <div class="portlet-title">
+        <div class="caption font-green-sharp">
+            <span class="caption-subject"> Detail Truk</span>
+        </div>
+        <div class="tools">
+            <a href="" class="collapse"> </a>
+        </div>
+    </div>
+    <div class="portlet-body">
+        <div class="row">
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="portlet light">
+                        <div class="portlet-title">
+                            <div class="caption font-green-sharp">
+                                <span class="caption-subject"> Truk </span>
+                            </div>
+                        </div>
+                        <div class="portlet-body">
+                            @Html.HiddenFor(model => model.IdDataTruck)
+                            <div class="form-group">
+                                <label class="control-label col-md-4">Vehicle No</label>
+                                <div class="col-md-8">
+                                    <div class="input-group input-group-sm">
+                                        @Html.TextBoxFor(model => model.VehicleNo, new { @class = "form-control input-sm", @readonly = true })
+                                        <span class="input-group-btn">
+                                            <button type="button" class="btn red" onclick="DeleteTruk()"><i class="glyphicon glyphicon-remove"></i></button>
+                                            <button type="button" class="btn btn-success" data-toggle="modal" data-target="#ModalMasterTruk">Browse</button>
+                                        </span>
+                                    </div>
+                                    @Html.ValidationMessageFor(model => model.IdDataTruck)
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-4">Jenis Ttruck</label>
+                                <div class="col-md-8">
+                                    @Html.TextBoxFor(model => model.JenisTruckItem, new { @class = "form-control input-sm", @readonly = true })
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-4">Keterangan</label>
+                                <div class="col-md-8">
+                                    @Html.TextAreaFor(model => model.KeteranganDataTruck, new { @class = "form-control input-sm" })
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div id="GridAlertTruk"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="portlet light">
+                        <div class="portlet-title">
+                            <div class="caption font-green-sharp">
+                                <span class="caption-subject"> Driver 1 </span>
+                            </div>
+                        </div>
+                        <div class="portlet-body">
+                            @Html.HiddenFor(model => model.Driver1Id)
+                            <div class="form-group">
+                                <label class="control-label col-md-4">ID Driver</label>
+                                <div class="col-md-8">
+                                    <div class="input-group input-group-sm">
+                                        @Html.TextBoxFor(model => model.KodeDriver1, new { @class = "form-control input-sm", @readonly = true })
+                                        <span class="input-group-btn">
+                                            <button type="button" class="btn red" onclick="clearDriver(1)"><i class="glyphicon glyphicon-remove"></i></button>
+                                            <button type="button" class="btn btn-success" data-toggle="modal" data-target="#ModalMasterDriver" onclick="caller = 1;">Browse</button>
+                                        </span>
+                                    </div>
+                                    @Html.ValidationMessageFor(model => model.Driver1Id)
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-4">Nama Driver</label>
+                                <div class="col-md-8">
+                                    @Html.TextBoxFor(model => model.NamaDriver1, new { @class = "form-control input-sm", @readonly = true })
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-4">Keterangan</label>
+                                <div class="col-md-8">
+                                    @Html.TextAreaFor(model => model.KeteranganDriver1, new { @class = "form-control input-sm" })
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div id="GridAlertDr1"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="portlet light">
+                        <div class="portlet-title">
+                            <div class="caption font-green-sharp">
+                                <span class="caption-subject"> Driver 2 </span>
+                            </div>
+                        </div>
+                        <div class="portlet-body">
+                            @Html.HiddenFor(model => model.Driver2Id)
+                            <div class="form-group">
+                                <label class="control-label col-md-4">ID Driver</label>
+                                <div class="col-md-8">
+                                    <div class="input-group input-group-sm">
+                                        @Html.TextBoxFor(model => model.KodeDriver2, new { @class = "form-control input-sm", @readonly = true })
+                                        <span class="input-group-btn">
+                                            <button type="button" class="btn red" onclick="clearDriver(2)"><i class="glyphicon glyphicon-remove"></i></button>
+                                            <button type="button" class="btn btn-success" data-toggle="modal" data-target="#ModalMasterDriver" onclick="caller = 2;">Browse</button>
+                                        </span>
+                                    </div>
+                                    @Html.ValidationMessageFor(model => model.Driver2Id)
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-4">Nama Driver</label>
+                                <div class="col-md-8">
+                                    @Html.TextBoxFor(model => model.NamaDriver2, new { @class = "form-control input-sm", @readonly = true })
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-4">Keterangan</label>
+                                <div class="col-md-8">
+                                    @Html.TextAreaFor(model => model.KeteranganDriver2, new { @class = "form-control input-sm" })
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div id="GridAlertDr2"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@*Modal Truk*@
+<div id="ModalMasterTruk" class="modal fade bs-modal-full" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-full">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+            </div>
+            <div class="modal-body">
+                <div id="GridMasterTruk"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@*Modal Customer*@
+<div id="ModalMasterDriver" class="modal fade bs-modal-full" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-full">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+            </div>
+            <div class="modal-body">
+                <div id="GridMasterDriver"></div>
+            </div>
+        </div>
+    </div>
+</div>

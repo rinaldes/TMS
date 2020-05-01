@@ -1,0 +1,631 @@
+﻿@using tms_mka_v2.Models;
+
+@model tms_mka_v2.Models.SolarInap
+@{
+    ViewBag.Title = "Form";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    string currentController = (string)ViewContext.RouteData.Values["controller"];
+    string currentAction = (string)ViewContext.RouteData.Values["action"];
+    string backLink = Url.Action("Index");
+    if (currentAction == "Add")
+    {
+        ViewBag.Title = "Tambah SolarInap";
+    }
+    else
+    {
+        ViewBag.Title = ViewBag.name + " | Edit";
+    }
+}
+@if (User.HasMenuAccess("DM") || User.HasMenuAccess("Marketing") || User.HasMenuAccess("Admin") || User.HasMenuAccess("Kasir"))
+{
+<div class="portlet light">
+    <div class="portlet-title">
+        <div class="caption">
+            <span class="caption-subject font-dark sbold uppercase">@ViewBag.Title</span>
+        </div>
+    </div>
+    <div class="portlet-body form">
+        @using (@Html.BeginForm(currentAction, currentController, FormMethod.Post, new { @class = "form-horizontal form-label-left input_mask", @id = "formsubmit" }))
+        {
+            @Html.ValidationSummary(true)
+            @Html.HiddenFor(model => model.Id)
+            @Html.HiddenFor(model => model.IdSO)
+            @Html.HiddenFor(model => model.StepKe)
+            <div class="portlet light">
+                <div class="portlet-title">
+                    <div class="caption font-green-sharp">
+                        <span class="caption-subject"> Basic Info</span>
+                    </div>
+                    <div class="tools">
+                        <a href="" class="collapse"> </a>
+                    </div>
+                </div>
+                <div class="portlet-body">
+                    @Html.ValidationMessageFor(model => model.IdSO)
+                    <div class="form-group">
+                        <div class="col-md-12">
+                            <div id="PartialSo"></div>
+                        </div>
+                    </div>
+                </div>
+                <br /><hr /><br />
+                <div class="portlet-body">
+                    <div class="form-group">
+                        <div class="col-md-12">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.TanggalDari, new { @class = "control-label col-md-2 col-sm-3 col-xs-12" })
+                                    <div class="col-md-4 col-sm-9 col-xs-12">
+                                        @Html.TextBoxFor(model => model.TanggalDari, new { @class = "form-control-datepicker input-sm", @ReadOnly = "true" })
+                                        @Html.ValidationMessageFor(model => model.TanggalDari)
+                                    </div>
+                                    @Html.Label("S/D", new { @class = "control-label col-md-1 col-sm-3 col-xs-12" })
+                                    <div class="col-md-4 col-sm-9 col-xs-12">
+                                        @Html.TextBoxFor(model => model.TanggalDari, new { @class = "form-control-datepicker input-sm", @ReadOnly = "true" })
+                                        @Html.ValidationMessageFor(model => model.TanggalDari)
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.KeteranganOperation, new { @class = "control-label col-md-2 col-sm-3 col-xs-12" })
+                                    <div class="col-md-9 col-sm-9 col-xs-12">
+                                        @Html.TextAreaFor(model => model.KeteranganOperation, new { @class = "form-control input-sm", @ReadOnly = "true" })
+                                        @Html.ValidationMessageFor(model => model.KeteranganOperation)
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <br /><hr /><br />
+                <div class="portlet-body">
+                    <div class="form-group">
+                        <div class="col-md-12">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.StatusTagihan, new { @class = "control-label col-md-2 col-sm-3 col-xs-12" })
+                                    <div class="col-md-10 col-sm-9 col-xs-12">
+                                        @Html.TextBoxFor(model => model.StatusTagihan, new { @class = "form-control input-sm", @Readonly = "true" })
+                                        @Html.ValidationMessageFor(model => model.StatusTagihan)
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.Nominal, new { @class = "control-label col-md-2 col-sm-3 col-xs-12" })
+                                    <div class="col-md-10 col-sm-9 col-xs-12">
+                                        @Html.TextBoxFor(model => model.Nominal, new { @class = "form-control input-sm", @Readonly = "true" })
+                                        @Html.ValidationMessageFor(model => model.Nominal)
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.KeteranganMarketing, new { @class = "control-label col-md-2 col-sm-3 col-xs-12" })
+                                    <div class="col-md-9 col-sm-9 col-xs-12">
+                                        @Html.TextAreaFor(model => model.KeteranganMarketing, new { @class = "form-control input-sm", @Readonly = "true" })
+                                        @Html.ValidationMessageFor(model => model.KeteranganMarketing)
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <br /><hr /><br />
+                <div class="portlet-body">
+                    <div class="form-group">
+                        <div class="col-md-12">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    @Html.Label("JumlahLabel", "Jumlah", new { @class = "control-label col-md-2 col-sm-3 col-xs-12" })
+                                    <div class="col-md-10 col-sm-9 col-xs-12">
+                                        @Html.TextBox("Jumlah", Model.NilaiYgDiajukan, new { @class = "form-control input-sm", @ReadOnly = "true" })
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.Cash, new { @class = "control-label col-md-2 col-sm-3 col-xs-12" })
+                                    <div class="col-md-4 col-sm-9 col-xs-12">
+                                        @Html.TextBoxFor(model => model.Cash, new { @class = "form-control input-sm", @ReadOnly = "true" })
+                                        @Html.ValidationMessageFor(model => model.Cash)
+                                    </div>
+                                    @Html.LabelFor(model => model.TglCash, new { @class = "control-label col-md-2 col-sm-3 col-xs-12" })
+                                    <div class="col-md-4 col-sm-9 col-xs-12">
+                                        @Html.TextBoxFor(model => model.TglCash, new { @class = "form-control input-sm", @ReadOnly = "true" })
+                                        @Html.ValidationMessageFor(model => model.TglCash)
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.IdDriver, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                                    <div class="col-md-9 col-sm-9 col-xs-12">
+                                        <div>
+                                            @Html.HiddenFor(model => model.IdDriver)
+                                            @Html.TextBox("NamaDriver", Model.NamaDriver, new { @class = "form-control input-sm", @ReadOnly = "true" })
+                                            @Html.ValidationMessageFor(model => model.IdDriver)
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.DititipKe, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                                    <div class="col-md-9 col-sm-9 col-xs-12">
+                                        @Html.TextBoxFor(model => model.DititipKe, new { @class = "form-control input-sm", @ReadOnly = "true" })
+                                        @Html.ValidationMessageFor(model => model.DititipKe)
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.Transfer, new { @class = "control-label col-md-2 col-sm-3 col-xs-12" })
+                                    <div class="col-md-4 col-sm-9 col-xs-12">
+                                        @Html.TextBoxFor(model => model.Transfer, new { @class = "form-control input-sm", @ReadOnly = "true" })
+                                        @Html.ValidationMessageFor(model => model.Transfer)
+                                    </div>
+                                    @Html.LabelFor(model => model.TglTransfer, new { @class = "control-label col-md-2 col-sm-3 col-xs-12" })
+                                    <div class="col-md-4 col-sm-9 col-xs-12">
+                                        @Html.TextBoxFor(model => model.TglTransfer, new { @class = "form-control input-sm", @ReadOnly = "true" })
+                                        @Html.ValidationMessageFor(model => model.TglTransfer)
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.IdAtm, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                                    <div class="col-md-9 col-sm-9 col-xs-12">
+                                        <div>
+                                            @Html.HiddenFor(model => model.IdAtm)
+                                            @Html.TextBox("AtmName", Model.NoRek, new { @class = "form-control input-sm", @ReadOnly = "true" })
+                                            @Html.ValidationMessageFor(model => model.IdAtm)
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    @Html.Label("AtasNamaLabel", "Atas Nama", new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                                    <div class="col-md-9 col-sm-9 col-xs-12">
+                                        @Html.TextBox("AtasNama", Model.AtasNama, new { @class = "form-control input-sm", @ReadOnly = "true" })
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    @Html.Label("Bank", "Bank", new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                                    <div class="col-md-9 col-sm-9 col-xs-12">
+                                        @Html.TextBox("BankName", Model.BankNama, new { @class = "form-control input-sm", @ReadOnly = "true" })
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.KeteranganAdmin, new { @class = "control-label col-md-2 col-sm-3 col-xs-12" })
+                                    <div class="col-md-9 col-sm-9 col-xs-12">
+                                        @Html.TextAreaFor(model => model.KeteranganAdmin, new { @class = "form-control input-sm", @ReadOnly = "true" })
+                                        @Html.ValidationMessageFor(model => model.KeteranganAdmin)
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <br /><hr /><br />
+                <div class="portlet-body">
+                    <div class="form-group">
+                        <div class="col-md-12">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    @Html.Label("SudahDiberikan", "Sudah Diberikan", new { @class = "control-label col-md-2 col-sm-3 col-xs-12" })
+                                    <div class="col-md-10 col-sm-9 col-xs-12">
+                                        @Html.TextBox("Jumlah", Model.NilaiYgDiajukan, new { @class = "form-control input-sm", @ReadOnly = "true" })
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    @Html.Label("Cash", "Cash", new { @class = "control-label col-md-2 col-sm-3 col-xs-12" })
+                                    <div class="col-md-10 col-sm-9 col-xs-12">
+                                        @Html.TextBox("Cash", Model.AktualCash, new { @class = "form-control input-sm", @ReadOnly = "true" })
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    @Html.Label("Transfer", "Transfer", new { @class = "control-label col-md-2 col-sm-3 col-xs-12" })
+                                    <div class="col-md-10 col-sm-9 col-xs-12">
+                                        @Html.TextBox("Jumlah", Model.AktualTransfer, new { @class = "form-control input-sm", @ReadOnly = "true" })
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    @Html.Label("Dikembalikan", "Dikembalikan", new { @class = "control-label col-md-2 col-sm-3 col-xs-12" })
+                                    <div class="col-md-10 col-sm-9 col-xs-12">
+                                        @Html.TextBoxFor(model => Model.CashBack, new { @class = "form-control input-sm", @ReadOnly = "true" })
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    @Html.Label("TanggalBatal", "Tanggal Batal", new { @class = "control-label col-md-2 col-sm-3 col-xs-12" })
+                                    <div class="col-md-4 col-sm-9 col-xs-12">
+                                        @Html.TextBoxFor(model => model.TanggalBatal, new { @class = "form-control-datepicker" })
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.KeteranganBatal, new { @class = "control-label col-md-2 col-sm-3 col-xs-12" })
+                                    <div class="col-md-6 col-sm-9 col-xs-12">
+                                        @Html.TextAreaFor(model => model.KeteranganBatal, new { @class = "form-control input-sm", @ReadOnly = "true" })
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="ln_solid"></div>
+            <div class="form-group">
+                <div class="col-md-9 col-sm-9 col-xs-12 col-md-offset-2">
+                    <button type="submit" class="btn btn-success">Submit</button>
+                    <a href="@backLink" class="btn btn-link">Cancel</a>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+<div id="modalGridDriver" class="modal fade bs-modal-lg" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div id="modalForm" class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                <h4 class="modal-title">List Driver</h4>
+            </div>
+            <div class="modal-body">
+                <div id="GridDriver"></div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="modalGridAtm" class="modal fade bs-modal-lg" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div id="modalForm" class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                <h4 class="modal-title">List No Rekening</h4>
+            </div>
+            <div class="modal-body">
+                <div id="GridAtm"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts{
+<script type="text/javascript">
+    var dsSo = [] , dsGridTambahan = [];
+    var gridIndex, GridTambahan;
+    var tydriver = "";
+    var IdSo = 0;
+
+    function SelectDriver(e) {
+        e.preventDefault();
+        var data = this.dataItem(getDataRowGrid(e));
+        $('#IdDriver').val(data.Id);
+        $('#NamaDriver').val(data.NamaDriver);
+        $('#modalGridDriver').modal('hide');
+    }
+    function SelectAtm(e) {
+        e.preventDefault();
+        var data = this.dataItem(getDataRowGrid(e));
+        $('#IdAtm').val(data.Id);
+        $('#AtmName').val(data.NoRekening);
+        $('#AtasNama').val(data.AtasNama);
+        $('#BankName').val(data.NamaBank);
+        $('#modalGridAtm').modal('hide');
+    }
+
+    function selectSo(e) {
+        e.preventDefault();
+        var data = this.dataItem(getDataRowGrid(e));
+
+        $.ajax({
+            url: 'GetPartialSo?idSo='+data.IdSalesOrder+'&ListIdSo='+data.ListIdSo,
+            contentType:'application/html; charset=utf-8',
+            type:'GET',
+            dataType:'html'
+        }).success( function (res){
+            $("#IdSO").val(data.IdSalesOrder);
+            $("#listIdSoKontrak").val(data.ListIdSo);
+            $('#PartialSo').html(res);
+        })
+
+
+        $.ajax({
+            url: 'GetDetailSo?idSo='+data.IdSalesOrder+'&ListIdSo='+data.ListIdSo,
+            type: "POST",
+            success: function (res) {
+
+                var data = jQuery.parseJSON(res);
+                console.log(data)
+                var TotalSpbu = 0;
+                var TotalKapal = 0;
+                var TotalTf = 0;
+                var TotalUang = 0;
+
+
+                for( var i = 0 ; i < data.ModelListSpbu.length ; i++)
+                {
+                    TotalSpbu = TotalSpbu + data.ModelListSpbu[i].Value;
+                }
+                for( var i = 0 ; i < data.ModelListKapal.length ; i++)
+                {
+                    TotalKapal = TotalKapal + data.ModelListKapal[i].Value;
+                }
+                for( var i = 0 ; i < data.ModelListTf.length ; i++)
+                {
+                    if(data.ModelListTf[i].Nama != "Tunai")
+                        TotalTf = TotalTf + data.ModelListTf[i].Value;
+                    else
+                        TotalUang = TotalUang + data.ModelListTf[i].Value;
+                }
+                $("#KasDiterima").data("kendoNumericTextBox").value(TotalUang);
+                $("#TransferDiterima").data("kendoNumericTextBox").value(TotalTf);
+                $("#SolarDiterima").data("kendoNumericTextBox").value(TotalSpbu);
+                $("#KapalDiterima").data("kendoNumericTextBox").value(TotalKapal);
+                $("#IdDriverTujuan").val(data.IdDriver1);
+                $("#NamaDriverTujuan").val(data.NamaDriver1);
+
+                if(data.DummyAtm != null)
+                {
+                    $("#IdAtm").val(data.DummyAtm.Id);
+                    $("#NoRekening").val(data.DummyAtm.NoRekening);
+                    $("#AtasNamaRek").val(data.DummyAtm.AtasNama);
+                    $("#Bank").val(data.DummyAtm.NamaBank);
+                }
+                else
+                {
+                    $("#IdAtm").val('');
+                    $("#NoRekening").val('');
+                    $("#AtasNamaRek").val('');
+                    $("#Bank").val('');
+                }
+            },
+            error:function(){
+
+            }
+        });
+
+        $('#modalSo').modal('hide');
+    }
+
+    $(document).ready(function () {
+        if(@Model.Id != 0)
+        {
+            $.ajax({
+                url: 'GetPartialSo?idSo=' + '@Model.IdSO',
+                    contentType:'application/html; charset=utf-8',
+                    type:'GET',
+                    dataType:'html'
+                }).success( function (res){
+                    $('#PartialSo').html(res);
+                })
+            }
+            //Driver
+            var dsDriver = new kendo.data.DataSource({
+                transport: {
+                    read: {
+                        url: '@Url.Action("Binding", "Driver")',
+                        dataType: "json"
+                    },
+                },
+                schema: {
+                    total: "total",
+                    data: "data",
+                    model: {
+                        fields: {
+                            "Id": { type: "number" },
+                            "KodeDriver": { type: "string" },
+                            "NamaDriver": { type: "string" },
+                            "NamaPangilan": { type: "string" },
+                        }
+                    }
+                },
+                pageSize: 10,
+                pageable: true,
+                serverFiltering: true,
+                serverPaging: true,
+                serverSorting: true,
+                sortable: true,
+                //sort: { field: "SubmittedDate", dir: "desc" }
+            })
+
+            gridDriver = $("#GridDriver").kendoGrid({
+                dataSource: dsDriver,
+                filterable: kendoGridFilterable,
+                sortable: true,
+                reorderable: true,
+                resizable: true,
+                pageable: true,
+                columns: [
+                    {
+                        command: [
+                         {
+                             name: "select",
+                             text: "Select",
+                             click: SelectDriver,
+                             imageClass: "glyphicon glyphicon-ok",
+                             template: '<a class="k-button-icon #=className#" #=attr# href="\\#"><span class="#=iconClass# #=imageClass#"></span></a>'
+                         }
+                        ],
+                        width: "50px"
+                    },
+                    {
+                        field: "KodeDriver",
+                        title: "Kode Driver"
+                    },
+                    {
+                        field: "NamaDriver",
+                        title: "Nama Driver"
+                    },
+                    {
+                        field: "NamaPangilan",
+                        title: "Nama Pangilan"
+                    },
+
+                ],
+            }).data("kendoGrid");
+
+            //Atm
+            var dsAtm = new kendo.data.DataSource({
+                transport: {
+                    read: {
+                        url: '@Url.Action("Binding", "Atm")',
+                        dataType: "json"
+                    },
+                },
+                schema: {
+                    total: "total",
+                    data: "data",
+                    model: {
+                        fields: {
+                            "Id": { type: "number" },
+                            "NoRekening": { type: "string" },
+                            "AtasNama": { type: "string" },
+                            "NamaBank": { type: "string" },
+                        }
+                    }
+                },
+                pageSize: 10,
+                pageable: true,
+                serverFiltering: true,
+                serverPaging: true,
+                serverSorting: true,
+                sortable: true,
+                //sort: { field: "SubmittedDate", dir: "desc" }
+            })
+
+            gridAtm = $("#GridAtm").kendoGrid({
+                dataSource: dsAtm,
+                filterable: kendoGridFilterable,
+                sortable: true,
+                reorderable: true,
+                resizable: true,
+                pageable: true,
+                columns: [
+                    {
+                        command: [
+                         {
+                             name: "select",
+                             text: "Select",
+                             click: SelectAtm,
+                             imageClass: "glyphicon glyphicon-ok",
+                             template: '<a class="k-button-icon #=className#" #=attr# href="\\#"><span class="#=iconClass# #=imageClass#"></span></a>'
+                         }
+                        ],
+                        width: "50px"
+                    },
+                    {
+                        field: "NoRekening",
+                        title: "No Rekening"
+                    },
+                    {
+                        field: "AtasNama",
+                        title: "Atas Nama"
+                    },
+                    {
+                        field: "NamaBank",
+                        title: "Nama Bank"
+                    },
+
+                ],
+            }).data("kendoGrid");
+            dsSo = new kendo.data.DataSource({
+                transport: {
+                    read: {
+                        url: '@Url.Action("BindingSo")',
+                    dataType: "json"
+                },
+            },
+            schema: {
+                total: "total",
+                data: "data",
+                model: {
+                    fields: {
+                        "Id": { type: "number" },
+                        "IdSalesOrder": { type: "number" },
+                        "Status": { type: "string" },
+                        "JenisOrder": { type: "string" },
+                        "NoSo": { type: "string" },
+                        "Customer": { type: "string" },
+                        "VehicleNo": { type: "string" },
+                        "JenisTruk": { type: "string" },
+                        "IDDriver": { type: "string" },
+                        "Driver": { type: "string" },
+                        "Rute": { type: "string" },
+                        "JumlahRit": { type: "number" },
+                        "KeteranganPenggatian": { type: "string" },
+                        "ListIdSo":{ type: "string" },
+                    }
+                }
+            },
+            pageSize: 10,
+            pageable: true,
+            sortable: true,
+        });
+        gridIndex = $("#GridSo").kendoGrid({
+            dataSource: dsSo,
+            filterable: kendoGridFilterable,
+            sortable: true,
+            reorderable: true,
+            resizable: true,
+            pageable: true,
+            groupable: true,
+            columns: [
+                {
+                    command: [
+                        {
+                            name: "select",
+                            text: "Select",
+                            click: selectSo,
+                            imageClass: "glyphicon glyphicon-ok",
+                            template: '<a class="k-button-icon #=className#" #=attr# href="\\#"><span class="#=iconClass# #=imageClass#"></span></a>'
+                        }
+                    ],
+                    width: "50px"
+                },
+                {
+                    field: "NoSo",
+                    title: "SO Number"
+                },
+                {
+                    field: "Customer",
+                    title: "Customer"
+                },
+                {
+                    field: "VehicleNo",
+                    title: "Vehicle No"
+                },
+                {
+                    field: "JenisTruk",
+                    title: "Vehicle No"
+                },
+                {
+                    field: "IDDriver",
+                    title: "ID Driver"
+                },
+                {
+                    field: "Driver",
+                    title: "Driver"
+                },
+                {
+                    field: "Rute",
+                    title: "Rute"
+                },
+                {
+                    field: "JamMuat",
+                    title: "Jam Muat",
+                    template: "#= JamMuat != null ? kendo.toString(new Date(1, 1, 1, JamMuat.Hours, JamMuat.Minutes), 'HH : mm') : ''#",
+                },
+                {
+                    field: "JumlahRit",
+                    title: "Jumlah Rit"
+                },
+                {
+                    field: "KeteranganPenggatian",
+                    title: "Keterangan Penggatian"
+                },
+            ],
+        }).data("kendoGrid");
+    })
+</script>
+<script type="text/javascript" src="~/Content/Driver/InitialGridSo.js"></script>
+}
+}
+else{
+    ViewBag.Title = "AccessDenied";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    <h1>Maaf, anda tidak memiliki hak akses yang cukup untuk mengakses halaman ini</h1>
+}

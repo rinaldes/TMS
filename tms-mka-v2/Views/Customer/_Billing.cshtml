@@ -1,0 +1,212 @@
+﻿@model tms_mka_v2.Models.Customer
+@using tms_mka_v2.Models
+@using System.Web.Script.Serialization
+@{
+    string currentController = (string)ViewContext.RouteData.Values["controller"];
+    string currentAction = (string)ViewContext.RouteData.Values["action"];
+    ViewBag.SubTitle = "Customer Billing";
+}
+<div class="row ">
+    <div class="col-md-6">
+        <div class="btn-group">
+            <div class="caption">
+                <h2>@ViewBag.SubTitle</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="btn-group pull-right">
+            <span class="btn green" id="btnBilling" data-toggle="modal" data-target="#modalFormBilling" title="Customer Billing" onclick="ShowBillingPopup()">Add New Billing</span>
+        </div>
+    </div>
+</div>
+<br />
+@using (Html.BeginForm("UpdateCustBilling", currentController))
+{
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(model => model.Id)
+    <table class="table table-striped table-hover table-bordered" id="table-custbilling">
+        <tr>
+            <th>No</th>
+            <th>
+                @Html.DisplayName("Nama Dokumen")
+            </th>
+            <th>
+                @Html.DisplayName("Lembar")
+            </th>
+            <th>
+                @Html.DisplayName("Warna")
+            </th>
+            <th>
+                @Html.DisplayName("Stempel")
+            </th>
+            <th>
+                @Html.DisplayName("Attachment")
+            </th>
+            <th>Action</th>
+        </tr>
+        @{int i = 0;}
+
+        @foreach (tms_mka_v2.Context.CustomerBilling item in (List<tms_mka_v2.Context.CustomerBilling>)Model.ListBilling)
+        {
+            i++;
+            List<ObjDataJadwal> dataJadwal = new List<ObjDataJadwal>();
+            foreach (tms_mka_v2.Context.CustomerJadwalBilling items in item.CustomerJadwalBilling)
+            {
+                dataJadwal.Add(new ObjDataJadwal(){
+                    Hari = items.Hari,
+                    Jam = items.Jam,
+                    Catatan = items.Catatan,
+                    Email = items.PIC
+                });
+            }
+            string srtDataJadwal = new JavaScriptSerializer().Serialize(dataJadwal);
+            <tr>
+                @Html.Hidden("BillingId", (Int32)item.Id)
+                <td style="display:none">
+                    <input value='@item.DocumentName;@item.Lembar;@item.Warna;@item.Stempel.ToString();@item.UrlAtt;@item.FileName;@item.IsFax.ToString();@item.Fax;@item.IsEmail.ToString();@item.Email;@item.IsTukarFaktur.ToString();@srtDataJadwal;@item.IsJasaPengiriman.ToString()' name='listBilling' />
+                </td>
+                <td class="no_billing">@i</td>
+                <td>
+                    @item.DocumentName
+                </td>
+                <td>
+                    @item.Lembar
+                </td>
+                <td>
+                    @item.Warna
+                </td>
+                <td>
+                    @{if (item.Stempel == true)
+                    {
+                        <text>
+                            Ya
+                        </text>
+                    }
+                    else
+                    {
+                        <text>
+                            Tidak
+                        </text>
+                    }
+                    }
+                </td>
+                <td>
+                    <a href='@item.UrlAtt.Replace("~/", "/")' target='_blank'> @item.FileName </a>
+                </td>
+                <td>
+                    <a href='#' data-toggle='modal' data-target='#modalFormBilling' onclick='EditBilling($(this))'>Edit</a> | <a href='#' onclick='RemoveBilling($(this));'>Delete</a>
+                </td>
+            </tr>
+        }
+
+    </table>
+    <div class="form-group updatebutton">
+        <div class="col-md-4">
+            <input type="submit" name="updateBilling" value="Update" class="btn btn-default" />
+            <input type="submit" name="updateBilling" value="Update and Next" class="btn btn-default" />
+        </div>
+    </div>
+}
+<div id="modalFormBilling" class="modal fade bs-modal-lg" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div id="modalForm" class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                <h4 class="modal-title">Customer Billing</h4>
+            </div>
+            <div class="modal-body">
+                <form id="formBilling" class="form-horizontal">
+                    @Html.Hidden("CustomerBillingId")
+                    @Html.Hidden("Condition")
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                @Html.Label("Nama Dokumen", new { @class = "control-label col-md-3" })
+                                <div class="col-md-7">
+                                    <input id="Dok" name="Dok" class="k-textbox" required validationmessage="Nama dokumen harus diisi" />
+                                    <span class="k-invalid-msg" data-for="Dok"></span>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                @Html.Label("Lembar", new { @class = "control-label col-md-3" })
+                                <div class="col-md-7">
+                                    <input id="Lembar" name="Lembar" class="k-numerictextbox" required validationmessage="Lembar harus diisi" />
+                                    <span class="k-invalid-msg" data-for="Lembar"></span>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                @Html.Label("Warna", new { @class = "control-label col-md-3" })
+                                <div class="col-md-7">
+                                    <div class="mt-checkbox-list">
+                                        @foreach (tms_mka_v2.Context.LookupCode item in Model.ListWarna)
+                                        {
+                                            <text>
+                                                <div class="row">
+                                                    <label class="checkbox-inline"><input class="warna" type="checkbox" value="@item.Nama"> @item.Nama</label>
+                                                </div>
+                                            </text>
+                                        }
+                                    </div>
+                                    <div class="row">
+                                        <input hidden name="Hidwarna" id="Hidwarna" data-warnareq-msg="Warna harus dipilih." />
+                                        <span class="k-invalid-msg" data-for="hidwarna"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                @Html.Label("Stampel", new { @class = "control-label col-md-3" })
+                                <div class="col-md-7">
+                                    <label class="radio-inline"><input type="radio" name="rdStampe" id="rdStampe" value="true" checked> Yes</label>
+                                    <label class="radio-inline"><input type="radio" name="rdStampe" id="rdStampe" value="false"> No</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-8">
+                            <div class="form-group">
+                                <label class="control-label col-md-3" style="text-align:left"> Billing Info :</label>
+                                <input hidden name="Info" id="Info" data-inforeq-msg="Billiing info harus dipilih." />
+                                <span class="k-invalid-msg" data-for="Info"></span>
+                            </div>
+                            <div class="form-group">
+                                <label class="checkbox-inline control-label col-md-3" style="text-align:left"><input id="IsFax" type="checkbox">Fax</label>
+                                <div class="col-md-7">
+                                    <input id="FaxBilling" name="FaxBilling" class="k-textbox" data-faxreq-msg="Fax harus diisi." readonly />
+                                    <span class="k-invalid-msg" data-for="FaxBilling"></span>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="checkbox-inline control-label col-md-3" style="text-align:left"><input id="IsEmail" type="checkbox">Email</label>
+                                <div class="col-md-7">
+                                    <input type="email" id="EmailBilling" name="EmailBilling" class="k-textbox" data-emailreq-msg="Email harus diisi." data-email-msg="Format email tidak valid." readonly />
+                                    <span class="k-invalid-msg" data-for="EmailBilling"></span>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="checkbox-inline control-label col-md-4" style="text-align:left"><input id="IsFaktur" type="checkbox" style="float:left">Tukar Faktur</label>
+                            </div>
+                            <div class="form-group">
+                                <div id="gridJadwal" style="display:none"></div>
+                            </div>
+                            <div class="form-group">
+                                <label class="checkbox-inline control-label col-md-4" style="text-align:left"><input id="IsJasa" type="checkbox" style="float:left">Jasa Pengiriman</label>
+                            </div>
+                            
+                            <div class="form-group">
+                                @Html.Label("Attachment", new { @class = "control-label col-md-3" })
+                                <div class="col-md-7">
+                                    <div id="wrapper"></div>
+                                    @*<input name="files" id="filesBilling" type="file" />*@
+                                    @*<a id="tempfile" style="display:none"></a>*@
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn green" onclick="SaveBilling($('#Condition').val());">Submit</button>
+            </div>
+        </div>
+    </div>
+</div>

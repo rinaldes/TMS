@@ -1,0 +1,336 @@
+﻿@using tms_mka_v2.Models;
+
+@model tms_mka_v2.Models.FaktorBorongan
+@{
+    ViewBag.Title = "Form";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    string currentController = (string)ViewContext.RouteData.Values["controller"];
+    string currentAction = (string)ViewContext.RouteData.Values["action"];
+    string backLink = Url.Action("Index");
+    if (currentAction == "Add")
+    {
+        ViewBag.Title = "Tambah Faktor";
+    }
+    else
+    {
+        ViewBag.Title = ViewBag.name + " | Edit";
+    }
+}
+<div class="portlet light">
+    <div class="portlet-title">
+        <div class="caption">
+            <span class="caption-subject font-dark sbold uppercase">@ViewBag.Title</span>
+        </div>
+    </div>
+    <div class="portlet-body form">
+        @using (@Html.BeginForm(currentAction, currentController, FormMethod.Post, new { @class = "form-horizontal", @id = "formsubmit" }))
+        {
+            @Html.ValidationSummary(true)
+            @Html.HiddenFor(model => model.Id)
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.IdMasterPool, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                        <div class="col-md-9 col-sm-9 col-xs-12">
+                            @Html.TextBoxFor(model => model.IdMasterPool, new { @class = "form-control input-sm" })
+                            @Html.ValidationMessageFor(model => model.IdMasterPool)
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.IdJenisTruck, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                        <div class="col-md-9 col-sm-9 col-xs-12">
+                            @Html.TextBoxFor(model => model.IdJenisTruck, new { @class = "form-control input-sm" })
+                            @Html.ValidationMessageFor(model => model.IdJenisTruck)
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.RasioDlmKota, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                        <div class="col-md-9 col-sm-9 col-xs-12">
+                            @Html.TextBoxFor(model => model.RasioDlmKota, new { @class = "form-control-numeric-decimal" })
+                            @Html.ValidationMessageFor(model => model.RasioDlmKota)
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.RasioDlmKota2, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                        <div class="col-md-9 col-sm-9 col-xs-12">
+                            @Html.TextBoxFor(model => model.RasioDlmKota2, new { @class = "form-control-numeric-decimal" })
+                            @Html.ValidationMessageFor(model => model.RasioDlmKota2)
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.RasioJawaBali, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                        <div class="col-md-9 col-sm-9 col-xs-12">
+                            @Html.TextBoxFor(model => model.RasioJawaBali, new { @class = "form-control-numeric-decimal" })
+                            @Html.ValidationMessageFor(model => model.RasioJawaBali)
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.RasioSumatra, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                        <div class="col-md-9 col-sm-9 col-xs-12">
+                            @Html.TextBoxFor(model => model.RasioSumatra, new { @class = "form-control-numeric-decimal" })
+                            @Html.ValidationMessageFor(model => model.RasioSumatra)
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.RasioKosong, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                        <div class="col-md-9 col-sm-9 col-xs-12">
+                            @Html.TextBoxFor(model => model.RasioKosong, new { @class = "form-control-numeric-decimal" })
+                            @Html.ValidationMessageFor(model => model.RasioKosong)
+                        </div>
+                    </div>
+                    @*<div class="form-group">
+                        @Html.LabelFor(model => model.RasioSolar, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                        <div class="col-md-9 col-sm-9 col-xs-12">
+                            @Html.TextBoxFor(model => model.RasioSolar, new { @class = "form-control-numeric-idr" })
+                            @Html.ValidationMessageFor(model => model.RasioSolar)
+                        </div>
+                    </div>*@
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.UangMakanJawaBali, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                        <div class="col-md-9 col-sm-9 col-xs-12">
+                            @Html.TextBoxFor(model => model.UangMakanJawaBali, new { @class = "form-control-numeric-idr" })
+                            @Html.ValidationMessageFor(model => model.UangMakanJawaBali)
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.UangMakanSumatra, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                        <div class="col-md-9 col-sm-9 col-xs-12">
+                            @Html.TextBoxFor(model => model.UangMakanSumatra, new { @class = "form-control-numeric-idr" })
+                            @Html.ValidationMessageFor(model => model.UangMakanSumatra)
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.FaktorPengaliGaji, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                        <div class="col-md-9 col-sm-9 col-xs-12">
+                            @Html.TextBoxFor(model => model.FaktorPengaliGaji, new { @class = "form-control-numeric-decimal" })
+                            @Html.ValidationMessageFor(model => model.FaktorPengaliGaji)
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    @*<div class="form-group">
+                        @Html.LabelFor(model => model.FaktorPengaliGaji, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                        <div class="col-md-9 col-sm-9 col-xs-12">
+                            @Html.TextBoxFor(model => model.FaktorPengaliGaji, new { @class = "form-control-numeric-decimal" })
+                            @Html.ValidationMessageFor(model => model.FaktorPengaliGaji)
+                        </div>
+                    </div>*@
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.FaktorPengaliTips, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                        <div class="col-md-9 col-sm-9 col-xs-12">
+                            @Html.TextBoxFor(model => model.FaktorPengaliTips, new { @class = "form-control-numeric-decimal" })
+                            @Html.ValidationMessageFor(model => model.FaktorPengaliTips)
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.PotonganDriver1, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                        <div class="col-md-9 col-sm-9 col-xs-12">
+                            @Html.TextBoxFor(model => model.PotonganDriver1, new { @class = "form-control-numeric-idr" })
+                            @Html.ValidationMessageFor(model => model.PotonganDriver1)
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.PotonganDriver2, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                        <div class="col-md-9 col-sm-9 col-xs-12">
+                            @Html.TextBoxFor(model => model.PotonganDriver2, new { @class = "form-control-numeric-idr" })
+                            @Html.ValidationMessageFor(model => model.PotonganDriver2)
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.BiayaKapalBali, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                        <div class="col-md-9 col-sm-9 col-xs-12">
+                            @Html.TextBoxFor(model => model.BiayaKapalBali, new { @class = "form-control-numeric-idr" })
+                            @Html.ValidationMessageFor(model => model.BiayaKapalBali)
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.BiayaKapalBaliNTB, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                        <div class="col-md-9 col-sm-9 col-xs-12">
+                            @Html.TextBoxFor(model => model.BiayaKapalBaliNTB, new { @class = "form-control-numeric-idr" })
+                            @Html.ValidationMessageFor(model => model.BiayaKapalBaliNTB)
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.BiayaKapalSumatra, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                        <div class="col-md-9 col-sm-9 col-xs-12">
+                            @Html.TextBoxFor(model => model.BiayaKapalSumatra, new { @class = "form-control-numeric-idr" })
+                            @Html.ValidationMessageFor(model => model.BiayaKapalSumatra)
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.BiayaKapalKalimantan, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                        <div class="col-md-9 col-sm-9 col-xs-12">
+                            @Html.TextBoxFor(model => model.BiayaKapalKalimantan, new { @class = "form-control-numeric-idr" })
+                            @Html.ValidationMessageFor(model => model.BiayaKapalKalimantan)
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.BiayaKapalSulawesi, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                        <div class="col-md-9 col-sm-9 col-xs-12">
+                            @Html.TextBoxFor(model => model.BiayaKapalSulawesi, new { @class = "form-control-numeric-idr" })
+                            @Html.ValidationMessageFor(model => model.BiayaKapalSulawesi)
+                        </div>
+                    </div>
+                </div>
+            </div>
+            if (Model.Id != 0)
+            {
+                <div class="portlet light">
+                    <div class="portlet-title">
+                        <div class="caption font-green-sharp">
+                            <span class="caption-subject"> History</span>
+                        </div>
+                        <div class="tools">
+                            <a href="" class="collapse"> </a>
+                        </div>
+                    </div>
+                    <div class="portlet-body">
+                        <div id="gridHistory"></div>
+                    </div>
+                </div>
+            }
+            <div class="ln_solid"></div>
+
+            <div class="form-group">
+                <button type="submit" class="btn btn-success">Submit</button>
+                <a href="@backLink" class="btn btn-link">Cancel</a>
+            </div>
+        }
+    </div>
+</div>
+
+@section scripts{
+    <script type="text/javascript">
+    $(document).ready(function () {
+        var dsJnsTruck = new kendo.data.DataSource({
+            transport: {
+                read: {
+                    url: '@Url.Action("GetJnsTruck","JenisTruck")',
+                    dataType: "json"
+                },
+            },
+        });
+
+        var dsPool = new kendo.data.DataSource({
+            transport: {
+                read: {
+                    url: '@Url.Action("GetPool","MasterPool")',
+                    dataType: "json"
+                },
+            },
+        });
+
+        $("#IdJenisTruck").kendoComboBox({
+            dataTextField: "StrJenisTruck",
+            dataValueField: "Id",
+            dataSource: dsJnsTruck,
+            filter: "contains",
+            suggest: true,
+        });
+
+        $("#IdMasterPool").kendoComboBox({
+            dataTextField: "NamePool",
+            dataValueField: "Id",
+            dataSource: dsPool,
+            filter: "contains",
+            suggest: true,
+        });
+
+        var dsGPS = new kendo.data.DataSource({
+            transport: {
+                read: {
+                    url: '@Url.Action("getGPS","VendorGps")',
+                    dataType: "json"
+                },
+            },
+        });
+
+        var dsHistory = new kendo.data.DataSource({
+            transport: {
+                read: {
+                    url: '@Url.Action("BindingHistory")?Id=' + '@Model.Id',
+                    dataType: "json"
+                },
+            },
+            schema: {
+                model: {
+                    fields: {
+                        Tanggal: { type: "string" },
+                        RasioDlmKota2: { type: "number" },
+                        RasioJawaBali: { type: "number" },
+                        RasioSumatra: { type: "number" },
+                        RasioKosong: { type: "number" },
+                        RasioSolar: { type: "number" },
+                        UangMakanJawaBali: { type: "number" },
+                        UangMakanSumatra: { type: "number" },
+                        FaktorPengaliGaji: { type: "number" },
+                        FaktorPengaliTips: { type: "number" },
+                        PotonganDriver1: { type: "number" },
+                        PotonganDriver2: { type: "number" },
+                        username: { type: "string" }
+                    }
+                }
+            },
+        });
+
+        $("#gridHistory").kendoGrid({
+            dataSource: dsHistory,
+            columns: [
+                {
+                    field: "Tanggal",
+                    title: "Tanggal",
+                    template: "#= kendo.toString(kendo.parseDate(Tanggal, 'yyyy-MM-dd'), 'MM/dd/yyyy HH:mm') #"
+                },
+                {
+                    field: "RasioDlmKota2",
+                    title: "Rasio Dalam Kota 2",
+                },
+                {
+                    field: "RasioJawaBali",
+                    title: "Rasio Jawa Bali",
+                },
+                {
+                    field: "RasioSumatra",
+                    title: "Rasio Sumatra",
+                },
+                {
+                    field: "RasioKosong",
+                    title: "Rasio Kosong",
+                },
+                {
+                    field: "RasioSolar",
+                    title: "Rasio Solar",
+                },
+                {
+                    field: "UangMakanJawaBali",
+                    title: "Uang Makan Jawa Bali",
+                },
+                {
+                    field: "UangMakanSumatra",
+                    title: "Uang Makan Sumatra",
+                },
+                {
+                    field: "FaktorPengaliGaji",
+                    title: "Faktor Pengali Gaji",
+                },
+                {
+                    field: "FaktorPengaliTips",
+                    title: "Faktor Pengali Tips",
+                },
+                {
+                    field: "PotonganDriver1",
+                    title: "Potongan Driver 1",
+                },
+                {
+                    field: "PotonganDriver2",
+                    title: "Potongan Driver 2",
+                },
+                {
+                    field: "username",
+                    title: "User",
+                }
+            ],
+        }).data("kendoGrid");
+    })
+    </script>
+}

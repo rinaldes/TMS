@@ -1,0 +1,209 @@
+﻿@using tms_mka_v2.Models;
+
+@model tms_mka_v2.Models.MultiDrop
+@{
+    ViewBag.Title = "Form";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    string currentController = (string)ViewContext.RouteData.Values["controller"];
+    string currentAction = (string)ViewContext.RouteData.Values["action"];
+    string backLink = Url.Action("Index");
+    if (currentAction == "Add")
+    {
+        ViewBag.Title = "Tambah Multidrop";
+    }
+    else
+    {
+        ViewBag.Title = ViewBag.name + " | Edit";
+    }
+}
+<div class="portlet light">
+    <div class="portlet-title">
+        <div class="caption">
+            <span class="caption-subject font-dark sbold uppercase">@ViewBag.Title</span>
+        </div>
+    </div>
+    <div class="portlet-body form">
+        @using (@Html.BeginForm(currentAction, currentController, FormMethod.Post, new { @class = "form-horizontal form-label-left input_mask" }))
+        {
+            @Html.ValidationSummary(true)
+            @Html.HiddenFor(model => model.Id)
+            <div class="form-group">
+                @Html.LabelFor(model => model.tujuan, new { @class = "control-label col-md-2 col-sm-3 col-xs-12" })
+                <div class="col-md-6 col-sm-9 col-xs-12">
+                    <div class="input-group input-group-sm">
+                        @Html.TextBoxFor(model => model.tujuan, new { @class ="form-control", @readonly = "true" })
+                        <span class="input-group-btn">
+                            <button type="button" class="btn btn-success" data-toggle="modal" data-target="#modaltujuan" onclick="RefreshGrid()">Browse</button>
+                        </span>
+                    </div>
+                    @Html.ValidationMessageFor(model => model.tujuan)
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.JumlahKota, new { @class = "control-label col-md-2 col-sm-3 col-xs-12" })
+                <div class="col-md-6 col-sm-9 col-xs-12">
+                    @Html.TextBoxFor(model => model.JumlahKota, new { @class = "form-control-numeric-ns " })
+                    @Html.ValidationMessageFor(model => model.JumlahKota)
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.WaktuTempuh, new { @class = "control-label col-md-2 col-sm-3 col-xs-12" })
+                <div class="col-md-6 col-sm-9 col-xs-12">
+                    @Html.TextBoxFor(model => model.WaktuTempuh, new { @class = "form-control-numeric-ns" })
+                    @Html.ValidationMessageFor(model => model.WaktuTempuh)
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.WaktuKerja, new { @class = "control-label col-md-2 col-sm-3 col-xs-12" })
+                <div class="col-md-6 col-sm-9 col-xs-12">
+                    @Html.TextBoxFor(model => model.WaktuKerja, new { @class = "form-control-numeric-ns" })
+                    @Html.ValidationMessageFor(model => model.WaktuKerja)
+                </div>
+            </div>
+            <div class="ln_solid"></div>
+            <div class="form-group">
+                <div class="col-md-9 col-sm-9 col-xs-12 col-md-offset-2">
+                    <button type="submit" class="btn btn-success">Submit</button>
+                    <a href="@backLink" class="btn btn-link">Cancel</a>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+<div id="modaltujuan" class="modal fade" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                <h4 class="modal-title">Tujuan</h4>
+            </div>
+            <div class="modal-body">
+                <div id="gridLocation"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn green" data-dismiss="modal" id="btnSelect">Submit</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts{
+    <script>
+        var checkedIds = {};
+        @{
+            if (Model.tujuan != null)
+            { 
+            string[] TujuanArr = Model.tujuan.Split(new string[] { " - " }, StringSplitOptions.None);
+            foreach (string item in TujuanArr)
+            { 
+            <text>
+        checkedIds['@item'] = true;
+            </text>
+        }
+            }
+        }
+        console.log(checkedIds)
+        $(document).ready(function () {
+            var dataSource = new kendo.data.DataSource({
+                transport: {
+                    read: {
+                        url: '@Url.Action("Binding","Location")',
+                        dataType: "json"
+                    }
+                },
+                schema: {
+                    total: "total",
+                    data: "data",
+                    model: {
+                        fields: {
+                            "Id": { type: "number" },
+                            "Code": { type: "string" },
+                            "Type": { type: "string" },
+                            "Nama": { type: "string" }
+                        }
+                    }
+                },
+                pageSize: 5,
+                pageable: true,
+                serverFiltering: true,
+                serverPaging: true,
+                serverSorting: true,
+                sortable: true,
+            });
+
+            var grid = $("#gridLocation").kendoGrid({
+                dataSource: dataSource,
+                filterable: kendoGridFilterable,
+                sortable: true,
+                pageable: true,
+                dataBound: onDataBound,
+                columns: [
+                {
+                    template: "<input type='checkbox' class='checkbox' />",
+                    width: "50px"
+                },
+                {
+                    field: "Code",
+                    title: "Code"
+                },
+                {
+                    field: "Type",
+                    title: "Type"
+                },
+                {
+                    field: "Nama",
+                    title: "Nama"
+                }]
+            }).data("kendoGrid");
+
+            //bind click event to the checkbox
+            grid.table.on("click", ".checkbox", selectRow);
+
+            $("#btnSelect").bind("click", function () {
+                var checked = [];
+                for (var i in checkedIds) {
+                    if (checkedIds[i]) {
+                        checked.push(i);
+                    }
+                }
+
+                $('#tujuan').val(checked.join(' - '))
+            });
+        })
+
+        function RefreshGrid()
+        {
+            $("#gridLocation").data("kendoGrid").dataSource.read();
+        }
+
+        //on click of the checkbox:
+        function selectRow() {
+            var checked = this.checked,
+            row = $(this).closest("tr"),
+            grid = $("#gridLocation").data("kendoGrid"),
+            dataItem = grid.dataItem(row);
+
+            checkedIds[dataItem.Nama] = checked;
+            console.log(checkedIds)
+            if (checked) {
+                //-select the row
+                row.addClass("k-state-selected");
+            } else {
+                //-remove selection
+                row.removeClass("k-state-selected");
+            }
+        }
+
+        function onDataBound(e) {
+            var view = this.dataSource.view();
+            for (var i = 0; i < view.length; i++) {
+                if (checkedIds[view[i].Nama]) {
+                    this.tbody.find("tr[data-uid='" + view[i].uid + "']")
+                    .addClass("k-state-selected")
+                    .find(".checkbox")
+                    .attr("checked", "checked");
+                }
+            }
+        }
+    </script>
+}

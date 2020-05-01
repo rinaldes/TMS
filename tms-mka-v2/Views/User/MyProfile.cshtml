@@ -1,0 +1,127 @@
+﻿@using tms_mka_v2.Models;
+
+@model tms_mka_v2.Models.User
+@{
+    ViewBag.Title = "Form";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    string currentController = (string)ViewContext.RouteData.Values["controller"];
+    string currentAction = (string)ViewContext.RouteData.Values["action"];
+    string backLink = Url.Action("Index");
+    if (currentAction == "Add")
+    {
+        ViewBag.Title = "Tambah User";
+    }
+    else
+    {
+        ViewBag.Title = ViewBag.name + " | Edit";
+    }
+}
+<div class="portlet light">
+    <div class="portlet-title">
+        <div class="caption">
+            <span class="caption-subject font-dark sbold uppercase">@ViewBag.Title</span>
+        </div>
+    </div>
+    <div class="portlet-body form">
+        @using (@Html.BeginForm(currentAction, currentController, FormMethod.Post, new { @class = "form-horizontal form-label-left input_mask" }))
+        {
+            @Html.ValidationSummary(true)
+            @Html.HiddenFor(model => model.Id)
+            <div class="col-md-10">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Nik, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                    <div class="col-md-9 col-sm-9 col-xs-12">
+                        @Html.TextBoxFor(model => model.Nik, new { @class = "form-control input-sm" })
+                        @Html.ValidationMessageFor(model => model.Nik)
+                    </div>
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Username, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                    <div class="col-md-9 col-sm-9 col-xs-12">
+                        @Html.TextBoxFor(model => model.Username, new { @class = "form-control input-sm" })
+                        @Html.ValidationMessageFor(model => model.Username)
+                    </div>
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Fristname, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                    <div class="col-md-9 col-sm-9 col-xs-12">
+                        @Html.TextBoxFor(model => model.Fristname, new { @class = "form-control input-sm" })
+                        @Html.ValidationMessageFor(model => model.Fristname)
+                    </div>
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Lastname, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                    <div class="col-md-9 col-sm-9 col-xs-12">
+                        @Html.TextBoxFor(model => model.Lastname, new { @class = "form-control input-sm" })
+                        @Html.ValidationMessageFor(model => model.Lastname)
+                    </div>
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Email, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                    <div class="col-md-9 col-sm-9 col-xs-12">
+                        @Html.TextBoxFor(model => model.Email, new { @class = "form-control input-sm" })
+                        @Html.ValidationMessageFor(model => model.Email)
+                    </div>
+                </div>
+                @if (currentAction == "Add"){
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Password, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                        <div class="col-md-9 col-sm-9 col-xs-12">
+                            @Html.PasswordFor(model => model.Password, new { @class = "form-control input-sm" })
+                            @Html.ValidationMessageFor(model => model.Password)
+                        </div>
+                    </div>
+                }
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Phone, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                    <div class="col-md-9 col-sm-9 col-xs-12">
+                        @Html.TextBoxFor(model => model.Phone, new { @class = "form-control-hp input-sm" })
+                        @Html.ValidationMessageFor(model => model.Phone)
+                    </div>
+                </div>
+                <div class="form-group">
+                    @Html.Label("Role", new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                    <div class="col-md-9 col-sm-9 col-xs-12">
+                        @foreach (Role item in Model.ListRole)
+                        {
+                            int idx = Model.ListRole.LastIndexOf(item);
+                            <label class="checkbox-inline">
+                                @Html.CheckBoxFor(model => model.ListRole[idx].isselect) @item.name
+                                @Html.HiddenFor(model => model.ListRole[idx].id)
+                                @Html.HiddenFor(model => model.ListRole[idx].name)
+                            </label>
+                        }
+                        <br>
+                        @Html.ValidationMessage("roles")
+                    </div>
+                </div>
+
+            </div>
+            <div class="col-md-2">
+                <div class="countainer-img">
+                    <img id="profile-foto" src="@Model.path_foto" class="img-profile" alt="">
+                </div>
+                <div class="col-md-12" style="padding:0">
+                    @Html.HiddenFor(model => model.path_foto)
+                    <input type="file" id="filesFoto" name="files" />
+                </div>
+            </div>
+            <div class="ln_solid"></div>
+            <div class="form-group">
+                <div class="col-md-9 col-sm-9 col-xs-12 col-md-offset-2">
+                    <button type="submit" class="btn btn-success">Submit</button>
+                    <a href="@backLink" class="btn btn-link">Cancel</a>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+@section scripts{
+    <script type="text/javascript">
+        $(document).ready(function () {
+           
+        });
+
+    </script>
+}

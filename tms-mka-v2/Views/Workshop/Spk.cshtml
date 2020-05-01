@@ -1,0 +1,449 @@
+﻿@using tms_mka_v2.Models;
+
+@model tms_mka_v2.Models.Spk
+@{
+    ViewBag.Title = "Form";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    string currentController = (string)ViewContext.RouteData.Values["controller"];
+    string currentAction = (string)ViewContext.RouteData.Values["action"];
+    string backLink = Url.Action("Index");
+    if (currentAction == "Spk")
+    {
+        ViewBag.Title = "SPK";
+    }
+    else
+    {
+        ViewBag.Title = "SPK";
+    }
+}
+<div class="portlet light">
+    <div class="portlet-title">
+        <div class="caption">
+            <span class="caption-subject font-dark sbold uppercase judulnya">SPK</span>
+        </div>
+    </div>
+    <div class="portlet-body form">
+        @using (@Html.BeginForm("update_spk", currentController, FormMethod.Post, new { @class = "form-horizontal form-label-left input_mask", @id = "formsubmit" }))
+                {
+            @Html.ValidationSummary(true)
+        <div class="col-md-6">
+            <div class="form-group">
+                @Html.LabelFor(model => model.Workshop.NoPPK, new { @class = "control-label col-md-4 col-sm-3 col-xs-12" })
+                <div class="col-md-8 col-sm-9 col-xs-12">
+                    @Model.Workshop.NoPPK
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.Workshop.TglPre, new { @class = "control-label col-md-4 col-sm-3 col-xs-12" })
+                <div class="col-md-2 col-sm-9 col-xs-12">
+                    @Model.Workshop.TglPre.ToString("dd/MM/yyyy")
+                </div>
+                @Html.LabelFor(model => model.Workshop.TglPPK, new { @class = "control-label col-md-2 col-sm-3 col-xs-12" })
+                <div class="col-md-2 col-sm-9 col-xs-12">
+                    @Model.Workshop.TglPPK.ToString("dd/MM/yyyy")
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.Workshop.IdVehicle, new { @class = "control-label col-md-4 col-sm-3 col-xs-12" })
+                <div class="col-md-8 col-sm-9 col-xs-12">
+                    @Model.Workshop.VehicleNo
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.Workshop.PrioritasFrom, new { @class = "control-label col-md-4 col-sm-3 col-xs-12" })
+                <div class="col-md-8 col-sm-9 col-xs-12">@Model.Workshop.Prioritas</div>
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.Workshop.KetPrioritas, new { @class = "control-label col-md-4 col-sm-3 col-xs-12" })
+                <div class="col-md-8 col-sm-9 col-xs-12">@Model.Workshop.KetPrioritas</div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-group col-md-6">
+                @Html.Label("Status GPS", new { @class = "control-label col-md-4 col-sm-3 col-xs-12" })
+                <div class="col-md-8 col-sm-9 col-xs-12">
+                    @if (@ViewBag.MonVech != null)
+                    {
+                        @ViewBag.MonVech.Gps
+                    }
+                </div>
+            </div>
+            <div class="form-group col-md-6">
+                @Html.Label("Last Update", new { @class = "control-label col-md-4 col-sm-3 col-xs-12" })
+                @if (@ViewBag.MonVech != null)
+                {
+                    @ViewBag.MonVech.LastUpdate
+                }
+            </div><br /><br /><br />
+            <div class="form-group col-md-6">
+                @Html.Label("KM Actual", new { @class = "control-label col-md-4 col-sm-3 col-xs-12" })
+                <div class="col-md-8 col-sm-9 col-xs-12">@Model.Workshop.KmActual</div>
+            </div>
+            <div class="form-group col-md-6">
+                @Html.Label("KM GPS", new { @class = "control-label col-md-4 col-sm-3 col-xs-12" })
+                <div class="col-md-8 col-sm-9 col-xs-12">
+                    @if (ViewBag.MonVech != null && ViewBag.MonVech.Km != null)
+                    {
+                        @(Math.Round(Decimal.Parse(ViewBag.MonVech.Km.ToString().Replace(".", ",")), 2))
+                    }
+                </div>
+            </div><br /><br /><br />
+            <div class="form-group col-md-6">
+                @Html.Label("HM Actual", new { @class = "control-label col-md-4 col-sm-3 col-xs-12" })
+                <div class="col-md-8 col-sm-9 col-xs-12">@Model.Workshop.HmActual</div>
+            </div>
+            <div class="form-group col-md-6">
+                @Html.Label("HM GPS", new { @class = "control-label col-md-4 col-sm-3 col-xs-12" })
+                <div class="col-md-8 col-sm-9 col-xs-12">
+                    @if (ViewBag.MonVech != null && ViewBag.MonVech.Hm != null)
+                    {
+                        @(Math.Round(Decimal.Parse(ViewBag.MonVech.Hm.ToString().Replace(".", ",")), 2))
+                    }
+                </div>
+            </div><br /><br /><br />
+            <div class="form-group"></div>
+            <div class="form-group"></div>
+            <div class="form-group"></div>
+            <div class="form-group"></div>
+        </div>
+
+        <div class="form-group ket_perbaikan">
+            <h4>Keterangan Perbaikan</h4>
+            <div id="ket_grid"></div>
+        </div>
+        }
+        <div class="form-group history_perbaikan">
+            <h4>History</h4>
+            <div id="his_grid"></div>
+        </div>
+        <div class="form-group history_perbaikan">
+            <div class="col-md-9 col-sm-9 col-xs-12 col-md-offset-2">
+                <a href="@backLink" class="btn btn-link">Back To List</a>
+            </div>
+            <h4>&nbsp;</h4>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalJudul">Keterangan Perbaikan</h4>
+            </div>
+            
+                @using (@Html.BeginForm("UpdateSpk", currentController, FormMethod.Post, new { @class = "form-horizontal form-label-left input_mask", @id = "formsubmit" }))
+                {
+                    <div class="modal-body">
+                    @Html.Hidden("Id", null)
+                    @Html.Hidden("Workshop_id", null)
+                    <div class="form-group">
+                        @Html.Label("Jenis", "Jenis Perbaikan", new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                        <div class="col-md-9 col-sm-9 col-xs-12">
+                            @Html.TextBox("Jenis", null, new { @class = "form-control input-sm", @readonly = true })
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        @Html.Label("Permintaan", "Permintaan Perbaikan", new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                        <div class="col-md-9 col-sm-9 col-xs-12">
+                            @Html.TextBox("Permintaan", null, new { @class = "form-control input-sm" })
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        @Html.Label("Keterangan", "Keterangan Perbaikan", new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                        <div class="col-md-9 col-sm-9 col-xs-12">
+                            @Html.TextArea("Keterangan", null, new { @class = "form-control input-sm" })
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        @Html.Label("Mekanik1", "Mekanik 1", new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                        <div class="col-md-9 col-sm-9 col-xs-12">
+                            @Html.TextBox("Mekanik1", null, new { @class = "form-control input-sm" })
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        @Html.Label("Mekanik2", "Mekanik 2", new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                        <div class="col-md-9 col-sm-9 col-xs-12">
+                            @Html.TextBox("Mekanik2", null, new { @class = "form-control input-sm" })
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        @Html.Label("Status", "Status", new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                        <div class="col-md-2 col-sm-9 col-xs-12">
+                            @Html.RadioButton("Status", "Open", new { @id="StatusOpen"}) Open 
+                        </div>
+                        <div class="col-md-3 col-sm-9 col-xs-12">
+                            @Html.RadioButton("Status", "On-Progress", new { @id = "StatusOn-Progress" }) Work In Progress
+                        </div>
+                        <div class="col-md-2 col-sm-9 col-xs-12">
+                            @Html.RadioButton("Status", "Closed", new { @id = "StatusClosed", @onclick = "setServiceOut()" }) Closed
+                        </div>
+                        <div class="col-md-2 col-sm-9 col-xs-12">
+                            @Html.RadioButton("Status", "Pending", new { @id = "StatusPending" }) Pending
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        @Html.Label("ServiceIn", "Service In", new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                        <div class="col-md-5 col-sm-9 col-xs-12">
+                            @Html.TextBox("ServiceIn", null, new { @class = "form-control-datepicker" })
+                        </div>
+                        <div class="col-md-4 col-sm-9 col-xs-12">
+                            <div class="input-group input-group-sm">
+                                @Html.TextBoxFor(model => model.JamServiceIn, new { @class = "form-control input-sm timepicker timepicker-24" })
+                                <span class="input-group-btn">
+                                    <button class="btn btn-sm default" type="button">
+                                        <i class="fa fa-clock-o"></i>
+                                    </button>
+                                </span>
+                            </div>
+                            @Html.ValidationMessageFor(model => model.JamServiceIn)
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        @Html.Label("Estimasi", "Estimasi", new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                        <div class="col-md-5 col-sm-9 col-xs-12">
+                            @Html.TextBox("Estimasi", null, new { @class = "form-control-datepicker", @onchange = "$('#RevEstimasi').val(this.value == $('#EstimasiAwal').val() ? $('#RevEstimasiAwal').val() : parseInt($('#RevEstimasiAwal').val())+1);" })
+                            <input type="hidden" id="EstimasiAwal" />
+                            <input type="hidden" id="RevEstimasiAwal" />
+                        </div>
+                        <div class="col-md-4 col-sm-9 col-xs-12">
+                            <div class="input-group input-group-sm">
+                                @Html.TextBoxFor(model => model.JamEstimasi, new { @class = "form-control input-sm timepicker timepicker-24", @onchange = "$('#RevEstimasi').val(this.value == $('#EstimasiAwal').val() ? $('#RevEstimasiAwal').val() : parseInt($('#RevEstimasiAwal').val())+1);" })
+                                <span class="input-group-btn">
+                                    <button class="btn btn-sm default" type="button">
+                                        <i class="fa fa-clock-o"></i>
+                                    </button>
+                                </span>
+                            </div>
+                            @Html.ValidationMessageFor(model => model.JamEstimasi)
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        @Html.Label("RevEstimasi", "Revisi Estimasi", new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                        <div class="col-md-9 col-sm-9 col-xs-12">
+                            @Html.TextBox("RevEstimasi", null, new { @class = "form-control input-sm", @readonly = true })
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        @Html.Label("ServiceOut", "Service Out", new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                        <div class="col-md-5 col-sm-9 col-xs-12">
+                            @Html.TextBox("ServiceOut", null, new { @class = "form-control-datepicker" })
+                        </div>
+                        <div class="col-md-4 col-sm-9 col-xs-12">
+                            <div class="input-group input-group-sm">
+                                @Html.TextBoxFor(model => model.JamServiceOut, new { @class = "form-control input-sm timepicker timepicker-24" })
+                                <span class="input-group-btn">
+                                    <button class="btn btn-sm default" type="button">
+                                        <i class="fa fa-clock-o"></i>
+                                    </button>
+                                </span>
+                            </div>
+                            @Html.ValidationMessageFor(model => model.JamServiceOut)
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        @Html.Label("Keterangan", "Keterangan", new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                        <div class="col-md-9 col-sm-9 col-xs-12">
+                            @Html.TextArea("KeteranganSpk", null, new { @class = "form-control" })
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Save changes</button>
+                </div>
+                }
+                    
+        </div>
+    </div>
+</div>
+@section scripts{
+    <script id="Status-template" type="text/x-kendo-template">
+        # if(Status == "Pending") { #
+        <a href="\\#" onclick="ShowKetrerangan('#:KeteranganSpk#')">Pending</a>
+        # } else { #
+        #: Status #
+        # } #
+    </script>
+    <script type="text/javascript">
+        function ShowKetrerangan(msg)
+        {
+            swal("", msg, "info")
+        }
+
+        function setServiceOut() {
+            tgl = new Date;
+            $('#ServiceOut').val(("0" + tgl.getDate()).slice(-2) + "/" + ("0" + (tgl.getMonth() + 1)).slice(-2) + "/" + tgl.getFullYear())
+            $('#JamServiceOut').val(("0" + tgl.getHours()).slice(-2) + ":" + ("0" + (tgl.getMinutes())).slice(-2))
+        }
+        function editItem(e) {
+            var data = this.dataItem(getDataRowGrid(e));
+            var estimasi = 1;
+            $("#myModal").modal('show');
+            $('#Id').val(data.Id);
+            $('#Workshop_id').val(@Request.QueryString["id"]);
+            $('#Jenis').val(data.Jenis);
+            $('#Permintaan').val(data.Permintaan);
+            $('#Keterangan').val(data.Keterangan);
+            $('#KeteranganSpk').val(data.KeteranganSpk);
+            $('#Mekanik1').val(data.Mekanik1);
+            $('#Mekanik2').val(data.Mekanik2);
+            $('#ServiceIn').val(data.ServiceIn);
+            $('#JamServiceIn').val(data.JamServiceInString);
+            $('#JamEstimasi').val(data.JamEstimasiString);
+            $('#JamServiceOut').val(data.JamServiceOutString);
+            $('#Estimasi').val(data.Estimasi);
+            $('#EstimasiAwal').val(data.Estimasi);
+            if (data.RevEstimasi != null || data.RevEstimasi != "") {
+                estimasi = data.RevEstimasi == null ? 1 : parseInt(data.RevEstimasi);
+            }
+            $('#RevEstimasiAwal').val(estimasi);
+            $('#RevEstimasi').val(estimasi);
+            $('#ServiceOut').val(data.ServiceOut);
+            $('#Keterangan').val(data.Keterangan);
+
+            $('#Status' + data.Status).attr("checked", "checked");
+        }
+        $(document).ready(function () {
+            dsMecha = new kendo.data.DataSource({
+                transport: {
+                    read: {
+                        url: '@Url.Action("GetMecha")',
+                        dataType: "json"
+                    },
+                },
+            });
+            $("#Mekanik1").kendoComboBox({
+                dataTextField: "NamaMekanik",
+                dataValueField: "Id",
+                dataSource: dsMecha
+            });
+            $("#Mekanik2").kendoComboBox({
+                dataTextField: "NamaMekanik",
+                dataValueField: "Id",
+                dataSource: dsMecha
+            });
+            var ds = new kendo.data.DataSource({
+                transport: {
+                    read: {
+                        url: '@Url.Action("BindingKet", "Workshop", new { id = Request.QueryString["idnya"] })', dataType: "json"
+                    },
+                    parameterMap: function (options, operation) {
+                        if (operation !== "read" && options != '') {
+                            return kendo.stringify(options);
+                        }
+                        else if (operation == "read") {
+                            return options;
+                        }
+                    }
+                },
+                schema: {
+                    total: "total", data: "data",
+                    model: {
+                        fields: {
+                            "Id": { type: "number" }, "Jenis": { type: "string" }, "Permintaan": { type: "string" }, "Keterangan": { type: "string" },
+                            "KeteranganSpk": { type: "string" }, "Mekanik1": { type: "string" }, "Mekanik2": { type: "string" }, "OmMekanik1": { type: "string" },
+                            "OmMekanik2": { type: "string" }, "Status": { type: "string" }, "ServiceIn": { type: "string" }, "Estimasi": { type: "string" },
+                            "RevEstimasi": { type: "string" }, "ServiceOut": { type: "string" }
+                        }
+                    }
+                },
+                pageSize: 10,
+                pageable: true,
+            });
+            gridIndex = $("#ket_grid").kendoGrid({
+                dataSource: ds,
+                pageable: true,
+                columns: [
+                    {field: "Jenis", title: "Jenis Perbaikan", width: "105px"}, {field: "Permintaan", title: "Permintaan Perbaikan", width: "119px"},
+                    {field: "Keterangan", title: "Keterangan Perbaikan"}, {field: "OmMekanik1", title: "Mekanik 1", width: "119px"},
+                    {field: "OmMekanik2", title: "Mekanik 2", width: "119px" }, {
+                        field: "Status", title: "Status", template: kendo.template($("#Status-template").html()), width: "70px"
+                    },
+                    {
+                        field: "ServiceInDateTime", title: "Service In",
+                        width: "105px", template: "#= ServiceInDateTime != null ? kendo.toString(kendo.parseDate(ServiceInDateTime, 'yyyy-MM-dd'), 'HH:mm') != '00:00' ? kendo.toString(kendo.parseDate(ServiceInDateTime, 'yyyy-MM-dd'), 'dd/MM/yyyy HH:mm') : kendo.toString(kendo.parseDate(ServiceInDateTime, 'yyyy-MM-dd'), 'dd/MM/yyyy')+' '+JamServiceInString : ''#",
+                    },
+                    {
+                        field: "Estimasi", title: "Estimasi Selesai",
+                        width: "105px", template: "#= EstimasiDateTime != null ? kendo.toString(kendo.parseDate(EstimasiDateTime, 'yyyy-MM-dd'), 'HH:mm') != '00:00' ? kendo.toString(kendo.parseDate(EstimasiDateTime, 'yyyy-MM-dd'), 'dd/MM/yyyy HH:mm') : kendo.toString(kendo.parseDate(EstimasiDateTime, 'yyyy-MM-dd'), 'dd/MM/yyyy')+' '+JamEstimasiString : ''#",
+                    },
+                    {field: "RevEstimasi", title: "Revisi Estimasi", width: "105px"},
+                    {
+                        field: "ServiceOut", title: "Service Out",
+                        width: "105px", template: "#= ServiceOutDateTime != null ? kendo.toString(kendo.parseDate(ServiceOutDateTime, 'yyyy-MM-dd'), 'HH:mm') != '00:00' ? kendo.toString(kendo.parseDate(ServiceOutDateTime, 'yyyy-MM-dd'), 'dd/MM/yyyy HH:mm') : kendo.toString(kendo.parseDate(ServiceOutDateTime, 'yyyy-MM-dd'), 'dd/MM/yyyy')+' '+JamServiceOutString : ''#",
+                    },
+                    {
+                        command: [
+                            {
+                                name: "edit", text: "edit", click: editItem, imageClass: "glyphicon glyphicon-edit",
+                                template: '<a class="k-button-icon #=className#" #=attr# href="\\#"><span class="#=imageClass#"></span></a>'
+                            }
+                        ],
+                        width: "30px"
+                    }
+                ],
+            }).data("kendoGrid");
+
+            var ds_his = new kendo.data.DataSource({
+                transport: {
+                    read: {
+                        url: '@Url.Action("BindingKet2", "Workshop", new { id = Request.QueryString["idnya"] })',
+                        dataType: "json"
+                    },
+                    parameterMap: function (options, operation) {
+                        if (operation !== "read" && options != '') {
+                            return kendo.stringify(options);
+                        }
+                        else if (operation == "read") {
+                            return options;
+                        }
+                    }
+                },
+                schema: {
+                    total: "total",
+                    data: "data",
+                    model: {
+                        fields: {
+                            "Id": { type: "number" },
+                            "Jenis": { type: "string" },
+                            "Status": { type: "string" },
+                            "Estimasi": { type: "string" },
+                            "RevEstimasi": { type: "string" },
+                            "Tanggal": { type: "string" }
+                        }
+                    }
+                },
+                pageSize: 10,
+                pageable: true,
+                serverPaging: true,
+                serverSorting: true,
+                //sort: { field: "SubmittedDate", dir: "desc" }
+            });
+
+            gridIndex = $("#his_grid").kendoGrid({
+                dataSource: ds_his,
+                pageable: true,
+                columns: [
+
+                    {
+                        field: "Jenis",
+                        title: "Jenis Perbaikan"
+                    },
+                    {
+                        field: "Status",
+                        title: "Status"
+                    },
+                    {
+                        field: "Estimasi",
+                        title: "Estimasi Selesai"
+                    },
+                    {
+                        field: "RevEstimasi",
+                        title: "Revisi Estimasi"
+                    }
+                ],
+            }).data("kendoGrid");
+        });
+</script>
+}

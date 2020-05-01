@@ -1,0 +1,91 @@
+﻿@using tms_mka_v2.Models
+@model tms_mka_v2.Models.SalesOrderKonsolidasi
+@{
+    string rute = ViewBag.rute;
+    string satuan = Model.PerhitunganDasar != "Manual" ? Model.PerhitunganDasar : Model.TypeKonsolidasi;
+    decimal harga = decimal.Parse("0.0");
+    
+    if(Model.PerhitunganDasar == "Tonase")
+    {
+        harga = Model.Tonase.Value;
+    }
+    else if (Model.PerhitunganDasar == "Karton")
+    {
+        harga = Model.karton.Value;
+    }
+    else if (Model.PerhitunganDasar == "Pallet")
+    {
+        harga = Model.Pallet.Value;
+    }
+    else if (Model.PerhitunganDasar == "Container")
+    {
+        harga = Model.Container.Value;
+    }
+    else if (Model.PerhitunganDasar == "m3")
+    {
+        harga = Model.m3.Value;
+    }
+    else if (Model.PerhitunganDasar == "Manual")
+    {
+        if (Model.TypeKonsolidasi == "Tonase")
+        {
+            harga = Model.Tonase.Value;
+        }
+        else if (Model.TypeKonsolidasi == "Karton")
+        {
+            harga = Model.karton.Value;
+        }
+        else if (Model.TypeKonsolidasi == "Pallet")
+        {
+            harga = Model.Pallet.Value;
+        }
+        else if (Model.TypeKonsolidasi == "Container")
+        {
+            harga = Model.Container.Value;
+        }
+        else if (Model.TypeKonsolidasi == "m3")
+        {
+            harga = Model.m3.Value;
+        }
+    }
+    satuan = satuan == "Tonase" ? "Kg" : satuan;
+    var cust = Model.NamaCustomerTagihan;
+    var dummyRute = Model.Rute;
+    var dari = Model.Rute.Split('-')[0];
+    var tujuan = Model.Rute.Split('-')[1];
+}
+<div class="container" style="margin-top: 7px">
+    <div class="col-xs-6 col-md-6">
+    </div>
+    <div class="col-xs-6 col-md-6">
+        <div class="row">
+            <label class="col-xs-6 col-md-6"></label><label class="col-xs-6 col-md-6" style="font-size: 11px !important; font-weight: 100"> @Model.SONumber</label>
+        </div>
+    </div>
+    <div class="col-xs-6 col-md-6" style="margin-top: 21px">
+        <div class="row">
+            <label class="col-xs-3 col-md-3"></label><label class="col-xs-9 col-md-9" style="font-size: 11px !important; font-weight: 100"> @Model.NamaCustomerTagihan</label>
+            <label class="col-xs-3 col-md-2"></label><label class="col-xs-9 col-md-9" style="font-size: 11px !important; font-weight: 100"> @Model.Rute.Split('-')[0]</label>
+        </div>
+        <div style="margin-top: 25px">
+            <label class="col-xs-2 col-md-2"></label><label class="col-xs-10 col-md-8" style="font-size: 11px !important; font-weight: 100">@satuan</label>
+        </div>
+        <div style="margin-top: 49px">
+            <label class="col-xs-2 col-md-2"></label><label class="col-xs-10 col-md-8" style="font-size: 11px !important; font-weight: 100"> @Model.StrProduct </label>
+        </div>
+        <div style="margin-top: 77px">
+            <label class="col-xs-2 col-md-2"></label><label class="col-xs-10 col-md-8" style="font-size: 11px !important; font-weight: 100"> @Model.TanggalMasuk</label>
+        </div>
+        <div style="margin-top: 189px">
+            <label class="col-xs-4 col-md-4"></label><label class="col-xs-8 col-md-8" style="font-size: 11px !important; font-weight: 100"> @Model.Rute.Split('-')[1]</label>
+        </div>
+    </div>
+    <div class="col-xs-6 col-md-6" style="margin-top: 21px">
+        <div class="row">
+            <label class="col-xs-4 col-md-4"></label><label class="col-xs-8 col-md-8" style="font-size: 11px !important; font-weight: 100"> @ViewBag.namadr</label>
+        </div>
+        <div style="margin-top: 28px">
+            <label class="col-xs-4 col-md-4"></label><label class="col-xs-8 col-md-8" style="font-size: 11px !important; font-weight: 100"> @ViewBag.nopol</label>
+        </div>
+    </div>
+</div>

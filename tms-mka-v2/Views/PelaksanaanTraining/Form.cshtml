@@ -1,0 +1,402 @@
+﻿@using tms_mka_v2.Models;
+
+@model tms_mka_v2.Models.PelaksanaanTraining
+@{
+    ViewBag.Title = "Form";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    string currentController = (string)ViewContext.RouteData.Values["controller"];
+    string currentAction = (string)ViewContext.RouteData.Values["action"];
+    string backLink = Url.Action("Index");
+    if (currentAction == "Add")
+    {
+        ViewBag.Title = "Tambah Pelaksanaan Training";
+    }
+    else
+    {
+        ViewBag.Title = ViewBag.name + " | Edit";
+    }
+}
+<div class="portlet light">
+    <div class="portlet-title">
+        <div class="caption">
+            <span class="caption-subject font-dark sbold uppercase">@ViewBag.Title</span>
+        </div>
+    </div>
+    <div class="portlet-body form">
+        @using (@Html.BeginForm(currentAction, currentController, FormMethod.Post, new { @class = "form-horizontal form-label-left input_mask", @id = "formsubmit" }))
+        {
+            @Html.ValidationSummary(true)
+            @Html.HiddenFor(model => model.Id)
+            <section class="col col-md-6">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Tanggal, new { @class = "control-label col-md-3" })
+                    <div class="col-md-9">
+                        @Html.TextBoxFor(model => model.Tanggal, new { @class = "form-control input-sm form-control-datepicker" })
+                        @Html.ValidationMessageFor(model => model.Tanggal)
+                    </div>
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(model => model.WaktuPelaksanaan, new { @class = "control-label col-md-3" })
+                    <div class="col-md-9">
+                        <div class="input-group input-group-sm">
+                            @Html.TextBoxFor(model => model.WaktuPelaksanaan, new { @class = "form-control input-sm timepicker timepicker-24" })
+                            <span class="input-group-btn">
+                                <button class="btn btn-sm default" type="button">
+                                    <i class="fa fa-clock-o"></i>
+                                </button>
+                            </span>
+                        </div>
+                        @Html.ValidationMessageFor(model => model.WaktuPelaksanaan)
+                    </div>
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(model => model.WaktuSelesai, new { @class = "control-label col-md-3" })
+                    <div class="col-md-9">
+                        <div class="input-group input-group-sm">
+                            @Html.TextBoxFor(model => model.WaktuSelesai, new { @class = "form-control input-sm timepicker timepicker-24" })
+                            <span class="input-group-btn">
+                                <button class="btn btn-sm default" type="button">
+                                    <i class="fa fa-clock-o"></i>
+                                </button>
+                            </span>
+                        </div>
+                        @Html.ValidationMessageFor(model => model.WaktuSelesai)
+                    </div>
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(model => model.IdLokasi, new { @class = "control-label col-md-3" })
+                    <div class="col-md-9">
+                        @Html.TextBoxFor(model => model.IdLokasi, new { @class = "form-control input-sm" })
+                        @Html.ValidationMessageFor(model => model.IdLokasi)
+                    </div>
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(model => model.IdTrainingSetting, new { @class = "control-label col-md-3" })
+                    <div class="col-md-9">
+                        @Html.TextBoxFor(model => model.IdTrainingSetting, new { @class = "form-control input-sm" })
+                        @Html.ValidationMessageFor(model => model.IdTrainingSetting)
+                    </div>
+                </div>
+            </section>
+            <section class="col col-md-6">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.IdTrainingMateri, new { @class = "control-label col-md-3" })
+                    <div class="col-md-9">
+                        @Html.TextBoxFor(model => model.IdTrainingMateri, new { @class = "form-control input-sm" })
+                        @Html.ValidationMessageFor(model => model.IdTrainingMateri)
+                    </div>
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Trainer, new { @class = "control-label col-md-3" })
+                    <div class="col-md-9">
+                        @Html.TextBoxFor(model => model.Trainer, new { @class = "form-control input-sm" })
+                        @Html.ValidationMessageFor(model => model.Trainer)
+                    </div>
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Keterangan, new { @class = "control-label col-md-3" })
+                    <div class="col-md-9">
+                        @Html.TextAreaFor(model => model.Keterangan, new { @class = "form-control input-sm" })
+                        @Html.ValidationMessageFor(model => model.Keterangan)
+                    </div>
+                </div>
+            </section>
+            <div class="form-group">
+                <div class="col-md-12">
+                    <button type="button" class="btn btn-sm" data-toggle="modal" data-target="#modalGridRute">Add</button>
+                    <div id="gridDetails"></div>
+                    @Html.HiddenFor(model => model.strPelaksanaanTrainingDetail)
+                </div>
+            </div>
+            <div class="ln_solid"></div>
+            <div class="form-group">
+                <button type="submit" class="btn btn-success">Submit</button>
+                <a href="@backLink" class="btn btn-link">Cancel</a>
+            </div>
+        }
+    </div>
+</div>
+<div id="modalGridRute" class="modal fade bs-modal-lg" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div id="modalForm" class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                <h4 class="modal-title">List Driver</h4>
+            </div>
+            <div class="modal-body">
+                <div id="GridDriver"></div>
+            </div>
+        </div>
+    </div>
+</div>
+@section scripts{
+<script type="text/javascript">
+    var gridDriver;
+    var cboLokasi, cboSetting, cboMateri;
+    var nilai_minimum = 0;
+    var dsDriver = new kendo.data.DataSource({
+        transport: {
+            read: {
+                url: '/Driver/Binding',
+                dataType: "json"
+            },
+        },
+        schema: {
+            total: "total",
+            data: "data",
+            model: {
+                fields: {
+                    "Id": { type: "number" },
+                    "KodeDriver": { type: "string" },
+                    "NamaDriver": { type: "string" },
+                    "NamaPangilan": { type: "string" },
+                    "TglLahir": { type: "date" },
+                    "Alamat": { type: "string" },
+                    "LevelDriver": { type: "string" },
+                    "StrJenisSim": { type: "string" },
+                    "TglBerlakuSim": { type: "date" },
+                    "NoHp1": { type: "string" },
+                    "NoHp2": { type: "string" }
+                }
+            }
+        },
+        pageSize: 5,
+        pageable: true,
+        sortable: true,
+        filter: { field: "Status", operator: 'eq', value: "ACTIVE" }
+    });
+    var dsGrid;
+    var dsDriverDummy = [] ;
+    if(@Model.listPelaksanaanTraining.Count > 0) {
+        @foreach (var item in Model.listPelaksanaanTraining)
+        {
+        <text>
+        dsDriverDummy.push({
+            Id : @item.Id,
+            IdDriver : @item.IdDriver,
+            KodeDriver : '@item.KodeDriver',
+            NamaDriver : '@item.NamaDriver',
+            Nilai : @item.Nilai,
+            Keterangan : '@item.Keterangan'
+        });
+
+        dsGrid = new kendo.data.DataSource({
+            data: dsDriverDummy,
+            batch: true,
+            schema: {
+                model: {
+                    id: "Id",
+                    fields: {
+                        "Id": { type: "number" },
+                        "IdDriver" : { type: "number" },
+                        "KodeDriver": { type: "string", editable: false },
+                        "NamaDriver": { type: "string" , editable: false},
+                        "Nilai": { type: "number" , defaultValue: 0},
+                        "Keterangan": { type: "string" }
+                    }
+                }
+            },
+            pageSize: 100,
+            pageable: true,
+            sortable: true,
+        });    
+
+        </text>
+        }
+    }
+    else {
+        dsGrid = new kendo.data.DataSource({
+            transport: {
+                read: {
+                    url: '@Url.Action("BindingItem")' + '?id=' + @Model.Id,
+                    dataType: "json"
+                },
+            },
+            batch: true,
+            schema: {
+                model: {
+                    id: "Id",
+                    fields: {
+                        "Id": { type: "number" },
+                        "IdDriver" : { type: "number" },
+                        "KodeDriver": { type: "string", editable: false },
+                        "NamaDriver": { type: "string" , editable: false},
+                        "Nilai": { type: "number" , defaultValue: 0},
+                        "Keterangan": { type: "string" }
+                    }
+                }
+            },
+            pageSize: 5,
+            pageable: true,
+            sortable: true,
+        });
+    }
+
+
+    function settingChange(e) {
+        if (this.value() != "") {
+            SetMateri(this.value());
+        } else {
+            cboMateri.text('');
+            cboMateri.value();
+            cboMateri.setDataSource();
+        }
+    }
+    function materiChange(e) {
+        $.ajax({
+            url: '@Url.Action("GetNilaiMinimum")?IdMateri=' + this.value(),
+            success: function (data) {
+                nilai_minimum = data;
+            }
+        });
+    }
+    function nilai_ganti(e) {
+        if (parseInt(e) >= parseInt(nilai_minimum)) {
+            $(".keterangannya").val("Lulus");
+        }
+        else {
+            $(".keterangannya").val("Tidak Lulus")
+        }
+    }
+    function SetMateri(val) {
+        var dsMateri = new kendo.data.DataSource({
+            transport: {
+                read: {
+                    url: '@Url.Action("GetMateri")?IdTraining=' + val,
+                    dataType: "json"
+                },
+            },
+        });
+        cboMateri.text('');
+        cboMateri.value();
+        cboMateri.setDataSource(dsMateri);
+    }
+    function SelectDriver(e)
+    {
+        e.preventDefault();
+        var data = this.dataItem(getDataRowGrid(e));
+        if(validateDriver(data.Id)) {
+            gridDriver.dataSource.add({
+                IdDriver: data.Id,
+                KodeDriver: data.KodeDriver,
+                NamaDriver: data.NamaDriver
+            });        
+        }
+
+        $('#modalGridRute').modal('hide');
+    }
+    function validateDriver(idDriver)
+    {
+        var dataItem = gridDriver.dataSource.data();
+        for (var i = 0 ; i < dataItem.length ; i++)
+        {
+            if (dataItem[i].IdDriver == idDriver) {
+                swal("","Driver sudah dipilih.","warning")
+                return false;
+            }
+        }
+        return true;
+    }
+    $(document).ready(function () {
+        //dropdown Location
+        dsLocation = new kendo.data.DataSource({
+            transport: {
+                read: {
+                    url: '@Url.Action("GetLocation")',
+                    dataType: "json"
+                },
+            },
+        });
+        cboLokasi =  $("#IdLokasi").kendoComboBox({
+            dataTextField: "NamePool",
+            dataValueField: "Id",
+            dataSource: dsLocation
+        }).data('kendoComboBox');
+
+        //dropdown Training Setting
+        dsTraining = new kendo.data.DataSource({
+            transport: {
+                read: {
+                    url: '@Url.Action("GetTraining")',
+                    dataType: "json"
+                },
+            },
+        });
+        cboSetting = $("#IdTrainingSetting").kendoComboBox({
+            dataTextField: "Name",
+            dataValueField: "Id",
+            dataSource: dsTraining,
+            change: settingChange
+        }).data('kendoComboBox');
+
+        //dropdown Training Setting Detail
+        cboMateri = $("#IdTrainingMateri").kendoComboBox({
+            dataTextField: "Name",
+            dataValueField: "Id",
+            change: materiChange
+        }).data('kendoComboBox');
+        @if (Model.Id != 0)
+        {
+            <text>
+        SetMateri(@Model.IdTrainingSetting);
+        cboMateri.value(@Model.IdTrainingMateri);
+        </text>
+        }
+
+        //grid
+        gridMasterDriver = $("#GridDriver").kendoGrid({
+            dataSource: dsDriver,
+            filterable: kendoGridFilterable,
+            sortable: true,
+            resizable: true,
+            pageable: true,
+            columns: [
+                {
+                    command: [
+                        {
+                            name: "select",
+                            text: "Select",
+                            click: SelectDriver,
+                            imageClass: "glyphicon glyphicon-ok",
+                            template: '<a class="k-button-icon #=className#" #=attr# href="\\#"><span class="#=iconClass# #=imageClass#"></span></a>'
+                        }
+                    ],
+                    width: "50px"
+                },
+                { field: "KodeDriver", title: "Kode Driver" },
+                { field: "NamaDriver", title: "Nama Driver" },
+                { field: "NamaPangilan", title: "Nama Panggilan" },
+                { field: "StrJenisSim", title: "Jenis Sim" },
+            ],
+        }).data("kendoGrid");
+
+        gridDriver = $("#gridDetails").kendoGrid({
+            dataSource: dsGrid,
+            editable: true,
+            columns: [
+                {
+                    command: [
+                        {
+                            name: "destroy",
+                            text: "Hapus",
+                            imageClass: "glyphicon glyphicon-remove",
+                            template: '<a class="k-button-icon #=className#" #=attr# href="\\#" title="#=text#"><span class="#=imageClass#"></span></a>'
+                        }
+                    ],
+                    width: 50
+                },
+                { field: "KodeDriver", title: "Id Driver" },
+                { field: "NamaDriver", title: "Nama Driver" },
+                { field: "Nilai", title: "Nilai" },
+                { field: "Keterangan", title: "Keterangan" }
+            ],
+        }).data("kendoGrid");
+    });
+    $('#formsubmit').submit(function (e) {
+        var grid = $('#gridDetails').data('kendoGrid');
+        grid.saveRow();
+        var data = grid.dataSource.data();
+        $('#strPelaksanaanTrainingDetail').val(JSON.stringify(data));
+    })
+</script>
+}

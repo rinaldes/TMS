@@ -1,0 +1,260 @@
+﻿@using tms_mka_v2.Models;
+@model tms_mka_v2.Models.ERPConfig
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    string currentController = (string)ViewContext.RouteData.Values["controller"];
+    string currentAction = ViewBag.postData == null ? (string)ViewContext.RouteData.Values["action"] : ViewBag.postData;
+    string backLink = Url.Action("Index");
+}
+<div class="portlet light">
+    <div class="portlet-title">
+        <div class="caption">
+            <span class="caption-subject font-dark sbold uppercase">Setting Akun</span>
+        </div>
+    </div>
+    <div class="portlet-body form">
+        @using (@Html.BeginForm(currentAction, currentController, FormMethod.Post, new { @class = "form-horizontal form-label-left input_mask", @id = "formsubmit" }))
+        {
+            @Html.ValidationSummary(true)
+            @Html.HiddenFor(model => model.Id)
+
+            <input type='hidden' name='params' id='params'>
+            <h4>Konfigurasi SPBU</h4>
+            <div class="col-md-12 col-sm-12 col-xs-12">
+                <div class="col-md-12 col-sm-12 col-xs-12">
+                    <div class="form-group">
+                        <label class="control-label col-md-6"><strong>Nama SPBU</strong></label>
+                        <label class="control-label col-md-6"><strong>Nama Akun</strong></label>
+                    </div>
+                    @foreach(var lookupCode in ViewBag.LookupCodesSPBU){
+                        <div class="form-group">
+                            <label class="control-label col-md-3">@lookupCode.Nama</label>
+                            <div class="col-md-3 col-sm-2 col-xs-12">
+                                <div class="input-group input-group-sm">
+                                    <input type='hidden' name="spbu[@lookupCode.Id][id]" readonly="readonly" value=@lookupCode.Id>
+                                    <input type='hidden' name="spbu[@lookupCode.Id][ac_id]" readonly="readonly" value=@lookupCode.ac_id>
+                                    <input type='text' class='form-control' name="spbu[@lookupCode.Id][ac_code]" readonly="readonly" value=@lookupCode.ac_id>
+                                    <span class="input-group-btn">
+                                        <button type="button" class="btn btn-success" data-toggle="modal" data-target="#modalGridAcc" onclick="caller='@lookupCode.Nama';">Browse</button>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <input type='text' class='form-control' name="spbu[@lookupCode.Id][ac_name]" readonly="readonly" value=@lookupCode.ac_name>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+            <h4>Konfigurasi Kapal</h4>
+            <div class="col-md-12 col-sm-12 col-xs-12">
+                <div class="col-md-12 col-sm-12 col-xs-12">
+                    <div class="form-group">
+                        <label class="control-label col-md-6"><strong>Nama Kapal</strong></label>
+                        <label class="control-label col-md-6"><strong>Nama Akun</strong></label>
+                    </div>
+                    @foreach(var lookupCode in ViewBag.LookupCodesKapal){
+                        <div class="form-group">
+                            <label class="control-label col-md-3">@lookupCode.Nama</label>
+                            <div class="col-md-3 col-sm-2 col-xs-12">
+                                <div class="input-group input-group-sm">
+                                    <input type='hidden' name="kapal[@lookupCode.Id][id]" readonly="readonly" value=@lookupCode.Id>
+                                    <input type='hidden' name="kapal[@lookupCode.Id][ac_id]" readonly="readonly" value=@lookupCode.ac_id>
+                                    <input type='text' class='form-control' name="kapal[@lookupCode.Id][ac_code]" readonly="readonly" value=@lookupCode.ac_id>
+                                    <span class="input-group-btn">
+                                        <button type="button" class="btn btn-success" data-toggle="modal" data-target="#modalGridAcc" onclick="caller='@lookupCode.Nama';">Browse</button>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <input type='text' class='form-control' name="kapal[@lookupCode.Id][ac_name]" readonly="readonly" value=@lookupCode.ac_name>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+            <h4>Konfigurasi Pool</h4>
+            <div class="col-md-12 col-sm-12 col-xs-12">
+                <div class="col-md-12 col-sm-12 col-xs-12">
+                    <div class="form-group">
+                        <label class="control-label col-md-6"><strong>Nama Pool</strong></label>
+                        <label class="control-label col-md-6"><strong>Nama Akun</strong></label>
+                    </div>
+                    @foreach(var lookupCode in ViewBag.Pool){
+                        <div class="form-group">
+                            <label class="control-label col-md-3">@lookupCode.NamePool</label>
+                            <div class="col-md-3 col-sm-2 col-xs-12">
+                                <div class="input-group input-group-sm">
+                                    <input type='hidden' name="pool[@lookupCode.Id][id]" readonly="readonly" value=@lookupCode.Id>
+                                    <input type='hidden' name="pool[@lookupCode.Id][ac_id]" readonly="readonly" value=@lookupCode.IdCreditCash>
+                                    <input type='text' class='form-control' name="pool[@lookupCode.Id][ac_code]" readonly="readonly">
+                                    <span class="input-group-btn">
+                                        <button type="button" class="btn btn-success" data-toggle="modal" data-target="#modalGridAcc" onclick="caller='@lookupCode.NamePool';">Browse</button>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <input type='text' class='form-control' name="pool[@lookupCode.Id][ac_name]" readonly="readonly">
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-md-8">
+                    <button type="submit" class="btn btn-success">Submit</button>
+                    <a href="@backLink" class="btn btn-link">Cancel</a>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+<div class="modal fade " id="modalGridAcc" role="dialog" aria-hidden="true">
+    <div class="modal-dialog ">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                <h4 class="modal-title">List Account</h4>
+            </div>
+            <div class="modal-body">
+                <div id="GridAcc"></div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade " id="modalGridBk" role="dialog" aria-hidden="true">
+    <div class="modal-dialog ">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                <h4 class="modal-title">List Account</h4>
+            </div>
+            <div class="modal-body">
+                <div id="GridBk"></div>
+            </div>
+        </div>
+    </div>
+</div>
+@section scripts{
+    <script type="text/javascript">
+        var caller = '';
+        SelectSPBU()
+        var dsAcc = new kendo.data.DataSource({
+            transport: {
+                read: {
+                    url: '@Url.Action("BindingAcc")', dataType: "json"
+                },
+            },
+            schema: {
+                total: "total", data: "data",
+                model: {
+                    fields: {
+                        "id": { type: "number" }, "ac_code": { type: "string" }, "ac_name": { type: "string" },
+                    }
+                }
+            },
+            pageSize: 10, pageable: true, sortable: true,
+        });
+
+        function SelectAcc(e) {
+            e.preventDefault();
+            var data = this.dataItem(getDataRowGrid(e));
+            @foreach(var lookupCode in ViewBag.LookupCodesSPBU){
+                <text>
+                    if (caller == '@lookupCode.Nama') {
+                        $("input[name='spbu[@lookupCode.Id][ac_id]']").val(data.id);
+                        $("input[name='spbu[@lookupCode.Id][ac_code]']").val(data.ac_code);
+                        $("input[name='spbu[@lookupCode.Id][ac_name]']").val(data.ac_name);
+                        $.ajax({
+                            url: '/ERPConfig/save?id='+$("input[name='spbu[@lookupCode.Id][id]']").val()+'&ac_id='+data.id+'&type=SPBU'
+                        })
+                    }
+                </text>
+            }
+            @foreach(var lookupCode in ViewBag.LookupCodesKapal){
+                <text>
+                    if (caller == '@lookupCode.Nama') {
+                        $("input[name='kapal[@lookupCode.Id][ac_id]']").val(data.id);
+                        $("input[name='kapal[@lookupCode.Id][ac_code]']").val(data.ac_code);
+                        $("input[name='kapal[@lookupCode.Id][ac_name]']").val(data.ac_name);
+                        $.ajax({
+                            url: '/ERPConfig/save?id='+$("input[name='kapal[@lookupCode.Id][id]']").val()+'&ac_id='+data.id+'&type=SPBU'
+                        })
+                    }
+                </text>
+            }
+            @foreach(var lookupCode in ViewBag.Pool){
+                <text>
+                    if (caller == '@lookupCode.NamePool') {
+                        $("input[name='pool[@lookupCode.Id][ac_id]']").val(data.id);
+                        $("input[name='pool[@lookupCode.Id][ac_code]']").val(data.ac_code);
+                        $("input[name='pool[@lookupCode.Id][ac_name]']").val(data.ac_name);
+                        $.ajax({
+                            url: '/ERPConfig/save?id='+$("input[name='pool[@lookupCode.Id][id]']").val()+'&ac_id='+data.id+'&type=Pool'
+                        })
+                    }
+                </text>
+            }
+            $('#modalGridAcc').modal('hide');
+        }
+
+        function SelectSPBU() {
+            @foreach(var lookupCode in ViewBag.LookupCodesSPBU){
+                <text>
+                    $.ajax({
+                        url: '/ERPConfig/select?id='+$("input[name='spbu[@lookupCode.Id][id]']").val()+'&type=SPBU&ac_id=@lookupCode.ac_id',
+                        success: function (data) {
+                            console.log(JSON.parse(data).id)
+                            $("input[name='spbu[@lookupCode.Id][ac_id]']").val(JSON.parse(data).id);
+                            $("input[name='spbu[@lookupCode.Id][ac_code]']").val(JSON.parse(data).ac_code);
+                            $("input[name='spbu[@lookupCode.Id][ac_name]']").val(JSON.parse(data).ac_name);
+                        }
+                    })
+                </text>
+            }
+            @foreach(var lookupCode in ViewBag.LookupCodesKapal){
+                <text>
+                    $.ajax({
+                        url: '/ERPConfig/select?id='+$("input[name='kapal[@lookupCode.Id][id]']").val()+'&type=SPBU&ac_id=@lookupCode.ac_id',
+                        success: function (data) {
+                            $("input[name='kapal[@lookupCode.Id][ac_id]']").val(JSON.parse(data).id);
+                            $("input[name='kapal[@lookupCode.Id][ac_code]']").val(JSON.parse(data).ac_code);
+                            $("input[name='kapal[@lookupCode.Id][ac_name]']").val(JSON.parse(data).ac_name);
+                        }
+                    })
+                </text>
+            }
+            @foreach(var lookupCode in ViewBag.Pool){
+                <text>
+                    $.ajax({
+                        url: '/ERPConfig/select?id='+$("input[name='pool[@lookupCode.Id][id]']").val()+'&type=Pool&ac_id=@lookupCode.IdCreditCash',
+                        success: function (data) {
+                            $("input[name='pool[@lookupCode.Id][ac_id]']").val(JSON.parse(data).id);
+                            $("input[name='pool[@lookupCode.Id][ac_code]']").val(JSON.parse(data).ac_code);
+                            $("input[name='pool[@lookupCode.Id][ac_name]']").val(JSON.parse(data).ac_name);
+                        }
+                    })
+                </text>
+            }
+            $('#modalGridAcc').modal('hide');
+        }
+
+        $(document).ready(function () {
+            gridAcc = $("#GridAcc").kendoGrid({
+                dataSource: dsAcc, filterable: kendoGridFilterable, sortable: true, resizable: true, pageable: true,
+                columns: [
+                    {
+                        command: [
+                        {
+                            name: "select", text: "Select", click: SelectAcc, imageClass: "glyphicon glyphicon-ok",
+                            template: '<a class="k-button-icon #=className#" #=attr# href="\\#"><span class="#=iconClass# #=imageClass#"></span></a>'
+                        }
+                        ],
+                        width: "50px"
+                    },
+                    { field: "ac_code", title: "Code Account" }, { field: "ac_name", title: "Nama Account" },
+                ]
+            });
+        });
+    </script>
+}

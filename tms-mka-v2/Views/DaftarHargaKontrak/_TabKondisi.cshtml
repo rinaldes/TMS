@@ -1,0 +1,305 @@
+﻿@model tms_mka_v2.Models.DaftarHargaKontrak
+@using tms_mka_v2.Models
+@using System.Web.Script.Serialization
+@{
+    string currentController = (string)ViewContext.RouteData.Values["controller"];
+    string currentAction = (string)ViewContext.RouteData.Values["action"];
+    int idx = 0;
+}
+<div class="row">
+    <table class="table table-striped table-hover " id="table-kondisi">
+        @foreach (DaftarHargaKondisi item in Model.listKondisi)
+        {
+            @Html.HiddenFor(model => model.listKondisi[idx].IsDelete)
+            @Html.HiddenFor(model => model.listKondisi[idx].IsDefault)
+            if (item.kondisi != "Biaya Multidrop")
+            {
+                <tr id="rowkondisi_@idx">
+                    @if (item.IsDefault)
+                    {
+                        @Html.HiddenFor(model => model.listKondisi[idx].kondisi)
+                        <td>
+                            @item.kondisi
+                        </td>
+                    }
+                    else
+                    {
+                        <td>
+                            @Html.TextBoxFor(model => model.listKondisi[idx].kondisi, new { @class = "form-control input-sm" })
+                            @Html.ValidationMessageFor(model => model.listKondisi[idx].kondisi)
+                        </td>
+                    }
+
+                    <td>
+                        <label> @Html.RadioButtonFor(model => model.listKondisi[idx].IsInclude, false, new { @onclick = "InitValue(this, " + @idx + ")" }) Termasuk</label>
+                    </td>
+                    <td>
+                        <label> @Html.RadioButtonFor(model => model.listKondisi[idx].IsInclude, true, new { @onclick = "InitValue(this, " + @idx + ")" }) Tidak Termasuk</label>
+                    </td>
+                    @if (Model.listKondisi[idx].IsInclude)
+                    {
+                        if (Model.listKondisi[idx].kondisi == "Biaya Inap")
+                        {
+                            <td colspan="2">
+                                <div class="row">
+                                    <label class="col-md-3"> @Html.RadioButtonFor(model => model.listKondisi[idx].IsBill, false, new { @class = "billKon" + idx, @onclick = "InitHarga(this, " + idx + ")" }) Rp </label>
+                                    <div class="col-md-9">
+                                        @Html.TextBoxFor(model => model.listKondisi[idx].value, new { @class = "form-control-numeric-idr", @style = "width:96%" })
+                                        @Html.ValidationMessageFor(model => model.listKondisi[idx].value)
+                                    </div>
+                                </div>
+                            </td>
+                        }
+                        else
+                        {
+                            <td>
+                                <label> @Html.RadioButtonFor(model => model.listKondisi[idx].IsBill, true, new { @class = "billKon" + idx, @onclick = "InitHarga(this, " + idx + ")" }) As Bill</label>
+                            </td>
+                            <td>
+                                <label class="col-md-3"> @Html.RadioButtonFor(model => model.listKondisi[idx].IsBill, false, new { @class = "billKon" + idx, @onclick = "InitHarga(this, " + idx + ")" }) Rp </label>
+                                @if (Model.listKondisi[idx].IsBill == true)
+                                {
+                                    <div class="col-md-9">
+                                        @Html.TextBoxFor(model => model.listKondisi[idx].value, new { @class = "form-control-numeric-idr", @readonly = true })
+                                        @Html.ValidationMessageFor(model => model.listKondisi[idx].value)
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="col-md-9">
+                                        @Html.TextBoxFor(model => model.listKondisi[idx].value, new { @class = "form-control-numeric-idr" })
+                                        @Html.ValidationMessageFor(model => model.listKondisi[idx].value)
+                                    </div>
+                                }
+                            </td>
+                        }
+                    }
+                    else
+                    {
+                        if (Model.listKondisi[idx].kondisi == "Biaya Inap")
+                        {
+                            <td colspan="2">
+                                <div class="row">
+                                    <label class="col-md-3"> @Html.RadioButtonFor(model => model.listKondisi[idx].IsBill, false, new { @disabled = "disabled", @class = "billKon" + idx, @onclick = "InitHarga(this, " + idx + ")" }) Rp </label>
+                                    <div class="col-md-9">
+                                        @Html.TextBoxFor(model => model.listKondisi[idx].value, new { @class = "form-control-numeric-idr", @readonly = true, @style = "width:96%" })
+                                        @Html.ValidationMessageFor(model => model.listKondisi[idx].value)
+                                    </div>
+                                </div>
+                            </td>
+                        }
+                        else
+                        {
+                            <td>
+                                <label> @Html.RadioButtonFor(model => model.listKondisi[idx].IsBill, true, new { @disabled = "disabled", @class = "billKon" + idx, @onclick = "InitHarga(this, " + idx + ")" }) As Bill</label>
+                            </td>
+                            <td>
+                                <label class="col-md-3"> @Html.RadioButtonFor(model => model.listKondisi[idx].IsBill, false, new { @disabled = "disabled", @class = "billKon" + idx, @onclick = "InitHarga(this, " + idx + ")" }) Rp </label>
+                                <div class="col-md-9">
+                                    @Html.TextBoxFor(model => model.listKondisi[idx].value, new { @class = "form-control-numeric-idr", @readonly = true })
+                                    @Html.ValidationMessageFor(model => model.listKondisi[idx].value)
+                                </div>
+                            </td>
+                        }
+                    }
+                    @if (item.IsDefault)
+                    {
+                        <td></td>
+                    }
+                    else
+                    {
+                        <td><a class='btn btn-sm btn-circle btn-icon-only red' href='javascript:;' onclick='deleteRow(this, @idx)'><i class='fa fa-minus'></i></a></td>
+                    }
+                </tr>
+            }
+            else
+            {
+                //anu multi drop
+                <tr id="rowkondisi_@idx">
+                    <td>
+                        @Html.HiddenFor(model => model.listKondisi[idx].kondisi)
+                        @item.kondisi
+                    </td>
+                    <td>
+                        <label> @Html.RadioButtonFor(model => model.listKondisi[idx].IsInclude, true, new { @onclick = "InitValue(this, " + @idx + ")" }) Termasuk</label>
+                    </td>
+                    <td>
+                        <label> @Html.RadioButtonFor(model => model.listKondisi[idx].IsInclude, false, new { @onclick = "InitValue(this, " + @idx + ")" }) Tidak Termasuk</label>
+                    </td>
+                    <td colspan="2">
+                        @if (Model.listKondisi[idx].IsInclude)
+                        {
+                            <div class="row">
+                                <label class="col-md-3">@Html.CheckBoxFor(model => model.listKondisi[idx].IsKota, new { @class = "permultidrop", @onclick = "InitHargaKota(this, " + @idx + ")" }) Per Kota</label>
+                                @if (Model.listKondisi[idx].IsKota)
+                                {
+                                    <div class="col-md-9">
+                                        @Html.TextBoxFor(model => model.listKondisi[idx].ValKota, new { @class = "form-control-numeric-idr", @style = "width:96%" })
+                                        @Html.ValidationMessageFor(model => model.listKondisi[idx].ValKota)
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="col-md-9">
+                                        @Html.TextBoxFor(model => model.listKondisi[idx].ValKota, new { @class = "form-control-numeric-idr", @readonly = true, @style = "width:96%" })
+                                        @Html.ValidationMessageFor(model => model.listKondisi[idx].ValKota)
+                                    </div>
+                                }
+                            </div>
+                            <div class="row">
+                                <label class="col-md-3">@Html.CheckBoxFor(model => model.listKondisi[idx].IsTitik, new { @class = "permultidrop", @onclick = "InitHargaTitik(this, " + @idx + ")" }) Per Titik</label>
+                                @if (Model.listKondisi[idx].IsTitik)
+                                {
+                                    <div class="col-md-9">
+                                        @Html.TextBoxFor(model => model.listKondisi[idx].ValTitik, new { @class = "form-control-numeric-idr", @style = "width:96%" })
+                                        @Html.ValidationMessageFor(model => model.listKondisi[idx].ValTitik)
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="col-md-9">
+                                        @Html.TextBoxFor(model => model.listKondisi[idx].ValTitik, new { @class = "form-control-numeric-idr", @readonly = true, @style = "width:96%" })
+                                        @Html.ValidationMessageFor(model => model.listKondisi[idx].ValTitik)
+                                    </div>
+                                }
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="row">
+                                <label class="col-md-3">@Html.CheckBoxFor(model => model.listKondisi[idx].IsKota, new { @disabled = "disabled", @onclick = "InitHargaKota(this, " + @idx + ")" }) Per Kota</label>
+                                @if (Model.listKondisi[idx].IsKota)
+                                {
+                                    <div class="col-md-9">
+                                        @Html.TextBoxFor(model => model.listKondisi[idx].ValKota, new { @class = "form-control-numeric-idr", @style = "width:96%" })
+                                        @Html.ValidationMessageFor(model => model.listKondisi[idx].ValKota)
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="col-md-9">
+                                        @Html.TextBoxFor(model => model.listKondisi[idx].ValKota, new { @class = "form-control-numeric-idr", @readonly = true, @style = "width:96%" })
+                                        @Html.ValidationMessageFor(model => model.listKondisi[idx].ValKota)
+                                    </div>
+                                }
+                            </div>
+                            <div class="row">
+                                <label class="col-md-3">@Html.CheckBoxFor(model => model.listKondisi[idx].IsTitik, new { @disabled = "disabled", @onclick = "InitHargaTitik(this, " + @idx + ")" }) Per Titik</label>
+                                @if (Model.listKondisi[idx].IsTitik)
+                                {
+                                    <div class="col-md-9">
+                                        @Html.TextBoxFor(model => model.listKondisi[idx].ValTitik, new { @class = "form-control-numeric-idr", @style = "width:96%" })
+                                        @Html.ValidationMessageFor(model => model.listKondisi[idx].ValTitik)
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="col-md-9">
+                                        @Html.TextBoxFor(model => model.listKondisi[idx].ValTitik, new { @class = "form-control-numeric-idr", @readonly = true, @style = "width:96%" })
+                                        @Html.ValidationMessageFor(model => model.listKondisi[idx].ValTitik)
+                                    </div>
+                                }
+                            </div>
+                        }
+                    </td>
+                    <td></td>
+                </tr>
+            }
+
+            idx++;
+        }
+    </table>
+    <a class="btn btn-circle btn-icon-only green" href="javascript:;" onclick="AddKondisi()">
+        <i class="fa fa-plus"></i>
+    </a>
+</div>
+<script type="text/javascript">
+    var idx = @idx;
+    function AddKondisi()
+    {
+        @{
+            Model.listKondisi.Add(new DaftarHargaKondisi());
+        }
+        var markup = "<tr id='rowkondisi_" + idx + "'>" +
+                        "<input data-val='true' data-val-required='The IsDelete field is required.' id='listKondisi_"+idx+"__IsDelete' name='listKondisi["+idx+"].IsDelete' type='hidden' value='False'>" +            
+                        "<input data-val='true' data-val-required='The IsDefault field is required.' id='listKondisi_"+idx+"__IsDefault' name='listKondisi["+idx+"].IsDefault' type='hidden' value='True'>" +
+                        "<td><input class='form-control input-sm' id='listKondisi_" + idx + "kondisi' name='listKondisi[" + idx + "].kondisi'/></td>" +
+                        "<span class='field-validation-valid' data-valmsg-for='listKondisi_" + idx + "kondisi' data-valmsg-replace='true'></span>"+
+                        "<td><label><input id='listKondisi_" + idx + "__IsInclude' name='listKondisi[" + idx + "].IsInclude' type='radio' value='True' onclick='InitValue(this, " + idx + ")'> Termasuk</label></td>" +
+                        "<td><label><input checked='checked' id='listKondisi_" + idx + "__IsInclude' name='listKondisi[" + idx + "].IsInclude' type='radio' value='False' onclick='InitValue(this, " + idx + ")'> Tidak Termasuk</label></td>" +
+                        "<td><label><input class='billKon" + idx + "' data-val='true' data-val-required='The IsBill field is required.' disabled='disabled' id='listKondisi_" + idx + "__IsBill' name='listKondisi[" + idx + "].IsBill' type='radio' value='True' onclick='InitHarga(this, " + idx + ")'> As Bill</label></td>" +
+                        "<td><label class='col-md-3'> <input class='billKon" + idx + "' checked='checked' disabled='disabled' id='listKondisi_" + idx + "__IsBill' name='listKondisi[" + idx + "].IsBill' type='radio' value='False' onclick='InitHarga(this, " + idx + ")'> Rp </label>" +
+                        "<div class='col-md-9'>" +
+                            "<input class='form-control-numeric-idr" + idx + "' data-val='true' data-val-number='Nilai value harus berupa angka.' id='listKondisi_" + idx + "__value' name='listKondisi[" + idx + "].value' readonly='True' type='text' value=''>" +
+                        "</div></td>" +
+                        "<td><a class='btn btn-sm btn-circle btn-icon-only red' href='javascript:;' onclick='deleteRow(this,"+idx+")'><i class='fa fa-minus'></i></a></td>" +
+                     "</tr>"
+        $("#table-kondisi").append(markup);
+        $('.form-control-numeric-idr' + idx).kendoNumericTextBox({
+            min: 0,
+            max: 1000000000000000000,
+            decimals: 2,
+            format: "Rp ###,###.00 ",
+            spinners: false
+        });
+        idx++;
+    }
+
+    function deleteRow(btn,idx) {
+        $('#rowkondisi_' + idx).hide();
+        $('#listKondisi_' + idx + '__IsDelete').val(true);
+    }
+
+    function InitValue(el, idx){
+        if($("#listKondisi_" + idx + "__kondisi").val() != "Biaya Multidrop"){
+            if($(el).val() == "True"){
+                $(".billKon" + idx).prop('disabled',"");
+                if($('input[name="listKondisi[' + idx + '].IsBill"]:checked').val() == "False")
+                    $("#listKondisi_" + idx + "__value").data("kendoNumericTextBox").enable(true);
+            }
+            else{
+                $(".billKon" + idx).prop('disabled',"disabled");
+                $("#listKondisi_" + idx + "__value").data("kendoNumericTextBox").enable(false);
+            }
+        }else{
+            if($(el).val() == "True"){
+                $("#listKondisi_" + idx + "__IsKota").prop('disabled',"");
+                $("#listKondisi_" + idx + "__IsTitik").prop('disabled',"");
+                if($('input[name="listKondisi[' + idx + '].IsKota"]:checked').val() == "False")
+                    $("#listKondisi_" + idx + "__ValKota").data("kendoNumericTextBox").enable(true);
+                if($('input[name="listKondisi[' + idx + '].IsTitik"]:checked').val() == "False")
+                    $("#listKondisi_" + idx + "__ValTitik").data("kendoNumericTextBox").enable(true);
+            }
+            else{
+                $("#listKondisi_" + idx + "__IsKota").prop('disabled',"disabled");
+                $("#listKondisi_" + idx + "__IsTitik").prop('disabled',"disabled");
+                $("#listKondisi_" + idx + "__ValKota").data("kendoNumericTextBox").enable(false);
+                $("#listKondisi_" + idx + "__ValTitik").data("kendoNumericTextBox").enable(false);
+            }
+        }
+    }
+    function InitHarga(el, idx){
+        if($(el).val() == "True"){
+            $("#listKondisi_" + idx + "__value").data("kendoNumericTextBox").enable(false);
+        }
+        else{
+            $("#listKondisi_" + idx + "__value").data("kendoNumericTextBox").enable(true);
+        }
+    }
+    function InitHargaKota(el, idx){
+        if($(el).is(":checked")){
+            $("#listKondisi_" + idx + "__ValKota").data("kendoNumericTextBox").enable(true);
+        }
+        else{
+            $("#listKondisi_" + idx + "__ValKota").data("kendoNumericTextBox").enable(false);
+        }
+    }
+    function InitHargaTitik(el, idx){
+        if($(el).is(":checked")){
+            $("#listKondisi_" + idx + "__ValTitik").data("kendoNumericTextBox").enable(true);
+        }
+        else{
+            $("#listKondisi_" + idx + "__ValTitik").data("kendoNumericTextBox").enable(false);
+        }
+    }
+</script>

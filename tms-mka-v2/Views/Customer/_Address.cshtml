@@ -1,0 +1,280 @@
+﻿@model tms_mka_v2.Models.Customer
+
+@{
+    string currentController = (string)ViewContext.RouteData.Values["controller"];
+    string currentAction = (string)ViewContext.RouteData.Values["action"];
+    ViewBag.SubTitle = "Customer Address List";
+}
+
+<div class="row ">
+    <div class="col-md-6">
+        <div class="btn-group">
+            <div class="caption">
+                <h2>@ViewBag.SubTitle</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="btn-group pull-right">
+            <span class="btn green" id="btnAdd" title="Customer Address" data-toggle="modal" data-target="#modalFormAddress" onclick="ShowAddressPopup()">Add New Address</span>
+        </div>
+    </div>
+</div>
+<br />
+@using (Html.BeginForm("UpdateCustAdd", currentController))
+{
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(model => model.Id)
+    <table class="table table-striped table-hover table-bordered" id="table-custaddr">
+        <tr>
+            <th>No</th>
+            <th>
+                @Html.DisplayName("Kode")
+            </th>
+            <th>
+                @Html.DisplayName("Alamat")
+            </th>
+            <th>
+                @Html.DisplayName("Zona")
+            </th>
+            <th>
+                @Html.DisplayName("Kel/Desa")
+            </th>
+            <th>
+                @Html.DisplayName("Kecamatan")
+            </th>
+            <th>
+                @Html.DisplayName("Kab/Kota")
+            </th>
+            <th>
+                @Html.DisplayName("Provinsi")
+            </th>
+            <th>
+                @Html.DisplayName("Longitude")
+            </th>
+            <th>
+                @Html.DisplayName("Latitude")
+            </th>
+            <th>
+                @Html.DisplayName("Radius")
+            </th>
+            <th>
+                @Html.DisplayName("Telp")
+            </th>
+            <th>
+                @Html.DisplayName("Fax")
+            </th>
+            <th>
+                @Html.DisplayName("Office Type")
+            </th>
+            <th>Action</th>
+        </tr>
+        @{int i = 0;}
+
+        @foreach (tms_mka_v2.Context.CustomerAddress item in Model.ListAddress)
+        {
+            i++;
+        <tr>
+            @Html.Hidden("AddressId", (Int32)item.Id)
+            <td style="display:none">
+                <input value='@item.Code;@item.Alamat;@item.Zona;@item.IdProvinsi;@item.IdKabKota;@item.IdKec;@item.IdKel;@item.Longitude;@item.Latitude;@item.Radius;@item.Telp;@item.Fax;@item.OfficeTypeId' name='listAddress' />
+            </td>
+            <td class="no_address">@i</td>
+            <td>
+                @item.Code
+            </td>
+            <td>
+                @item.Alamat
+            </td>
+            <td>
+                @item.Zona
+            </td>
+            <td>
+                @item.LocKelurahan.Nama
+            </td>
+            <td>
+                @item.LocKecamatan.Nama
+            </td>
+            <td>
+                @item.LocKabKota.Nama
+            </td>
+            <td>
+                @item.LocProvinsi.Nama
+            </td>
+            <td>
+                @item.Longitude
+            </td>
+            <td>
+                @item.Latitude
+            </td>
+            <td>
+                @item.Radius
+            </td>
+            <td>
+                @item.Telp
+            </td>
+            <td>
+                @item.Fax
+            </td>
+            <td>
+                @item.LookUpCodesOffice.Nama
+            </td>
+            <td>
+                <a href='#' data-toggle='modal' data-target='#modalFormAddress' onclick='EditAddRow($(this))'>Edit</a> | <a href='#' onclick='RemoveAddRow($(this));'>Delete</a>
+            </td>
+        </tr>
+        }
+
+    </table>
+    <div class="form-group updatebutton">
+        <div class="col-md-4">
+            <input type="submit" name="updateAddress" value="Update" class="btn btn-default" />
+            <input type="submit" name="updateAddress" value="Update and Next" class="btn btn-default" />
+        </div>
+    </div>
+}
+<div id="modalFormAddress" class="modal fade bs-modal-lg" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                <h4 class="modal-title">Address List</h4>
+            </div>
+            <div class="modal-body">
+                <form id="formAddress" class="form-horizontal">
+                    @Html.Hidden("CustomerAddressId")
+                    @Html.Hidden("Condition")
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                @Html.Label("Kode", new { @class = "control-label col-md-3" })
+                                <div class="col-md-7">
+                                    <input id="KodeAdd" name="KodeAdd" class="k-textbox" required validationmessage="Kode harus diisi" />
+                                    <span class="k-invalid-msg" data-for="KodeAdd"></span>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                @Html.Label("Alamat", new { @class = "control-label col-md-3" })
+                                <div class="col-md-7">
+                                    <textarea rows="9" id="AlamatAdd" name="AlamatAdd" class="k-textbox" required validationmessage="Alamat harus diisi"></textarea>
+                                    <span class="k-invalid-msg" data-for="AlamatAdd"></span>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                @Html.Label("Telephone", new { @class = "control-label col-md-3" })
+                                <div class="col-md-7">
+                                    <input id="TlpAdd" name="TlpAdd" class="k-textbox" required validationmessage="Telephone harus diisi" />
+                                    <span class="k-invalid-msg" data-for="TlpAdd"></span>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                @Html.Label("Fax", new { @class = "control-label col-md-3" })
+                                <div class="col-md-7">
+                                    <input id="FaxAdd" name="FaxAdd" class="k-textbox" required validationmessage="Fax harus diisi" />
+                                    <span class="k-invalid-msg" data-for="FaxAdd"></span>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                @Html.Label("Office Type", new { @class = "control-label col-md-3" })
+                                <div class="col-md-7">
+                                    <input id="OfficeAdd" name="OfficeAdd" required validationmessage="Office Type harus diisi" data-comboreq-msg="Office Type harus diisi" />
+                                    <span class="k-invalid-msg" data-for="OfficeAdd"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                @Html.Label("Zona", new { @class = "control-label col-md-3" })
+                                <div class="col-md-7">
+                                    <input id="ZonaAdd" name="ZonaAdd" pattern="^[a-zA-Z][a-zA-Z0-9-_\.]{5,12}$" class="k-textbox" required validationmessage="Zona harus diisi" />
+                                    <span class="k-invalid-msg" data-for="ZonaAdd"></span>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                @Html.Label("Provinsi", new { @class = "control-label col-md-3" })
+                                <div class="col-md-7">
+                                    <input id="ProvinsiAdd" name="ProvinsiAdd" required validationmessage="Provinsi harus diisi" data-comboreq-msg="Provinsi harus diisi" />
+                                    <span class="k-invalid-msg" data-for="ProvinsiAdd"></span>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                @Html.Label("Kabupaten/Kota", new { @class = "control-label col-md-3" })
+                                <div class="col-md-7">
+                                    <input id="KotaAdd" name="KotaAdd" required validationmessage="Kabupaten/Kota harus diisi" data-comboreq-msg="Kabupaten/Kota harus diisi" />
+                                    <span class="k-invalid-msg" data-for="KotaAdd"></span>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                @Html.Label("Kecamatan", new { @class = "control-label col-md-3" })
+                                <div class="col-md-7">
+                                    <input id="KecamatanAdd" name="KecamatanAdd" required validationmessage="Kecamatan harus diisi" data-comboreq-msg="Kecamatan harus diisi" />
+                                    <span class="k-invalid-msg" data-for="KecamatanAdd"></span>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                @Html.Label("Kelurahan/desa", new { @class = "control-label col-md-3" })
+                                <div class="col-md-7">
+                                    <input id="KelurahanAdd" name="KelurahanAdd" required validationmessage="Kelurahan/desa harus diisi" data-comboreq-msg="Kelurahan/desa harus diisi" />
+                                    <span class="k-invalid-msg" data-for="KelurahanAdd"></span>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                @Html.Label("Longitude", new { @class = "control-label col-md-3" })
+                                <div class="col-md-7">
+                                    <input id="LongAdd" name="LongAdd" class="form-control-numeric-latlong" required validationmessage="Longitude harus diisi" />
+                                    <span id="valLong" class="k-invalid-msg" data-for="LongAdd"></span>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                @Html.Label("Latitude", new { @class = "control-label col-md-3" })
+                                <div class="col-md-7">
+                                    <input id="LatAdd" name="LatAdd" class="form-control-numeric-latlong" required validationmessage="Latitude harus diisi" />
+                                    <span id="valLat" class="k-invalid-msg" data-for="LatAdd"></span>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                @Html.Label("Radius", new { @class = "control-label col-md-3" })
+                                <div class="col-md-7">
+                                    <div class="row">
+                                        <div class="col-md-8">
+                                            <input id="RadiusAdd" name="RadiusAdd" class="form-control-numeric-ns" required validationmessage="Radius harus diisi" />
+                                            <span class="k-invalid-msg" data-for="RadiusAdd"></span>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <button type="button" class="btn green" id="btnviewmap" title="View Map" data-toggle="modal" data-target="#modalviewmapaddress" onclick="getMapByLatLong($('#LongAdd').val(), $('#LatAdd').val(), $('#RadiusAdd').val(), cboKec.text(), document.getElementById('viewmap'), $('#modalviewmapaddress'))">Map</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn green" onclick="SaveAdd($('#Condition').val());">Submit</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="modalviewmapaddress" class="modal fade bs-modal-lg" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                <h4 class="modal-title">View Map</h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-horizontal">
+                    <div class="form-group">
+                        <div class="col-md-12">
+                            <div id="viewmap" style="height:400px; width:800px; margin: auto"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn green" onclick="addMapLatLongAdd()">Submit</button>
+            </div>
+        </div>
+    </div>
+</div>

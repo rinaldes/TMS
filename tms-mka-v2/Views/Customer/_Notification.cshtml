@@ -1,0 +1,260 @@
+﻿@model tms_mka_v2.Models.Customer
+@using tms_mka_v2.Models
+@using System.Web.Script.Serialization
+@{
+    string currentController = (string)ViewContext.RouteData.Values["controller"];
+    string currentAction = (string)ViewContext.RouteData.Values["action"];
+    ViewBag.SubTitle = "Customer Notification";
+}
+<style>
+    .checkbox-list {
+        display: block;
+        float: left;
+        width: 25%;
+    }
+
+    .clear {
+        clear: both;
+    }
+</style>
+<div class="row ">
+    <div class="col-md-6">
+        <div class="btn-group">
+            <div class="caption">
+                <h2>@ViewBag.SubTitle</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="btn-group pull-right">
+            <span class="btn green" id="btnNotif" data-toggle="modal" data-target="#modalFormNotif" title="Customer Notification" onclick="ShowNotifPopup()">Add New Notifiaction</span>
+        </div>
+    </div>
+</div>
+<br />
+@using (Html.BeginForm("UpdateCustNotif", currentController))
+{
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(model => model.Id)
+    <table class="table table-striped table-hover table-bordered" id="table-custnotif">
+        <tr>
+            <th>No</th>
+            <th>
+                @Html.DisplayName("Status")
+            </th>
+            <th>
+                @Html.DisplayName("Nama")
+            </th>
+            <th>
+                @Html.DisplayName("Jabatan")
+            </th>
+            <th>
+                @Html.DisplayName("Type")
+            </th>
+            <th>
+                @Html.DisplayName("Email")
+            </th>
+            <th>
+                @Html.DisplayName("SMS")
+            </th>
+            <th>
+                @Html.DisplayName("Rute")
+            </th>
+            <th>
+                @Html.DisplayName("Truck Type")
+            </th>
+            <th>Action</th>
+        </tr>
+        @{int i = 0;}
+
+        @foreach (tms_mka_v2.Context.CustomerNotification item in (List<tms_mka_v2.Context.CustomerNotification>)Model.ListNotif)
+        {
+            i++;
+            List<string> strRute = new List<string>();
+            List<int> strIdRute = new List<int>();
+            List<string> strTruck = new List<string>();
+            List<int> strIdTruck = new List<int>();
+            foreach (tms_mka_v2.Context.CustomerNotifRute ruteItem in item.CustomerNotifRute)
+            {
+                strRute.Add(ruteItem.Rute.LocationAsal.Nama + " - " + ruteItem.Rute.LocationTujuan.Nama);
+                strIdRute.Add(ruteItem.IdRute.Value);
+            }
+            foreach (tms_mka_v2.Context.CustomerNotifTruck truckItem in item.CustomerNotifTruck)
+            {
+                strTruck.Add(truckItem.JenisTrucks.StrJenisTruck);
+                strIdTruck.Add(truckItem.IdTruck.Value);
+            }
+            tms_mka_v2.Context.CustomerPic dataPic = item.Customer.CustomerPic.Where(d => d.Id == item.IdPic).FirstOrDefault();
+        <tr>
+            @Html.Hidden("NotifId", (Int32)item.Id)
+            <td style="display:none">
+                <input value='@item.IsActive.ToString();@item.IdPic;@item.NotifType;@string.Join(",", strIdRute);@string.Join(",", strIdTruck)' name='listNotif' />
+            </td>
+            <td class="no_notif">@i</td>
+            <td>
+                @if (item.IsActive)
+                    {
+                    <text>Aktif</text>
+                    }
+                    else
+                    {
+                    <text>Tidak Aktif</text>
+                    }
+            </td>
+            <td>
+                @dataPic.Name
+            </td>
+            <td>
+                @dataPic.LookUpCodesJabatan.Nama
+            </td>
+            <td>
+                @item.NotifType
+            </td>
+            <td>
+                @dataPic.EmailAdd
+            </td>
+            <td>
+                @dataPic.Mobile
+            </td>
+            <td>
+                @string.Join(", ", strRute)
+            </td>
+            <td>
+                @string.Join(", ", strTruck)
+            </td>
+            <td>
+                <a href='#' data-toggle='modal' data-target='#modalFormNotif' onclick='EditNotif($(this))'>Edit</a> | <a href='#' onclick='RemoveNotif($(this));'>Delete</a>
+            </td>
+        </tr>
+        }
+
+    </table>
+    <div class="form-group updatebutton">
+        <div class="col-md-4">
+            <input type="submit" name="updateNotif" value="Update" class="btn btn-default" />
+            <input type="submit" name="updateNotif" value="Update and Next" class="btn btn-default" />
+        </div>
+    </div>
+}
+<div id="modalFormNotif" class="modal fade bs-modal-lg" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div id="modalForm" class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                <h4 class="modal-title">Customer Notification</h4>
+            </div>
+            <div class="modal-body">
+                <form id="formNotif" class="form-horizontal">
+                    @Html.Hidden("CustomerNotifId")
+                    @Html.Hidden("Condition")
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                @Html.Label("Status", new { @class = "control-label col-md-4" })
+                                <div class="col-md-8">
+                                    <label class="checkbox-inline">
+                                        <input type="checkbox" id="StatusNotif" name="StatusNotif" />
+                                        Active
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                @Html.Label("Nama", new { @class = "control-label col-md-4" })
+                                <div class="col-md-8">
+                                    <div class="input-group input-group-sm">
+                                        <input type="hidden" id="IdPicNotif" />
+                                        <input id="NamaPicNotif" class="k-textbox" type="text" readonly required data-required-msg="Pic harus diisi." />
+                                        <span class="input-group-btn">
+                                            <button type="button" class="btn btn-success" data-toggle="modal" data-target="#modalGridPic" onclick="callerGrid = 'notif'">Browse</button>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                @Html.Label("Jabatan", new { @class = "control-label col-md-4" })
+                                <div class="col-md-8">
+                                    <input id="JabatanPicNotif" class="k-textbox" readonly />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                @Html.Label("Email", new { @class = "control-label col-md-4" })
+                                <div class="col-md-8">
+                                    <input id="EmailPicNotif" class="k-textbox" readonly />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                @Html.Label("Mobile Phone", new { @class = "control-label col-md-4" })
+                                <div class="col-md-8">
+                                    <input id="MobilePicNotif" class="k-textbox" readonly />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                @Html.Label("Type", new { @class = "control-label col-md-4" })
+                                <div class="col-md-8">
+                                    <label class="radio-inline"><input type="radio" name="rdTypeNotif" id="rdTypeNotif" value="EMAIL" checked> EMAIL</label>
+                                    <label class="radio-inline"><input type="radio" name="rdTypeNotif" id="rdTypeNotif" value="SMS"> SMS</label>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                @Html.Label("Rute", new { @class = "control-label col-md-4" })
+                                <div class="col-md-8">
+                                    <div class="input-group input-group-sm">
+                                        <input type="hidden" id="IdRuteNotif" />
+                                        <input id="RuteNotif" class="form-control" readonly />
+                                        <span class="input-group-btn">
+                                            <button type="button" class="btn btn-success" data-toggle="modal" data-target="#modalGridRute" onclick="refreshRute()">Browse</button>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                @Html.Label("Truck", new { @class = "control-label col-md-3" })
+                                <div class="col-md-7">
+                                        <div class="col-md-6">
+                                            <label class="checkbox checkbox-outline">
+                                                <input type="checkbox" value="0" name="AllTruck" id="chkAll" />
+                                                All
+                                                <span></span>
+                                            </label>
+                                        </div>
+                                        
+                                        @foreach (tms_mka_v2.Context.JenisTrucks item in Model.ListTruck)
+                                        {
+                                            <div class="col-md-6">
+                                                <label class="checkbox checkbox-outline">
+                                                    <input type="checkbox" value="@item.Id|@item.StrJenisTruck" name="chkTruck" id="chkTruck[@item.Id]" />
+                                                    @item.StrJenisTruck
+                                                    <span></span>
+                                                </label>
+                                        </div>
+                                        }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn green" onclick="SaveNotif($('#Condition').val());">Submit</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="modalGridRute" class="modal fade bs-modal-lg" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div id="modalForm" class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                <h4 class="modal-title">List Rute</h4>
+            </div>
+            <div class="modal-body">
+                <div id="GridRute"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn green" onclick="SelectRute();">Submit</button>
+            </div>
+        </div>
+    </div>
+</div>

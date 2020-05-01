@@ -1,0 +1,148 @@
+﻿@model tms_mka_v2.Models.Customer
+@using tms_mka_v2.Models
+@using System.Web.Script.Serialization
+@{
+    string currentController = (string)ViewContext.RouteData.Values["controller"];
+    string currentAction = (string)ViewContext.RouteData.Values["action"];
+    ViewBag.SubTitle = "Customer Billing";
+}
+<div class="row ">
+    <div class="col-md-6">
+        <div class="btn-group">
+            <div class="caption">
+                <h2>@ViewBag.SubTitle</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="btn-group pull-right">
+            <span class="btn green" id="btnBilling" data-toggle="modal" data-target="#modalFormBilling" title="Customer Billing" onclick="ShowBillingPopup()">Add New Billing</span>
+        </div>
+    </div>
+</div>
+<br />
+@using (Html.BeginForm("UpdateCustBilling", currentController))
+{
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(model => model.Id)
+    <div id="GridCustBilling"></div>
+}
+<div id="modalFormBilling" class="modal fade bs-modal-lg" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-full">
+        <div id="modalForm" class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                <h4 class="modal-title">Customer Billing</h4>
+            </div>
+            <div class="modal-body">
+                <form id="formBilling" class="form-horizontal">
+                    @Html.Hidden("CustomerBillingId")
+                    @Html.Hidden("Condition")
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                @Html.Label("Nama Dokumen", new { @class = "control-label col-md-3" })
+                                <div class="col-md-7">
+                                    <input type="text" id="Dok" name="Dok" class="k-textbox" pattern="[a-zA-Z0-9\s]+" required data-required-msg="Nama dokumen harus diisi." validationmessage="Format Nama Dokumen tidak valid." />
+                                    <span class="k-invalid-msg" data-for="Dok"></span>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                @Html.Label("Lembar", new { @class = "control-label col-md-3" })
+                                <div class="col-md-7">
+                                    <input id="Lembar" name="Lembar" class="k-numerictextbox" required validationmessage="Lembar harus diisi" />
+                                    <span class="k-invalid-msg" data-for="Lembar"></span>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                @Html.Label("Warna", new { @class = "control-label col-md-3" })
+                                <div class="col-md-7">
+                                    <div class="mt-checkbox-list">
+                                        @foreach (tms_mka_v2.Context.LookupCode item in Model.ListWarna)
+                                        {
+                                            <text>
+                                                <div class="row">
+                                                    &nbsp; &nbsp; &nbsp;
+                                                    <label class="checkbox-inline"><input class="warna" type="checkbox" value="@item.Nama"> @item.Nama</label>
+                                                </div>
+                                            </text>
+                                        }
+                                    </div>
+                                    <div class="row">
+                                        <input hidden name="Hidwarna" id="Hidwarna" data-warnareq-msg="Warna harus dipilih." />
+                                        <span class="k-invalid-msg" data-for="hidwarna"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                @Html.Label("Stempel", new { @class = "control-label col-md-3" })
+                                <div class="col-md-7">
+                                    <label class="radio-inline"><input type="radio" name="rdStampe" id="rdStampe" value="true" checked> Yes</label>
+                                    &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+                                    <label class="radio-inline"><input type="radio" name="rdStampe" id="rdStampe" value="false"> No</label>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                @Html.Label("Attachment", new { @class = "control-label col-md-3" })
+                                <div class="col-md-7">
+                                    <div id="wrapper"></div>
+                                    @*<input name="files" id="filesBilling" type="file" />*@
+                                    @*<a id="tempfile" style="display:none"></a>*@
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-8">
+                            <div class="form-group">
+                                <label class="control-label col-md-3" style="text-align:left"> Billing Info :</label>
+                            </div>
+                            <div class="form-group">
+                                <input hidden name="Info" id="Info" data-inforeq-msg="Billiing info harus dipilih." />
+                                <span class="k-invalid-msg" data-for="Info"></span>
+                            </div>
+                            <div class="form-group">
+                                <label class="checkbox-inline control-label col-md-3" style="text-align:left"><input id="IsFax" type="checkbox">Fax</label>
+                                <div class="col-md-2">
+<<<<<<< HEAD
+                                    <input type="tel" id="KodeFaxBilling" name="KodeFaxBilling" class="k-textbox form-control-kodearea" data-kodefaxreq-msg="Kode area harus diisi." />
+                                    <span class="k-invalid-msg" data-for="KodeFaxBilling"></span>
+                                </div>
+                                <div class="col-md-5">
+                                    <input type="tel" id="FaxBilling" name="FaxBilling" class="k-textbox form-control-tel" data-faxreq-msg="Fax harus diisi." />
+=======
+                                    <input id="KodeFaxBilling" name="KodeFaxBilling" class="k-textbox form-control-kodearea" required validationmessage="Kode area harus diisi" />
+                                    <span class="k-invalid-msg" data-for="KodeFaxBilling"></span>
+                                </div>
+                                <div class="col-md-5">
+                                    <input id="FaxBilling" name="FaxBilling" class="k-textbox" data-faxreq-msg="Fax harus diisi." readonly />
+>>>>>>> 106b1e7ba06a662c5c47015f61f3dc8d9590a03b
+                                    <span class="k-invalid-msg" data-for="FaxBilling"></span>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="checkbox-inline control-label col-md-3" style="text-align:left"><input id="IsEmail" type="checkbox">Email</label>
+                                <div class="col-md-7">
+                                    <input type="email" id="EmailBilling" name="EmailBilling" class="form-control input-sm" data-emailreq-msg="Email harus diisi." data-email-msg="Format email tidak valid." disabled="disabled" />
+                                    <span class="k-invalid-msg" data-for="EmailBilling"></span>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="checkbox-inline control-label col-md-4" style="text-align:left"><input id="IsFaktur" type="checkbox" style="float:left">Tukar Faktur</label>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-md-11">
+                                    <div id="gridJadwal" style="display:none"></div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="checkbox-inline control-label col-md-4" style="text-align:left"><input id="IsJasa" type="checkbox" style="float:left">Jasa Pengiriman</label>
+                            </div>              
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn green" onclick="SaveBilling($('#Condition').val());">Submit</button>
+            </div>
+        </div>
+    </div>
+</div>

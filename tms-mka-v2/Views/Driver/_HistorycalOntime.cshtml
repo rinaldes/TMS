@@ -1,0 +1,23 @@
+﻿@using tms_mka_v2.Models
+@model tms_mka_v2.Models.Driver
+@{
+    string currentController = (string)ViewContext.RouteData.Values["controller"];
+    string currentAction = (string)ViewContext.RouteData.Values["action"];
+}
+<div class="form-group">
+    <div class="mt-radio-inline">
+        <label class="mt-radio">
+            <input type="radio" id="rdKondisi" name="rdKondisi" value="success"> Success: 150
+            <span></span>
+        </label>
+        <label class="mt-radio">
+            <input type="radio" id="rdKondisi" name="rdKondisi" value="ontime"> On-Time: 75 (50%)
+            <span></span>
+        </label>
+        <label class="mt-radio">
+            <input type="radio" id="rdKondisi" name="rdKondisi" value="late"> Late: 75 (50%)
+            <span></span>
+        </label>
+    </div>
+    <div id="gridOnTime"></div>
+</div>

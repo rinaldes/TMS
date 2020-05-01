@@ -1,0 +1,277 @@
+﻿@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "Daftar Barang";
+    string currentController = (string)ViewContext.RouteData.Values["controller"];
+    string currentAction = "Index";
+}
+<div class="portlet light ">
+    <div class="portlet-title">
+        <div class="caption">
+            <span class="caption-subject font-dark sbold uppercase">@ViewBag.Title</span>
+        </div>
+        <div class="actions">
+            <a class="btn btn-sm green dropdown-toggle"
+               href="@Url.Action("Add","SalesOrderKonsolidasi")">
+                <i class="fa fa-plus"></i>Add
+            </a>
+        </div>
+    </div>
+    <div class="portlet-body form">
+        <div class="portlet box blue ">
+            <div class="portlet-title">
+                <div class="caption">
+                    Hide Column :
+                </div>
+                <div class="tools">
+                    <a href="" class="expand"> </a>
+                </div>
+            </div>
+            <div class="portlet-body form" style="display: none;">
+                <form role="form">
+                    <div class="form-body">
+                        <div id="content-col" class="md-checkbox-inline" style="margin-left:10px"></div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div id="grid"></div>
+    </div>
+</div>
+
+@section scripts
+{
+    <script id="command-template" type="text/x-kendo-template">
+        # if(Status == "draft") { #
+        <a class="k-button-icon k-grid-edit" href="\\#" title="Edit" onclick="editItem(#=SalesOrderId#)"><span class="glyphicon glyphicon-edit"></span></a>
+        <a class="k-button-icon k-grid-edit" href="\\#" title="Hapus" onclick="deleteItem(#=SalesOrderId#)"><span class="glyphicon glyphicon-remove"></span></a>
+        <a class="k-button-icon k-grid-edit" href="\\#" title="Submit" onclick="submitItem(#=SalesOrderId#)"><span class="glyphicon glyphicon-check"></span></a>
+        # } else if (Status == "save" && IsSelect == false) { #
+        <a class="k-button-icon k-grid-edit" href="\\#" title="Edit" onclick="editItem(#=SalesOrderId#)"><span class="glyphicon glyphicon-edit"></span></a>
+        <a class="k-button-icon k-grid-edit" href="\\#" title="Hapus" onclick="deleteItem(#=SalesOrderId#)"><span class="glyphicon glyphicon-remove"></span></a>
+        # } #
+    </script>
+
+    <script type="text/javascript">
+        function submitItem(id) {
+            goToSubmitPage('@Url.Action("Submit")' + "?id=" + id, gridIndex.dataSource);
+        }
+
+        function deleteItem(id) {
+            goToDeletePage('@Url.Action("Delete")' + "?id=" + id, gridIndex.dataSource);
+        }
+
+        function editItem(id) {
+            window.location.href = "@Url.Action("Edit")" + "?id=" + id;
+        }
+
+        $(document).ready(function () {
+            currController = '@currentController';
+            currAction = '@currentAction';
+
+            var ds = new kendo.data.DataSource({
+                transport: {
+                    read: {
+                        url: '@Url.Action("Binding")',
+                        dataType: "json"
+                    },
+                },
+                schema: {
+                    total: "total",
+                    data: "data",
+                    model: {
+                        fields: {                            
+                            "SalesOrderId": { type: "number" },
+                            "SalesOrderkosolidasiId": { type: "number" },
+                            "SONumber": { type: "string" },
+                            "Urutan": { type: "number" },
+                            "TanggalOrder": { type: "date" },
+                            "TanggalMasuk": { type: "date" },
+                            "SONumberCust": { type: "date" },
+                            "CustomerId": { type: "number" },
+                            "KodeCustomer": { type: "string" },
+                            "KodeNama": { type: "string" },
+                            "NamaCustomer": { type: "string" },
+                            "SupplierId": { type: "number" },
+                            "SupplierName": { type: "string" },
+                            "KodeCustomerTagihan": { type: "string" },
+                            "NamaCustomerTagihan": { type: "string" },
+                            "Keterangan": { type: "string" },
+                            "ProductId": { type: "number" },
+                            "StrProduct": { type: "string" },
+                            "Suhu": { type: "number" },
+                            "Rute": {type: "string"},
+                            "TypeKonsolidasi": { type: "string" },
+                            "StrType": { type: "string" },
+                            "Tonase": { type: "number" },
+                            "karton": { type: "number" },
+                            "Pallet": { type: "number" },
+                            "Container": { type: "number" },
+                            "m3": { type: "number" },
+                            "isMinimumBerat": { type: "boolean" },
+                            "BeratMinimum": { type: "number" },                            
+                            "PerhitunganDasar": { type: "string" },
+                            "Harga": { type: "number" },
+                            "TotalHarga": { type: "number" },
+                            "CaraBayar": {type: "string"},
+                            "Status": {type: "string"},
+                            "IsSelect":{type: "boolean"}
+                        }
+                    }
+                },
+                pageSize: 10,
+                pageable: true,
+                sortable: true,
+                sort: { field: "DateStatus", dir: "desc" }
+            });
+
+            gridIndex = $("#grid").kendoGrid({
+                dataSource: ds,
+                filterable: kendoGridFilterable,
+                sortable: true,
+                reorderable: true,                
+                pageable: true,
+                groupable: true,
+                resizable: true,
+                scrollable: true,
+                columns: [
+                    {
+                        template: kendo.template($("#command-template").html()),
+                        width: 70
+                    },                    
+                    {
+                        field: "SONumber",
+                        title: "No SO",
+                        width: "135px"
+                    },
+                    {
+                        field: "TanggalOrder",
+                        title: "Tanggal Order",
+                        template: "#= kendo.toString(kendo.parseDate(TanggalOrder, 'yyyy-MM-dd'), 'dd/MM/yyyy') #",
+                        width: "150px",
+                        groupHeaderTemplate: "Tanggal Order : #= value != null ? kendo.toString(kendo.parseDate(value, 'yyyy-MM-dd'), 'dd/MM/yyyy') : '' #"
+                    },
+                    {
+                        field: "TanggalMasuk",
+                        title: "Tanggal Masuk",
+                        template: "#= kendo.toString(kendo.parseDate(TanggalMasuk, 'yyyy-MM-dd'), 'dd/MM/yyyy') #",
+                        width: "150px",
+                        groupHeaderTemplate: "Tanggal Masuk : #= value != null ? kendo.toString(kendo.parseDate(value, 'yyyy-MM-dd'), 'dd/MM/yyyy') : '' #"
+                    },
+                    {
+                        field: "KodeNama",
+                        title: "Kode Nama",
+                        width: "180px"
+                    },
+                    {
+                        field: "NamaCustomer",
+                        title: "Customer",
+                        width: "180px"
+                    },
+                    {
+                        field: "SupplierName",
+                        title: "Supplier",
+                        width: "180px"
+                    },
+                    {
+                        field: "Keterangan",
+                        title: "Keterangan",
+                        width: "190px"
+                    },
+                    {
+                        field: "StrProduct",
+                        title: "Jenis Barang",
+                        width: "150px"
+                    },
+                    {
+                        field: "Suhu",
+                        title: "Suhu",
+                        width: "80px",
+                        attributes: { style: "text-align:right;" }
+                    },
+                    {
+                        field: "Rute",
+                        title: "Rute",
+                        width: "150px"
+                    },
+                    {
+                        field: "TypeKonsolidasi",
+                        title: "Type",                        
+                        width: "100px"
+                    },
+                    {
+                        field: "Tonase",
+                        title: "Tonase",
+                        attributes: { style: "text-align:right;" },
+                        width: "100px"
+                    },
+                    {
+                        field: "karton",
+                        title: "karton",
+                        attributes: { style: "text-align:right;" },
+                        width: "100px"
+                    },
+                    {
+                        field: "Pallet",
+                        title: "Pallet",
+                        attributes: { style: "text-align:right;" },
+                        width: "100px"
+                    },
+                    {
+                        field: "Container",
+                        title: "Container",
+                        attributes: { style: "text-align:right;" },
+                        width: "100px"
+                    },
+                    {
+                        field: "m3",
+                        title: "m3",
+                        attributes: { style: "text-align:right;" },
+                        width: "100px"
+                    },
+                    {
+                        field: "isMinimumBerat",
+                        title: "Minimum Berat",
+                        template: "#= isMinimumBerat ? 'Ya' : 'Tidak' #",
+                        width: "130px"
+                    },
+                    {
+                        field: "PerhitunganDasar",
+                        title: "Dasar Perhitungan",
+                        width: "150px"
+                    },
+                    {
+                        field: "Harga",
+                        template: 'Rp. #: Harga == null ? 0 : kendo.format("{0:n2}", Harga)#',
+                        attributes: { style: "text-align:right;" },
+                        title: "Harga",
+                        width: "150px"
+                    },
+                    {
+                        field: "TotalHarga",
+                        title: "Total Perhitungan",
+                        template: 'Rp. #: TotalHarga == null ? 0 : kendo.format("{0:n2}", TotalHarga)#',
+                        attributes: { style: "text-align:right;" },
+                        width: "150px"
+                    },
+                    {
+                        field: "CaraBayar",
+                        title: "Cara Pembayaran",
+                        width: "130px"
+                    },
+                ],
+            }).data("kendoGrid");
+
+            @foreach (tms_mka_v2.Context.UserReference item in (List<tms_mka_v2.Context.UserReference>)ViewBag.listKolom)
+            {
+                <text>
+            listKolom.push('@item.Coloumn');
+            </text>
+            }
+
+            GetColomnData(gridIndex);
+        })
+    </script>
+}
+
+

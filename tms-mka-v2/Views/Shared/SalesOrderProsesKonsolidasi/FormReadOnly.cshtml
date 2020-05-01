@@ -1,0 +1,306 @@
+﻿@using tms_mka_v2.Models;
+@model tms_mka_v2.Models.SalesOrderProsesKonsolidasi
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    string currentController = (string)ViewContext.RouteData.Values["controller"];
+    string currentAction = ViewBag.PostData == null ? (string)ViewContext.RouteData.Values["action"] : ViewBag.PostData;
+    string backLink = Url.Action("Index");
+}
+
+<div class="portlet light">
+    <div class="portlet-title">
+        <div class="caption">
+            <span class="caption-subject font-dark sbold uppercase">@ViewBag.Title</span>
+        </div>
+    </div>
+    <div class="portlet-body form">
+        @using (@Html.BeginForm(currentAction, currentController, FormMethod.Post, new { @class = "form-horizontal", @id = "formsubmit" }))
+        {
+            @Html.ValidationSummary(true)
+            @Html.HiddenFor(model => model.SalesOrderId)
+            @Html.HiddenFor(model => model.SalesOrderProsesKonsolidasiId)
+            @Html.HiddenFor(model => model.IdJnsTruck)
+            @Html.HiddenFor(model => model.Status)
+            <div class="portlet light">
+                <div class="portlet-title">
+                    <div class="caption font-green-sharp">
+                        <span class="caption-subject"> Basic Info</span>
+                    </div>
+                    <div class="tools">
+                        <a href="" class="collapse"> </a>
+                    </div>
+                </div>
+                <div class="portlet-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="control-label col-md-3"> Tanggal Proses</label>
+                                <label class="control-label col-md-9">: @Model.TanggalProses.Value.ToShortDateString()</label>
+                                @Html.HiddenFor(model => model.TanggalProses)
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-3"> NO SO</label>
+                                <label class="control-label col-md-9">: @Model.SONumber</label>
+                                @Html.HiddenFor(model => model.SONumber)
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-3"> Tanggal Muat</label>
+                                <label class="control-label col-md-9">: @Model.TanggalMuat.Value.ToShortDateString()  @Model.JamMuat.ToString()</label>
+                                @Html.HiddenFor(model => model.TanggalMuat)
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-3"> Jenis Truk</label>
+                                <label class="control-label col-md-9">: @Model.StrJnsTruck</label>
+                                @Html.HiddenFor(model => model.StrJnsTruck)
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="control-label col-md-3"> Rute</label>
+                                <label class="control-label col-md-9">: @Model.Rute</label>
+                                @Html.HiddenFor(model => model.Rute)
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-3"> Multidrop</label>
+                                <label class="control-label col-md-9">: @Model.Multidrop</label>
+                                @Html.HiddenFor(model => model.Multidrop)
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="portlet light">
+                            <div class="portlet-title">
+                                <div class="caption font-green-sharp">
+                                    <span class="caption-subject"> Customer</span>
+                                </div>
+                                <div class="tools">
+                                    <a href="" class="collapse"> </a>
+                                </div>
+                            </div>
+                            <div class="portlet-body">
+                                <div id="GridKonsolidasi"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            if (ViewBag.kondisi == "inputdp")
+            {
+                @*@Html.Partial("_InputDp", Model)*@
+                <br />
+                @Html.Partial("SalesOrderOnCall/_InputDp", Model)
+                <div class="row">
+                    <br />
+                    <div class="form-group">
+                        <div class="col-md-12" style="margin:0px 15px 0px 15px">
+                            <a href="@Url.Action("Index","ListOrder")" class="btn btn-link" style="width:100px">Cancel</a>
+                        </div>
+                    </div>
+                </div>
+            }
+            @*if (ViewBag.kondisi == "revisiTanggal")
+            {
+                <br />
+                @Html.Partial("SalesOrderProsesKonsolidasi/_RevisiTanggal", Model)
+                <div class="row">
+                    <br />
+                    <div class="form-group">
+                        <div class="col-md-12" style="margin:0px 15px 0px 15px">                            
+                            <button type="submit" name="btnsave" value="draft planning" class="btn btn-success" style="width:100px">Save</button>
+                            <a href="@Url.Action("Index","ListOrder")" class="btn btn-link" style="width:100px">Cancel</a>
+                        </div>
+                    </div>
+                </div>
+            }*@
+            if (ViewBag.kondisi == "revisiJenistruck")
+            {
+                <br />
+                @Html.Partial("SalesOrderProsesKonsolidasi/_RevisiJenisTruk", Model)
+                <div class="row">
+                    <br />
+                    <div class="form-group">
+                        <div class="col-md-12" style="margin:0px 15px 0px 15px">
+                            <button type="submit" name="btnsave" value="draft planning" class="btn btn-success" style="width:100px">Save</button>
+                            <a href="@Url.Action("Index","ListOrder")" class="btn btn-link" style="width:100px">Cancel</a>
+                        </div>
+                    </div>
+                </div>
+            }
+            if (ViewBag.kondisi == "planning" || ViewBag.kondisi == "konfirmasi")
+            {
+                @Html.Partial("SalesOrderProsesKonsolidasi/_OperationalTruck", Model)
+                if (ViewBag.kondisi == "konfirmasi")
+                {
+                    @Html.Partial("_KeteranganTambahanKonsolidasi", Model)
+                }
+                @Html.Partial("SalesOrderProsesKonsolidasi/_Comment", Model)
+                <div class="row">
+                    <br />
+                    <div class="form-group">
+                        <div class="col-md-12">
+                            @if (ViewBag.kondisi == "planning")
+                            {
+                                <button type="button" value="save planning" class="btn btn-success" onclick="notifSave($('#formsubmit'),$(this).val());">Submit</button>
+                                <button type="submit" name="btnsave" value="draft planning" class="btn btn-success">Save As Draft</button>
+                                <button type="button" value="draft" class="btn btn-success" onclick="notifSave($('#formsubmit'),$(this).val());">Return</button>
+                            }
+                            else if (ViewBag.kondisi == "konfirmasi")
+                            {
+                                <button type="button" value="save konfirmasi" class="btn btn-success" onclick="notifSave($('#formsubmit'),$(this).val());">Submit</button>
+                                <button type="submit" name="btnsave" value="draft konfirmasi" class="btn btn-success">Save As Draft</button>
+                                <button type="button" value="draft planning" class="btn btn-success" onclick="notifSave($('#formsubmit'),$(this).val());">Return</button>
+                            }
+                            <a href="@backLink" class="btn btn-link">Cancel</a>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+    </div>
+</div>
+<div id="ModalHistoryJalan" class="modal fade bs-modal-full" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-full">
+        <div id="modalForm" class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                <h4 class="modal-title">List Sales Order</h4>
+            </div>
+            <div class="modal-body">
+                <div id="GridHistoryJalanDriver"></div>
+            </div>
+        </div>
+    </div>
+</div>
+@section scripts{
+    <script type="text/javascript">
+    var dsGridKonsolidasi;
+    var GridKonsolidasi;
+    var piwbeg ='';
+        @if (ViewBag.errorMsgRevisiKapasitas != null) { 
+        <text>
+    piwbeg = '@ViewBag.errorMsgRevisiKapasitas';
+        </text>
+    }
+
+    @if (Model.StrListSo != null && Model.StrListSo != "")
+        {
+            foreach (string item in Model.StrListSo.Split(','))
+            {
+                <text>
+    GenerateSo(@item);
+    </text>
+            }
+        }
+    else if (ViewBag.StrListSo != null && ViewBag.StrListSo != "")
+        {
+            foreach (string item in ViewBag.StrListSo.Split(','))
+            {
+                <text>
+    GenerateSo(@item);
+    </text>
+            }
+        }
+
+
+    function GenerateSo(id) {
+        //panggil lewat ajax
+        $.ajax({
+            url: '@Url.Action("FindById", "SalesOrderKonsolidasi")',
+            type: 'POST',
+            dataType: 'Json',
+            data: {
+                id: id,
+            },
+            success: function (res) {
+                GridKonsolidasi.dataSource.add({
+                    Id: res.CustomerId,
+                    IdSo: res.SalesOrderKonsolidasiId,
+                    KodeNama: res.KodeNama,
+                    SupplierName: res.SupplierName,
+                    Custumer: res.NamaCustomer,
+                    NoSO: res.SONumber,
+                    JenisBarang: res.StrProduct,
+                    Tonase: res.Tonase == null ? 0 : res.Tonase,
+                    Karton: res.Karton == null ? 0 : res.Karton,
+                    Rute: res.Rute,
+                    TanggalTiba: "",
+                });
+            }
+        });
+    }
+
+    $(document).ready(function () {
+        
+        @if (ViewBag.errorMsgRevisiTgl != null)
+            {
+                <text>
+        swal({
+            title: "Error",
+            type: 'error',
+            text: '@ViewBag.errorMsgRevisiTgl',
+            showCloseButton: true,
+        })
+        </text>
+            }
+
+        GridKonsolidasi = $("#GridKonsolidasi").kendoGrid({
+            dataSource: {
+                data: dsGridKonsolidasi,
+                schema: {
+                    model: {
+                        id: "Id",
+                        fields: {
+                            Id: { type: "number", defaultValue: 0 },
+                            IdSo: { type: "number", defaultValue: 0 },
+                            KodeNama: { type: "string" },
+                            SupplierName: { type: "string" },
+                            Custumer: { type: "string" },
+                            NoSO: { type: "string" },
+                            JenisBarang: { type: "string" },
+                            Tonase: { type: "number", defaultValue: 0 },
+                            Karton: { type: "number", defaultValue: 0 },
+                            Rute: { type: "string" },
+                            TanggalTiba: { type: "string" },
+                        }
+                    }
+                },
+                aggregate: [{ field: "Tonase", aggregate: "sum" }, { field: "Karton", aggregate: "sum" }],
+                pageSize: 5,
+                pageable: true,
+                sortable: true,
+            },
+            filterable: kendoGridFilterable,
+            sortable: true,
+            reorderable: true,
+            resizable: true,
+            pageable: true,
+            columns: [
+                { field: "KodeNama", title: "Kode Nama" },
+                { field: "SupplierName", title: "Supplier" },
+                { field: "Custumer", title: "Customer" },
+                { field: "NoSO", title: "No SO" },
+                { field: "JenisBarang", title: "Jenis Barang" },
+                { field: "Tonase", title: "Berat (Kg)", footerTemplate: "Total : #=sum#" },
+                { field: "Karton", title: "Volume (m3)", footerTemplate: "Total : #=sum#" },
+                { field: "Rute", title: "Tujuan" },
+                //{ field: "TanggalTiba", title: "Tanggal Tiba" },
+            ],
+        }).data("kendoGrid");
+    })
+    </script>
+    @if (ViewBag.kondisi == "planning" || ViewBag.kondisi == "konfirmasi")
+    {
+        <script src="~/Content/OperationalOncall/TruckDetail.js"></script>
+        <script src="~/Content/DataTruk/TruckDetail.js"></script>
+        <script src="~/Content/Driver/InitialGridSo.js"></script>
+        <script src="~/Content/SalesOrderProsesKonsolidasi/Comment.js"></script>
+        if (ViewBag.kondisi == "konfirmasi")
+        {
+            <script src="~/Content/OperationalOncall/KeteranganTambahan.js"></script>
+        }
+    }
+    @if (ViewBag.kondisi == "revisiJenistruck")
+    {
+        <script src="~/Content/RevisiListOrder/revisiJenisTruk.js"></script>
+    }
+}

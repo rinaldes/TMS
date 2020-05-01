@@ -1,0 +1,294 @@
+﻿@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "Data GPS";
+    string currentController = (string)ViewContext.RouteData.Values["controller"];
+    string currentAction = "Index";
+}
+<div class="portlet light ">
+    <div class="portlet-title">
+        <div class="caption">
+            <span class="caption-subject font-dark sbold uppercase">@ViewBag.Title</span>
+        </div>
+        <div class="actions">
+            <a class="btn btn-sm green dropdown-toggle"
+               href="@Url.Action("Add","DataGPS")">
+                <i class="fa fa-plus"></i>Add
+            </a>
+            <a class="btn btn-sm green"
+               href="~/Content/Template/TemplateDataGPS.xlsx" target="_blank">
+                <i class="fa fa-plus"></i>Download template
+            </a>
+            <a class="btn btn-sm green"
+               data-toggle="modal" href="#ModalDataGPS">
+                <i class="fa fa-plus"></i>Import
+            </a>
+            <a class="btn btn-sm green" href="@Url.Action("ExportDataGPS")">
+                <i class="fa fa-upload"></i>Export
+            </a>
+        </div>
+        <div class="actions">
+
+        </div>
+        <div class="actions">
+
+        </div>
+    </div>
+    <!-- /.modal -->
+    <div class="modal fade bs-modal-sm" id="ModalDataGPS" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                    <h4 class="modal-title">Import Data GPS</h4>
+                </div>
+                <div class="modal-body">
+                    <input name="filesDataGPS" id="filesDataGPS" type="file" />
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn dark btn-outline" data-dismiss="modal" onclick="uploadDataGPS()">Import</button>
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
+    <!-- /.modal -->
+
+    <div class="portlet-body form">
+        <div class="portlet box blue ">
+            <div class="portlet-title">
+                <div class="caption">
+                    Hide Column :
+                </div>
+                <div class="tools">
+                    <a href="" class="expand"> </a>
+                </div>
+            </div>
+            <div class="portlet-body form" style="display: none;">
+                <form role="form">
+                    <div class="form-body">
+                        <div id="content-col" class="md-checkbox-inline" style="margin-left:10px"></div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div id="grid"></div>
+    </div>
+</div>
+@section scripts
+{
+    <script type="text/javascript">
+        var kendoUploadButtonExim;
+
+        function deleteItem(e) {
+            e.preventDefault();
+            var data = this.dataItem(getDataRowGrid(e));
+            goToDeletePage('@Url.Action("Delete")' + "?id=" + data.Id, this.dataSource);
+        }
+
+        function editItem(e) {
+            e.preventDefault();
+            var data = this.dataItem(getDataRowGrid(e));
+            window.location.href = "@Url.Action("Edit")" + "?id=" + data.Id;
+        }
+
+        function uploadDataGPS() {
+            if (kendoUploadButtonExim)
+                totalFile = 0;
+
+            kendoUploadButtonExim.click();
+        }
+
+        function onSelectFile(e) {
+            var flagExtension = 0;
+            var allowedExtension = [".xlsx", ".xls"];
+            $.each(e.files, function (index, value) {
+                if ($.inArray((value.extension).toLowerCase(), allowedExtension) === -1) {
+                    flagExtension = 1;
+                }
+            });
+            if (flagExtension == 1) {
+                alert("File yang diperbolehkan hanya berupa Excell");
+                e.preventDefault();
+            }
+
+            setTimeout(function () {
+                kendoUploadButtonExim = $(".k-upload-selected");
+                kendoUploadButtonExim.hide();
+            }, 1);
+        }
+
+        $(document).ready(function () {
+            CreateUploaderExim($("#filesDataGPS"), "@Url.Action("UploadDataGPS")", $("#grid"));
+
+            currController = '@currentController';
+            currAction = '@currentAction';
+
+            var ds = new kendo.data.DataSource({
+                transport: {
+                    read: {
+                        url: '@Url.Action("Binding")',
+                        dataType: "json"
+                    },
+                    parameterMap: function (options, operation) {
+                        if (operation !== "read" && options != '') {
+                            return kendo.stringify(options);
+                        }
+                        else if (operation == "read") {
+                            if (options.filter) {
+                                filter = options.filter.filters;
+                                for (var i in filter) {
+                                    if (filter[i].field == "VehicleNo") {
+                                        filter[i].field = "DataTruck.VehicleNo";
+                                    }
+                                    if (filter[i].field == "Vendor") {
+                                        filter[i].field = "VendorGps.Nama";
+                                    }
+                                }
+                            }
+
+                            if (options.sort) {
+                                sort = options.sort;
+                                for (var i in sort) {
+                                    if (sort[i].field == "VehicleNo") {
+                                        sort[i].field = "DataTruk.VehicleNo";
+                                    }
+                                    if (sort[i].field == "Vendor") {
+                                        sort[i].field = "VendorGps.Nama";
+                                    }
+                                }
+                            }
+                            return options;
+                        }
+                    }
+                },
+                schema: {
+                    total: "total",
+                    data: "data",
+                    model: {
+                        fields: {
+                            "Id": { type: "number" },
+                            "NoGPS": { type: "string" },
+                            "VehicleNo": { type: "string" },
+                            "Vendor": { type: "string" },
+                            "ModelGps": { type: "string" },
+                            "NoDevice": { type: "string" },
+                            "SensorSuhu": { type: "boolean" },
+                            "SensorPintu": { type: "boolean" },
+                            "Tahun": { type: "number" },
+                            "TanggalPasang": { type: "date" },
+                            "TanggalGaransi": { type: "date" },
+                        }
+                    }
+                },
+                pageSize: 10,
+                pageable: true,
+                serverFiltering: true,
+                serverPaging: true,
+                serverSorting: true,
+                sortable: true,
+                //sort: { field: "SubmittedDate", dir: "desc" }
+            });
+
+            gridIndex = $("#grid").kendoGrid({
+                dataSource: ds,
+                filterable: kendoGridFilterable,
+                sortable: true,
+                reorderable: true,
+                resizable: true,
+                pageable: true,
+                groupable: true,
+                //height: "615",
+                columns: [
+                    {
+                        command: [
+                            {
+                                name: "edit",
+                                text: "edit",
+                                click: editItem,
+                                imageClass: "glyphicon glyphicon-edit",
+                                template: '<a class="k-button-icon #=className#" #=attr# href="\\#"><span class="#=imageClass#"></span></a>'
+                            },
+                            {
+                                name: "delete",
+                                text: "delete",
+                                click: deleteItem,
+                                imageClass: "glyphicon glyphicon-remove",
+                                template: '<a class="k-button-icon #=className#" #=attr# href="\\#"><span class="#=iconClass# #=imageClass#"></span></a>'
+                            }
+                        ],
+                        width: "60px"
+                    },
+                    {
+                        field: "NoGPS",
+                        title: "No GPS",
+                        width: "140px"
+                    },
+                    {
+                        field: "VehicleNo",
+                        title: "No Vehicle",
+                        width: "140px"
+                    },
+                    {
+                        field: "Vendor",
+                        title: "Merk",
+                        width: "160px"
+                    },
+                    {
+                        field: "ModelGps",
+                        title: "Model Gps",
+                        width: "150px"
+                    },
+                    {
+                        field: "NoDevice",
+                        title: "No Device",
+                        width: "150px"
+                    },
+                    {
+                        field: "SensorSuhu",
+                        title: "Sensor Suhu",
+                        template: '#= SensorSuhu ? "Ya" : "Tidak" #',
+                        width: "160px"
+                    },
+                    {
+                        field: "SensorPintu",
+                        title: "Sensor Pintu",
+                        template: '#= SensorPintu ? "Ya" : "Tidak" #',
+                        width: "160px"
+                    },
+                    {
+                        field: "Tahun",
+                        title: "Tahun",
+                        width: "140px"
+                    },
+                    {
+                        field: "TanggalPasang",
+                        title: "Tanggal Pasang",
+                        template: "#= TanggalPasang != null ? kendo.toString(kendo.parseDate(TanggalPasang, 'yyyy-MM-dd'), 'MM/dd/yyyy') : ''#",
+                        width: "160px",
+                        groupHeaderTemplate: "Tanggal Pasang : #= value != null ? kendo.toString(kendo.parseDate(value, 'yyyy-MM-dd'), 'MM/dd/yyyy') : '' #"
+                    },
+                    {
+                        field: "TanggalGaransi",
+                        title: "Tanggal Garansi",
+                        template: "#= TanggalGaransi != null ? kendo.toString(kendo.parseDate(TanggalGaransi, 'yyyy-MM-dd'), 'MM/dd/yyyy') : '' #",
+                        groupHeaderTemplate: "Tanggal Garansi : #= value != null ? kendo.toString(kendo.parseDate(value, 'yyyy-MM-dd'), 'MM/dd/yyyy') : '' #",
+                        width: "160px"
+                    },
+                ],
+            }).data("kendoGrid");
+
+            @foreach (tms_mka_v2.Context.UserReference item in (List<tms_mka_v2.Context.UserReference>)ViewBag.listKolom)
+            {
+                <text>
+            listKolom.push('@item.Coloumn');
+            </text>
+            }
+
+            GetColomnData(gridIndex);
+        })
+    </script>
+}
+
+

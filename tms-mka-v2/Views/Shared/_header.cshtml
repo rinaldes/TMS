@@ -1,0 +1,717 @@
+﻿<div class="page-header">
+    <!-- BEGIN HEADER TOP -->
+    <div class="page-header-top">
+        <div class="container">
+            <!-- BEGIN LOGO -->
+            <div class="page-logo">
+                <a href="/">
+                    <img src="~/Content/img/logoMKA1.png" alt="logo" class="logo-default">
+                </a>
+            </div>
+            <!-- END LOGO -->
+            <!-- BEGIN RESPONSIVE MENU TOGGLER -->
+            <a href="javascript:;" class="menu-toggler"></a>
+            <!-- END RESPONSIVE MENU TOGGLER -->
+            <!-- BEGIN TOP NAVIGATION MENU -->
+            <div class="top-menu">
+                <ul class="nav navbar-nav pull-right">
+                    <!-- BEGIN USER LOGIN DROPDOWN -->
+                    <li class="dropdown dropdown-user dropdown-dark">
+                        <a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" data-close-others="true">
+                            @if (User != null)
+                            {
+                                <img alt="" class="img-circle" style="width:50px" src="@User.path_foto">
+                                <span class="username username-hide-mobile">
+                                    @(User.firstname + " " + User.lastname)
+                                </span>
+                            }
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-default">
+                            <li>
+                                <a href="@Url.Action("ChangePassword", "User", new { id = User.id })">
+                                    <i class="icon-lock"></i> Change Password
+                                </a>
+                            </li>
+                            <li>
+                                <a href="/User/LogOut">
+                                    <i class="icon-key"></i> Log Out
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    <!-- END USER LOGIN DROPDOWN -->
+                </ul>
+            </div>
+            <!-- END TOP NAVIGATION MENU -->
+        </div>
+    </div>
+    <!-- END HEADER TOP -->
+    <!-- BEGIN HEADER MENU -->
+    <div class="page-header-menu">
+        <div class="container">
+            <!-- END HEADER SEARCH BOX -->
+            <!-- BEGIN MEGA MENU -->
+            <!-- DOC: Apply "hor-menu-light" class after the "hor-menu" class below to have a horizontal menu with white background -->
+            <!-- DOC: Remove data-hover="dropdown" and data-close-others="true" attributes below to disable the dropdown opening on mouse hover -->
+            <div class="hor-menu  ">
+                @if (User != null)
+                {
+                    <ul class="nav navbar-nav">
+                        @if (
+                            User.HasMenuAccess("Customer") || User.HasMenuAccess("Produk") || User.HasMenuAccess("Jenis Truk") || User.HasMenuAccess("Vendor Gps") || User.HasMenuAccess("Data Truk") ||
+                            User.HasMenuAccess("Data Pendingin") || User.HasMenuAccess("Data Box") || User.HasMenuAccess("Data Gps") || User.HasMenuAccess("Unit List") || User.HasMenuAccess("Rekening") ||
+                            User.HasMenuAccess("Lookup") || User.HasMenuAccess("Solar") || User.HasMenuAccess("Faktor Borongan") || User.HasMenuAccess("DataBorongan") || 
+                            User.HasMenuAccess("Master Area") || User.HasMenuAccess("Tol") || User.HasMenuAccess("Rute Tol") || User.HasMenuAccess("Rute") || User.HasMenuAccess("Pool") || 
+                            User.HasMenuAccess("ATM") || User.HasMenuAccess("Lokasi") || User.HasMenuAccess("Multidrop")
+                        )
+                        {
+                            <li class="menu-dropdown mega-menu-dropdown  ">
+                                <a href="javascript:;">
+                                    Master Data
+                                    <span class="arrow"></span>
+                                </a>
+                                <ul class="dropdown-menu" style="min-width: 400px">
+                                    <li>
+                                        <div class="mega-menu-content">
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <ul class="mega-menu-submenu">
+
+                                                        @if (User.HasMenuAccess("Customer"))
+                                                        {
+                                                            <li>
+                                                                <a href="@Url.Action("Index","Customer")" target="_blank"> Customer </a>
+                                                            </li>
+                                                        }
+                                                        @if (User.HasMenuAccess("Produk"))
+                                                        {
+                                                            <li>
+                                                                <a href="@Url.Action("Index","Product")" target="_blank"> Master Produk </a>
+                                                            </li>
+                                                        }
+                                                        @if (User.HasMenuAccess("Jenis Truk"))
+                                                        {
+                                                            <li>
+                                                                <a href="@Url.Action("Index","JenisTruck")" target="_blank"> Jenis Truk </a>
+                                                            </li>
+                                                        }
+                                                        @if (User.HasMenuAccess("Vendor Gps"))
+                                                        {
+                                                            <li>
+                                                                <a href="@Url.Action("Index", "VendorGps")" target="_blank"> Vendor GPS </a>
+                                                            </li>
+                                                        }
+                                                        @if (User.HasMenuAccess("Data Truk") || User.HasMenuAccess("Data Pendingin") || User.HasMenuAccess("Data Box") || User.HasMenuAccess("Data Gps") || User.HasMenuAccess("Unit List"))
+                                                        {
+                                                        <li class="dropdown-submenu">
+                                                            <a href="javascript:;"> Unit </a>
+                                                            <ul class="dropdown-menu">
+                                                                @if (User.HasMenuAccess("Data Truk"))
+                                                                {
+                                                                    <li>
+                                                                        <a href="@Url.Action("Index","DataTruck")" target="_blank"> Data Truk </a>
+                                                                    </li>
+                                                                }
+
+                                                                @if (User.HasMenuAccess("Data Pendingin"))
+                                                                {
+                                                                    <li>
+                                                                        <a href="@Url.Action("Index","DataPendingin")" target="_blank"> Data Pendingin </a>
+                                                                    </li>
+                                                                }
+                                                                @if (User.HasMenuAccess("Data Box"))
+                                                                {
+                                                                    <li>
+                                                                        <a href="@Url.Action("Index","DataBox")" target="_blank"> Data Box </a>
+                                                                    </li>
+                                                                }
+                                                                @if (User.HasMenuAccess("Data Gps"))
+                                                                {
+                                                                    <li>
+                                                                        <a href="@Url.Action("Index","DataGPS")" target="_blank"> Data GPS </a>
+                                                                    </li>
+                                                                }
+                                                                @if (User.HasMenuAccess("Unit List"))
+                                                                {
+                                                                    <li>
+                                                                        <a href="@Url.Action("Index","UnitList")" target="_blank"> Unit List </a>
+                                                                    </li>
+                                                                }
+                                                            </ul>
+                                                        </li>
+                                                        }
+                                                        @if (User.HasMenuAccess("Rekening"))
+                                                        {
+                                                            <li>
+                                                                <a href="@Url.Action("Index","Rekening")" target="_blank"> Rekening </a>
+                                                            </li>
+                                                        }
+                                                        @if (User.HasMenuAccess("Lookup"))
+                                                        {
+                                                            <li>
+                                                                <a href="@Url.Action("Index","LookUpCode")" target="_blank"> Lookup Codes </a>
+                                                            </li>
+                                                        }
+                                                        @if (User.HasMenuAccess("Solar") || User.HasMenuAccess("Faktor Borongan") || User.HasMenuAccess("Data Borongan"))
+                                                        {
+                                                        <li class="dropdown-submenu">
+                                                            <a href="javascript:;"> Borongan </a>
+                                                            <ul class="dropdown-menu">
+                                                                @if (User.HasMenuAccess("Solar"))
+                                                                {
+                                                                    <li>
+                                                                        <a href="@Url.Action("Index","MasterSolar")" target="_blank"> Master Solar </a>
+                                                                    </li>
+                                                                }
+                                                                @if (User.HasMenuAccess("Faktor Borongan"))
+                                                                {
+                                                                    <li>
+                                                                        <a href="@Url.Action("Index","FaktorBorongan")" target="_blank"> Faktor Borongan </a>
+                                                                    </li>
+                                                                }
+                                                                @if (User.HasMenuAccess("Data Borongan"))
+                                                                {
+                                                                    <li>
+                                                                        <a href="@Url.Action("Index","DataBorongan")" target="_blank"> Data Borongan </a>
+                                                                    </li>
+                                                                }
+                                                            </ul>
+                                                        </li>
+                                                        }
+                                                        @if (User.HasMenuAccess("Area"))
+                                                        {
+                                                            <li>
+                                                                <a href="@Url.Action("index","area")" target="_blank">Master Area</a>
+                                                            </li>
+                                                        }
+                                                    </ul>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <ul class="mega-menu-submenu">
+                                                        @if (User.HasMenuAccess("Tol"))
+                                                        {
+                                                            <li>
+                                                                <a href="@Url.Action("Index","JnsTol")" target="_blank"> Tol </a>
+                                                            </li>
+                                                        }
+                                                        @if (User.HasMenuAccess("Rute Tol"))
+                                                        {
+                                                            <li>
+                                                                <a href="@Url.Action("Index","RuteTol")" target="_blank"> Rute Tol </a>
+                                                            </li>
+                                                        }
+                                                        @if (User.HasMenuAccess("Rute"))
+                                                        {
+                                                            <li>
+                                                                <a href="@Url.Action("Index","Rute")" target="_blank"> Rute </a>
+                                                            </li>
+                                                        }
+                                                        @if (User.HasMenuAccess("Pool"))
+                                                        {
+                                                            <li>
+                                                                <a href="@Url.Action("Index","Masterpool")" target="_blank"> Master Pool </a>
+                                                            </li>
+                                                        }
+                                                        @if (User.HasMenuAccess("ATM"))
+                                                        {
+                                                            <li>
+                                                                <a href="@Url.Action("index","atm")" target="_blank">ATM</a>
+                                                            </li>
+                                                        }
+                                                        @if (User.HasMenuAccess("Lokasi"))
+                                                        {
+                                                            <li>
+                                                                <a href="@Url.Action("Index","Location")" target="_blank"> Location </a>
+                                                            </li>
+                                                        }
+                                                        @if (User.HasMenuAccess("Multidrop"))
+                                                        {
+                                                            <li>
+                                                                <a href="@Url.Action("Index","Multidrop")" target="_blank"> Multidrop </a>
+                                                            </li>
+                                                        }
+                                                        @if (User.HasMenuAccess("Multidrop"))
+                                                        {
+                                                            <li>
+                                                                <a href="@Url.Action("Index","Mekanik")" target="_blank"> Data Mekanik </a>
+                                                            </li>
+                                                        }
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </li>
+                        }
+                        @if (User.HasMenuAccess("Driver Batangan"))
+                        {
+                            <li class="menu-dropdown mega-menu-dropdown  ">
+                                <a href="javascript:;">
+                                    DM
+                                    <span class="arrow"></span>
+                                </a>
+                                <ul class="dropdown-menu pull-left">
+                                    <li aria-haspopup="true">
+                                        <a href="@Url.Action("Index","PenetapanDriver")" target="_blank"> Driver Batangan </a>
+                                    </li>
+                                </ul>
+                            </li>
+                        }
+                        @if (
+                            User.HasMenuAccess("List Order") || User.HasMenuAccess("Daftar Harga On Call") || User.HasMenuAccess("Sales Order Proses Konsolidasi") || 
+                            User.HasMenuAccess("Sales Order Konsolidasi Daftar Barang") || User.HasMenuAccess("Sales Order Konsolidasi Pickup") || User.HasMenuAccess("Sales Order Kontrak") || 
+                            User.HasMenuAccess("Sales Order On Call") || User.HasMenuAccess("Daftar Harga Konsolidasi") || User.HasMenuAccess("Daftar Harga Kontrak")
+                        )
+                        {
+                            <li class="menu-dropdown mega-menu-dropdown  ">
+                                <a href="javascript:;">
+                                    Marketing
+                                    <span class="arrow"></span>
+                                </a>
+                                <ul class="dropdown-menu pull-left">
+                                    @if (User.HasMenuAccess("Daftar Harga Oncall"))
+                                    {
+                                        <li aria-haspopup="true">
+                                            <a href="@Url.Action("Index","DaftarHargaOnCall")" target="_blank">Daftar Harga On Call</a>
+                                        </li>
+                                    }
+                                    @if (User.HasMenuAccess("Daftar Harga Kontrak"))
+                                    {
+                                        <li aria-haspopup="true">
+                                            <a href="@Url.Action("Index","DaftarHargaKontrak")" target="_blank">Daftar Harga Kontrak</a>
+                                        </li>
+                                    }
+                                    @if (User.HasMenuAccess("Daftar Harga Konsolidasi"))
+                                    {
+                                        <li aria-haspopup="true">
+                                            <a href="@Url.Action("Index","DaftarHargaKonsolidasi")" target="_blank">Daftar Harga Konsolidasi</a>
+                                        </li>
+                                    }
+                                    @if (User.HasMenuAccess("Sales Order Oncall"))
+                                    {
+                                        <li aria-haspopup="true">
+                                            <a href="@Url.Action("Index","SalesOrderOncall")" target="_blank">Sales Order On Call</a>
+                                        </li>
+                                    }
+                                    @if (User.HasMenuAccess("Sales Order Kontrak"))
+                                    {
+                                        <li aria-haspopup="true">
+                                            <a href="@Url.Action("Index","SalesOrderKontrak")" target="_blank">Sales Order Kontrak</a>
+                                        </li>
+                                    }
+                                    @if (
+                                        User.HasMenuAccess("Sales Order Konsolidasi Pickup") || User.HasMenuAccess("Sales Order Konsolidasi Daftar Barang") || 
+                                        User.HasMenuAccess("Sales Order Proses Konsolidasi")
+                                    )
+                                    {
+                                        <li class="dropdown-submenu">
+                                            <a href="javascript:;"> Sales Order Konsolidasi </a>
+                                            <ul class="dropdown-menu">
+                                                @if (User.HasMenuAccess("Sales Order Konsolidasi Pickup"))
+                                                {
+                                                    <li>
+                                                        <a href="@Url.Action("Index","SalesOrderPickup")" target="_blank">Pickup Order</a>
+                                                    </li>
+                                                }
+                                                @if (User.HasMenuAccess("Sales Order Konsolidasi Daftar Barang"))
+                                                {
+                                                    <li>
+                                                        <a href="@Url.Action("Index", "SalesOrderKonsolidasi")" target="_blank">Daftar Barang</a>
+                                                    </li>
+                                                }
+                                                @if (User.HasMenuAccess("Sales Order Proses Konsolidasi"))
+                                                {
+                                                    <li><a href="@Url.Action("Index", "SalesOrderProsesKonsolidasi")" target="_blank">Sales Order Proses Konsolidasi</a></li>
+                                                }
+                                            </ul>
+                                        </li>
+                                    }
+                                    @if (User.HasMenuAccess("List Order"))
+                                    {
+                                        <li aria-haspopup="true"><a href="@Url.Action("Index","ListOrder")" target="_blank">List Order Oncall</a></li>
+                                        <li aria-haspopup="true"><a href="@Url.Action("IndexKontrak","ListOrder")" target="_blank">List Order Kontrak</a></li>
+                                    }
+                                </ul>
+                            </li>
+                        }
+                        @if (
+                            User.HasMenuAccess("Calendar View") || User.HasMenuAccess("Monitoring") || User.HasMenuAccess("Planning Oncall") || User.HasMenuAccess("Planning Kontrak") || 
+                            User.HasMenuAccess("Konfirmasi Planning Oncall") || User.HasMenuAccess("Konfirmasi Planning kontrak") || User.HasMenuAccess("Admin Uang Jalan") || 
+                            User.HasMenuAccess("Settlement Reguler") || User.HasMenuAccess("Settlement Batal") || User.HasMenuAccess("Dokumen Billing") || User.HasMenuAccess("Dokumen Surat Jalan")
+                        )
+                        {
+                            <li class="menu-dropdown mega-menu-dropdown  ">
+                                <a href="javascript:;">
+                                    Operasional
+                                    <span class="arrow"></span>
+                                </a>
+                                <ul class="dropdown-menu pull-left">
+                                    @if (User.HasMenuAccess("Calendar View"))
+                                    {
+                                        <li aria-haspopup="true"><a href="/CalendarView/Detail" target="_blank">Calendar View</a></li>
+                                    }
+                                    @if (User.HasMenuAccess("Monitoring"))
+                                    {
+                                        <li aria-haspopup="true"><a href="@Url.Action("Index","Monitoring")" target="_blank">Monitoring</a></li>
+                                    }
+                                    @if (User.HasMenuAccess("Planning Oncall"))
+                                    {
+                                        <li aria-haspopup="true"><a href="@Url.Action("Index","PlanningOncall")" target="_blank">Planning Oncall</a></li>
+                                    }
+                                    @if (User.HasMenuAccess("Planning Kontrak"))
+                                    {
+                                        <li aria-haspopup="true"><a href="@Url.Action("Index","PlanningKontrak")" target="_blank">Planning Kontrak</a></li>
+                                        <li aria-haspopup="true"><a href="@Url.Action("IndexAfterBatalTruk","PlanningKontrak")" target="_blank">Planning Kontrak Batal Truk</a></li>
+                                    }
+                                    @if (User.HasMenuAccess("Konfirmasi Planning Oncall") || User.HasMenuAccess("Konfirmasi Planning kontrak"))
+                                    {
+                                        <li class="dropdown-submenu">
+                                            <a href="javascript:;"> Konfirmasi Planning </a>
+                                            <ul class="dropdown-menu">
+                                                @if (User.HasMenuAccess("Konfirmasi Planning Oncall"))
+                                                {
+                                                    <li><a href="@Url.Action("Index","KonfirmasiOncall")" target="_blank"> Konfirmasi Planning Oncall </a></li>
+                                                }
+                                                @if (User.HasMenuAccess("Konfirmasi Planning kontrak"))
+                                                {
+                                                    <li><a href="@Url.Action("Index","KonfirmasiKontrak")" target="_blank"> Konfirmasi Planning Kontrak </a></li>
+                                                }
+                                            </ul>
+                                        </li>
+                                    }
+                                    @if (User.HasMenuAccess("Admin Uang Jalan"))
+                                    {
+                                        <li class="dropdown-submenu">
+                                            <a href="javascript:;">Admin Uang Jalan</a>
+                                            <ul class="dropdown-menu">
+                                                @if (User.HasMenuAccess("Admin Uang Jalan"))
+                                                {
+                                                    <li><a href="@Url.Action("Index", "AdminUangJalan")" target="_blank"> Admin Uang Jalan On Call</a></li>
+                                                }
+                                                @if (User.HasMenuAccess("Admin Uang Jalan"))
+                                                {
+                                                    <li><a href="@Url.Action("IndexKontrak", "AdminUangJalan")" target="_blank"> Admin Uang Jalan Kontrak </a></li>
+                                                }
+                                            </ul>
+                                        </li>
+                                    }
+                                    @if (User.HasMenuAccess("Settlement Reguler") || User.HasMenuAccess("Settlement Batal"))
+                                    {
+                                        <li class="dropdown-submenu">
+                                            <a href="javascript:;"> Settlement </a>
+                                            <ul class="dropdown-menu">
+                                                @if (User.HasMenuAccess("Settlement Reguler"))
+                                                {
+                                                    <li><a href="@Url.Action("Index","SettlementReg")" target="_blank"> Settlement Regular </a></li>
+                                                }
+                                                @if (User.HasMenuAccess("Settlement Batal"))
+                                                {
+                                                    <li><a href="@Url.Action("Index","SettlementBatal")" target="_blank"> Settlement Batal </a></li>
+                                                }
+                                            </ul>
+                                        </li>
+                                    }
+                                    @if (User.HasMenuAccess("Dokumen Billing") || User.HasMenuAccess("Dokumen Surat Jalan"))
+                                    {
+                                        <li class="dropdown-submenu">
+                                            <a href="javascript:;"> Dokumen </a>
+                                            <ul class="dropdown-menu">
+                                                @if (User.HasMenuAccess("Dokumen Surat Jalan"))
+                                                {
+                                                    <li><a href="@Url.Action("Index", "Dokumen", new { caller = "admin"})" target="_blank"> Surat Jalan On Call</a></li>
+                                                    <li><a href="@Url.Action("IndexKontrak", "Dokumen", new { caller = "admin"})" target="_blank"> Surat Jalan Kontrak</a></li>
+                                                    <li><a href="@Url.Action("IndexKonsolidasi", "Dokumen", new { caller = "admin"})" target="_blank"> Surat Jalan Konsolidasi</a></li>
+                                                    
+                                                }
+                                                @if (User.HasMenuAccess("Dokumen Billing"))
+                                                {
+                                                    <li><a href="@Url.Action("Billing","Dokumen")" target="_blank"> Billing </a></li>
+                                                }
+                                            </ul>
+                                        </li>
+                                    }
+                                </ul>
+                            </li>
+                        }
+                        @if (User.HasMenuAccess("Training Setting") || User.HasMenuAccess("Pelaksanaan Training") || User.HasMenuAccess("Data Driver"))
+                        {
+                            <li class="menu-dropdown mega-menu-dropdown  ">
+                                <a href="javascript:;">
+                                    HR
+                                    <span class="arrow"></span>
+                                </a>
+                                <ul class="dropdown-menu pull-left">
+                                    @if (User.HasMenuAccess("Data Driver"))
+                                    {
+                                        <li aria-haspopup="true"><a href="@Url.Action("Index","Driver")" target="_blank"> Data Driver </a></li>
+                                    }
+                                    @if (User.HasMenuAccess("Training Setting") || User.HasMenuAccess("Pelaksanaan Training"))
+                                    {
+                                        <li class="dropdown-submenu">
+                                            <a href="javascript:;"> Training </a>
+                                            <ul class="dropdown-menu">
+                                                @if (User.HasMenuAccess("Training Setting"))
+                                                {
+                                                    <li><a href="@Url.Action("Index","TrainingSetting")" target="_blank"> Training Setting </a></li>
+                                                }
+                                                @if (User.HasMenuAccess("Pelaksanaan Training"))
+                                                {
+                                                    <li><a href="@Url.Action("Index","PelaksanaanTraining")" target="_blank"> Pelaksanaan Training </a></li>
+                                                }
+                                            </ul>
+                                        </li>
+                                    }
+                                </ul>
+                            </li>
+                        }
+                        @if (User.HasMenuAccess("BAP"))
+                        {
+                            <li class="menu-dropdown mega-menu-dropdown  ">
+                                <a href="javascript:;">
+                                    GA
+                                    <span class="arrow"></span>
+                                </a>
+                                <ul class="dropdown-menu pull-left">
+                                    <li aria-haspopup="true">
+                                        <a href="@Url.Action("Index","BAP")" target="_blank"> BAP </a>
+                                    </li>
+                                </ul>
+                            </li>
+                        }
+                        @if (User.HasMenuAccess("Kasir Transfer") || User.HasMenuAccess("Kasir Kas"))
+                        {
+                            <li class="menu-dropdown mega-menu-dropdown  ">
+                                <a href="javascript:;">
+                                    Finance
+                                    <span class="arrow"></span>
+                                </a>
+                                <ul class="dropdown-menu pull-left">
+                                    <li class="dropdown-submenu">
+                                        <a href="javascript:;"> Kasir </a>
+                                        <ul class="dropdown-menu">
+                                            @if (User.HasMenuAccess("Kasir Transfer"))
+                                            {
+                                                <li><a href="@Url.Action("IndexTf","Kasir")" target="_blank"> Kasir Transfer </a></li>
+                                            }
+                                            @if (User.HasMenuAccess("Kasir Cash"))
+                                            {
+                                                <li><a href="@Url.Action("IndexKas","Kasir")" target="_blank"> Kasir Cash </a></li>
+                                            }
+                                        </ul>
+                                    </li>
+                                    <li class="dropdown-submenu">
+                                        <a href="javascript:;"> Batal Order Belum Settlement </a>
+                                        <ul class="dropdown-menu">
+                                            @if (User.HasMenuAccess("Kasir Transfer"))
+                                            {
+                                                <li><a href="@Url.Action("IndexTfBOBS","Kasir")" target="_blank"> Kasir Transfer </a></li>
+                                            }
+                                            @if (User.HasMenuAccess("Kasir Cash"))
+                                            {
+                                                <li><a href="@Url.Action("IndexKasBOBS","Kasir")" target="_blank"> Kasir Cash </a></li>
+                                            }
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </li>
+                        }
+                        @if (User.HasMenuAccess("Perbaikan Kendaraan") || User.HasMenuAccess("Mekanik"))
+                        {
+                            <li class="menu-dropdown mega-menu-dropdown  ">
+                                <a href="javascript:;">
+                                    Workshop
+                                    <span class="arrow"></span>
+                                </a>
+                                <ul class="dropdown-menu pull-left">
+                                    @if (User.HasMenuAccess("Perbaikan Kendaraan"))
+                                    {
+                                        <li aria-haspopup="true"><a href="@Url.Action("Index","Workshop")" target="_blank"> Perbaikan Kendaraan </a></li>
+                                    }
+                                    @if (User.HasMenuAccess("Mekanik"))
+                                    {
+                                        <li aria-haspopup="true"><a href="@Url.Action("Index","WorkshopMekanik")" target="_blank"> Mekanik </a></li>
+                                    }
+                                </ul>
+                            </li>
+                        }
+                        @if (User.HasMenuAccess("Klaim") || (User.HasMenuAccess("Tiket")))
+                        {
+                            <li class="menu-dropdown mega-menu-dropdown  ">
+                                <a href="javascript:;">
+                                    CS
+                                    <span class="arrow"></span>
+                                </a>
+                                <ul class="dropdown-menu pull-left">
+                                    @if (User.HasMenuAccess("Klaim"))
+                                    {
+                                        <li aria-haspopup="true">
+                                            <a href="@Url.Action("Index", "Klaim")" target="_blank">Klaim</a>
+                                        </li>
+                                    }
+                                    @if (User.HasMenuAccess("Tiket"))
+                                    {
+                                        <li aria-haspopup="true">
+                                            <a href="@Url.Action("Index", "Tiket")" target="_blank">Tiket</a>
+                                        </li>
+                                    }
+                                </ul>
+                            </li>
+                        }
+                        @if (User.HasMenuAccess("General Setting") || User.HasMenuAccess("Audit Trail") || User.HasMenuAccess("Time Alert") || User.HasMenuAccess("ERP Config"))
+                        {
+                            <li class="menu-dropdown mega-menu-dropdown  ">
+                                <a href="javascript:;">
+                                    Setting
+                                    <span class="arrow"></span>
+                                </a>
+                                <ul class="dropdown-menu pull-left">
+                                    @if (User.HasMenuAccess("General Setting"))
+                                    {
+                                        <li aria-haspopup="true"><a href="@Url.Action("Index", "GeneralSetting")" target="_blank">General Setting</a></li>
+                                    }
+                                    @if (User.HasMenuAccess("Audit Trail"))
+                                    {
+                                        <li aria-haspopup="true"><a href="@Url.Action("Index", "Auditrail")" target="_blank">Auditrail</a></li>
+                                    }
+                                    @if (User.HasMenuAccess("Time Alert"))
+                                    {
+                                        <li aria-haspopup="true"><a href="@Url.Action("Index", "TimeAlert")" target="_blank">Time Alert</a></li>
+                                    }
+                                    @if (User.HasMenuAccess("ERP Config"))
+                                    {
+                                        <li class="dropdown-submenu">
+                                            <a href="javascript:;"> ERP Config </a>
+                                            <ul class="dropdown-menu">
+                                                <li aria-haspopup="true"><a href="@Url.Action("Edit","JurnalSetting")" target="_blank">Static</a></li>
+                                                <li><a href="@Url.Action("Dynamic","ERPConfig")" target="_blank">Dynamic</a></li>
+                                            </ul>
+                                        </li>
+                                    }
+                                </ul>
+                            </li>
+                        }
+                        @if (User.HasMenuAccess("DM") || User.HasMenuAccess("Marketing") || User.HasMenuAccess("Admin") || User.HasMenuAccess("Kasir"))
+                                    {
+                            <li class="menu-dropdown mega-menu-dropdown  ">
+                                <a href="javascript:;">
+                                    Solar Inap<span class="arrow"></span>
+                                </a>
+                                <ul class="dropdown-menu pull-left">
+                                    @if (User.HasMenuAccess("DM") || User.HasMenuAccess("Kasir")) { 
+                                        <li aria-haspopup="true">
+                                            <a href="@Url.Action("Index", "SolarInap")" target="_blank">Solar Inap</a>
+                                        </li>
+                                    }
+                                    @if (User.HasMenuAccess("Marketing")) { 
+                                        <li aria-haspopup="true">
+                                            <a href="@Url.Action("IndexMarketing", "SolarInap")" target="_blank">Marketing</a>
+                                        </li>
+                                    }
+                                    @if (User.HasMenuAccess("Admin"))
+                                    {
+                                        <li aria-haspopup="true">
+                                            <a href="@Url.Action("IndexAUJ", "SolarInap")" target="_blank">Admin Uang Jalan</a>
+                                        </li>
+                                    }
+                                </ul>
+                            </li>
+                        }
+                        @if (User.HasMenuAccess("User") || User.HasMenuAccess("Role"))
+                        {
+                            <li class="menu-dropdown mega-menu-dropdown  ">
+                                <a href="javascript:;">
+                                    User Management
+                                    <span class="arrow"></span>
+                                </a>
+                                <ul class="dropdown-menu pull-left">
+                                    @if (User.HasMenuAccess("User"))
+                                    {
+                                        <li aria-haspopup="true"><a href="@Url.Action("Index", "User")" target="_blank">User</a></li>
+                                    }
+                                    @if (User.HasMenuAccess("Role"))
+                                    {
+                                        <li aria-haspopup="true">
+                                            <a href="@Url.Action("Index", "Role")" target="_blank">Role</a>
+                                        </li>
+                                    }
+                                </ul>
+                            </li>
+                        }
+                        @if (User.HasMenuAccess("Order") || User.HasMenuAccess("Admin Uang Jalan") || User.HasMenuAccess("Kasir Transfer") || User.HasMenuAccess("Kasir Kas") || User.HasMenuAccess("Solar Inap"))
+                        {
+                            <li class="menu-dropdown mega-menu-dropdown  ">
+                                <a href="javascript:;">
+                                    Report
+                                    <span class="arrow"></span>
+                                </a>
+                                <ul class="dropdown-menu pull-left">
+                                    <li aria-haspopup="true"><a href="@Url.Action("OrderHistory", "Report")" target="_blank">Order History</a></li>
+                                    <li aria-haspopup="true"><a href="@Url.Action("Index", "Report")" target="_blank">Daftar Barang</a></li>
+                                    <li aria-haspopup="true"><a href="@Url.Action("SalesOrderKontrak", "Report")" target="_blank">Sales Order Kontrak</a></li>
+                                    @if (User.HasMenuAccess("Order"))
+                                    {
+                                        <li aria-haspopup="true"><a href="@Url.Action("Order", "Report")" target="_blank">List Order Oncall</a></li>
+                                        <li aria-haspopup="true"><a href="@Url.Action("OrderKontrak", "Report")" target="_blank">List Order Kontrak</a></li>
+                                    }
+                                    @if (User.HasMenuAccess("Admin Uang Jalan"))
+                                    {
+                                        <li aria-haspopup="true"><a href="@Url.Action("AdminUangJalan", "Report")" target="_blank">Admin Uang Jalan Oncall</a></li>
+                                        <li aria-haspopup="true"><a href="@Url.Action("AdminUangJalanKontrak", "Report")" target="_blank">Admin Uang Jalan Kontrak</a></li>
+                                    }
+                                    @if (User.HasMenuAccess("Batal Order Belum Settlement"))
+                                    {
+                                        <li class="dropdown-submenu">
+                                            <a href="javascript:;"> Batal Order Belum Settlement </a>
+                                            <ul class="dropdown-menu">
+                                                @if (User.HasMenuAccess("Kasir Transfer"))
+                                                {
+                                                    <li><a href="@Url.Action("IndexTfBOBS","Report")" target="_blank"> Kasir Transfer </a></li>
+                                                }
+                                                @if (User.HasMenuAccess("Kasir Cash"))
+                                                {
+                                                    <li><a href="@Url.Action("IndexKasBOBS", "Report")" target="_blank"> Kasir Cash </a></li>
+                                                }
+                                            </ul>
+                                        </li>
+                                    }
+                                    @if (User.HasMenuAccess("Kasir Transfer") || User.HasMenuAccess("Kasir Kas"))
+                                    {
+                                        <li class="dropdown-submenu">
+                                            <a href="javascript:;"> Kasir </a>
+                                            <ul class="dropdown-menu">
+                                                @if (User.HasMenuAccess("Kasir Transfer"))
+                                                {
+                                                    <li><a href="@Url.Action("KasirTf","Report")" target="_blank"> Kasir Transfer </a></li>
+                                                }
+                                                @if (User.HasMenuAccess("Kasir Cash"))
+                                                {
+                                                    <li><a href="@Url.Action("KasirKas","Report")" target="_blank"> Kasir Cash </a></li>
+                                                }
+                                                <li><a href="@Url.Action("SettlementReguler", "Report")" target="_blank"> Settlement Reguler </a></li>
+                                            </ul>
+                                        </li>
+                                    }
+                                    @if (User.HasMenuAccess("Surat Jalan"))
+                                    {
+                                        <li aria-haspopup="true"><a href="@Url.Action("SuratJalan", "Report")" target="_blank">Surat Jalan</a></li>
+                                    }
+                                    @if (User.HasMenuAccess("Solar Inap"))
+                                    {
+                                        <li aria-haspopup="true"><a href="@Url.Action("SolarInap", "Report")" target="_blank">Solar Inap</a></li>
+                                    }
+                                    @if (User.HasMenuAccess("Settlement Batal"))
+                                    {
+                                        <li aria-haspopup="true"><a href="@Url.Action("SettlementBatal", "Report")" target="_blank">Settlement Batal</a></li>
+                                    }
+                                </ul>
+                            </li>
+                        }
+                    </ul>
+                }
+            </div>
+            <!-- END MEGA MENU -->
+        </div>
+    </div>
+    <!-- END HEADER MENU -->
+</div>

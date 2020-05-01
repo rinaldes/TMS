@@ -1,0 +1,222 @@
+﻿\@using tms_mka_v2.Models;
+
+@model tms_mka_v2.Models.DataGPS
+@{
+    ViewBag.Title = "Form";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    string currentController = (string)ViewContext.RouteData.Values["controller"];
+    string currentAction = (string)ViewContext.RouteData.Values["action"];
+    string backLink = Url.Action("Index");
+    if (currentAction == "Add")
+    {
+        ViewBag.Title = "Tambah Data GPS";
+    }
+    else
+    {
+        ViewBag.Title = ViewBag.name + " | Edit";
+    }
+}
+<div class="portlet light">
+    <div class="portlet-title">
+        <div class="caption">
+            <span class="caption-subject font-dark sbold uppercase">@ViewBag.Title</span>
+        </div>
+    </div>
+    <div class="portlet-body form">
+        @using (@Html.BeginForm(currentAction, currentController, FormMethod.Post, new { @class = "form-horizontal", @id = "formsubmit" }))
+        {
+            @Html.ValidationSummary(true)
+            @Html.HiddenFor(model => model.Id)
+            <div class="form-group">
+                @Html.LabelFor(model => model.NoGPS, new { @class = "control-label col-md-2 col-sm-3 col-xs-12" })
+                <div class="col-md-6 col-sm-9 col-xs-12">
+                    @Html.TextBoxFor(model => model.NoGPS, new { @class = "form-control input-sm", @readonly = "true" })
+                    @Html.ValidationMessageFor(model => model.NoGPS)
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.IdDataTruck, new { @class = "control-label col-md-2 col-sm-3 col-xs-12" })
+                <div class="col-md-6 col-sm-9 col-xs-12">
+                    @Html.TextBoxFor(model => model.IdDataTruck, new { @class = "form-control input-sm" })
+                    @Html.HiddenFor(model => model.VehicleNo)
+                    @Html.ValidationMessageFor(model => model.IdDataTruck)
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.IdVendor, new { @class = "control-label col-md-2 col-sm-3 col-xs-12" })
+                <div class="col-md-6 col-sm-9 col-xs-12">
+                    @Html.TextBoxFor(model => model.IdVendor, new { @class = "form-control input-sm" })
+                    @Html.HiddenFor(model => model.Vendor)
+                    @Html.ValidationMessageFor(model => model.IdVendor)
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.ModelGps, new { @class = "control-label col-md-2 col-sm-3 col-xs-12" })
+                <div class="col-md-6 col-sm-9 col-xs-12">
+                    @Html.TextBoxFor(model => model.ModelGps, new { @class = "form-control input-sm focus" })
+                    @Html.ValidationMessageFor(model => model.ModelGps)
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.NoDevice, new { @class = "control-label col-md-2 col-sm-3 col-xs-12" })
+                <div class="col-md-6 col-sm-9 col-xs-12">
+                    @Html.TextBoxFor(model => model.NoDevice, new { @class = "form-control input-sm" })
+                    @Html.ValidationMessageFor(model => model.NoDevice)
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.SensorSuhu, new { @class = "control-label col-md-2 col-sm-3 col-xs-12" })
+                <div class="col-md-6 col-sm-9 col-xs-12">
+                    <div class="checkbox checkbox-inline">
+                        <label class="checkbox">@Html.RadioButtonFor(model => model.SensorSuhu, true) Yes</label>
+                    </div>
+                    <div class="checkbox checkbox-inline">
+                        <label class="checkbox">@Html.RadioButtonFor(model => model.SensorSuhu, false) No</label>
+                    </div>
+                    @Html.ValidationMessageFor(model => model.SensorSuhu)
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.SensorPintu, new { @class = "control-label col-md-2 col-sm-3 col-xs-12" })
+                <div class="col-md-6 col-sm-9 col-xs-12">
+                    <div class="checkbox checkbox-inline">
+                        <label class="checkbox">@Html.RadioButtonFor(model => model.SensorPintu, true) Yes</label>
+                    </div>
+                    <div class="checkbox checkbox-inline">
+                        <label class="checkbox">@Html.RadioButtonFor(model => model.SensorPintu, false) No</label>
+                    </div>
+                    @Html.ValidationMessageFor(model => model.SensorPintu)
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.Tahun, new { @class = "control-label col-md-2 col-sm-3 col-xs-12" })
+                <div class="col-md-6 col-sm-9 col-xs-12">
+                    @Html.TextBoxFor(model => model.Tahun, new { @class = "form-control-dateyear" })
+                    @Html.ValidationMessageFor(model => model.Tahun)
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.TanggalPasang, new { @class = "control-label col-md-2 col-sm-3 col-xs-12" })
+                <div class="col-md-6 col-sm-9 col-xs-12">
+                    @Html.TextBoxFor(model => model.TanggalPasang, new { @class = "form-control-datepicker" })
+                    @Html.ValidationMessageFor(model => model.TanggalPasang)
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.TanggalGaransi, new { @class = "control-label col-md-2 col-sm-3 col-xs-12" })
+                <div class="col-md-6 col-sm-9 col-xs-12">
+                    @Html.TextBoxFor(model => model.TanggalGaransi, new { @class = "form-control-datepicker" })
+                    @Html.ValidationMessageFor(model => model.TanggalGaransi)
+                </div>
+            </div>
+            if (Model.Id != 0)
+            {
+                <div class="portlet light">
+                    <div class="portlet-title">
+                        <div class="caption font-green-sharp">
+                            <span class="caption-subject"> History</span>
+                        </div>
+                        <div class="tools">
+                            <a href="" class="collapse"> </a>
+                        </div>
+                    </div>
+                    <div class="portlet-body">
+                        <div id="gridHistory"></div>
+                    </div>
+                </div>
+            }
+            <div class="ln_solid"></div>
+
+            <div class="form-group">
+                <div class="col-md-9 col-sm-9 col-xs-12 col-md-offset-2">
+                    <button type="submit" class="btn btn-success">Submit</button>
+                    <a href="@backLink" class="btn btn-link">Cancel</a>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+@section scripts{
+    <script type="text/javascript">
+    $(document).ready(function () {
+        var dsTruck = new kendo.data.DataSource({
+            transport: {
+                read: {
+                    url: '@Url.Action("getTruck","DataTruck")?type=GPS&id=' + '@Model.IdDataTruck',
+                        dataType: "json"
+                    },
+                },
+            });
+            $("#IdDataTruck").kendoComboBox({
+                dataTextField: "VehicleNo",
+                dataValueField: "Id",
+                dataSource: dsTruck,
+                filter: "contains",
+                suggest: true,
+                change: function (e) {
+                    $("#VehicleNo").val(this.text());
+                },
+            });
+
+            var dsGPS = new kendo.data.DataSource({
+                transport: {
+                    read: {
+                        url: '@Url.Action("getGPS","VendorGps")',
+                    dataType: "json"
+                },
+            },
+        });
+        $("#IdVendor").kendoComboBox({
+            dataTextField: "Nama",
+            dataValueField: "Id",
+            dataSource: dsGPS,
+            filter: "contains",
+            suggest: true,
+        });
+
+        var dsHistory = new kendo.data.DataSource({
+            transport: {
+                read: {
+                    url: '@Url.Action("BindingHistory")?Id=' + '@Model.Id',
+                    dataType: "json"
+                },
+            },
+            schema: {
+                model: {
+                    fields: {
+                        Tanggal: { type: "string" },
+                        VehicleNo: { type: "string" },
+                        username: { type: "string" },
+                        TanggalPasang: { type: "string" },
+                    }
+                }
+            },
+        });
+
+        gridHistory = $("#gridHistory").kendoGrid({
+            dataSource: dsHistory,
+            columns: [
+                {
+                    field: "TanggalPasang",
+                    title: "Tanggal Pasang",
+                    template: "#= TanggalPasang != null ? kendo.toString(kendo.parseDate(TanggalPasang, 'yyyy-MM-dd'), 'MM/dd/yyyy') :''#"
+                },
+                {
+                    field: "VehicleNo",
+                    title: "Vehicle No",
+                },
+                {
+                    field: "username",
+                    title: "User",
+                },
+                {
+                    field: "Tanggal",
+                    title: "Tanggal",
+                    template: "#= kendo.toString(kendo.parseDate(Tanggal, 'yyyy-MM-dd'), 'MM/dd/yyyy HH:mm') #"
+                }
+            ],
+        }).data("kendoGrid");
+    })
+    </script>
+}

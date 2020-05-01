@@ -1,0 +1,158 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "Solar Inap";
+}
+@if (User.HasMenuAccess("Admin"))
+{
+<div class="portlet light ">
+    <div class="portlet-title">
+        <div class="caption">
+            <span class="caption-subject font-dark sbold uppercase">Solar Inap Admin Uang Jalan</span>
+        </div>
+    </div>
+    <div class="portlet-body form">
+        <div class="portlet box blue ">
+            <div class="portlet-title">
+                <div class="caption">
+                    Hide Column :
+                </div>
+                <div class="tools">
+                    <a href="" class="expand"> </a>
+                </div>
+            </div>
+            <div class="portlet-body form" style="display: none;">
+                <form role="form">
+                    <div class="form-body">
+                        <div id="content-col" class="md-checkbox-inline" style="margin-left:10px"></div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div id="grid"></div>
+    </div>
+</div>
+@section scripts
+{
+    <script id="command-template" type="text/x-kendo-template">
+        <a class="k-button-icon k-grid-edit" href="\\#" title="Set Uang Inap" onclick="editItem(#=Id#, '#=NoSO#')"><span class="glyphicon glyphicon-bookmark"></span></a>
+    </script>
+    <script type="text/javascript">
+    var kendoUploadButtonExim;
+
+    function editItem(id, NoSO) {
+        window.location.href = "@Url.Action("EditAUJ")" + "?id=" + id +"&NoSO=" + NoSO;
+    }
+
+    $(document).ready(function () {
+        var user_types = [];
+        @if (User.HasMenuAccess("Kasir")){
+                <text>
+        user_types.push("Kasir")
+        </text>
+            }
+        @if (User.HasMenuAccess("Admin")){
+                <text>
+        user_types.push("Admin")
+        </text>
+            }
+        @if (User.HasMenuAccess("Marketing")){
+                <text>
+        user_types.push("Marketing")
+        </text>
+            }
+        @if (User.HasMenuAccess("DM")){
+                <text>
+        user_types.push("DM")
+        </text>
+            }
+        var ds = new kendo.data.DataSource({
+            transport: {
+                read: {
+                    url: '@Url.Action("BindingAUJ")' + "?user_types=" + user_types.join(','),
+                    dataType: "json"
+                },
+                parameterMap: function (options, operation) {
+                    if (operation !== "read" && options != '') {
+                        return kendo.stringify(options);
+                    }
+                    else if (operation == "read") {
+                        if (options.filter) {
+                            filter = options.filter.filters;
+                            for (var i in filter) {
+                                if (filter[i].field == "Status") {
+                                    filter[i].field = "LookupCodeBank.Nama";
+                                }
+                                if (filter[i].field == "VehicleNo") {
+                                    filter[i].field = "DataTruck.VehicleNo";
+                                }
+                                if (filter[i].field == "KodeDriver") {
+                                    filter[i].field = "Driver.KodeDriver";
+                                }
+                                if (filter[i].field == "NamaDriver") {
+                                    filter[i].field = "Driver.NamaDriver";
+                                }
+                                if (filter[i].field == "Panggilan") {
+                                    filter[i].field = "Driver.NamaPangilan";
+                                }
+                                if (filter[i].field == "NoSO") {
+                                    filter[i].field = "SalesOrderOncall.SONumber";
+                                }
+                            }
+                        }
+
+                        if (options.sort) {
+                            sort = options.sort;
+                            for (var i in sort) {
+                                if (filter[i].field == "VehicleNo")
+                                    filter[i].field = "DataTruk.VehicleNo";
+                                if (sort[i].field == "NamaBank")
+                                    sort[i].field = "LookupCodeBank.Nama";
+                                if (sort[i].field == "KodeDriver")
+                                    sort[i].field = "Driver.KodeDriver";
+                                if (sort[i].field == "NamaDriver")
+                                    sort[i].field = "Driver.NamaDriver";
+                                if (sort[i].field == "Panggilan")
+                                    sort[i].field = "Driver.NamaPangilan";
+                            }
+                        }
+                        return options;
+                    }
+                }
+            },
+            schema: {
+                total: "total", data: "data", model: {
+                    fields: {
+                        "Id": {type: "number"}, "NoSO": {type: "string"}, "VehicleNo": {type: "string"}, "KodeDriver": {type: "string"}, "NamaDriver": {type: "string"}, "JenisTruk": {type: "string"},
+                        "Customer": {type: "string"}, "TanggalBerangkat": {type: "date"}, "TanggalTiba": {type: "date"}, "TanggalDari": {type: "date"}, "TanggalHingga": {type: "string"},
+                        "KeteranganOperation": {type: "string"}, "StatusTagihan": {type: "string"}, "Cash": {type: "string"}, "TglCash": {type: "string"}, "Transfer": {type: "string"},
+                        "TglTransfer": { type: "string" }
+                    }
+                }
+            }, pageSize: 10, pageable: true, sortable: true,
+        });
+        gridIndex = $("#grid").kendoGrid({
+            dataSource: ds, filterable: kendoGridFilterable, sortable: true, reorderable: true, resizable: true, pageable: true, groupable: true, columns: [
+                {template: kendo.template($("#command-template").html()), width: 60}, {field: "Status", width: "119px"}, {field: "NoSO", title: "No SO", width: "119px"},
+                {field: "VehicleNo", title: "Vehicle No", width: "91px"}, {field: "KodeDriver", title: "Id Driver", width: "105px"}, {field: "NamaDriver", title: "Driver", width: "161px"},
+                {field: "JenisTruk", title: "Jenis Truk", width: "91px"}, {field: "KodeNama", title: "Kode Nama", width: "105px"}, {field: "Customer", width: "175px"},
+                {
+                    field: "TanggalBerangkat", title: "Tanggal Berangkat", width: "91px",
+                    template: "#= TanggalBerangkat != null ? kendo.toString(kendo.parseDate(TanggalBerangkat, 'yyyy-MM-dd'), 'dd/MM/yyyy') : ''#"
+                },
+                {field: "TanggalTiba", title: "Tanggal Tiba", width: "91px", template: "#= TanggalTiba != null ? kendo.toString(kendo.parseDate(TanggalTiba, 'yyyy-MM-dd'), 'dd/MM/yyyy') : ''#"},
+                {field: "JamTiba", title: "Jam Tiba", width: "63px", template: "#= JamTiba != null ? kendo.toString(new Date(1, 1, 1, JamTiba.Hours, JamTiba.Minutes), 'hh : mm') : ''#"},
+                {field: "TanggalDari", title: "Tanggal Inap", width: "91px", template: "#= TanggalDari != null ? kendo.toString(kendo.parseDate(TanggalDari, 'yyyy-MM-dd'), 'dd/MM/yyyy') : ''#"},
+                {field: "KeteranganOperation", title: "Keterangan", width: "125px"}, {field: "StatusTagihan", title: "Status Tagihan", width: "125px"}, {field: "Cash", width: "105px"},
+                {field: "TglCash", title: "Tanggal Cash", width: "91px"}, {field: "Transfer", width: "105px"}, {field: "TglTransfer", title: "Tanggal Transfer", width: "91px"}
+            ],
+        }).data("kendoGrid");
+        GetColomnData(gridIndex);
+    })
+    </script>
+}
+}
+else{
+    ViewBag.Title = "AccessDenied";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    <h1>Maaf, anda tidak memiliki hak akses yang cukup untuk mengakses halaman ini</h1>
+}

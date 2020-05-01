@@ -1,0 +1,123 @@
+﻿@using tms_mka_v2.Models
+
+<link rel="stylesheet" href="~/Content/metronic/bootstrap.min.css" />
+<page size="A4" layout="portrait">
+    <div class="container" style="margin-left: 35px; margin-right: 35px">
+        <div class="row">
+            <div class="col-xs-6 col-md-6">
+                <div class="row">
+                    <h4 class="control-label col-xs-3 col-md-3">KIATANANDA</h4>
+                </div>
+                <div class="row">
+                    <label class="col-xs-3 col-md-3" style="font-size: 11px !important">No Bukti</label>
+                    <label class="col-xs-9 col-md-9" style="font-size: 11px !important">: @ViewBag.noBukti</label>
+                </div>
+                <div class="row">
+                    <label class="col-xs-3 col-md-3" style="font-size: 11px !important">Tanggal</label>
+                    <label class="col-xs-9 col-md-9" style="font-size: 11px !important">: @ViewBag.tanggal</label>
+                </div>
+                <div class="row">
+                    <label class="control-label col-xs-3 col-md-3" style="font-size: 11px !important">Kontak</label>
+                    <label class="control-label col-xs-9 col-md-9" style="font-size: 11px !important">: @ViewBag.kontak</label>
+                </div>
+            </div>
+            <div class="col-xs-6 col-md-6">
+                <div class="row">
+                    <h3 class="control-label col-xs-12 col-md-12" style="text-align:right !important; font-size: 11px !important"><u>Bukti Kas Keluar</u></h3>
+                </div>
+                <div class="row">
+                    <label class="control-label col-xs-12 col-md-12" style="text-align:right !important; font-size: 11px !important">Kas Besar</label>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <td style="font-size: 11px !important">No</td>
+                        <td style="font-size: 11px !important">Keterangan</td>
+                        <td style="font-size: 11px !important">Jumlah</td>
+                        <td style="font-size: 11px !important">&nbsp;&nbsp;&nbsp;</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    @{ int idx = 1; }
+                    @foreach (var item in ViewBag.item)
+                    {
+                        <tr>
+                            <td style="font-size: 11px !important">@idx</td>
+                            <td style="font-size: 11px !important">@item.Nama</td>
+                            <td style="text-align:right; font-size: 11px !important">@item.JumlahTransfer.ToString("N2")</td>
+                            <td style="font-size: 11px !important">&nbsp;&nbsp;&nbsp;</td>
+                        </tr>
+                        idx++;
+                    }
+                </tbody>
+            </table>
+        </div>
+        <div class="row">
+            <div class="col-xs-8 col-md-8">
+                <div class="row" style="font-size: 11px !important">
+                    <label class="control-label col-xs-12 col-md-12" style="font-size: 11px !important">Terbilang : # @ViewBag.terbilang # </label>
+                </div>
+            </div>
+            <div class="col-xs-4 col-md-4">
+                <div class="row">
+                    <label class="control-label col-xs-6 col-md-6" style="font-size: 11px !important">Total</label>
+                    <label class="control-label col-xs-6 col-md-6" style="text-align:right !important; font-size: 11px !important">@ViewBag.total.ToString("N2")</label>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-8 col-md-8">
+
+            </div>
+            <div class="col-xs-4 col-md-4">
+                <div class="row">
+                    <label class="control-label col-xs-12 col-md-12" style="font-size: 11px !important">@DateTime.Now.ToLongDateString() @DateTime.Now.ToShortTimeString()</label>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-8 col-md-8"></div>
+            <div class="col-xs-4 col-md-4">
+                <div class="row">
+                    <label class="control-label col-xs-6 col-md-6" style="text-align:center; font-size: 11px !important">Diterima</label>
+                </div>
+            </div>
+        </div>
+    </div>
+</page>@section styles{
+
+    <style>
+        body {
+            background: rgb(204,204,204);
+        }
+
+        page {
+            background: white;
+            display: block;
+            margin: 0 auto;
+            margin-bottom: 0.5cm;
+            box-shadow: 0 0 0.5cm rgba(0,0,0,0.5);
+        }
+
+            page[size="A4"] {
+                width: 21cm;
+                height: 29.7cm;
+            }
+
+                page[size="A4"][layout="portrait"] {
+                    width: 29.7cm;
+                    height: 21cm;
+                }
+
+        body, page {
+            margin: 0;
+            box-shadow: 0;
+        }
+    </style>
+}
+<script>
+    window.print()
+</script>

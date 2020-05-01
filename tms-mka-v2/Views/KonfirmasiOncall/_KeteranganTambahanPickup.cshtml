@@ -1,0 +1,72 @@
+﻿@using tms_mka_v2.Models;
+@using System.Web.Mvc.Html;
+
+@model tms_mka_v2.Models.SalesOrderPickup
+
+<div class="portlet light">
+    <div class="portlet-title">
+        <div class="caption font-green-sharp">
+            <span class="caption-subject"> Keterangan Tambahan</span>
+        </div>
+        <div class="tools">
+            <a href="" class="collapse"> </a>
+        </div>
+    </div>
+    <div class="portlet-body">
+        <div class="form-group">
+            <label class="control-label col-md-2"> @Html.RadioButtonFor(model => model.IsCash, true, new { @onchange = "GenerateCash('True')" }) Uang Dititpkan Kepada</label>
+            <div class="col-md-4">
+                @Html.TextBoxFor(model => model.IdDriverTitip, new { @class = "form-control input-sm" })
+                @Html.ValidationMessageFor(model => model.IdDriverTitip)
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="control-label col-md-2"> @Html.RadioButtonFor(model => model.IsCash, false, new { @onchange = "GenerateCash('False')" }) Uang Ditransfer Via</label>
+        </div>
+        @Html.HiddenFor(model => model.AtmId)
+        <div class="form-group">
+            <label class="control-label col-md-2"> Rekening</label>
+            <div class="col-md-4">
+                <div class="input-group input-group-sm">
+                    @Html.TextBoxFor(model => model.StrRekening, new { @class = "form-control", @readonly = true })
+                    <span class="input-group-btn">
+                        <button id="btnbrowserek" type="button" class="btn btn-success" data-toggle="modal" data-target="#ModalMasterRekening">Browse</button>
+                    </span>
+                </div>
+                @Html.ValidationMessageFor(model => model.AtmId)
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="control-label col-md-2"> Nama</label>
+            <div class="col-md-4">
+                @Html.TextBoxFor(model => model.AtasNamaRek, new { @class = "form-control input-sm", @readonly = true })
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="control-label col-md-2"> Bank</label>
+            <div class="col-md-4">
+                @Html.TextBoxFor(model => model.Bank, new { @class = "form-control input-sm", @readonly = true })
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="control-label col-md-2"> Keterangan</label>
+            <div class="col-md-4">
+                @Html.TextAreaFor(model => model.KeteranganRek, new { @class = "form-control input-sm" })
+            </div>
+        </div>
+    </div>
+</div>
+
+@*Modal Rekening*@
+<div id="ModalMasterRekening" class="modal fade bs-modal-full" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-full">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+            </div>
+            <div class="modal-body">
+                <div id="GridMasterRekening"></div>
+            </div>
+        </div>
+    </div>
+</div>

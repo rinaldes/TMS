@@ -1,0 +1,453 @@
+﻿@using tms_mka_v2.Models;
+@model tms_mka_v2.Models.Customer
+@{
+    ViewBag.Title = "Form";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    string currentController = (string)ViewContext.RouteData.Values["controller"];
+    string currentAction = (string)ViewContext.RouteData.Values["action"];
+    string backLink = Url.Action("Index");
+    if (currentAction == "Add")
+    {
+        ViewBag.Title = "Tambah Customer";
+    }
+    else
+    {
+        ViewBag.Title = ViewBag.name + " | Edit";
+    }
+}
+<style>
+    span.k-widget.k-tooltip-validation {
+        display;
+        inline-block;
+        width: 160px;
+        text-align: left;
+        border: 0;
+        padding: 0;
+        margin: 0;
+        background: none;
+        box-shadow: none;
+        color: red;
+        font-size: smaller;
+    }
+
+    .k-tooltip-validation .k-warning {
+        display: none;
+    }
+
+    /*.k-state-disabled {
+    cursor:not-allowed;
+    background-color: #eef1f5;
+    opacity: 1;
+    }*/
+</style>
+<script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?sensor=false&key=AIzaSyBfPWT55ybzPawdPYh58Y85LICkYHQe27U"></script>
+<div class="portlet light">
+    <div class="portlet-title">
+        <div class="caption">
+            <span class="caption-subject font-dark sbold uppercase">@ViewBag.Title</span>
+        </div>
+    </div>
+    <div class="portlet-body form">
+        @using (@Html.BeginForm(currentAction, currentController, FormMethod.Post, new { @class = "form-horizontal" }))
+        {
+            @Html.ValidationSummary(true)
+            @Html.HiddenFor(model => model.Id)
+            <div class="form-horizontal">
+                <div class="portlet-body">
+                    <span id="notif" style="display:none;"></span>
+                    <div id="appendto" style="text-align: center;"></div>
+                    <ul class="nav nav-tabs" id="wtab">
+                        <li class="active">
+                            <a href="#tab_BasicData" data-toggle="tab"> Basic Data </a>
+                        </li>
+                        @if (Model.Id != 0)
+                        {
+                            <text>
+                                @if (User.HasMenuAccess("Customer PIC")){
+                                <li><a href="#tab_Pic" data-toggle="tab">PIC</a></li>
+                                }
+                                @if (User.HasMenuAccess("Customer Address")){
+                                <li><a href="#tab_Address" data-toggle="tab">Address</a></li>
+                                }
+                                @if (User.HasMenuAccess("Customer Product Type")){
+                                <li><a href="#tab_ProductType" data-toggle="tab">Product Type</a></li>
+                                }
+                                @if (User.HasMenuAccess("Customer Loading Address")){
+                                <li>
+                                    <a href="#tab_LoadingAddress" data-toggle="tab">Loading Address</a>
+                                </li>
+                                }
+                                @if (User.HasMenuAccess("Customer Unloading Address")){
+                                <li><a href="#tab_UnloadingAddress" data-toggle="tab">Unloading Address</a></li>
+                                }
+                                @if (User.HasMenuAccess("Customer Supplier")){
+                                <li><a href="#tab_Supplier" data-toggle="tab">Supplier</a></li>
+                                }
+                                @if (User.HasMenuAccess("Customer Billing")){
+                                <li><a href="#tab_Billing" data-toggle="tab">Billing</a></li>
+                                }
+                                @if (User.HasMenuAccess("Customer PPN")){
+                                <li><a href="#tab_PPN" data-toggle="tab">PPN</a></li>        
+                                }
+                                @if (User.HasMenuAccess("Customer Credit Status")){
+                                <li><a href="#tab_cs" data-toggle="tab">Credit Status</a></li>
+                                }
+                                @if (User.HasMenuAccess("Customer Notification")){
+                                <li>
+                                    <a href="#tab_notif" data-toggle="tab">Notification</a>
+                                </li>
+                                }
+                                @if (User.HasMenuAccess("Customer Attachment")){
+                                <li>
+                                    <a href="#tab_attc" data-toggle="tab">Attachment</a>
+                                </li>
+                                }
+                                @if (User.HasMenuAccess("Customer Truck Type")){
+                                <li>
+                                    <a href="#tab_TypeTrucks" data-toggle="tab">Truck Type</a>
+                                </li>
+                                }
+                            </text>
+                        }
+                    </ul>
+                </div>
+                <div class="tab-content">
+                    <div class="tab-pane fade active in" id="tab_BasicData">
+                        @Html.Partial("_BasicData", Model)
+                    </div>
+                    @if (Model.Id != 0)
+                    {
+                        <text>
+                            @if (User.HasMenuAccess("Customer PIC")){
+                            <div class="tab-pane fade" id="tab_Pic">
+                                @*@Html.Partial("_Pic", Model)*@
+                                @Html.Partial("_PicNew", Model)
+                            </div>
+                            }
+                            @if (User.HasMenuAccess("Customer Address")){
+                            <div class="tab-pane fade" id="tab_Address">
+                                @*@Html.Partial("_Address", Model)*@
+                                @Html.Partial("_AddressNew", Model)
+                            </div>
+                            }
+                            @if (User.HasMenuAccess("Customer Product Type")){
+                            <div class="tab-pane fade" id="tab_ProductType">
+                                @*@Html.Partial("_ProductType", Model)*@
+                                @Html.Partial("_ProductTypeNew", Model)
+                            </div>
+                            }
+                            @if (User.HasMenuAccess("Customer Loading Address")){
+                            <div class="tab-pane fade" id="tab_LoadingAddress">
+                                @Html.Partial("_LoadAddress", Model)
+                                @*@Html.Partial("_LoadAddressNew", Model)*@
+                            </div>
+                            }
+                            @if (User.HasMenuAccess("Customer Unloading Address")){
+                            <div class="tab-pane fade" id="tab_UnloadingAddress">
+                                @Html.Partial("_UnloadingAddress", Model)
+                                @*@Html.Partial("_UnloadingAddressNew", Model)*@
+                            </div>
+                            }
+                            @if (User.HasMenuAccess("Customer Supplier")){
+                            <div class="tab-pane fade" id="tab_Supplier">
+                                @*@Html.Partial("_Supplier", Model)*@
+                                @Html.Partial("_SupplierNew", Model)
+                            </div>
+                            }
+                            @if (User.HasMenuAccess("Customer Billing")){
+                            <div class="tab-pane fade" id="tab_Billing">
+                                @*@Html.Partial("_Billing", Model)*@
+                                @Html.Partial("_BillingNew", Model)
+                            </div>
+                            }
+                            @if (User.HasMenuAccess("Customer PPN")){
+                            <div class="tab-pane fade" id="tab_PPN">
+                                @Html.Partial("_PPN", Model)
+                            </div>
+                            }
+                            @if (User.HasMenuAccess("Customer Attachment")){
+                            <div class="tab-pane fade" id="tab_attc">
+                                @Html.Partial("_Attachment", Model)
+                            </div>
+                            }
+                            @if (User.HasMenuAccess("Customer Truck Type")){
+                            <div class="tab-pane fade" id="tab_TypeTrucks">
+                                @Html.Partial("_TruckType", Model)
+                            </div>
+                            }
+                            @if (User.HasMenuAccess("Customer Notification")){
+                            <div class="tab-pane fade" id="tab_notif">
+                                @Html.Partial("_NotificationNew", Model)
+                            </div>
+                            }
+                            @if (User.HasMenuAccess("Customer Credit Status")){
+                            <div class="tab-pane fade" id="tab_cs">
+                                @Html.Partial("_CreditStatus", Model)
+                            </div>
+                            }
+                        </text>
+                    }
+                    <div>
+                        @Html.ActionLink("Back to List", "Index")
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+<div id="modalGridPic" class="modal fade bs-modal-lg" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div id="modalForm" class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                <h4 class="modal-title">List PIC</h4>
+            </div>
+            <div class="modal-body">
+                <div id="GridPic"></div>
+            </div>
+        </div>
+    </div>
+</div>
+@section scripts{
+    <script>
+        $('ul.nav li').removeClass('active');
+        $('ul.nav a[href="#tab_@ViewBag.activeTab"]').parent().addClass('active');
+        $('.tab-pane').removeClass("active in");
+        $('#tab_@ViewBag.activeTab').addClass("active in");
+    </script>
+    <script type="text/javascript">
+        var callerGrid;
+        var statPPN;
+        var dataAttachment = [];
+        var dsMainPic = [];
+        var gridPicHeader;
+        var gridmainpic;
+        var cbooverride;
+
+        @if(Model.CustomerPicId.HasValue)
+        {
+            tms_mka_v2.Context.CustomerPic dbpic = Model.ListPic.Where(d=> d.Id == Model.CustomerPicId.Value).FirstOrDefault();
+        <text>
+        dsMainPic.push({
+            Id: @dbpic.Id,
+            Nama: '@dbpic.Name',
+            Dept: '@dbpic.LookUpCodesDept.Nama',
+            Jabatan: '@dbpic.LookUpCodesJabatan.Nama',
+            EmailAdd: '@dbpic.EmailAdd',
+            Mobile: '@dbpic.Mobile'
+            })
+        </text>
+        }
+        function SelectPic(e) {
+            e.preventDefault();
+            var data = this.dataItem(getDataRowGrid(e));
+            if (callerGrid == 'notif') {
+                $('#IdPicNotif').val(data.Id);
+                $('#NamaPicNotif').val(data.Nama);
+                $('#JabatanPicNotif').val(data.Jabatan);
+                $('#EmailPicNotif').val(data.EmailAdd);
+                $('#MobilePicNotif').val(data.Mobile);
+            }
+            else if (callerGrid == 'basisdata')
+            {
+                $('#CustomerPicId').val(data.Id);
+                dsMainPic = [];
+                dsMainPic.push({
+                    Id: data.Id,
+                    Nama: data.Nama,
+                    Dept: data.Dept,
+                    Jabatan: data.Jabatan,
+                    EmailAdd: data.EmailAdd,
+                    Mobile: data.Mobile
+                });
+                gridmainpic.dataSource.data(dsMainPic);
+            }
+            $('#modalGridPic').modal('hide');
+        }
+
+        function deleteMainPic(e)
+        {
+            e.preventDefault();
+            $('#CustomerPicId').val('');
+            gridmainpic.removeRow(getDataRowGrid(e));
+        }
+
+        function showPic(caller)
+        {
+            callerGrid = caller;
+            gridPicHeader.dataSource.read();
+        }
+
+        $(document).ready(function () {
+            @if (ViewBag.status == "success")
+            {
+                <text>
+
+            SuccessNotif();
+            </text>
+            }
+
+            var ds = new kendo.data.DataSource({
+                transport: {
+                    read: {
+                        url: '@Url.Action("GetPrioritas")',
+                        dataType: "json"
+                    },
+                },
+            });
+            $("#PrioritasId").kendoComboBox({
+                dataTextField: "Nama",
+                dataValueField: "Id",
+                dataSource: ds,
+                filter: "contains",
+                suggest: true,
+            });
+            @if (Model.IsPPn)
+            {
+                <text>
+            statPPN = 'PPN';
+            </text>
+            }
+            else
+            {
+                <text>
+            statPPN = 'NON PPN';
+            </text>
+            }
+            //grid pic
+            var dsGridPic = new kendo.data.DataSource({
+                transport: {
+                    read: {
+                        url: '@Url.Action("BindingPic")?idCust=' + '@Model.Id',
+                        dataType: "json"
+                    },
+                },
+                schema: {
+                    data: "data",
+                    model: {
+                        fields: {
+                            "Id": { type: "number" },
+                            "Nama": { type: "string" },
+                            "Dept": { type: "string" },
+                            "Jabatan": { type: "string" },
+                            "EmailAdd": { type: "string" },
+                            "Mobile": { type: "string" }
+                        }
+                    }
+                },
+                pageSize: 10,
+                //sort: { field: "SubmittedDate", dir: "desc" }
+            });
+
+            gridPicHeader = $("#GridPic").kendoGrid({
+                dataSource: dsGridPic,
+                //filterable: kendoGridFilterable,
+                sortable: true,
+                //height: "615",
+                columns: [
+                    {
+                        command: [
+                            {
+                                name: "select",
+                                text: "Select",
+                                click: SelectPic,
+                                imageClass: "glyphicon glyphicon-ok",
+                                template: '<a class="k-button-icon #=className#" #=attr# href="\\#"><span class="#=iconClass# #=imageClass#"></span></a>'
+                            }
+                        ],
+                        width: "50px"
+                    },
+                    {
+                        field: "Nama",
+                        title: "Nama"
+                    },
+                    {
+                        field: "Dept",
+                        title: "Departemen"
+                    },
+                    {
+                        field: "Jabatan",
+                        title: "Jabatan"
+                    },
+                    {
+                        field: "EmailAdd",
+                        title: "Email"
+                    },
+                    {
+                        field: "Mobile",
+                        title: "Hp"
+                    },
+                ],
+            }).data("kendoGrid");
+
+
+            gridmainpic = $("#gridmainpic").kendoGrid({
+                dataSource: dsMainPic,
+                sortable: true,
+                columns: [
+                    {
+                        command: [
+                            {
+                                name: "delete",
+                                text: "Delete",
+                                click: deleteMainPic,
+                                imageClass: "glyphicon glyphicon-remove",
+                                template: '<a class="k-button-icon #=className#" #=attr# href="\\#"><span class="#=iconClass# #=imageClass#"></span></a>'
+                            }
+                        ],
+                        width: "50px"
+                    },
+                    {
+                        field: "Nama",
+                        title: "Nama"
+                    },
+                    {
+                        field: "Dept",
+                        title: "Departemen"
+                    },
+                    {
+                        field: "Jabatan",
+                        title: "Jabatan"
+                    },
+                    {
+                        field: "EmailAdd",
+                        title: "Email"
+                    },
+                    {
+                        field: "Mobile",
+                        title: "Hp"
+                    },
+                ],
+            }).data("kendoGrid");
+        })
+    </script>
+    @if (Model.Id != 0)
+    {
+        if (User.HasMenuAccess("Customer Credit Status")){
+            <script src="~/Content/Customer/CustCreditStatus.js"></script>
+        }
+        if (User.HasMenuAccess("Customer PPN"))
+        {
+            <script src="~/Content/Customer/CustPPN.js"></script>
+        }
+        <script src="~/Content/Customer/CustMapsJs.js"></script>
+            //<script src="~/Content/Customer/CustPic.js"></script>
+        <script src="~/Content/Customer/CustPicNew.js"></script>
+        //<script src="~/Content/Customer/CustAddress.js"></script>
+        <script src="~/Content/Customer/CustAddressNew.js"></script>
+        //<script src="~/Content/Customer/CustProdcutType.js"></script>
+        <script src="~/Content/Customer/CustProdcutTypeNew.js"></script>
+        //<script src="~/Content/Customer/CustLoadingAddress.js"></script>
+        //<script src="~/Content/Customer/CustUnloadingAddress.js"></script>
+        <script src="~/Content/Customer/CustLoadingAddressNew.js"></script>
+        <script src="~/Content/Customer/CustUnloadingAddressNew.js"></script>
+        <script src="~/Content/Customer/CustAttachment.js"></script>
+        //<script src="~/Content/Customer/CustSupplier.js"></script>
+        <script src="~/Content/Customer/CustSupplierNew.js"></script>
+        //<script src="~/Content/Customer/CustBilling.js"></script>
+        <script src="~/Content/Customer/CustBillingNew.js"></script>
+        //<script src="~/Content/Customer/CustNotif.js"></script>
+        <script src="~/Content/Customer/CustNotifNew.js"></script>
+        <script src="~/Content/Customer/CustTruckType.js"></script>
+    }
+}

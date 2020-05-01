@@ -1,0 +1,129 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "Auditrail";
+    string currentController = "Auditrail";
+    string currentAction = "Index";
+}
+<div class="portlet light ">
+    <div class="portlet-title">
+        <div class="caption">
+            <span class="caption-subject font-dark sbold uppercase">@ViewBag.Title</span>
+        </div>
+    </div>
+    <div class="portlet-body form">
+        <div class="portlet box blue ">
+            <div class="portlet-title">
+                <div class="caption">
+                    Hide Column :
+                </div>
+                <div class="tools">
+                    <a href="" class="expand"> </a>
+                </div>
+            </div>
+            <div class="portlet-body form" style="display: none;">
+                <form role="form">
+                    <div class="form-body">
+                        <div id="content-col" class="md-checkbox-inline" style="margin-left:10px"></div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div id="grid"></div>
+    </div>
+</div>
+@section scripts
+{
+    <script type="text/javascript">
+        $(document).ready(function () {
+            currController = '@currentController';
+            currAction = '@currentAction';
+            var ds = new kendo.data.DataSource({
+                transport: {
+                    read: {
+                        url: '@Url.Action("Binding")',
+                        dataType: "json"
+                    },
+                    parameterMap: function (options, operation) {
+                        if (operation !== "read" && options != '') {
+                            return kendo.stringify(options);
+                        }
+                        else if (operation == "read") {
+                            if (options.filter) {
+                                filter = options.filter.filters;
+                                for (var i in filter) {
+                                    if (filter[i].field == "NamaUser") {
+                                        filter[i].field = "User.Fristname";
+                                    }
+                                }
+                            }
+
+                            if (options.sort) {
+                                sort = options.sort;
+                                for (var i in sort) {
+                                    if (sort[i].field == "NamaUser") {
+                                        sort[i].field = "User.Fristname";
+                                    }
+                                }
+                            }
+                            return options;
+                        }
+                    }
+                },
+                schema: {
+                    total: "total",
+                    data: "data",
+                    model: {
+                        fields: {
+                            "Id": { type: "number" },
+                            "EventDate": { type: "date" },
+                            "Actionnya": { type: "string" },
+                            "NamaUser": { type: "string" },
+                            "RemoteAddress": { type: "string" },
+                            "Modulenya": { type: "string" },
+                            "QueryDetail": { type: "string" }
+                        }
+                    }
+                },
+                pageSize: 10,
+                pageable: true,
+                serverFiltering: true,
+                serverPaging: true,
+                serverSorting: true,
+                sortable: true,
+                sort: { field: "EventDate", dir: "desc" }
+            });
+            gridIndex = $("#grid").kendoGrid({
+                dataSource: ds,
+                filterable: kendoGridFilterable,
+                sortable: true,
+                reorderable: true,
+                resizable: true,
+                pageable: true,
+                groupable: true,
+                //height: "615",
+                columns: [
+                    {
+                        field: "EventDate", title: "Event Date", width: 105,
+                        template: "#= EventDate != null ? kendo.toString(kendo.parseDate(EventDate, 'yyyy-MM-dd'), 'dd/MM/yyyy HH:mm') : ''#"
+                    },
+                    {
+                        field: "Modulenya", title: "Module", width: 105,
+                    },
+                    {
+                        field: "Actionnya", title: "Action", width: 105,
+                    },
+                    {
+                        field: "NamaUser", title: "User", width: 105,
+                    },
+                    {
+                        field: "RemoteAddress", title: "Remote Address", width: 105,
+                    },
+                    {
+                        field: "QueryDetail", title: "Query Detail",
+                    }
+                ],
+            }).data("kendoGrid");
+            GetColomnData(gridIndex);
+        })
+    </script>
+}

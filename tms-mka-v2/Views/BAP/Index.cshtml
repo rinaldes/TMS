@@ -1,0 +1,216 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "BAP";
+    string currentController = "BAP";
+    string currentAction = "Index";
+}
+@if (User.HasMenuAccess("BAP"))
+{
+<div class="portlet light ">
+    <div class="portlet-title">
+        <div class="caption">
+            <span class="caption-subject font-dark sbold uppercase">@ViewBag.Title</span>
+        </div>
+        <div class="actions">
+            <a class="btn btn-sm green dropdown-toggle" href="@Url.Action("Add", "BAP")">
+                <i class="fa fa-plus"></i>Add BAP/Pengaduan
+            </a>
+        </div>
+    </div>
+    <div class="portlet-body form">
+        <div class="portlet box blue ">
+            <div class="portlet-title">
+                <div class="caption">
+                    Hide Column :
+                </div>
+                <div class="tools">
+                    <a href="" class="expand"> </a>
+                </div>
+            </div>
+            <div class="portlet-body form" style="display: none;">
+                <form role="form">
+                    <div class="form-body">
+                        <div id="content-col" class="md-checkbox-inline" style="margin-left:10px"></div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div id="grid"></div>
+    </div>
+</div>
+@section scripts
+{
+    <script type="text/javascript">
+        function deleteItem(e) {
+            e.preventDefault();
+            var data = this.dataItem(getDataRowGrid(e));
+            goToDeletePage('@Url.Action("Delete")' + "?id=" + data.Id, this.dataSource);
+        }
+
+        function editItem(e) {
+            e.preventDefault();
+            var data = this.dataItem(getDataRowGrid(e));
+            window.location.href = "@Url.Action("Edit")" + "?id=" + data.Id;
+        }
+
+        $(document).ready(function () {
+            currController = '@currentController';
+            currAction = '@currentAction';
+
+            var ds = new kendo.data.DataSource({
+            transport: {
+                read: {
+                    url: '@Url.Action("Binding")',
+                    dataType: "json"
+                },
+                parameterMap: function (options, operation) {
+                    if (operation !== "read" && options != '') {
+                        return kendo.stringify(options);
+                    }
+                    else if (operation == "read") {
+                        if (options.filter) {
+                            filter = options.filter.filters;
+                            for (var i in filter) {
+                                if (filter[i].field == "TanggalKejadian") {
+                                    filter[i].field = "TanggalKejadian";
+                                }
+                                if (filter[i].field == "NoBAP") {
+                                    filter[i].field = "NoBAP";
+                                }
+                                if (filter[i].field == "NamaDriver1") {
+                                    filter[i].field = "Driver1.NamaDriver";
+                                }
+                                if (filter[i].field == "NamaDriver2") {
+                                    filter[i].field = "Driver2.NamaDriver";
+                               }
+                                if (filter[i].field == "VehicleNo") {
+                                    filter[i].field = "DataTruck.VehicleNo";
+                                }
+                                if (filter[i].field == "StrKategori") {
+                                    filter[i].field = "LookUpKategori.Nama";
+                                }
+                            }
+                        }
+
+                        if (options.sort) {
+                            sort = options.sort;
+                            for (var i in sort) {
+                                if (sort[i].field == "TanggalKejadian") {
+                                    sort[i].field = "TanggalKejadian";
+                                }
+                                if (sort[i].field == "NoBAP") {
+                                    sort[i].field = "NoBAP";
+                                }
+                                if (sort[i].field == "NamaDriver1") {
+                                    sort[i].field = "Driver1.NamaDriver";
+                                }
+                                if (sort[i].field == "NamaDriver2") {
+                                    sort[i].field = "Driver2.NamaDriver";
+                                }
+                                if (sort[i].field == "VehicleNo") {
+                                    sort[i].field = "DataTruck.VehicleNo";
+                                }
+                                if (sort[i].field == "StrKategori") {
+                                   sort[i].field = "LookUpKategori.Nama";
+                                }
+                            }
+                        }
+                        return options;
+                    }
+                }
+            },
+            schema: {
+                total: "total",
+                data: "data",
+                model: {
+                    fields: {
+                        "Id": { type: "number" },
+                        "TanggalKejadian": { type: "date" },
+                        "NoBAP": { type: "string" },
+                        "NamaDriver1": { type: "string" },
+                        "NamaDriver2": { type: "string" },
+                        "VehicleNo": { type: "string" },
+                        "StrKategori": { type: "string" },
+                        "StatusBap": { type: "string" },
+                    }
+                }
+            },
+            pageSize: 10,
+            pageable: true,
+            serverFiltering: true,
+            serverPaging: true,
+            serverSorting: true,
+            sortable: true,
+            sort: { field: "Id", dir: "desc" },
+        });
+
+        gridIndex = $("#grid").kendoGrid({
+            dataSource: ds,
+            filterable: kendoGridFilterable,
+            sortable: true,
+            reorderable: true,
+            resizable: true,
+            pageable: true,
+            groupable: true,
+            serverFiltering: true,
+            serverPaging: true,
+            serverSorting: true,
+            columns: [
+                {
+                    command: [
+                        {
+                            name: "edit",
+                            text: "edit",
+                            click: editItem,
+                            imageClass: "glyphicon glyphicon-edit",
+                            template: '<a class="k-button-icon #=className#" #=attr# href="\\#"><span class="#=imageClass#"></span></a>'
+                        },
+                        {
+                            name: "delete",
+                            text: "delete",
+                            click: deleteItem,
+                            imageClass: "glyphicon glyphicon-remove",
+                            template: '<a class="k-button-icon #=className#" #=attr# href="\\#"><span class="#=iconClass# #=imageClass#"></span></a>'
+                        }
+                    ],
+                    width: "60px"
+                },
+                {
+                    field: "TanggalKejadian", width: "119px", title: "Tanggal Kejadian", template: "#= kendo.toString(kendo.parseDate(TanggalKejadian, 'yyyy-MM-dd'), 'dd/MM/yyyy') #",
+                    groupHeaderTemplate: "Tanggal Masuk : #= TanggalKejadian != null ? kendo.toString(kendo.parseDate(TanggalKejadian, 'yyyy-MM-dd'), 'dd/MM/yyyy') : '' #"
+                },
+                {
+                    field: "JamKejadian", width: "119px", title: "Jam Kejadian",
+                    template: "#= JamKejadian != null ? kendo.toString(new Date(1, 1, 1, JamKejadian.Hours, JamKejadian.Minutes), 'HH : mm') : ''#", filterable: false
+                },
+                {
+                    field: "CreatedAt", width: "119px", title: "Tanggal Dibuat", template: "#= kendo.toString(kendo.parseDate(CreatedAt, 'yyyy-MM-dd'), 'dd/MM/yyyy') #",
+                    groupHeaderTemplate: "Tanggal Masuk : #= CreatedAt != null ? kendo.toString(kendo.parseDate(CreatedAt, 'yyyy-MM-dd'), 'dd/MM/yyyy') : '' #"
+                },
+                { field: "NoBAP", title: "No BAP" },
+                { field: "NamaDriver1", title: "Driver 1" },
+                { field: "NamaDriver2", title: "Driver 2" },
+                { field: "VehicleNo", title: "Vehicle No" },
+                { field: "JenisTruk", title: "Jenis Truk" },
+                { field: "StrKategori", title: "Kategori" },
+                { field: "StatusBap", title: "Status" },
+                ],
+            }).data("kendoGrid");
+
+            @foreach (tms_mka_v2.Context.UserReference item in (List<tms_mka_v2.Context.UserReference>)ViewBag.listKolom)
+            {
+                <text>
+            listKolom.push('@item.Coloumn');
+            </text>
+            }
+
+            GetColomnData(gridIndex);
+        })
+    </script>
+}
+}
+else{
+    ViewBag.Title = "AccessDenied";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    <h1>Maaf, anda tidak memiliki hak akses yang cukup untuk mengakses halaman ini</h1>
+}

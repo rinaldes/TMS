@@ -1,0 +1,435 @@
+﻿@using tms_mka_v2.Models;
+
+@model tms_mka_v2.Models.RuteTol
+@{
+    ViewBag.Title = "Form";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    string currentController = (string)ViewContext.RouteData.Values["controller"];
+    string currentAction = (string)ViewContext.RouteData.Values["action"];
+    string backLink = Url.Action("Index");
+    if (currentAction == "Add")
+    {
+        ViewBag.Title = "Tambah Rute Tol";
+    }
+    else
+    {
+        ViewBag.Title = ViewBag.name + " | Edit";
+    }
+}
+<div class="portlet light">
+    <div class="portlet-title">
+        <div class="caption">
+            <span class="caption-subject font-dark sbold uppercase">@ViewBag.Title</span>
+        </div>
+    </div>
+    <div class="portlet-body form">
+        @using (@Html.BeginForm(currentAction, currentController, FormMethod.Post, new { @class = "form-horizontal", @id = "formsubmit" }))
+        {
+            @Html.ValidationSummary(true)
+            @Html.HiddenFor(model => model.Id)
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.IdRute, new { @class = "control-label col-md-3" })
+                        <div class="col-md-9">
+                            <div class="input-group input-group-sm">
+                                @Html.HiddenFor(model => model.IdRute)
+                                @Html.TextBoxFor(model => model.KodeRute, new { @class = "form-control input-sm" })
+                                <span class="input-group-btn">
+                                    <button type="button" class="btn btn-success" data-toggle="modal" data-target="#modalGridRute">Browse</button>
+                                </span>
+                                @Html.ValidationMessageFor(model => model.KodeRute)
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        @Html.Label("Nama Rute", new { @class = "control-label col-md-3" })
+                        <div class="col-md-9">
+                            @Html.TextBoxFor(model => model.NamaRute, new { @class = "form-control input-sm", @readonly = "true" })
+                            @Html.ValidationMessageFor(model => model.NamaRute)
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.NamaRuteTol, new { @class = "control-label col-md-3" })
+                        <div class="col-md-9">
+                            @Html.TextBoxFor(model => model.NamaRuteTol, new { @class = "form-control input-sm focus" })
+                            @Html.ValidationMessageFor(model => model.NamaRuteTol)
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        @Html.Label("Rute Berangkat", new { @class = "control-label col-md-3" })
+                        <div class="col-md-9">
+                            <div id="gridBerangkat"></div>
+                            @Html.HiddenFor(model => model.strBerangkat)
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        @Html.Label("Rute Pulang", new { @class = "control-label col-md-3" })
+                        <div class="col-md-9">
+                            <div id="gridPulang"></div>
+                            @Html.HiddenFor(model => model.strPulang)
+                        </div>
+                    </div>
+                    <div class="ln_solid"></div>
+                    <div class="form-group">
+                        <div class="col-md-9 col-md-offset-3">
+                            <button type="submit" class="btn btn-success">Submit</button>
+                            <a href="@backLink" class="btn btn-link">Cancel</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+<div id="modalGridRute" class="modal fade bs-modal-lg" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div id="modalForm" class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                <h4 class="modal-title">List Rute</h4>
+            </div>
+            <div class="modal-body">
+                <div id="GridRute"></div>
+            </div>
+        </div>
+    </div>
+</div>
+@section scripts{
+    <script type="text/javascript">
+        var dsBerangkat = [];
+        @foreach(TolPP item in Model.ListTolBerangkat)
+       {
+        <text>
+        dsBerangkat.push({
+            IdTol: parseInt('@item.IdTol'),
+            NamaTol: '@item.NamaTol'
+        })
+        </text>
+       }
+
+        var dsPulang = [];
+        @foreach(TolPP item in Model.ListTolPulang)
+        {
+        <text>
+        dsPulang.push({
+            IdTol: parseInt('@item.IdTol'),
+            NamaTol: '@item.NamaTol'
+        })
+        </text>
+        }
+
+        var dsTol = new kendo.data.DataSource({
+            transport: {
+                read: {
+                    url: '@Url.Action("GetJnsTol", "JnsTol")',
+                    dataType: "json"
+                },
+            },
+        });
+
+        function SelectRute(e) {
+            e.preventDefault();
+            var data = this.dataItem(getDataRowGrid(e));
+            $('#IdRute').val(data.Id);
+            $('#KodeRute').val(data.Kode);
+            $('#NamaRute').val(data.Nama);
+            $('#modalGridRute').modal('hide');
+        }
+
+        $(document).ready(function () {
+            //Rute
+            var dsRute = new kendo.data.DataSource({
+                transport: {
+                    read: {
+                        url: '@Url.Action("Binding", "Rute")',
+                        dataType: "json"
+                    },
+                    parameterMap: function (options, operation) {
+                        if (operation !== "read" && options != '') {
+                            return kendo.stringify(options);
+                        }
+                        else if (operation == "read") {
+                            if (options.filter) {
+                                filter = options.filter.filters;
+                                for (var i in filter) {
+                                    if (filter[i].field == "Asal") {
+                                        filter[i].field = "LocationAsal.Nama";
+                                    }
+                                    if (filter[i].field == "AreaAsal") {
+                                        filter[i].field = "AreaAsal.Nama";
+                                    }
+                                    if (filter[i].field == "Tujuan") {
+                                        filter[i].field = "LocationTujuan.Nama";
+                                    }
+                                    if (filter[i].field == "AreaTujuan") {
+                                        filter[i].field = "AreaTujuan.Nama";
+                                    }
+                                    if (filter[i].field == "Multidrop") {
+                                        filter[i].field = "Multidrop.tujuan";
+                                    }
+                                }
+                            }
+
+                            if (options.sort) {
+                                sort = options.sort;
+                                for (var i in sort) {
+                                    if (sort[i].field == "Asal") {
+                                        sort[i].field = "LocationAsal.Nama";
+                                    }
+                                    if (sort[i].field == "AreaAsal") {
+                                        sort[i].field = "AreaAsal.Nama";
+                                    }
+                                    if (sort[i].field == "Tujuan") {
+                                        sort[i].field = "LocationTujuan.Nama";
+                                    }
+                                    if (sort[i].field == "AreaTujuan") {
+                                        sort[i].field = "AreaTujuan.Nama";
+                                    }
+                                    if (sort[i].field == "Multidrop") {
+                                        sort[i].field = "Multidrop.tujuan";
+                                    }
+                                }
+                            }
+                            return options;
+                        }
+                    }
+                },
+                schema: {
+                    total: "total",
+                    data: "data",
+                    model: {
+                        fields: {
+                            "Id": { type: "number" },
+                            "Kode": { type: "string" },
+                            "Nama": { type: "string" },
+                            "Asal": { type: "string" },
+                            "AreaAsal": { type: "string" },
+                            "Tujuan": { type: "string" },
+                            "AreaTujuan": { type: "string" },
+                            "MultiDrop": { type: "string" },
+                            "Jarak": { type: "number" },
+                            "WaktuKerja": { type: "number" },
+                            "WatkuTempuh": { type: "number" },
+                            "Toleransi": { type: "number" },
+                            "Keterangan": { type: "number" },
+                        }
+                    }
+                },
+                pageSize: 10,
+                pageable: true,
+                serverFiltering: true,
+                serverPaging: true,
+                serverSorting: true,
+                sortable: true,
+                //sort: { field: "SubmittedDate", dir: "desc" }
+            });
+
+            gridRute = $("#GridRute").kendoGrid({
+                dataSource: dsRute,
+                filterable: kendoGridFilterable,
+                sortable: true,
+                reorderable: true,
+                resizable: true,
+                pageable: true,
+                columns: [
+                    {
+                        command: [
+                         {
+                             name: "select",
+                             text: "Select",
+                             click: SelectRute,
+                             imageClass: "glyphicon glyphicon-ok",
+                             template: '<a class="k-button-icon #=className#" #=attr# href="\\#"><span class="#=iconClass# #=imageClass#"></span></a>'
+                         }
+                        ],
+                        width: "50px"
+                    },
+                    {
+                        field: "Nama",
+                        title: "Nama Rute"
+                    },
+                    {
+                        field: "Asal",
+                        title: "Dari"
+                    },
+                    {
+                        field: "Tujuan",
+                        title: "Tujuan"
+                    },
+                    {
+                        field: "MultiDrop",
+                        title: "MultiDrop"
+                    },
+
+                ],
+            }).data("kendoGrid");
+
+            $("#gridBerangkat").kendoGrid({
+                dataSource: {
+                    data: dsBerangkat,
+                    schema: {
+                        model: {
+                            fields: {
+                                IdTol: { type: "number" },
+                                NamaTol: {
+                                    type: "string",
+                                    validation: {
+                                        required: { message: "Nama harus diisi." },
+                                        comboreq: function (input) {
+                                            if ($(input).data("kendoComboBox")) {
+                                                if ($(input).data("kendoComboBox").selectedIndex == -1) {
+                                                    return false;
+                                                }
+                                            }
+
+                                            return true;
+                                        },
+                                    }
+                                },
+                            }
+                        }
+                    },
+                },
+                scrollable: false,
+                editable: { mode: "inline", confirmation: "Anda yakin menghapus data?" },
+                toolbar: [{ name: "create", text: "Tambah" }],
+                columns: [
+                    {
+                        command: [
+                            {
+                                name: "edit",
+                                text: "Edit",
+                                imageClass: "glyphicon glyphicon-edit",
+                                template: '<a class="k-button-icon #=className#" #=attr# title="edit" href="\\#"><span class="#=imageClass#"></span></a>'
+                            },
+                            {
+                                name: "destroy",
+                                text: "Hapus",
+                                imageClass: "glyphicon glyphicon-remove",
+                                template: '<a class="k-button-icon #=className#" #=attr# href="\\#" title="#=text#"><span class="#=imageClass#"></span></a>'
+                            }
+                        ],
+                        width: 90
+                    },
+                    {
+                        field: "NamaTol",
+                        title: "Tol",
+                        editor: kodeEditor
+                    }
+                ],
+                edit: function (e) {
+                    var detailCell = e.container.find("td:first");
+                    detailCell.html('');
+                    var commandCell = e.container.find("td:nth-child(1)");
+                    commandCell.html('<a class="k-button-icon k-grid-update form-inline" href="\\#" title="Simpan"><span class="glyphicon glyphicon-floppy-saved"></span></a> <a class="k-button-icon k-grid-cancel form-inline" href="\\#" title="Batal"><span class="glyphicon glyphicon-remove"></span></a>');
+                    var commandGroupCell = e.container.find("td:nth-child(0)");
+                    commandGroupCell.html('');
+                },
+                save: function (e) {
+                    var tol = e.container.find("input[name=NamaTol]").data("kendoComboBox");
+                    e.model.set("IdTol", tol.value());
+                    e.model.set("NamaTol", tol.text());
+                }
+            }).data("kendoGrid");
+
+        $("#gridPulang").kendoGrid({
+            dataSource: {
+                data: dsPulang,
+                schema: {
+                    model: {
+                        fields: {
+                            IdTol: { type: "number" },
+                            NamaTol: {
+                                type: "string",
+                                validation: {
+                                    required: { message: "Nama harus diisi." },
+                                    comboreq: function (input) {
+                                        if ($(input).data("kendoComboBox")) {
+                                            if ($(input).data("kendoComboBox").selectedIndex == -1) {
+                                                return false;
+                                            }
+                                        }
+
+                                        return true;
+                                    },
+                                }
+                            },
+                        }
+                    }
+                },
+            },
+            scrollable:false,
+            editable: { mode: "inline", confirmation: "Anda yakin menghapus data?" },
+            toolbar: [{ name: "create", text: "Tambah" }],
+            columns: [
+                {
+                    command: [
+                        {
+                            name: "edit",
+                            text: "Edit",
+                            imageClass: "glyphicon glyphicon-edit",
+                            template: '<a class="k-button-icon #=className#" #=attr# title="edit" href="\\#"><span class="#=imageClass#"></span></a>'
+                        },
+                        {
+                            name: "destroy",
+                            text: "Hapus",
+                            imageClass: "glyphicon glyphicon-remove",
+                            template: '<a class="k-button-icon #=className#" #=attr# href="\\#" title="#=text#"><span class="#=imageClass#"></span></a>'
+                        }
+                    ],
+                    width: 90
+                },
+                {
+                    field: "NamaTol",
+                    title: "Tol",
+                    editor: kodeEditor
+                }
+            ],
+            edit: function (e) {
+                var detailCell = e.container.find("td:first");
+                detailCell.html('');
+                var commandCell = e.container.find("td:nth-child(1)");
+                commandCell.html('<a class="k-button-icon k-grid-update form-inline" href="\\#" title="Simpan"><span class="glyphicon glyphicon-floppy-saved"></span></a> <a class="k-button-icon k-grid-cancel form-inline" href="\\#" title="Batal"><span class="glyphicon glyphicon-remove"></span></a>');
+                var commandGroupCell = e.container.find("td:nth-child(0)");
+                commandGroupCell.html('');
+            },
+            save: function (e) {
+                var tol = e.container.find("input[name=NamaTol]").data("kendoComboBox");
+                e.model.set("IdTol", tol.value());
+                e.model.set("NamaTol", tol.text());
+            }
+        }).data("kendoGrid");
+        });
+
+        function kodeEditor(container, options) {
+            $('<input required data-comboreq-msg="Nama harus diisi." data-required-msg="Nama harus diisi." data-text-field="Nama" data-value-field="Id" data-bind="value:' + options.field + '" name="' + options.field + '"/>')
+                   .appendTo(container)
+                   .kendoComboBox({
+                       dataSource: dsTol,
+                       dataTextField: "Nama",
+                       dataValueField: "Id",
+                       filter: "contains",
+                       suggest: true,
+                       //change: function (e) {
+                           //options.model.set("IdTol", options.model.NamaTol);
+                           //options.model.set("NamaTol", this.text());
+                       //},
+                   });
+            $("<span class='k-invalid-msg' data-for='" + options.field + "'></span>").appendTo(container);
+        }
+
+        $('#formsubmit').submit(function (e) {
+            var gridBerangkat = $('#gridBerangkat').data('kendoGrid');
+            var dataBerangkat = gridBerangkat.dataSource.data();
+
+            var gridPulang = $('#gridPulang').data('kendoGrid');
+            var dataPulang = gridPulang.dataSource.data();
+
+            gridBerangkat.saveRow();
+            $('#strBerangkat').val(JSON.stringify(dataBerangkat));
+            gridPulang.saveRow();
+            $('#strPulang').val(JSON.stringify(dataPulang));
+        })
+    </script>
+}

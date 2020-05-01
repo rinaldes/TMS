@@ -1,0 +1,384 @@
+﻿@using tms_mka_v2.Models;
+
+@model tms_mka_v2.Models.AdminUangJalan
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    string currentController = (string)ViewContext.RouteData.Values["controller"];
+    string currentAction = ViewBag.postData == null ? (string)ViewContext.RouteData.Values["action"] : ViewBag.postData;
+    string backLink = Url.Action("Index");
+    int idxBor = Model.ModelListBorongan.Count();
+}
+<div class="portlet light">
+    <div class="portlet-title">
+        <div class="caption">
+            <span class="caption-subject font-dark sbold uppercase">@ViewBag.Title</span>
+        </div>
+    </div>
+    <div class="portlet-body form">
+        @using (@Html.BeginForm(currentAction, currentController, FormMethod.Post, new { @class = "form-horizontal form-label-left input_mask", @id = "formsubmit" }))
+        {
+            @Html.ValidationSummary(true)
+            @Html.HiddenFor(model => model.Id)
+            @Html.HiddenFor(model => model.IdSalesOrder)
+            <ul class="nav nav-tabs" id="wtab">
+                <li class="active">
+                    <a href="#tab_So" data-toggle="tab">Basic Info</a>
+                </li>
+                <li>
+                    <a href="#tab_Borongan" data-toggle="tab">Borongan</a>
+                </li>
+            </ul>
+            <div class="tab-content">
+                <div class="tab-pane  active in" id="tab_So">
+                    @if (Model.ModelOncall != null)
+                    {
+                        @Html.Partial("SalesOrderOncall/_PartialFormReadOnly", Model.ModelOncall)
+                    }
+                    else if (Model.ModelPickup != null)
+                    {
+                        @Html.Partial("SalesOrderPickup/_PartialFormReadOnly", Model.ModelPickup)
+                    }
+                </div>
+                <div class="tab-pane fade" id="tab_Borongan">
+                    @Html.Partial("_BoronganOnCallView", Model)
+                </div>
+            </div>
+            <div class="ln_solid"></div>
+            <hr />
+            <div class="form-group">
+                <div class="col-md-8">
+                    <a href="@backLink" class="btn btn-link">Back To List</a>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+
+@section scripts{
+    <script type="text/javascript">
+        var dsBoronganDasar = [];
+        var dsSolar = [], dsKapal = [], dsGridUang = [];
+        var idxBor = @idxBor;
+
+        @foreach (var item in Model.ModelListSpbu)
+	    {
+            <text>
+            dsSolar.push({
+                NamaSpbu: '@item.NamaSpbu',
+                value: @item.Value,
+            })
+            </text>		 
+	    }
+        @foreach (var item in Model.ModelListKapal)
+        {
+            <text>
+            dsKapal.push({
+                NamaPenyebrangan: '@item.NamaPenyebrangan',
+                value: @item.Value,
+            })
+            </text>
+        }
+        @foreach (var item in Model.ModelListTf)
+        {
+    		 <text>
+            dsGridUang.push({
+                Nama: '@item.Nama',
+                value: @item.Value,
+                Tanggal: '@item.Tanggal',
+            })
+            </text>
+        }
+
+        function CalculateBorongan() {
+            var total = 0;
+            total = total + $("#NilaiBorongan").data("kendoNumericTextBox").value();
+
+            //tambahan rute
+            for (var i = 0 ; i <= idxRute ; i++)
+            {
+                if ($("#ModelListTambahanRute_" + i + "__IsDelete").val() == "false" || $("#ModelListTambahanRute_" + i + "__IsDelete").val() == "False")
+                {
+                    total = total + $("#ModelListTambahanRute_" + i + "__value").data("kendoNumericTextBox").value();
+                }
+            }
+            
+            //tambahan lain
+            for (var i = 0 ; i <= idxLain ; i++) {
+                if ($("#ModelListTambahanLain_" + i + "__IsDelete").val() == "false" || $("#ModelListTambahanLain_" + i + "__IsDelete").val() == "False") {
+                    total = total + $("#ModelListTambahanLain_" + i + "__Value").data("kendoNumericTextBox").value();
+                }
+            }
+
+            $("#TotalBorongan").data("kendoNumericTextBox").value(total);
+        }
+
+        function CalculatePotongan() {
+            var total = 0;
+            total = total + $("#TotalKasbon").data("kendoNumericTextBox").value() + $("#TotalKlaim").data("kendoNumericTextBox").value() ;
+            //Potongan Lain
+            for (var i = 0 ; i <= idxPotongan ; i++)
+            {
+                if ($("#ModelListPotonganLain_" + i + "__IsDelete").val() == "false" || $("#ModelListPotonganLain_" + i + "__IsDelete").val() == "False")
+                {
+                    total = total + $("#ModelListPotonganLain_" + i + "__Value").data("kendoNumericTextBox").value();
+                }
+            }
+
+            $("#TotalPotonganDriver").data("kendoNumericTextBox").value(total);
+        }
+
+        var gridSpbu, gridKapal, gridUang;
+        $(document).ready(function () {
+            gridSpbu = $("#gridSolar").kendoGrid({
+                dataSource: {
+                    data: dsSolar,
+                    batch: true,
+                    schema: {
+                        model: {
+                            fields: {
+                                NamaSpbu: { type: "string"},
+                                value: { type: "number"},
+                            }
+                        }
+                    },
+                    aggregate: [{ field: "value", aggregate: "sum" }],
+                },
+                resizable: true,
+                columns: [
+                { field: "NamaSpbu", title: "SPBU" },
+                { field: "value", title: "Rp", footerTemplate: "Total : Rp #= sum == null ? 0 : kendo.format('{0:n}', sum) #", template: 'Rp #: value == null ? 0 : kendo.format("{0:n}", value)#', },
+                ],
+            }).data("kendoGrid");
+
+            gridKapal = $("#gridKapal").kendoGrid({
+                dataSource: {
+                    data: dsKapal,
+                    batch: true,
+                    schema: {
+                        model: {
+                            fields: {
+                                NamaPenyebrangan: { type: "string" },
+                                value: { type: "number" },
+                            }
+                        }
+                    },
+                    aggregate: [{ field: "value", aggregate: "sum" }],
+                },
+                resizable: true,
+                columns: [
+                { field: "NamaPenyebrangan", title: "Penyebrangan" },
+                { field: "value", title: "Rp", footerTemplate: "Total : Rp #= sum == null ? 0 : kendo.format('{0:n}', sum) #", template: 'Rp #: value == null ? 0 : kendo.format("{0:n}", value)#', },
+                ],
+            }).data("kendoGrid");
+
+            gridUang = $("#gridUang").kendoGrid({
+                dataSource: {
+                    data: dsGridUang,
+                    batch: true,
+                    schema: {
+                        model: {
+                            fields: {
+                                Nama: { type: "string" , editable:false},
+                                value: { type: "number" , editable:false},
+                                Tanggal: { type: "Date"}
+                            }
+                        }
+                    },
+                    aggregate: [{ field: "value", aggregate: "sum" }],
+                },
+                resizable: true,
+                editable: true,
+                columns: [
+                { field: "Nama", title: "Keterangan" },
+                { field: "value", title: "Rp", footerTemplate: "Total : Rp #= sum == null ? 0 : kendo.format('{0:n}', sum) #", template: 'Rp #: value == null ? 0 : kendo.format("{0:n}", value)#', },
+                { field: "Tanggal", title: "Tanggal", editor: TanggalEditor, format: "{0:dd/MM/yyyy}" },
+                ],
+            }).data("kendoGrid");
+
+            $.ajax({
+                url: '/DataBorongan/GetDataForDispatch?idSo=' + '@Model.IdSalesOrder',
+                type: "POST",
+                success: function (res) {
+                    dsBoronganDasar = jQuery.parseJSON(res);
+                    
+                    for (var i = 0 ; i <= idxBor ; i++) {
+                        $("#ModelListBorongan_"+i+"__IdDataBorongan").kendoComboBox({
+                            dataSource: dsBoronganDasar,
+                            dataTextField: "NamaBorongan",
+                            dataValueField: "Id",
+                            filter: "contains",
+                            suggest: true,
+                            index:0,
+                            change: function (e) {
+                                CalBoronganDef();
+                            },
+                        }).attr("readonly", "readonly");
+                    }
+
+                    @if (Model.Id == 0)
+                    { 
+                        <text>
+                    CalBoronganDef();
+                    </text>
+                    } 
+                },
+            });
+
+            //tambahan rute
+            for (var i = 0 ; i <= idxRute ; i++) {
+                var txtval = $('.valRute' + i).kendoNumericTextBox({
+                    min: 0,
+                    max: 1000000000000000000,
+                    decimals: 2,
+                    format: "Rp ###,###.00 ",
+                    spinners: false,
+                }).attr("readonly", "readonly").data("kendoNumericTextBox");
+
+                CreateCboRute(i, txtval);
+            }
+
+            //tambahan lain
+            for (var i = 0 ; i <= idxLain ; i++) {
+                $('.valLain' + i).kendoNumericTextBox({
+                    min: 0,
+                    max: 1000000000000000000,
+                    decimals: 2,
+                    format: "Rp ###,###.00 ",
+                    spinners: false,
+                    change: function(e){
+                        CalculateBorongan();
+                    }
+                }).attr("readonly", "readonly");
+            }
+
+            //Potongan Lain
+            for (var i = 0 ; i <= idxLain ; i++) {
+                $('.valPotonganDriver1' + i).kendoNumericTextBox({
+                    min: 0,
+                    max: 1000000000000000000,
+                    decimals: 2,
+                    format: "Rp ###,###.00 ",
+                    spinners: false,
+                    change: function(e){
+                        CalculatePotongan();
+                    }
+                }).attr("readonly", "readonly");
+                $('.valPotonganDriver2' + i).kendoNumericTextBox({
+                    min: 0,
+                    max: 1000000000000000000,
+                    decimals: 2,
+                    format: "Rp ###,###.00 ",
+                    spinners: false,
+                    change: function(e){
+                        CalculatePotongan();
+                    }
+                }).attr("readonly", "readonly");
+            }
+        })
+
+        function CalBoronganDef()
+        {
+            $("#NilaiBorongan").data("kendoNumericTextBox").value(0);
+            $("#Kawalan").data("kendoNumericTextBox").value(0);
+            $("#Timbangan").data("kendoNumericTextBox").value(0);
+            $("#Karantina").data("kendoNumericTextBox").value(0);
+            $("#SPSI").data("kendoNumericTextBox").value(0);
+            $("#Multidrop").data("kendoNumericTextBox").value(0);
+            dsGridUang = [];
+            dsSolar = [];
+            dsKapal = [];
+            //borongan
+            for (var i = 0 ; i <= idxBor ; i++) {
+                if ($("#ModelListBorongan_" + i + "__IsDelete").val() == "false" || $("#ModelListBorongan_" + i + "__IsDelete").val() == "False") {
+                    var id = $("#ModelListBorongan_" + i + "__IdDataBorongan").val();
+                    var dsDummy = jQuery.grep(dsBoronganDasar, function (n, i) {
+                        return n.Id == id;
+                    });
+                    if(dsDummy.length == 1)
+                    {
+                        $("#NilaiBorongan").data("kendoNumericTextBox").value($("#NilaiBorongan").data("kendoNumericTextBox").value() + dsDummy[0].Pembulatan);
+                        $("#Kawalan").data("kendoNumericTextBox").value($("#Kawalan").data("kendoNumericTextBox").value () + dsDummy[0].Kawalan);
+                        $("#Timbangan").data("kendoNumericTextBox").value($("#Timbangan").data("kendoNumericTextBox").value() + dsDummy[0].Timbangan);
+                        $("#Karantina").data("kendoNumericTextBox").value($("#Karantina").data("kendoNumericTextBox").value() + dsDummy[0].Karantina);
+                        $("#SPSI").data("kendoNumericTextBox").value($("#SPSI").data("kendoNumericTextBox").value() + dsDummy[0].SPSI);
+                        $("#Multidrop").data("kendoNumericTextBox").value($("#Multidrop").data("kendoNumericTextBox").value() + dsDummy[0].MultiDrop);
+                        //solar
+                        dsDummy[0].listSpbuBorongan.forEach(function (item) {
+                            var ketemu = false;
+                            for (var i = 0; i < dsSolar.length; i++) {
+                                if(dsSolar[i].NamaSpbu == item.NamaSpbu){
+                                    dsSolar[i].value = dsSolar[i].value + item.value;
+                                    ketemu = true;
+                                }
+                            }
+                            if(!ketemu)
+                            {
+                                dsSolar.push({
+                                    NamaSpbu: item.NamaSpbu,
+                                    value: item.value,
+                                })
+                            }
+                        });
+                        gridSpbu.dataSource.data(dsSolar);
+                        //kapal
+                        dsDummy[0].listKapalBorongan.forEach(function (item) {
+                            var ketemu = false;
+                            for (var i = 0; i < dsKapal.length; i++) {
+                                if(dsKapal[i].NamaPenyebrangan == item.NamaPenyebrangan){
+                                    dsKapal[i].value = dsKapal[i].value + item.value;
+                                    ketemu = true;
+                                }
+                            }
+                            if(!ketemu)
+                            {
+                                dsKapal.push({
+                                    NamaPenyebrangan: item.NamaPenyebrangan,
+                                    value: item.value,
+                                })
+                            }
+                        });
+                        gridKapal.dataSource.data(dsKapal);
+                        //uang
+                        var dummyTotal = 0;
+                        dsDummy[0].listTfBorongan.forEach(function (item) {
+                            var ketemu = false;
+                            for (var i = 0; i < dsGridUang.length; i++) {
+                                if(dsGridUang[i].Nama == item.Nama){
+                                    dsGridUang[i].value = dsGridUang[i].value + item.value;
+                                    ketemu = true;
+                                    dummyTotal = dummyTotal + dsGridUang[i].value;
+                                }
+                            }
+                            if(!ketemu)
+                            {
+                                dummyTotal = dummyTotal + item.value;
+                                dsGridUang.push({
+                                    Nama: item.Nama,
+                                    value: item.value,
+                                    Tanggal: new Date($.now()),
+                                })
+                            }
+                        });
+                        dsGridUang.push({
+                            Nama: "Tunai",
+                            value: (Math.ceil(dummyTotal / 50000) * 50000) - dummyTotal,
+                            Tanggal: new Date($.now()),
+                        })
+                        gridUang.dataSource.data(dsGridUang);
+                    }
+                }
+            }
+            CalculateBorongan();
+        }
+
+        $('#formsubmit').submit(function (e) {
+            $('#StrSolar').val(JSON.stringify(gridSpbu.dataSource.data()));
+            $('#StrKapal').val(JSON.stringify(gridKapal.dataSource.data()));
+            gridUang.saveRow();
+            $('#StrUang').val(JSON.stringify(gridUang.dataSource.data()));
+        })
+    </script>
+    <script type="text/javascript" src="~/Content/AdminUangJalan/BoronganOncall.js"></script>
+    <script type="text/javascript" src="~/Content/Driver/InitialGridSo.js"></script>
+}

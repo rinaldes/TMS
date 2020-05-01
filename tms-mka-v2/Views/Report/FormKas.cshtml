@@ -1,0 +1,367 @@
+﻿@using tms_mka_v2.Models;
+
+@model tms_mka_v2.Models.AdminUangJalan
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    string currentController = (string)ViewContext.RouteData.Values["controller"];
+    string currentAction = ViewBag.postData == null ? (string)ViewContext.RouteData.Values["action"] : ViewBag.postData;
+    string backLink = Url.Action("IndexKas");
+}
+<div class="portlet light">
+    <div class="portlet-title">
+        <div class="caption">
+            <span class="caption-subject font-dark sbold uppercase">@ViewBag.Title</span>
+        </div>
+    </div>
+    <div class="portlet-body form">
+        @using (@Html.BeginForm(currentAction, currentController, FormMethod.Post, new { @class = "form-horizontal form-label-left input_mask", @id = "formsubmit" }))
+        {
+            @Html.ValidationSummary(true)
+            @Html.HiddenFor(model => model.Id)
+            @Html.HiddenFor(model => model.IdSalesOrder)
+            <input type='hidden' value="@ViewBag.Status" id='so_status'>
+            <div class="portlet light">
+                <div class="portlet-title">
+                    <div class="caption font-green-sharp">
+                        <span class="caption-subject"> Basic Info</span>
+                    </div>
+                    <div class="tools">
+                        <a href="" class="collapse"> </a>
+                    </div>
+                </div>
+                <div class="portlet-body">
+                    @if (Model.ModelOncall != null)
+                    {
+                        @Html.Partial("SalesOrderOncall/_PartialFormReadOnly", Model.ModelOncall)
+                    }
+                    else if (Model.ModelPickup != null)
+                    {
+                        @Html.Partial("SalesOrderPickup/_PartialFormReadOnly", Model.ModelPickup)
+                    }
+                    else if (Model.ModelKonsolidasi != null)
+                    {
+                        @Html.Partial("SalesOrderProsesKonsolidasi/_PartialFormReadOnly", Model.ModelKonsolidasi)
+                    }
+                    else
+                    {
+                        <div id="PartialSo" class="row">
+                            @Html.HiddenFor(model => model.ListIdSo)
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="control-label col-md-3"> NO SO</label>
+                                    <label class="control-label col-md-9">: @string.Join(", ", Model.ModelKontrak.ListValueModelSOKontrak.Select(d => d.NoSo).ToList())</label>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-md-3"> Kode Customer</label>
+                                    <label class="control-label col-md-9">: @Model.ModelKontrak.KodeCustomer</label>
+                                    @Html.HiddenFor(model => model.ModelKontrak.KodeCustomer)
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-md-3"> Nama Customer</label>
+                                    <label class="control-label col-md-9">: @Model.ModelKontrak.NamaCustomer</label>
+                                    @Html.HiddenFor(model => model.ModelKontrak.NamaCustomer)
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-md-3"> Status Kredit</label>
+                                    <label class="control-label col-md-9">: @Model.ModelKontrak.StatusKredit</label>
+                                    @Html.HiddenFor(model => model.ModelKontrak.StatusKredit)
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-md-3"> Jenis Barang</label>
+                                    <label class="control-label col-md-9">: @Model.ModelKontrak.StrProduct</label>
+                                    @Html.HiddenFor(model => model.ModelKontrak.StrProduct)
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-md-3"> Suhu</label>
+                                    <label class="control-label col-md-9">: @Model.ModelKontrak.Suhu <sup>o</sup>C</label>
+                                    @Html.HiddenFor(model => model.ModelKontrak.Suhu)
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="control-label col-md-3">Periode</label>
+                                    @Html.TextBoxFor(model => model.ModelKontrak.PeriodStr, new { @class = "form-control input-sm hidden" })
+                                    @Html.ValidationMessageFor(model => model.ModelKontrak.PeriodStr)
+
+                                    @Html.TextBoxFor(model => model.ModelKontrak.PeriodEnd, new { @class = "form-control input-sm hidden" })
+                                    @Html.ValidationMessageFor(model => model.ModelKontrak.PeriodEnd)
+                                    <div class="col-md-9 col-sm-9 col-xs-12">
+                                        <label class="control-label col-md-4">: @Model.ModelKontrak.PeriodStr.Value.ToShortDateString()</label>
+                                        <label class="control-label col-md-2">s.d.</label>
+                                        <label class="control-label col-md-4">@Model.ModelKontrak.PeriodEnd.Value.ToShortDateString()</label>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-md-3">Jam Muat</label>
+                                    <div class="col-md-3 col-sm-9 col-xs-12">
+                                        <label class="control-label col-md-9">: @Model.ModelKontrak.JamMuat</label>
+                                        @Html.HiddenFor(model => model.ModelKontrak.JamMuat)
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-md-3">Truk</label>
+                                    <div class="col-md-3 col-sm-9 col-xs-12">
+                                        <label class="control-label col-md-9">: @Model.ModelKontrak.ListModelSOKontrak.FirstOrDefault().Nopol</label>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-md-3">Jenis Truk</label>
+                                    <div class="col-md-3 col-sm-9 col-xs-12">
+                                        <label class="control-label col-md-9">: @Model.ModelKontrak.ListModelSOKontrak.FirstOrDefault().NamaJenisTruck</label>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-md-3"> Driver</label>
+                                    <div class="col-md-9 col-sm-9 col-xs-12">
+                                        <label class="control-label col-md-9">: @Model.NamaDriver1</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+            <div class="portlet light">
+                <div class="portlet-title">
+                    <div class="caption font-green-sharp">
+                        <span class="caption-subject"> Cash</span>
+                    </div>
+                    <div class="tools">
+                        <a href="" class="collapse"> </a>
+                    </div>
+                </div>
+                <div class="portlet-body">
+                    @{Model.ModelListTf = Model.ModelListTf.Where(d => d.Nama == "Tunai").ToList();}
+                    @for (int i = 0; i < Model.ModelListTf.Count() ; i++)
+                    {
+                        @Html.HiddenFor(model => model.ModelListTf[i].Id)
+                        if (Model.ModelListTf[i].Nama == "Tunai")
+                        {
+                            @Html.HiddenFor(model => model.ModelListTf[i].Nama)
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="control-label col-md-3">Jumlah Cash</label>
+                                        <div class="col-md-9">
+                                            @if (Model.ModelListTf[i].JumlahTransfer.HasValue && Model.ModelListTf[i].JumlahTransfer.Value != 0)
+                                            {
+                                                @Html.TextBoxFor(model => model.ModelListTf[i].JumlahTransfer, new { @class = "form-control-numeric-idr" })
+                                                @Html.ValidationMessageFor(model => model.ModelListTf[i].JumlahTransfer)
+                                            }
+                                            else
+                                            {
+                                                @Html.TextBoxFor(model => model.ModelListTf[i].Value, new { @class = "form-control-numeric-idr" })
+                                                @Html.ValidationMessageFor(model => model.ModelListTf[i].Value)
+                                            }
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="control-label col-md-3">Tanggal</label>
+                                        <div class="col-md-9">
+                                            <input id="tgl" value="@Model.ModelListTf[i].Tanggal.Value.ToShortDateString()" class="form-control-datepicker" readonly />
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="control-label col-md-3">Diberikan untuk</label>
+                                        <div class="col-md-9">
+                                            <input value="@Model.NamaDriver1" class="form-control input-sm" disabled />
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="control-label col-md-3">Dititipkan kepada</label>
+                                        <div class="col-md-9">
+                                            <div class="input-group input-group-sm">
+                                                @Html.HiddenFor(model => model.ModelListTf[i].IdDriverPenerima)
+                                                @Html.TextBoxFor(model => model.ModelListTf[i].DriverPenerima, new { @class = "form-control input-sm", @readonly = true })
+                                                <span class="input-group-btn">
+                                                    <button type="button" class="btn red" onclick="clearDriver()"><i class="glyphicon glyphicon-remove"></i></button>
+                                                    <button type="button" class="btn btn-success" data-toggle="modal" data-target="#ModalMasterDriver">Browse</button>
+                                                </span>
+                                            </div>
+                                            @Html.ValidationMessageFor(model => model.ModelListTf[i].IdDriverPenerima)
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="control-label col-md-3">Keterngan Admin</label>
+                                        <div class="col-md-9">
+                                            <textarea value="@Model.KeteranganAdmin" class="form-control input-sm" disabled></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="control-label col-md-3">Tanggal Aktual</label>
+                                        <div class="col-md-5">
+                                            @Html.TextBoxFor(model => model.ModelListTf[i].TanggalAktual, new { @class = "form-control-datepicker" })
+                                            @Html.ValidationMessageFor(model => model.ModelListTf[i].TanggalAktual)
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="input-group input-group-sm">
+                                                @Html.TextBoxFor(model => model.ModelListTf[i].JamAktual, new { @class = "form-control input-sm timepicker timepicker-24" })
+                                                <span class="input-group-btn">
+                                                    <button class="btn btn-sm default" type="button">
+                                                        <i class="fa fa-clock-o"></i>
+                                                    </button>
+                                                </span>
+                                            </div>
+                                            @Html.ValidationMessageFor(model => model.ModelListTf[i].JamAktual)
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="control-label col-md-3">Keterngan Kasir</label>
+                                        <div class="col-md-9">
+                                            @Html.TextAreaFor(model => model.ModelListTf[i].KeteranganTf, new { @class = "form-control input-sm" })
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-md-8">
+                    <button type="button" class="btn btn-success" onclick="save()">Submit</button>
+                    <a href="@backLink" class="btn btn-link">Cancel</a>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+<div id="ModalMasterDriver" class="modal fade bs-modal-full" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-full">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+            </div>
+            <div class="modal-body">
+                <div id="GridMasterDriver"></div>
+            </div>
+        </div>
+    </div>
+</div>
+@section scripts{
+    <script type="text/javascript">
+        var dsDriver = [];
+        var gridDriver;
+
+        function clearDriver() {
+            //$('#ModelListTf_0__IdDriverPenerima').val('');
+            //$('#ModelListTf_0__DriverPenerima').val('');
+        }
+
+        function SelectDriver(e) {
+            e.preventDefault();
+            var data = this.dataItem(getDataRowGrid(e));
+            $('#ModelListTf_0__IdDriverPenerima').val(data.Id);
+            $('#ModelListTf_0__DriverPenerima').val(data.NamaDriver);
+            $('#ModalMasterDriver').modal('hide');
+        }   
+
+        $(document).ready(function () {
+            if($('#so_status').val() == 'batal'){
+                alert("Kasir kas tidak dapat diproses karena sudah batal")
+                window.location.href = "/AdminUangJalan";
+            }
+            dsDriver = new kendo.data.DataSource({
+                transport: {
+                    read: {
+                        url: '/Driver/Binding',
+                        dataType: "json"
+                    },
+                },
+                schema: {
+                    total: "total",
+                    data: "data",
+                    model: {
+                        fields: {
+                            "Id": { type: "number" },
+                            "KodeDriver": { type: "string" },
+                            "NamaDriver": { type: "string" },
+                            "NamaPangilan": { type: "string" },
+                        }
+                    }
+                },
+                pageSize: 10,
+                pageable: true,
+                serverFiltering: true,
+                serverPaging: true,
+                serverSorting: true,
+                sortable: true,
+                //sort: { field: "SubmittedDate", dir: "desc" }
+            });
+
+            $("#GridMasterDriver").kendoGrid({
+                dataSource: dsDriver,
+                filterable: kendoGridFilterable,
+                sortable: true,
+                reorderable: true,
+                resizable: true,
+                pageable: true,
+                groupable: true,
+                //height: "615",
+                columns: [
+                    {
+                        command: [
+                            {
+                                name: "select",
+                                text: "Select",
+                                click: SelectDriver,
+                                imageClass: "glyphicon glyphicon-ok",
+                                template: '<a class="k-button-icon #=className#" #=attr# href="\\#"><span class="#=iconClass# #=imageClass#"></span></a>'
+                            }
+                        ],
+                        width: "50px"
+                    },
+                    {
+                        field: "KodeDriver",
+                        title: "Kode Driver"
+                    },
+                    {
+                        field: "NamaDriver",
+                        title: "Nama Sesuai KTP"
+                    },
+                    {
+                        field: "NamaPangilan",
+                        title: "Nama Panggilan"
+                    }
+                ],
+            }).data("kendoGrid");
+        })
+
+        function save() {
+            if ($("#tgl").data("kendoDatePicker").value() > $("#ModelListTf_0__TanggalAktual").data("kendoDatePicker").value()) {
+                return swal(
+                    {
+                        title: "Submit Data",
+                        text: "Tanggal aktual lebih kecil dari tanggal transfer, lanjutkan simpan data ?",
+                        type: "warning",
+                        cancelButtonText: "Batal",
+                        showCancelButton: true,
+                        confirmButtonClass: "btn btn-primary",
+                        confirmButtonText: "Ya",
+                        closeOnConfirm: false
+                    },
+                    function (isConfirm) {
+                        swal({
+                            title: "Loading",
+                            text: "Harap Menunggu...",
+                            imageUrl: "/Content/sweet-alert/ajax-loader.gif",
+                            closeOnConfirm: false,
+                            confirmButtonClass: "hidden",
+                        });
+                        if (isConfirm)
+                            $('#formsubmit').submit();
+                    });
+            }
+            else {
+                $('#formsubmit').submit();
+            }
+        }
+
+        $('#formsubmit').submit(function (e) {
+
+
+        })
+    </script>
+}

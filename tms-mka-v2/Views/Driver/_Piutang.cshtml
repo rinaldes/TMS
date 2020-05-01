@@ -1,0 +1,24 @@
+﻿@using tms_mka_v2.Models
+@model tms_mka_v2.Models.Driver
+@{
+    string currentController = (string)ViewContext.RouteData.Values["controller"];
+    string currentAction = (string)ViewContext.RouteData.Values["action"];
+}
+
+<div class="form-group">
+    <div class="mt-radio-inline">
+        <label class="mt-radio">
+            <input type="radio" id="rdKondisi" name="rdKondisi" value="all" onclick="call_piutang('All')" checked> All
+            <span></span>
+        </label>
+        <label class="mt-radio">
+            <input type="radio" id="rdKondisi" name="rdKondisi" value="kasbon" onclick="call_piutang('Kasbon')"> Kasbon
+            <span></span>
+        </label>
+        <label class="mt-radio">
+            <input type="radio" id="rdKondisi" name="rdKondisi" value="klaim" onclick="call_piutang('Klaim')"> Klaim
+            <span></span>
+        </label>
+    </div>
+    <div id="gridPiutang"></div>
+</div>

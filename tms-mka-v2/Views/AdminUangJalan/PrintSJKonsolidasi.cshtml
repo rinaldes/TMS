@@ -1,0 +1,12 @@
+﻿@using tms_mka_v2.Models
+@model tms_mka_v2.Models.SalesOrderProsesKonsolidasi
+<link rel="stylesheet" href="~/Content/metronic/bootstrap.min.css" />
+<body>
+    @foreach (var item in Model.ListModelSo)
+    {
+        Html.RenderPartial("PrintSJKonsolidasiDetail", item);
+    }
+</body>
+<script>
+    window.print()
+</script>

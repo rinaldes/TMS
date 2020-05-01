@@ -1,0 +1,98 @@
+﻿@using tms_mka_v2.Models;
+@model tms_mka_v2.Models.SalesOrderOncall
+<div class="portlet light">
+    <div class="portlet-title">
+        <div class="caption font-green-sharp">
+            <span class="caption-subject">Revisi Rute</span>
+        </div>
+        <div class="tools">
+            <a href="" class="collapse"> </a>
+        </div>
+    </div>
+    <div class="portlet-body">
+        <div class="form-group">
+            <div class="col-md-6">
+                <div class="row">
+                    <label class="control-label col-md-3">Rute Awal</label>
+                    <div class="col-md-5">
+                        @Html.HiddenFor(model => model.RuteId)
+                        @Html.TextBoxFor(model => model.Rute, new { @class = "form-control input-sm", @readonly = "true" })
+                    </div>
+                </div><br />
+                <div class="row">
+                    <label class="control-label col-md-3">Rute Baru</label>
+                    <div class="col-md-5">
+                        <div class="input-group input-group-sm">
+                            @Html.HiddenFor(model => model.RuteIdBaru)
+                            @Html.TextBoxFor(model => model.RuteBaru, new { @class = "form-control", @readonly = "true" })
+                            <span class="input-group-btn">
+                                <button type="button" class="btn btn-success" data-toggle="modal" data-target="#modalGridRute" >Browse</button> @*onclick="tandaanAnuDipilih()"*@
+                            </span>
+                        </div>
+                        @Html.ValidationMessageFor(model => model.RuteIdBaru)
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="row">
+                    @Html.LabelFor(model => model.KeteranganRevisi, new { @class = "control-label col-md-5" })
+                    <div class="col-md-7">
+                        @Html.TextAreaFor(model => model.KeteranganRevisi, new { @class = "form-control input-sm" })
+                        @Html.ValidationMessageFor(model => model.KeteranganRevisi)
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="portlet light">
+            <div class="portlet-title">
+                <div class="caption font-green-sharp">
+                    <span class="control-label">Alamat muat</span>
+                </div>
+                <div class="tools">
+                    <a href="" class="collapse"> </a>
+                </div>
+            </div>
+            <div class="portlet-body">
+                @Html.ValidationMessageFor(model => model.StrLoad)
+                <div id="gridmuat"></div>
+                @Html.HiddenFor(model => model.StrLoad)
+                @Html.HiddenFor(model => model.ListLoad)
+                @Html.HiddenFor(model => model.StrLoadBaru)
+                @Html.HiddenFor(model => model.ListLoadBaru)                
+            </div>
+        </div>
+        <br />
+        <div class="portlet light">
+            <div class="portlet-title">
+                <div class="caption font-green-sharp">
+                    <span class="control-label">Alamat Bongkar</span>
+                </div>
+                <div class="tools">
+                    <a href="" class="collapse"> </a>
+                </div>
+            </div>
+            <div class="portlet-body">
+                @Html.ValidationMessageFor(model => model.StrUnload)
+                <div id="gridbongkar"></div>
+                @Html.HiddenFor(model => model.StrUnload)
+                @Html.HiddenFor(model => model.ListUnload)
+                @Html.HiddenFor(model => model.StrUnloadBaru)
+                @Html.HiddenFor(model => model.ListUnloadBaru)                
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="modalGridRute" class="modal fade bs-modal-lg" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div id="modalForm" class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                <h4 class="modal-title">List Rute</h4>
+            </div>
+            <div class="modal-body">
+                <div id="GridRute"></div>
+            </div>
+        </div>
+    </div>
+</div>

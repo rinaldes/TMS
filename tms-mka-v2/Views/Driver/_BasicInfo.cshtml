@@ -1,0 +1,423 @@
+﻿@using tms_mka_v2.Models
+@model tms_mka_v2.Models.Driver
+@{
+    string currentController = (string)ViewContext.RouteData.Values["controller"];
+    string currentAction = (string)ViewContext.RouteData.Values["action"];
+    ViewBag.SubTitle = "Driver Basic Info";
+}
+<style>
+.countainer-img {
+    width: 100%;
+    height: 215px;
+    overflow: hidden;
+    position: relative;
+    border:1px solid;
+}
+.img-profile {
+    position: absolute;
+    margin: auto; 
+    max-height: 100%;
+    max-width: 100%;
+
+    left: -100%;
+    right: -100%;
+    top: -100%;
+    bottom: -100%;
+}
+</style>
+
+<div class="row">
+    <div class="col-md-3">
+        <div class="form-group">
+            @Html.LabelFor(model => model.IdStatus, 
+            new { @class = "control-label col-md-3" })
+            <div class="col-md-9 col-sm-9 col-xs-12">
+                @Html.TextBoxFor(model => model.IdStatus, new { @class = "form-control input-sm" })
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="form-group">
+            @Html.LabelFor(model => model.Keterangan, new { @class = "control-label col-md-4" })
+            <div class="col-md-8">
+                @Html.TextBoxFor(model => model.Keterangan, new { @class = "form-control input-sm" })
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="form-group">
+            @Html.LabelFor(model => model.IsSms, new { @class = "control-label col-md-4" })
+            <div class="col-md-8">
+                <label class="control-label">@Html.CheckBoxFor(model => model.IsSms)</label>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="portlet light">
+    <div class="portlet-title">
+        <div class="caption font-green-sharp">
+            <span class="caption-subject"> Basic Info</span>
+        </div>
+        <div class="tools">
+            <a href="" class="collapse"> </a>
+        </div>
+    </div>
+    <div class="portlet-body form">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.KodeDriver, htmlAttributes: new { @class = "control-label col-md-4" })
+                    <div class="col-md-8">
+                        @Html.TextBoxFor(model => model.KodeDriver, new { @class = "form-control input-sm", @readonly = "readonly" })
+                    </div>
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(model => model.KodeDriverOld, htmlAttributes: new { @class = "control-label col-md-4" })
+                    <div class="col-md-8">
+                        @Html.TextBoxFor(model => model.KodeDriverOld, new { @class = "form-control input-sm" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.TglGabung, htmlAttributes: new { @class = "control-label col-md-4" })
+                    <div class="col-md-8">
+                        @Html.TextBoxFor(model => model.TglGabung, new { @class = "form-control input-sm form-control-datepicker" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.NoKtp, htmlAttributes: new { @class = "control-label col-md-4" })
+                    <div class="col-md-8">
+                        @Html.TextBoxFor(model => model.NoKtp, new { @class = "form-control input-sm focus" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.NamaDriver, htmlAttributes: new { @class = "control-label col-md-4" })
+                    <div class="col-md-8">
+                        @Html.TextBoxFor(model => model.NamaDriver, new { @class = "form-control input-sm" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.NamaPangilan, htmlAttributes: new { @class = "control-label col-md-4" })
+                    <div class="col-md-8">
+                        @Html.TextBoxFor(model => model.NamaPangilan, new { @class = "form-control input-sm" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.TempatLahir, htmlAttributes: new { @class = "control-label col-md-4" })
+                    <div class="col-md-8">
+                        <div class="col-md-5" style="padding:0">
+                            @Html.TextBoxFor(model => model.TempatLahir, new { @class = "form-control input-sm" })
+                        </div>
+                        <div class="col-md-2" style="padding:0 ;text-align:center">
+                            @Html.Label("/", htmlAttributes: new { @class = "control-label" })
+                        </div>
+
+                        <div class="col-md-5" style="padding:0">
+                            @Html.TextBoxFor(model => model.TglLahir, new { @class = "form-control input-sm form-control-datepicker" })
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.IdJenisSim, new { @class = "control-label col-md-4" })
+                    <div class="col-md-8">
+                        @Html.TextBoxFor(model => model.IdJenisSim, new { @class = "form-control input-sm" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.NoSim, htmlAttributes: new { @class = "control-label col-md-4" })
+                    <div class="col-md-8">
+                        @Html.TextBoxFor(model => model.NoSim, new { @class = "form-control input-sm" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.TglBerlakuSim, htmlAttributes: new { @class = "control-label col-md-4" })
+                    <div class="col-md-8">
+                        @Html.TextBoxFor(model => model.TglBerlakuSim, new { @class = "form-control input-sm form-control-datepicker" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.NoTlp, htmlAttributes: new { @class = "control-label col-md-4" })
+                    <div class="col-md-2">
+                        @Html.TextBoxFor(model => model.KodeTlp, new { @class = "form-control input-sm form-control-kodearea" })
+                    </div>
+                    <div class="col-md-6">
+                        @Html.TextBoxFor(model => model.NoTlp, new { @class = "form-control input-sm form-control-tel" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.NoHp1, htmlAttributes: new { @class = "control-label col-md-4" })
+                    <div class="col-md-8">
+                        @Html.TextBoxFor(model => model.NoHp1, new { @class = "form-control input-sm form-control-hp" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.NoHp2, htmlAttributes: new { @class = "control-label col-md-4" })
+                    <div class="col-md-8">
+                        @Html.TextBoxFor(model => model.NoHp2, new { @class = "form-control input-sm form-control-hp" })
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-2">
+                <div class="countainer-img">
+                    <img id="profile-foto" src="@Model.Pathfoto" class="img-profile" alt="">
+                </div>
+                <div class="col-md-12" style="padding:0">
+                    @Html.HiddenFor(model => model.Pathfoto)
+                    <input type="file" id="filesFoto" name="files" />
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="portlet light">
+    <div class="portlet-title">
+        <div class="caption font-green-sharp">
+            <span class="caption-subject"> Data KTP</span>
+        </div>
+        <div class="tools">
+            <a href="" class="collapse"> </a>
+        </div>
+    </div>
+    <div class="portlet-body form">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Alamat, htmlAttributes: new { @class = "control-label col-md-4" })
+                    <div class="col-md-8">
+                        @Html.TextAreaFor(model => model.Alamat, new { @class = "form-control input-sm" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="col-md-8 col-md-offset-4">
+                        @Html.LabelFor(model => model.Rt, htmlAttributes: new { @class = "control-label col-md-2" })
+                        <div class="col-md-4" style="padding:0">
+                            @Html.TextBoxFor(model => model.Rt, new { @class = "form-control input-sm form-control-rtrw" })
+                        </div>
+                        @Html.LabelFor(model => model.Rw, htmlAttributes: new { @class = "control-label col-md-2" })
+                        <div class="col-md-4" style="padding:0">
+                            @Html.TextBoxFor(model => model.Rw, new { @class = "form-control input-sm form-control-rtrw" })
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="form-group">
+                    @Html.HiddenFor(model => model.StrProvinsi)
+                    @Html.LabelFor(model => model.IdProvinsi, htmlAttributes: new { @class = "control-label col-md-3" })
+                    <div class="col-md-9">
+                        @Html.TextBoxFor(model => model.IdProvinsi, new { @class = "form-control input-sm" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.HiddenFor(model => model.StrKabKota)
+                    @Html.LabelFor(model => model.IdKabKota, htmlAttributes: new { @class = "control-label col-md-3" })
+                    <div class="col-md-9">
+                        @Html.TextBoxFor(model => model.IdKabKota, new { @class = "form-control input-sm" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.HiddenFor(model => model.StrKec)
+                    @Html.LabelFor(model => model.IdKec, htmlAttributes: new { @class = "control-label col-md-3" })
+                    <div class="col-md-9">
+                        @Html.TextBoxFor(model => model.IdKec, new { @class = "form-control input-sm" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.HiddenFor(model => model.StrKel)
+                    @Html.LabelFor(model => model.IdKel, htmlAttributes: new { @class = "control-label col-md-3" })
+                    <div class="col-md-9">
+                        @Html.TextBoxFor(model => model.IdKel, new { @class = "form-control input-sm" })
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="portlet light">
+    <div class="portlet-title">
+        <div class="caption font-green-sharp">
+            <span class="caption-subject"> Domisili</span>
+        </div>
+        <div class="tools">
+            <a href="" class="collapse"> </a>
+        </div>
+    </div>
+    <div class="portlet-body form">
+        <div class="row">
+            <div class="form-group">
+                <div class="col-md-12">
+                    @Html.LabelFor(model => model.IsSameKtp, new { @class = "control-label col-md-2 col-sm-3 col-xs-12" })
+                    <div class="col-md-6 col-sm-9 col-xs-12">
+                        @Html.CheckBoxFor(model => model.IsSameKtp, new { @class = "checkbox" })
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.AlamatDomisili, htmlAttributes: new { @class = "control-label col-md-4" })
+                    <div class="col-md-8">
+                        @Html.TextAreaFor(model => model.AlamatDomisili, new { @class = "form-control input-sm" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="col-md-8 col-md-offset-4">
+                        @Html.LabelFor(model => model.RtDomisili, htmlAttributes: new { @class = "control-label col-md-2" })
+                        <div class="col-md-4">
+                            @Html.TextBoxFor(model => model.RtDomisili, new { @class = "form-control input-sm form-control-rtrw" })
+                        </div>
+                        @Html.LabelFor(model => model.RwDomisili, htmlAttributes: new { @class = "control-label col-md-2" })
+                        <div class="col-md-4">
+                            @Html.TextBoxFor(model => model.RwDomisili, new { @class = "form-control input-sm form-control-rtrw" })
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="form-group">
+                    @Html.HiddenFor(model => model.StrProvinsiDomisili)
+                    @Html.LabelFor(model => model.IdProvinsiDomisili, htmlAttributes: new { @class = "control-label col-md-3" })
+                    <div class="col-md-9">
+                        @Html.TextBoxFor(model => model.IdProvinsiDomisili, new { @class = "form-control input-sm" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.HiddenFor(model => model.StrKabKotaDomisili)
+                    @Html.LabelFor(model => model.IdKabKotaDomisili, htmlAttributes: new { @class = "control-label col-md-3" })
+                    <div class="col-md-9">
+                        @Html.TextBoxFor(model => model.IdKabKotaDomisili, new { @class = "form-control input-sm" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.HiddenFor(model => model.StrKecDomisili)
+                    @Html.LabelFor(model => model.IdKecDomisili, htmlAttributes: new { @class = "control-label col-md-3" })
+                    <div class="col-md-9">
+                        @Html.TextBoxFor(model => model.IdKecDomisili, new { @class = "form-control input-sm" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.HiddenFor(model => model.StrKelDomisili)
+                    @Html.LabelFor(model => model.IdKelDomisili, htmlAttributes: new { @class = "control-label col-md-3" })
+                    <div class="col-md-9">
+                        @Html.TextBoxFor(model => model.IdKelDomisili, new { @class = "form-control input-sm" })
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="portlet light">
+    <div class="portlet-title">
+        <div class="caption font-green-sharp">
+            <span class="caption-subject"> Referensi</span>
+        </div>
+        <div class="tools">
+            <a href="" class="collapse"> </a>
+        </div>
+    </div>
+    <div class="portlet-body form">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.IdReferensiDriver, htmlAttributes: new { @class = "control-label col-md-4" })
+                    <div class="col-md-8">
+                        @Html.TextBoxFor(model => model.IdReferensiDriver, new { @class = "form-control input-sm" })
+                    </div>
+                </div>
+                <div class="form-group">
+                    @Html.Label("Nama", new { @class = "control-label col-md-4" })
+                    <div class="col-md-8">
+                        <div class="input-group input-group-sm">
+                            @Html.HiddenFor(model => model.IdRef)
+                            @Html.TextBoxFor(model => model.NamaRef, new { @class = "form-control input-sm", @readonly = "true" })
+                            @*<input id="NamaRef" class="form-control" readonly />*@
+                            <span class="input-group-btn">
+                                <button id="BtnRef" type="button" class="btn btn-success" data-toggle="modal" data-target="#modalRef" onclick="callerGrid = 'notif'" disabled>Browse</button>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-md-4">No Induk</label>
+                    <div class="col-md-8">
+                        @Html.TextBoxFor(model => model.CodeRef, new { @class = "form-control input-sm", @disabled = "disabled" })
+                        @*<input disabled id="CodeRef" class="form-control input-sm" />*@
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-md-4">No KTP</label>
+                    <div class="col-md-8">
+                        @Html.TextBoxFor(model => model.tlpRef, new { @class = "form-control input-sm", @disabled = "disabled" })
+                        @*<input disabled id="KTPRef" class="form-control input-sm" />*@
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label class="control-label col-md-3">No Telp</label>
+                    <div class="col-md-9">
+                        @Html.TextBoxFor(model => model.tlpRef, new { @class = "form-control input-sm", @disabled = "disabled" })
+                        @*<input disabled id="tlpRef" class="form-control input-sm" />*@
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-md-3">No HP</label>
+                    <div class="col-md-9">
+                        @Html.TextBoxFor(model => model.hpRef, new { @class = "form-control input-sm", @disabled = "disabled" })
+                        @*<input disabled id="" class="form-control input-sm" />*@
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-md-3">Hubungan</label>
+                    <div class="col-md-9">
+                        @Html.TextBoxFor(model => model.HubunganRef, new { @class = "form-control input-sm", @disabled="disabled" })
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-md-3">Keterangan</label>
+                    <div class="col-md-9">
+                        @Html.TextBoxFor(model => model.KeteranganRef, new { @class = "form-control input-sm", @disabled = "disabled" })
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="modalRef" class="modal fade bs-modal-lg" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div id="modalForm" class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                <h4 class="modal-title">List Referensi</h4>
+            </div>
+            <div class="modal-body">
+                <div id="GridRef"></div>
+            </div>
+        </div>
+    </div>
+</div>
+

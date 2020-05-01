@@ -1,0 +1,184 @@
+﻿@model tms_mka_v2.Models.Customer
+
+@{
+    string currentController = (string)ViewContext.RouteData.Values["controller"];
+    string currentAction = (string)ViewContext.RouteData.Values["action"];
+    ViewBag.SubTitle = "Customer Unloading Address List";
+}
+
+<div class="row ">
+    <div class="col-md-6">
+        <div class="btn-group">
+            <div class="caption">
+                <h2>@ViewBag.SubTitle</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="btn-group pull-right">
+            <span class="btn green" id="btnAdd" title="Customer Unloading Address" data-toggle="modal" data-target="#modalFormUnloadAddress" onclick="ShowAddressUnloadingPopup()">Add New Unloading Address</span>
+        </div>
+    </div>
+</div>
+<br />
+@using (Html.BeginForm("UpdateCustUnloadingAdd", currentController))
+{
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(model => model.Id)
+    <div id="GridCustUnLoad"></div>
+}
+<div id="modalFormUnloadAddress" class="modal fade bs-modal-full" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-full">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                <h4 class="modal-title">Unloading Address List</h4>
+            </div>
+            <div class="modal-body">
+                <form id="formUnloadingAddress" class="form-horizontal">
+                    @Html.Hidden("CustomerUnloadingAddressId")
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                @Html.Label("Kode", new { @class = "control-label col-md-3" })
+                                <div class="col-md-7">
+                                    <input id="KodeUnloadingAdd" name="KodeUnloadingAdd" class="form-control input-sm" disabled="disabled" />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-3">Zona<span style="color:red;"></span></label>
+                                @*@Html.Label("Zona", new { @class = "control-label col-md-3" })*@
+                                <div class="col-md-7">
+                                    <input type="text" id="ZonaUnloadingAdd" name="ZonaUnloadingAdd" pattern="[a-zA-Z0-9\s]+" class="k-textbox" validationmessage="Format Zona tidak valid." />
+                                    <span class="k-invalid-msg" data-for="ZonaUnloadingAdd"></span>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-3">Alamat<span style="color:red;">*</span></label>
+                                @*@Html.Label("Alamat", new { @class = "control-label col-md-3" })*@
+                                <div class="col-md-7">
+                                    <textarea type="text" rows="9" id="AlamatUnloadingAdd" name="AlamatUnloadingAdd" class="k-textbox" pattern="[a-zA-Z0-9,./\\n\s]+" required data-required-msg="Alamat harus diisi." validationmessage="Format Alamat tidak valid."></textarea>
+                                    <span class="k-invalid-msg" data-for="AlamatUnloadingAdd"></span>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                @Html.Label("Kelurahan/desa", new { @class = "control-label col-md-3" })
+                                <div class="col-md-7">
+                                    <input id="KelurahanUnloadingAdd" name="KelurahanUnloadingAdd" />
+                                    <span class="k-invalid-msg" data-for="KelurahanUnloadingAdd"></span>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                @Html.Label("Kecamatan", new { @class = "control-label col-md-3" })
+                                <div class="col-md-7">
+                                    <input id="KecamatanUnloadingAdd" name="KecamatanUnloadingAdd" />
+                                    <span class="k-invalid-msg" data-for="KecamatanUnloadingAdd"></span>
+                                </div>
+                            </div>
+                            
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                @Html.Label("Kabupaten/Kota", new { @class = "control-label col-md-3" })
+                                <div class="col-md-7">
+                                    <input id="KotaUnloadingAdd" name="KotaUnloadingAdd" />
+                                    <span class="k-invalid-msg" data-for="KotaUnloadingAdd"></span>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                @Html.Label("Provinsi", new { @class = "control-label col-md-3" })
+                                <div class="col-md-7">
+                                    <input id="ProvinsiUnloadingAdd" name="ProvinsiUnloadingAdd"/>
+                                    <span class="k-invalid-msg" data-for="ProvinsiUnloadingAdd"></span>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-3">Longitude<span style="color:red;"></span></label>
+                                @*@Html.Label("Longitude", new { @class = "control-label col-md-3" })*@
+                                <div class="col-md-7">
+                                    <input id="LongUnloadingAdd" name="LongUnloadingAdd" class="form-control-numeric-latlong"/>
+                                    <span id="valUnloadingLong" class="k-invalid-msg" data-for="LongUnloadingAdd"></span>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-3">Latitude<span style="color:red;"></span></label>
+                                @*@Html.Label("Latitude", new { @class = "control-label col-md-3" })*@
+                                <div class="col-md-7">
+                                    <input id="LatUnloadingAdd" name="LatUnloadingAdd" class="form-control-numeric-latlong"/>
+                                    <span id="valUnloadingLat" class="k-invalid-msg" data-for="LatUnloadingAdd"></span>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-3">Radius<span style="color:red;"></span></label>
+                                @*@Html.Label("Radius", new { @class = "control-label col-md-3" })*@
+                                <div class="col-md-7">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <input id="RadiusUnloadingAdd" name="RadiusUnloadingAdd" class="form-control-numeric-ns"/>
+                                            <span class="k-invalid-msg" data-for="RadiusUnloadingAdd"></span>
+                                        </div>
+                                        <div class="col-md-2" style="padding:0px">
+                                            <label class="control-label">Meter</label>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <button type="button" class="btn btn-sm green" id="btnviewmapunloading" title="View Map" data-toggle="modal" data-target="#modalviewmapunloadingaddress" onclick="getMapByLatLong($('#LongUnloadingAdd').val(), $('#LatUnloadingAdd').val(), $('#RadiusUnloadingAdd').val(), cboKecUnloading.text(), document.getElementById('viewmapunloading'), $('#modalviewmapunloadingaddress'))">Map</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-3">Telephone<span style="color:red;"></span></label>
+                                @*@Html.Label("Telephone", new { @class = "control-label col-md-3" })*@
+                                <div class="col-md-2">
+                                    <input id="KodeTlpUnloadingAdd" name="KodeTlpUnloadingAdd" class="k-textbox form-control-kodearea" />
+                                    <span class="k-invalid-msg" data-for="KodeTlpUnloadingAdd"></span>
+                                </div>
+                                <div class="col-md-5">
+                                    <input id="TlpUnloadingAdd" name="TlpUnloadingAdd" class="k-textbox form-control-tel" />
+                                    <span class="k-invalid-msg" data-for="TlpUnloadingAdd"></span>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-3">Fax<span style="color:red;"></span></label>
+                                @*@Html.Label("Fax", new { @class = "control-label col-md-3" })*@
+                                <div class="col-md-2">
+                                    <input id="KodeFaxUnloadingAdd" name="KodeFaxUnloadingAdd" class="k-textbox form-control-kodearea" />
+                                    <span class="k-invalid-msg" data-for="KodeFaxUnloadingAdd"></span>
+                                </div>
+                                <div class="col-md-5">
+                                    <input id="FaxUnloadingAdd" name="FaxUnloadingAdd" class="k-textbox form-control-tel" />
+                                    <span class="k-invalid-msg" data-for="FaxUnloadingAdd"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn green" onclick="SaveUnloadingAdd($('#Condition').val());">Submit</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="modalviewmapunloadingaddress" class="modal fade bs-modal-lg" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                <h4 class="modal-title">View Map</h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-horizontal">
+                    <div class="form-group">
+                        <div class="col-md-12">
+                            <div id="viewmapunloading" style="height:400px; width:800px; margin: auto"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn green" onclick="addMapLatLongUnloadingAdd()">Submit</button>
+            </div>
+        </div>
+    </div>
+</div>

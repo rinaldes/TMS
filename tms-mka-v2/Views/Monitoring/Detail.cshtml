@@ -1,0 +1,1172 @@
+﻿<script src="~/Content/highcharts.js"></script>
+<script src="~/Content/highcharts-more.js"></script>
+<script src="~/Content/exporting.js"></script>
+@{
+    ViewBag.Title = "Monitoring Detail";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    string currentController = (string)ViewContext.RouteData.Values["controller"];
+}
+<style>
+    .form-group {
+        margin: 10px;
+    }
+
+    .popover-content {
+        width: 270px;
+        word-break: break-all;
+    }
+
+    .available {
+        background-color: #FFFFC0;
+    }
+
+    .onduty {
+        background-color: #CADEF9;
+    }
+
+    .ready {
+        background-color: #03bf2c;
+    }
+</style>
+<link rel="stylesheet" href="~/Content/OpenLayer/ol.css" type="text/css">
+<script src="~/Content/OpenLayer/ol.js" type="text/javascript"></script>
+<div class="form-group">
+    <div class="row">
+        <div class="form-group">
+            <div class="col-md-12">
+                <div class="col-md-1">
+                    <div class="col-md-1"><input type="checkbox" id="ckGeneral" name="ckGeneral" value="general"></div><label class="control-label col-md-1">General</label>
+                </div>
+                <div class="col-md-7">
+                    <label class="control-label col-md-1">From :</label>
+                    <div class="col-md-2">
+                        <input id="TanggalFr" name="TanggalFr" />
+                    </div>
+                    <div class="col-md-2">
+                        <div class="input-group input-group-sm">
+                            <input id="JamFr" name="JamFr" class="form-control input-sm timepicker timepicker-24" value="00:00"/>
+                            <span class="input-group-btn">
+                                <button class="btn btn-sm default" type="button">
+                                    <i class="fa fa-clock-o"></i>
+                                </button>
+                            </span>
+                        </div>
+                    </div>
+                    <label class="control-label col-md-1">To :</label>
+                    <div class="col-md-2">
+                        <input id="TanggalT" name="TanggalT" />
+                    </div>
+                    <div class="col-md-2">
+                        <div class="input-group input-group-sm">
+                            <input id="JamT" name="JamT" class="form-control input-sm timepicker timepicker-24" value="23:00" />
+                            <span class="input-group-btn">
+                                <button class="btn btn-sm default" type="button">
+                                    <i class="fa fa-clock-o"></i>
+                                </button>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="col-md-1">
+                        <button type="button" class="btn btn-sm green" onclick="loadMonitoringDetail()">Show</button>
+                    </div>
+                </div>
+                <div class="col-md-1">
+                    <button class="btn btn-sm green dropdown-toggle" id="History" data-toggle="modal" data-target="#modalHistory">History</button>
+                </div>
+                <div class="col-md-2"><select id="StatusMonitoringDetail" name="StatusMonitoringDetail" class="form-control input-sm"></select></div>
+                <div class="col-md-1">
+                    <button class="btn btn-sm green dropdown-toggle" id="ReportMonitoringDetail" data-toggle="modal" data-target="#modalReportGpsError">Report GPS Error</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="form-group">
+    <div id="map" style="height:400px"><div id="popup"></div></div>
+</div>
+<div class="portlet light">
+    <div class="portlet-title">
+        <div class="caption font-green-sharp"><span class="caption-subject"> Basic Info</span></div><div class="tools"><a href="" class="collapse"> </a></div>
+    </div>
+    <div class="portlet-body form">
+        <div class="row">
+            <div class="col-md-5">
+                <div class="form-group col-md-12">
+                    <label class="control-label col-md-12">@ViewBag.DataUnit.VehicleNo - @ViewBag.DataUnit.JenisTrucks.StrJenisTruck - @ViewBag.Pendingin</label>
+                </div>
+                <div class="form-group col-md-12">
+                    <label class="control-label col-md-2">Lokasi :</label><div class="col-md-8">@ViewBag.MonitoringPosition.Alamat</div>
+                    <span class="input-group-btn">
+                        <button type="button" class="btn btn-success" data-toggle="modal" data-target="#ModalLocation">Edit</button>
+                    </span>
+                </div>
+                <div class="form-group col-md-12">
+                    <label class="control-label col-md-2">Speed :</label><div class="col-md-4">@ViewBag.MonitoringPosition.Kecepatan km/jam</div>
+                    <div class="col-md-4" style="color: @(ViewBag.MonitoringPosition.Engine.ToLower() == "on" ? "green" : "red")">Engine @ViewBag.MonitoringPosition.Engine</div>
+                </div>
+                <div class="form-group col-md-12">
+                    <label class="control-label col-md-2">Driver 1 :</label>
+                    <div class="col-md-4">
+                        @if (@ViewBag.MonitoringSo != null)
+                        {
+                            @ViewBag.MonitoringSo.DriverNama1
+                        }
+                    </div>
+                    <label class="control-label col-md-2">Tlp :</label><div class="col-md-4">-</div>
+                </div>
+                <div class="form-group col-md-12">
+                    <label class="control-label col-md-2">Driver 2 :</label><div class="col-md-4"> - </div><label class="control-label col-md-2">Tlp :</label>
+                    <div class="col-md-4">-</div>
+                </div>
+            </div>
+            <div class="col-md-5">
+                <div class="form-group col-md-12">
+                    <label class="control-label col-md-2">GPS :</label>
+                    <div class="col-md-4" style="color: @(ViewBag.MonitoringPosition.Gps.ToLower().Contains("on") ? "green" : "red")">@ViewBag.MonitoringPosition.Gps</div>
+                </div>
+                <div class="form-group col-md-12">
+                    <label class="control-label col-md-2">Last Update :</label><div class="col-md-8">@ViewBag.MonitoringPosition.LastUpdate</div>
+                </div>
+                <div class="form-group col-md-12">
+                    <label class="control-label col-md-2">Temp :</label><div class="col-md-4">@ViewBag.MonitoringPosition.Suhu C</div>
+                    <div class="col-md-4" style="color: @(ViewBag.MonitoringPosition.Ac.ToLower() == "on" ? "green" : "red")">AC @ViewBag.MonitoringPosition.Ac</div>
+                </div>
+            </div>
+        </div>
+        <br /><div class="form-group"><div id="gridSo"></div></div>
+    </div>
+</div>
+<div class="portlet light">
+    <div class="form-horizontal">
+        <div class="portlet-body">
+            <ul class="nav nav-tabs" id="wtab">
+                <li class="active"><a href="#tab_AllHis" data-toggle="tab"> Analisa On-Time </a></li>
+                <li><a href="#tab_OntimeHis" data-toggle="tab"> Speed Alert </a></li>
+                <li><a href="#tab_OntempHis" data-toggle="tab"> Parking Alert </a></li>
+            </ul>
+        </div>
+        <div class="tab-content">
+            <div class="tab-pane fade active in" id="tab_OnTime"><div class="form-group"><div id="gridOnTime"></div></div></div>
+            <div class="tab-pane fade" id="tab_SpeedAlert"><div class="form-group"><div id="gridSpeedAlert"></div></div></div>
+            <div class="tab-pane fade" id="tab_ParkingAlert"><div class="form-group"><div id="gridParkingAlert"></div></div></div>
+        </div>
+    </div>
+</div>
+<div class="portlet light">
+    <div class="form-group"><div id="gridAlert"></div></div>
+</div>
+<div class="portlet light">
+    <div class="portlet-title">
+        <div class="caption font-green-sharp"><span class="caption-subject"> Grafik Suhu</span></div><div class="tools"><a href="" class="collapse"> </a></div>
+    </div>
+    <div class="portlet-body form">
+        <div class="form-group"><div id="container"></div></div>
+        <div class="form-group">
+            <div class="col-md-6">
+                <label class="control-label col-md-6" id="FromTimeTemp">From :</label>
+                <label class="control-label col-md-6" id="ToTimeTemp">To : </label>
+            </div>
+            <div class="col-md-6">
+                @if (ViewBag.MonitoringSo != null && ViewBag.MonitoringSo.RangeSuhu != null)
+                {
+                    <label class="control-label col-md-6">Range Suhu Target : @ViewBag.MonitoringSo.RangeSuhu.Replace(" - ", " To ")</label>
+                }
+                <label class="control-label col-md-2" id="AvgTemp">AVG : -1C</label>
+                <label class="control-label col-md-2" id="MinTemp">Min : -1C</label>
+                <label class="control-label col-md-2" id="MaxTemp">Max : -1C</label>
+            </div>
+        </div>
+        <div class="form-horizontal">
+            <div class="portlet-body">
+                <ul class="nav nav-tabs" id="wtab">
+                    <li class="active"><a href="#tab_OnTemp" data-toggle="tab"> Analisa On-Temp </a></li>
+                    <li><a href="#tab_TempAlert" data-toggle="tab"> Temperature Alert </a></li>
+                </ul>
+            </div>
+            <div class="tab-content">
+                <div class="tab-pane fade active in" id="tab_OnTemp">
+                    <div class="row ">
+                        <div class="col-md-12">
+                            <div class="btn-group pull-right">
+                                <span class="btn green" id="btnPic" title="Customer PIC" onclick="EditOnTemp()">Add</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group"><div id="gridOnTemp"></div></div>
+                </div>
+                <div class="tab-pane fade" id="tab_TempAlert"><div class="form-group"><div id="gridTempAlert"></div></div></div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="modalHistory" class="modal fade bs-modal-lg" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button><h4 class="modal-title">GPS History</h4></div>
+            <div class="modal-body">
+                <form id="formReportGpsError" class="form-horizontal" url="Monitoring/ReportGpsError">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <div class="col-md-12">
+                                    <label class="control-label col-md-1">From :</label>
+                                    <div class="col-md-2">
+                                        <input id="TanggalFrom" name="TanggalFrom" />
+                                    </div>
+                                    <div class="col-md-2">
+                                        <div class="input-group input-group-sm">
+                                            <input id="JamFrom" name="JamFrom" class="form-control input-sm timepicker timepicker-24" />
+                                            <span class="input-group-btn">
+                                                <button class="btn btn-sm default" type="button">
+                                                    <i class="fa fa-clock-o"></i>
+                                                </button>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <label class="control-label col-md-1">To :</label>
+                                    <div class="col-md-2">
+                                        <input id="TanggalTo" name="TanggalTo" />
+                                    </div>
+                                    <div class="col-md-2">
+                                        <div class="input-group input-group-sm">
+                                            <input id="JamTo" name="JamTo" class="form-control input-sm timepicker timepicker-24" />
+                                            <span class="input-group-btn">
+                                                <button class="btn btn-sm default" type="button">
+                                                    <i class="fa fa-clock-o"></i>
+                                                </button>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-1">
+                                        <button type="button" class="btn btn-sm green" onclick="loadGpsHistory()">Show</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div id="gridHistory"></div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="ModalLocation" class="modal fade bs-modal-lg" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                <h4 class="modal-title">Edit</h4>
+            </div>
+            <div class="modal-body">
+                <form id="formEditLocation" class="form-horizontal" url="Monitoring/ReportGpsError">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                @Html.Label("Provinsi", new { @class = "control-label col-md-3" })
+                                <div class="col-md-9">
+                                    <input id="Provinsi" name="Provinsi" />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                @Html.Label("Kabupaten/Kota", new { @class = "control-label col-md-3" })
+                                <div class="col-md-9">
+                                    <input id="Kabupaten" name="Kabupaten" />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                @Html.Label("Alamat", new { @class = "control-label col-md-3" })
+                                <div class="col-md-9">
+                                    <textarea id="Alamat" name="Alamat" class="form-control"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn green" onclick="updateLocation();">Submit</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="ModalFormSO" class="modal fade bs-modal-lg" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                <h4 class="modal-title">Edit</h4>
+            </div>
+            <div class="modal-body">
+                <form id="formEditLocation" class="form-horizontal" url="Monitoring/ReportGpsError">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                @Html.Label("Provinsi", new { @class = "control-label col-md-3" })
+                                <div class="col-md-9">
+                                    <input id="Provinsi" name="Provinsi" />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                @Html.Label("Kabupaten/Kota", new { @class = "control-label col-md-3" })
+                                <div class="col-md-9">
+                                    <input id="Kabupaten" name="Kabupaten" />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                @Html.Label("Alamat", new { @class = "control-label col-md-3" })
+                                <div class="col-md-9">
+                                    <textarea id="Alamat" name="Alamat" class="form-control"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn green" onclick="updateLocation();">Submit</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="modalFormTemp" class="modal fade bs-modal-lg" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                <h4 class="modal-title">Add</h4>
+            </div>
+            <div class="modal-body">
+                <form id="formReportGpsError" class="form-horizontal" url="Monitoring/ReportGpsError">
+                    <input id="Id" name="Id" type="hidden"/>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                @Html.Label("Kondisi", new { @class = "control-label col-md-3" })
+                                <div class="col-md-9">
+                                    <input id="Kondisi" name="Kondisi" />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                @Html.Label("Status", new { @class = "control-label col-md-3" })
+                                <div class="col-md-9">
+                                    <input id="Status" name="Status" />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                @Html.Label("Keterangan", new { @class = "control-label col-md-3" })
+                                <div class="col-md-9">
+                                    <textarea id="Keterangan" name="Keterangan" class="form-control"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn green" onclick="saveAnalisaOnTemp($('#Condition').val());">Submit</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="modalReportGpsError" class="modal fade bs-modal-lg" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                <h4 class="modal-title">GPS Error Reporting</h4>
+            </div>
+            <div class="modal-body">
+                <form id="formReportGpsError" class="form-horizontal" url="Monitoring/ReportGpsError">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                @Html.Label("GPS On/Off", new { @class = "control-label col-md-3" })
+                                @Html.Label("Ket", new { @class = "control-label col-md-3" })
+                                <div class="col-md-6">
+                                    <input id="KetGpsOnOff" name="KetGpsOnOff" class="k-textbox" />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                @Html.Label("Location Error", new { @class = "control-label col-md-3" })
+                                @Html.Label("Ket", new { @class = "control-label col-md-3" })
+                                <div class="col-md-6">
+                                    <input id="KetLocationError" name="KetLocationError" class="k-textbox" />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                @Html.Label("Temperature Sensor Error", new { @class = "control-label col-md-3" })
+                                @Html.Label("Ket", new { @class = "control-label col-md-3" })
+                                <div class="col-md-6">
+                                    <input id="KetTemperatureSensorError" name="KetTemperatureSensorError" class="k-textbox" />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                @Html.Label("Tidak Ada Grafik", new { @class = "control-label col-md-3" })
+                                @Html.Label("Ket", new { @class = "control-label col-md-3" })
+                                <div class="col-md-6">
+                                    <input id="KetTidakAdaGrafik" name="KetTidakAdaGrafik" class="k-textbox" />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                @Html.Label("Grafik Rata", new { @class = "control-label col-md-3" })
+                                @Html.Label("Ket", new { @class = "control-label col-md-3" })
+                                <div class="col-md-6">
+                                    <input id="KetGrafikRata" name="KetGrafikRata" class="k-textbox" />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                @Html.Label("Grafik Patah/Putus", new { @class = "control-label col-md-3" })
+                                @Html.Label("Ket", new { @class = "control-label col-md-3" })
+                                <div class="col-md-6">
+                                    <input id="KetGrafikPatah" name="KetGrafikPatah" class="k-textbox" />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                @Html.Label("Perbedaan Suhu", new { @class = "control-label col-md-3" })
+                                @Html.Label("Ket", new { @class = "control-label col-md-3" })
+                                <div class="col-md-6">
+                                    <input id="KetPerbedaanSuhu" name="KetPerbedaanSuhu" class="k-textbox" />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                @Html.Label("Engine On/Off Sensor", new { @class = "control-label col-md-3" })
+                                @Html.Label("Ket", new { @class = "control-label col-md-3" })
+                                <div class="col-md-6">
+                                    <input id="KetEngineOnOff" name="KetEngineOnOff" class="k-textbox" />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                @Html.Label("Engine On/Off Sensor", new { @class = "control-label col-md-3" })
+                                @Html.Label("Ket", new { @class = "control-label col-md-3" })
+                                <div class="col-md-6">
+                                    <input id="KetAcOnOff" name="KetAcOnOff" class="k-textbox" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer"><button type="button" class="btn green" onclick="saveReportGpsError($('#Condition').val());">Submit</button></div>
+        </div>
+    </div>
+</div>
+@section scripts
+{
+    <script id="command-template-SO" type="text/x-kendo-template">
+        <a class="k-button-icon k-grid-edit" href="\\#" title="Detail" onclick="editItem('#=VehicleNo#')"><span class="glyphicon glyphicon-eye-open"></span></a>
+    </script>
+    <script id="command-template-editOnTemp" type="text/x-kendo-template">
+        <a class="k-button-icon k-grid-edit" href="\\#" title="Edit" onclick="EditOnTemp('#=Kondisi#', '#=Keterangan#', '#=Status#', '#=Id#')">
+            <span class="glyphicon glyphicon-edit"></span>
+        </a>
+    </script>
+    <script id="command-template-editSO" type="text/x-kendo-template">
+        <a class="k-button-icon k-grid-edit" href="\\#" title="Edit" onclick="EditSO()">
+            <span class="glyphicon glyphicon-edit"></span>
+        </a>
+    </script>
+    <script type="text/javascript">
+    var dsProvinsi = new kendo.data.DataSource({
+        serverFiltering: true,
+        transport: {
+            read: {
+                url: '@Url.Action("BindingComboProvinsi", "Location")', dataType: "json"
+            },
+        },
+    });
+    var dsKabupaten = new kendo.data.DataSource({
+        serverFiltering: true,
+        transport: {
+            read: {
+                url: '@Url.Action("BindingComboKabupaten", "Location")', dataType: "json"
+                },
+            },
+        });
+        $("#Provinsi").kendoComboBox({dataTextField: "Nama", dataValueField: "Id", dataSource: dsProvinsi, filter: "contains", suggest: true, index: 3}).data("kendoComboBox");
+        $("#Kabupaten").kendoComboBox({dataTextField: "Nama", dataValueField: "Id", dataSource: dsKabupaten, filter: "contains", suggest: true, index: 3}).data("kendoComboBox");
+        $("#Status").kendoComboBox({dataSource: ["On Temp", "Out of Temp"], filter: "contains", suggest: true, index: 3}).data("kendoComboBox");
+    $("#Kondisi").kendoComboBox({dataSource: ["Precooling", "AC Mati", "Suhu Sesuai"], filter: "contains", suggest: true, index: 3}).data("kendoComboBox");
+    $("#TanggalFrom").kendoDatePicker({format: "dd/MM/yyyy", value: new Date()});
+    var TanggalFromDp = $("#TanggalFrom").data("kendoDatePicker");
+    $("#TanggalTo").kendoDatePicker({format: "dd/MM/yyyy", value: new Date()});
+    var TanggalToDp = $("#TanggalTo").data("kendoDatePicker");
+    $("#TanggalFr").kendoDatePicker({format: "dd/MM/yyyy", value: new Date()});
+    var TanggalFrDp = $("#TanggalFr").data("kendoDatePicker");
+    $("#TanggalT").kendoDatePicker({format: "dd/MM/yyyy", value: new Date()});
+    var TanggalTDp = $("#TanggalT").data("kendoDatePicker");
+    var itemsStatusMonitoringDetail = [{ text: "On Duty", value: "duty" }, { text: "Ready", value: "ready" }, { text: "Available", value: "available" },];
+    $("#StatusMonitoringDetail").kendoComboBox({dataTextField: "text", dataValueField: "value", dataSource: itemsStatusMonitoringDetail,
+        change: function (e) {
+            localStorage['StatusMonitoringDetailViewCalender'] = this.value();
+        },
+    });
+    function updateLocation() {
+        var data = {
+            Provinsi: $('#Provinsi').val(), KotaKab: $('#Kabupaten').val(), Lokasi: $('#Alamat').val(), Vehicle: '@ViewBag.DataUnit.VehicleNo'
+        };
+        goToSavePage("/Monitoring/updateLocation/", data, null);
+        $('#ModalLocation').modal('hide');
+        window.location.reload();
+    }
+    function EditOnTemp(Kondisi, Keterangan, Status, Id) {
+        $('#Kondisi').data("kendoComboBox").text(Kondisi);
+        $('#Status').data("kendoComboBox").text(Status);
+        $('#Keterangan').val(Keterangan);
+        $('#Id').val(Id);
+        $('#modalFormTemp').modal('show');
+    }
+    function EditSO(){
+        $('#modalFormSO').modal('show');
+    }
+    function loadMonitoringDetail(){
+        $('#FromTimeTemp').html('From : ' + $('#TanggalFr').val() + ' ' + $('#JamFr').val())
+        $('#ToTimeTemp').html('To : ' + $('#TanggalT').val() + ' ' + $('#JamT').val())
+        $.ajax({
+            url: '/Monitoring/getTemp?VehicleNo=' + '@ViewBag.DataUnit.VehicleNo' + '&StartTime=' + tanggalFr[2] + '-' + tanggalFr[1] + '-'  + tanggalFr[0] + ' ' +
+                $('#JamFr').val() + ':00&EndTime=' + tanggalT[2] + '-' + tanggalT[1] + '-'  + tanggalT[0] + ' ' + $('#JamT').val() + ':00',
+            type: "GET", dataType: 'Json', cache: false,
+            success: function (res) {
+                $('#AvgTemp').html('AVG: ' + res.Avg.toFixed(2) + '°C')
+                $('#MinTemp').html('Min: ' + res.Min + '°C')
+                $('#MaxTemp').html('Max: ' + res.Max + '°C')
+            }
+        });
+    }
+    function saveReportGpsError() {
+        var data = {
+            Keterangan: $('#KeteranganJasa').val(), GpsOnOff: $('#GpsOnOff').val(), KetGpsOnOff: $('#KetGpsOnOff').val(), LocationError: $('#LocationError').val(),
+            KetLocationError: $('#KetLocationError').val(), TemperatureSensorError: $('#TemperatureSensorError').val(),
+            KetTemperatureSensorError: $('#KetTemperatureSensorError').val(), TidakAdaGrafik: $('#TidakAdaGrafik').val(), KetTidakAdaGrafik: $('#KetTidakAdaGrafik').val(),
+            GrafikRata: $('#GrafikRata').val(), KetGrafikRata: $('#KetGrafikRata').val(), GrafikPatah: $('#GrafikPatah').val(), KetGrafikPatah: $('#KetGrafikPatah').val(),
+            PerbedaanSuhu: $('#PerbedaanSuhu').val(), KetPerbedaanSuhu: $('#KetPerbedaanSuhu').val(), EngineOnOff: $('#EngineOnOff').val(),
+            KetEngineOnOff: $('#KetEngineOnOff').val(), AcOnOff: $('#AcOnOff').val(), KetAcOnOff: $('#KetAcOnOff').val(),
+        };
+        goToSavePage("/Monitoring/ReportGpsError/", data, null);
+        $('#modalReportGpsError').modal('hide');
+    }
+    function saveAnalisaOnTemp() {
+        var data = {Id: $('#Id').val(), Status: $('#Status').val(), Kondisi: $('#Kondisi').val(), Keterangan: $('#Keterangan').val(), VehicleNo: '@ViewBag.DataUnit.VehicleNo'};
+        goToSavePage("/Monitoring/saveAnalisaOnTemp/", data, dsOnTemp);
+        $('#modalFormTemp').modal('hide');
+    }
+
+    //#region hitung derajat
+    function radians(n) {
+        return n * (Math.PI / 180);
+    }
+    function degrees(n) {
+        return n * (180 / Math.PI);
+    }
+
+    function getBearing(startLat, startLong, endLat, endLong) {
+        startLat = radians(startLat);
+        startLong = radians(startLong);
+        endLat = radians(endLat);
+        endLong = radians(endLong);
+
+        var dLong = endLong - startLong;
+
+        var dPhi = Math.log(Math.tan(endLat / 2.0 + Math.PI / 4.0) / Math.tan(startLat / 2.0 + Math.PI / 4.0));
+        if (Math.abs(dLong) > Math.PI) {
+            if (dLong > 0.0)
+                dLong = -(2.0 * Math.PI - dLong);
+            else
+                dLong = (2.0 * Math.PI + dLong);
+        }
+
+        return (degrees(Math.atan2(dLong, dPhi)) + 360.0) % 360.0;
+    }
+    //#endregion hitung derajat
+
+    //#region OpenLayers
+
+    function createStyle(src, img, startLat, startLong, endLat, endLong, colour, vehicleno) {
+        return new ol.style.Style({
+            image: new ol.style.Icon(({
+                src: src,
+                img: img,
+                imgSize: img ? [img.width, img.height] : undefined,
+                //anchorOrigin: "bottom-left",  // v KML je počítáno od levého spodního rohu
+                anchor: [0.5, 0.96],
+                //anchorXUnits: "fraction",
+                //anchorYUnits: "fraction",
+                scale: 0.4,
+                opacity: 0.75,
+                rotation: getBearing(startLat, startLong, endLat, endLong),
+                rotateWithView: "true"
+            })),
+            text: new ol.style.Text({
+                text: vehicleno,
+                fill: new ol.style.Fill({ color: 'black' }),
+                stroke: new ol.style.Stroke({ color: colour, width: 5 }),
+                offsetX: 50,
+                offsetY: 1,
+            })
+        });
+    }
+
+    //#region map
+
+    var iconFeature = [];
+
+    function addMarker(VehicleNo, Kecepatan, Lat, Long, Alamat, LatFisrt, LongFisrt, StatusOrder, CreatedDate, Status, Suhu) {
+
+        var Lat = parseFloat(Lat);
+        var Long = parseFloat(Long);
+        var Engine = '';
+        var AcOnOff = '';
+
+        var centerGis = ol.proj.transform([Long, Lat], 'EPSG:4326', 'EPSG:3857');
+
+        if (Kecepatan > 0) {
+            Engine = 'On';
+            AcOnOff = 'On';
+        }
+        else {
+            Engine = 'Off';
+            AcOnOff = 'Off';
+        }
+
+        //#region keterangan popup
+        var iconFeatureGis = new ol.Feature({
+            geometry: new ol.geom.Point(centerGis),
+            name: '<p><b>' + VehicleNo + '</b></p><p><code>Lokasi :' + Alamat + '</code></p><p><code>DateTime :' + CreatedDate + '</code></p><p><code>Kecepatan :' + Kecepatan + '</code></p><p><code>Engine :' + Engine + '</code></p><p><code>Temp :' + Suhu + '</code></p><p><code>AC :' + AcOnOff + '</code></p>'
+        });
+        //#region keterangan popup
+
+        if (StatusOrder == 'Available') {
+            iconFeatureGis.set('style', createStyle('/Content/img/map/on.png', undefined, LatFisrt, LongFisrt, Lat, Long, '#FFFFC0', VehicleNo));
+        }
+        else if (StatusOrder == 'Ready') {
+            iconFeatureGis.set('style', createStyle('/Content/img/map/ready.png', undefined, LatFisrt, LongFisrt, Lat, Long, '#03bf2c', VehicleNo));
+        }
+        else {
+            iconFeatureGis.set('style', createStyle('/Content/img/map/off.png', undefined, LatFisrt, LongFisrt, Lat, Long, '#CADEF9', VehicleNo));
+        }
+
+        iconFeature.push(iconFeatureGis);
+    }
+
+    //#endregion map
+
+
+    // Now add markers
+    @*@foreach (var item in ViewBag.GPSRealtimeAll) {
+            @:addMarker('@item.VehicleNo', '@item.Kecepatan', @item.Lat, @item.Long, '@item.Alamat', @item.LatFisrt, @item.LongFirst, '@item.StatusOrder', '@item.CreatedDate', '@item.Status', '@item.Suhu');
+        }*@
+    addMarker('@ViewBag.MonitoringPosition.VehicleNo', '0', @ViewBag.MonitoringPosition.LatNew, @ViewBag.MonitoringPosition.LongNew, '@ViewBag.MonitoringPosition.Alamat', -6.338990, 106.979158, 'On Duty', '19/04/2017 15.03.12', 'OK', '-');
+
+    var center = ol.proj.transform([123.5166958, -4.4871395], 'EPSG:4326', 'EPSG:3857');
+
+    //#region id map
+    var layerMap = new ol.layer.Tile({
+        source: new ol.source.OSM()
+    });
+    layerMap.setVisible(true);
+    var map = new ol.Map({
+        layers: [layerMap],
+        target: document.getElementById('map'),
+        view: new ol.View({
+            center: center,
+            zoom: 5
+        })
+    });
+
+
+    // marker
+    var vectorSource = new ol.source.Vector({
+        features: iconFeature //add an array of features
+    });
+    var vectorLayer = new ol.layer.Vector({
+        style: function (feature) {
+            return feature.get('style');
+        },
+        source: vectorSource,
+    });
+    map.addLayer(vectorLayer);
+
+    function stopinterval(){
+        window.clearInterval(timerMarker);
+        return false;
+    }
+
+    function loadGpsHistory(){
+        var dsHistory = new kendo.data.DataSource({
+            transport: {
+                read: {
+                    url: '@Url.Action("BindingHistory")?VehicleNo=' + '@ViewBag.DataUnit.VehicleNo' + '&StartTime=' + tanggalFrom[2] + '-' + tanggalFrom[1] + '-'  + tanggalFrom[0] +
+                        ' ' + $('#JamFrom').val() + ':00&EndTime=' + tanggalTo[2] + '-' + tanggalTo[1] + '-'  + tanggalTo[0] + ' ' + $('#JamTo').val() + ':00',
+                    dataType: "json"
+                },
+            },
+            schema: {
+                total: "total", data: "data", model: {
+                    fields: {
+                        "VehicleNo": {type: "string"}, "Lat": {type: "string"}, "Long": {type: "string"}, "Speed": {type: "string"}, "Temp": {type: "string"},
+                        "Mesin": {type: "string"}, "Ac": {type: "string"}, "Provinsi": {type: "string"}, "Kabupaten": {type: "string"}, "Alamat": {type: "string"},
+                        "CreatedDate": {type: "date"}, "Geofence": {type: "string"}, "Provider": {type: "string"}
+                    }
+                }
+            },
+            pageSize: 100, pageable: true, sortable: true,
+        });
+        gridIndex = $("#gridHistory").kendoGrid({
+            dataSource: dsHistory, filterable: kendoGridFilterable, sortable: true, reorderable: true, resizable: true, pageable: true, groupable: true,
+            columns: [{
+                field: "CreatedDate", title: "Date Time", width: 80,
+                template: "#= CreatedDate != null ? kendo.toString(kendo.parseDate(CreatedDate, 'yyyy-MM-dd'), 'dd/MM/yyyy HH:mm') : ''#", width: 80
+            },
+                {field: "VehicleNo", title: "Vehicle No", width: 49}, {field: "Alamat", title: "Lokasi", width: 210}, {field: "Kabupaten", title: "Kab/Kota", width: 105},
+                {field: "Provinsi", width: 105}, {field: "Geofence", width: 105, title: "Zone"}, {field: "Speed", width: 49},  {field: "Mesin", width: 49, title: "Engine"},
+                {field: "Temp", width: 49, title: "Suhu"}, {field: "Ac", width: 49, title: "AC"}
+            ],
+        }).data("kendoGrid");
+        return false;
+    }
+
+    function NewMarker() {
+        stopinterval();
+        timerMarker = window.setInterval(function () {
+            vectorSource.clear();//clean the layer from any existing markers
+            iconFeature = [];
+            $.ajax({
+                url: '/Monitoring/getCoordinate',
+                type: "GET",
+                dataType: 'Json',
+                cache: false,
+                success: function (res) {
+                    $.each(res, function (index, data) {
+                        addMarker(data.VehicleNo, data.Kecepatan, data.Lat, data.Long, data.Alamat, data.LatFisrt, data.LongFirst, data.StatusOrder, data.CreatedDate, data.Status, data.Suhu);
+                    });
+
+                    vectorSource.addFeatures(iconFeature);
+                }, error: function () {
+                    console.log("Connection Failed");
+                }
+            });
+        }, 4000); //1 menit 60000
+    }
+
+    function grafikSuhu(){
+        var ranges = [
+            [1246406400000, 14.3, 27.7],
+            [1246492800000, 14.5, 27.8],
+            [1246579200000, 15.5, 29.6],
+            [1246665600000, 16.7, 30.7],
+            [1246752000000, 16.5, 25.0],
+            [1246838400000, 17.8, 25.7],
+            [1246924800000, 13.5, 24.8],
+            [1247011200000, 10.5, 21.4],
+            [1247097600000, 9.2, 23.8],
+            [1247184000000, 11.6, 21.8],
+            [1247270400000, 10.7, 23.7],
+            [1247356800000, 11.0, 23.3],
+            [1247443200000, 11.6, 23.7],
+            [1247529600000, 11.8, 20.7],
+            [1247616000000, 12.6, 22.4],
+            [1247702400000, 13.6, 19.6],
+            [1247788800000, 11.4, 22.6],
+            [1247875200000, 13.2, 25.0],
+            [1247961600000, 14.2, 21.6],
+            [1248048000000, 13.1, 17.1],
+            [1248134400000, 12.2, 15.5],
+            [1248220800000, 12.0, 20.8],
+            [1248307200000, 12.0, 17.1],
+            [1248393600000, 12.7, 18.3],
+            [1248480000000, 12.4, 19.4],
+            [1248566400000, 12.6, 19.9],
+            [1248652800000, 11.9, 20.2],
+            [1248739200000, 11.0, 19.3],
+            [1248825600000, 10.8, 17.8],
+            [1248912000000, 11.8, 18.5],
+            [1248998400000, 10.8, 16.1]
+        ],
+        averages = [
+            [1246406400000, 21.5],
+            [1246492800000, 22.1],
+            [1246579200000, 23],
+            [1246665600000, 23.8],
+            [1246752000000, 21.4],
+            [1246838400000, 21.3],
+            [1246924800000, 18.3],
+            [1247011200000, 15.4],
+            [1247097600000, 16.4],
+            [1247184000000, 17.7],
+            [1247270400000, 17.5],
+            [1247356800000, 17.6],
+            [1247443200000, 17.7],
+            [1247529600000, 16.8],
+            [1247616000000, 17.7],
+            [1247702400000, 16.3],
+            [1247788800000, 17.8],
+            [1247875200000, 18.1],
+            [1247961600000, 17.2],
+            [1248048000000, 14.4],
+            [1248134400000, 13.7],
+            [1248220800000, 15.7],
+            [1248307200000, 14.6],
+            [1248393600000, 15.3],
+            [1248480000000, 15.3],
+            [1248566400000, 15.8],
+            [1248652800000, 15.2],
+            [1248739200000, 14.8],
+            [1248825600000, 14.4],
+            [1248912000000, 15],
+            [1248998400000, 13.6]
+        ];
+
+
+        Highcharts.chart('container', {
+
+            title: {
+                text: 'July temperatures'
+            },
+
+            xAxis: {
+                type: 'datetime'
+            },
+
+            yAxis: {
+                title: {
+                    text: null
+                }
+            },
+
+            tooltip: {
+                crosshairs: true,
+                shared: true,
+                valueSuffix: '°C'
+            },
+
+            legend: {
+            },
+
+            series: [{
+                name: 'Temperature',
+                data: averages,
+                zIndex: 1,
+                marker: {
+                    fillColor: 'white',
+                    lineWidth: 2,
+                    lineColor: Highcharts.getOptions().colors[0]
+                }
+            }, {
+                name: 'Range',
+                data: ranges,
+                type: 'arearange',
+                lineWidth: 0,
+                linkedTo: ':previous',
+                color: Highcharts.getOptions().colors[0],
+                fillOpacity: 0.3,
+                zIndex: 0,
+                marker: {
+                    enabled: false
+                }
+            }]
+        });
+    }
+
+    function NewMarkerAll() {
+        stopinterval();
+
+        timerMarker = window.setInterval(function () {
+            vectorSource.clear();//clean the layer from any existing markers
+            iconFeature = [];
+            $.ajax({
+                url: '/Monitoring/getCoordinateAll',
+                type: "GET",
+                dataType: 'Json',
+                cache: false,
+                success: function (res) {
+                    $.each(res, function (index, data) {
+                        addMarker(data.VehicleNo, data.Kecepatan, data.Lat, data.Long, data.Alamat, data.LatFisrt, data.LongFirst, data.StatusOrder, data.CreatedDate, data.Status, data.Suhu);
+                    });
+                    vectorSource.addFeatures(iconFeature);
+                }, error: function () {
+                    console.log("Connection Failed");
+                }
+            });
+        }, 4000); //1 menit 60000
+    }
+    var FullScreen = new ol.control.FullScreen();// marker
+    map.addControl(FullScreen);
+    var element = document.getElementById('popup');//popup
+    var popup = new ol.Overlay({element: element, positioning: 'bottom-center', stopEvent: false, offset: [80, 0]});
+    map.addOverlay(popup);
+    map.on('click', function (evt) {// display popup on click
+        var feature = map.forEachFeatureAtPixel(evt.pixel,
+            function (feature) {
+                return feature;
+            });
+        var coordinate = evt.coordinate;
+        if (feature) {
+            $(element).popover('destroy');
+            var coordinates = feature.getGeometry().getCoordinates();
+            popup.setPosition(coordinates);
+            map.getView().setCenter(coordinate);
+            $(element).popover({'placement': 'bottom-center', 'animation': false, 'html': true, 'content': feature.get('name')});
+            $(element).popover('show');
+        } else
+            $(element).popover('destroy');
+    });
+    map.on('pointermove', function (e) {// change mouse cursor when over marker
+        if (e.dragging) {
+            $(element).popover('destroy');
+            return;
+        }
+        var pixel = map.getEventPixel(e.originalEvent);
+        var hit = map.hasFeatureAtPixel(pixel);
+        map.getTarget().style.cursor = hit ? 'pointer' : '';
+    });//popup //#endregion id map //#endregion OpenLayers
+    var ds = new kendo.data.DataSource({
+        transport: {read: {url: '@Url.Action("BindingSO")?VehicleNo=' + '@ViewBag.DataUnit.VehicleNo', dataType: "json"}},
+        schema: {
+            total: "total", data: "data", model: {
+                fields: {
+                    "VehicleNo": {type: "string"}, "Customer": {type: "string"}, "JenisProduk": {type: "string"}, "Dari": {type: "string"}, "Tujuan": {type: "string"},
+                    "TglMuat": {type: "string"}, "TglBerangkat": {type: "string"}, "TglTiba": {type: "string"}, "TglBongkar": {type: "string"}, "NoSo": {type: "string"},
+                }
+            }
+        },
+        pageSize: 10, pageable: true, sortable: true,
+    });
+    gridIndex = $("#gridSo").kendoGrid({
+        dataSource: ds, filterable: kendoGridFilterable, sortable: true, reorderable: true, resizable: true, pageable: true, groupable: true,
+        columns: [{
+            command: [{name: "edit", imageClass: "glyphicon glyphicon-edit", template: kendo.template($("#command-template-editSO").html())}], width: "30px"
+        },
+            {field: "NoSo", title: "SO No", width: 49}, {field: "CustomerNama", title: "Customer", width: 94}, {field: "JenisProduk", title: "Jenis Produk", width: 77},
+            {field: "Dari", width: 200}, {field: "Tujuan", width: 80}, {
+                field: "TglMuat", title: "Tanggal Tiba Muat", width: 80,
+                template: "#= TglMuat != null ? kendo.toString(kendo.parseDate(TglMuat, 'yyyy-MM-dd'), 'dd/MM/yyyy HH:mm') : ''#", width: 80
+            }, {
+                field: "TglBerangkat", title: "Tanggal Berangkat", width: 80,
+                template: "#= TglBerangkat != null ? kendo.toString(kendo.parseDate(TglBerangkat, 'yyyy-MM-dd'), 'dd/MM/yyyy HH:mm') : ''#", width: 80
+            }, {
+                field: "TglTiba", title: "Tanggal Tiba", width: 80,
+                template: "#= TglTiba != null ? kendo.toString(kendo.parseDate(TglTiba, 'yyyy-MM-dd'), 'dd/MM/yyyy HH:mm') : ''#", width: 80
+            }, {
+                field: "TglBongkar", title: "Tanggal Bongkar",
+                template: "#= TglBongkar != null ? kendo.toString(kendo.parseDate(TglBongkar, 'yyyy-MM-dd'), 'dd/MM/yyyy HH:mm') : ''#", width: 80
+            },
+        ],
+    }).data("kendoGrid");
+    var tanggalFrom = $('#TanggalFrom').val().split('/');
+    var tanggalT = $('#TanggalT').val().split('/');
+    var tanggalFr = $('#TanggalFr').val().split('/');
+    var tanggalTo = $('#TanggalTo').val().split('/');
+    gridIndex = $("#gridAlert").kendoGrid({
+        filterable: kendoGridFilterable, sortable: true, reorderable: true, resizable: true, pageable: true, groupable: false,
+        columns: [{template: kendo.template($("#command-template-SO").html()), width: 30}, {
+            field: "VehicleNo", title: "Created Date Time", width: 150,
+            template: '<a href="javascript:DetailModalItem(\'#=VehicleNo#\',\'#=StrJenisTruck#\');" >#=VehicleNo#</a>'
+        }, {field: "StrJenisTruck", title: "Proses", width: 50}, {field: "Status", title: "Status", width: 50}, {field: "Alamat", title: "Keterangan", width: 200},
+            {field: "zone", title: "Last Edit", width: 80},
+        ],
+    }).data("kendoGrid");
+    var ds = new kendo.data.DataSource({
+        transport: {
+            read: {url: '@Url.Action("BindingSO")?VehicleNo=' + '@ViewBag.DataUnit.VehicleNo', dataType: "json"},
+        },
+        schema: {
+            total: "total", data: "data", model: {
+                fields: {
+                    "VehicleNo": {type: "string"}, "Customer": {type: "string"}, "JenisProduk": {type: "string"}, "Dari": {type: "string"}, "Tujuan": {type: "string"},
+                    "TglMuat": {type: "string"}, "TglBerangkat": {type: "string"}, "TglTiba": {type: "string"}, "TglBongkar": {type: "string"}, "NoSo": {type: "string"},
+                }
+            }
+        },
+        pageSize: 10, pageable: true, sortable: true,
+    });
+    gridIndex = $("#gridOnTime").kendoGrid({
+        filterable: kendoGridFilterable, sortable: true, reorderable: true, resizable: true, pageable: true, groupable: false,
+        columns: [
+            {
+                field: "VehicleNo", title: "Target Waktu", width: 150,
+                template: '<a href="javascript:DetailModalItem(\'#=VehicleNo#\',\'#=StrJenisTruck#\');" >#=VehicleNo#</a>'
+            }, {field: "StrJenisTruck", title: "Target Tiba", width: 50}, {field: "Status", title: "Estimasi Tiba", width: 50},
+            {field: "Alamat", title: "Delay", width: 200}, {field: "zone", title: "Moving", width: 80}, {field: "CustomerNama", title: "Stop", width: 80},
+            {field: "dari", title: "Max Stop", width: 80}, {field: "tujuan", title: "Max Stop Position", width: 80}, {field: "tujuan", title: "Stop Time", width: 80}, {
+                field: "TanggalMuat", title: "Durasi",
+                template: "#= TanggalMuat != null ? kendo.toString(kendo.parseDate(TanggalMuat, 'yyyy-MM-dd'), 'dd/MM/yyyy') : ''#", width: 80
+            },
+        ],
+    }).data("kendoGrid");
+    gridIndex = $("#gridSpeedAlert").kendoGrid({
+        filterable: kendoGridFilterable, sortable: true, reorderable: true, resizable: true, pageable: true, groupable: false,
+        columns: [
+            {
+                field: "VehicleNo",
+                title: "Target Waktu",
+                width: 150,
+                template: '<a href="javascript:DetailModalItem(\'#=VehicleNo#\',\'#=StrJenisTruck#\');" >#=VehicleNo#</a>'
+            },
+            {
+                field: "StrJenisTruck",
+                title: "Target Tiba",
+                width: 50
+            },
+            {
+                field: "Status",
+                title: "Estimasi Tiba",
+                width: 50
+            },
+            {
+                field: "Alamat",
+                title: "Delay",
+                width: 200
+            },
+                    {
+                        field: "zone",
+                        title: "Moving",
+                        width: 80
+                    },
+                    {
+                        field: "CustomerNama",
+                        title: "Stop",
+                        width: 80
+                    },
+                    {
+                        field: "dari",
+                        title: "Max Stop",
+                        width: 80
+                    },
+                    {
+                        field: "tujuan",
+                        title: "Max Stop Position",
+                        width: 80
+                    },
+                    {
+                        field: "tujuan",
+                        title: "Stop Time",
+                        width: 80
+                    },
+                    {
+                        field: "TanggalMuat",
+                        title: "Durasi",
+                        template: "#= TanggalMuat != null ? kendo.toString(kendo.parseDate(TanggalMuat, 'yyyy-MM-dd'), 'dd/MM/yyyy') : ''#",
+                        width: 80
+                    },
+        ],
+    }).data("kendoGrid");
+
+    gridIndex = $("#gridParkingAlert").kendoGrid({
+        filterable: kendoGridFilterable,
+        sortable: true,
+        reorderable: true,
+        resizable: true,
+        pageable: true,
+        groupable: false,
+        columns: [
+            {
+                field: "VehicleNo",
+                title: "Target Waktu",
+                width: 150,
+                template: '<a href="javascript:DetailModalItem(\'#=VehicleNo#\',\'#=StrJenisTruck#\');" >#=VehicleNo#</a>'
+            },
+            {
+                field: "StrJenisTruck",
+                title: "Target Tiba",
+                width: 50
+            },
+            {
+                field: "Status",
+                title: "Estimasi Tiba",
+                width: 50
+            },
+            {
+                field: "Alamat",
+                title: "Delay",
+                width: 200
+            },
+            {
+                field: "zone",
+                title: "Moving",
+                width: 80
+            },
+            {field: "CustomerNama", title: "Stop", width: 80}, {field: "dari", title: "Max Stop", width: 80}, {field: "tujuan", title: "Max Stop Position", width: 80},
+            {field: "tujuan", title: "Stop Time", width: 80}, {
+                field: "TanggalMuat", title: "Durasi", template: "#= TanggalMuat != null ? kendo.toString(kendo.parseDate(TanggalMuat, 'yyyy-MM-dd'), 'dd/MM/yyyy') : ''#",
+                width: 80
+            },
+        ],
+    }).data("kendoGrid");
+    var dsOnTemp = new kendo.data.DataSource({
+        transport: {
+            read: {
+                url: '@Url.Action("BindingOnTemp")?VehicleNo=' + '@ViewBag.DataUnit.VehicleNo' + '&StartTime=' + tanggalFr[2] + '-' + tanggalFr[1] + '-'  + tanggalFr[0] +
+                    ' ' + $('#JamFr').val() + ':00&EndTime=' + tanggalT[2] + '-' + tanggalT[1] + '-'  + tanggalT[0] + ' ' + $('#JamT').val() + ':00', dataType: "json"
+            },
+        },
+        schema: {
+            total: "total", data: "data", model: {
+                fields: {
+                    "CreatedAt": {type: "date"}, "Kondisi": {type: "string"}, "Status": {type: "string"}, "Keterangan": {type: "string"}, "UpdatedAt": {type: "date"},
+                }
+            }
+        },
+        pageSize: 10, pageable: true, sortable: true,
+    });
+    gridOnTemp = $("#gridOnTemp").kendoGrid({
+        dataSource: dsOnTemp, filterable: kendoGridFilterable, sortable: true, reorderable: true, resizable: true, pageable: true, groupable: false,
+        columns: [
+            {template: kendo.template($("#command-template-editOnTemp").html()), width: 30},
+            {
+                field: "CreatedAt", title: "Created Date Time", width: 150,
+                template: "#= CreatedAt != null ? kendo.toString(kendo.parseDate(CreatedAt, 'yyyy-MM-dd'), 'dd/MM/yyyy HH:mm') : ''#"
+            },
+            {field: "Kondisi", width: 50}, {field: "Status", width: 50}, {field: "Keterangan", width: 200},
+            {
+                field: "UpdatedAt", title: "Last Edit", width: 80,
+                template: "#= UpdatedAt != null ? kendo.toString(kendo.parseDate(UpdatedAt, 'yyyy-MM-dd'), 'dd/MM/yyyy HH:mm') : ''#"
+            },
+        ],
+    }).data("kendoGrid");
+    var dsTempAlert = new kendo.data.DataSource({
+        transport: {
+            read: {
+                url: '@Url.Action("BindingTempAlert")?VehicleNo=' + '@ViewBag.DataUnit.VehicleNo' + '&StartTime=' + tanggalFr[2] + '-' + tanggalFr[1] + '-'  + tanggalFr[0] +
+                    ' ' + $('#JamFr').val() + ':00&EndTime=' + tanggalT[2] + '-' + tanggalT[1] + '-'  + tanggalT[0] + ' ' + $('#JamT').val() + ':00', dataType: "json"
+            },
+        },
+        schema: {
+            total: "total", data: "data", model: {
+                fields: {
+                    "CreatedDate": {type: "date"}, "OutOfTempUntil": {type: "date"}, "StrDurasi": {type: "string"}, "Ac": {type: "string"}, "TargetSuhu": {type: "string"},
+                    "Temp": {type: "string"}, "Deviasi": {type: "string"}, "Alamat": {type: "string"}, "Kabupaten": {type: "string"}, "Provinsi": {type: "string"},
+                    "Geofence": {type: "string"}
+                }
+            }
+        },
+        pageSize: 10, pageable: true, sortable: true,
+    });
+    gridIndex = $("#gridTempAlert").kendoGrid({
+        dataSource: dsTempAlert, filterable: kendoGridFilterable, sortable: true, reorderable: true, resizable: true, pageable: true, groupable: false,
+        columns: [
+            {
+                field: "CreatedDate", title: "Start", template: "#= CreatedDate != null ? kendo.toString(kendo.parseDate(CreatedDate, 'yyyy-MM-dd'), 'dd/MM/yyyy HH:mm') : ''#"
+            },
+            {
+                field: "OutOfTempUntil", title: "End",
+                template: "#= OutOfTempUntil != null ? kendo.toString(kendo.parseDate(OutOfTempUntil, 'yyyy-MM-dd'), 'dd/MM/yyyy HH:mm') : ''#"
+            },
+            {field: "StrDurasi", title: "Durasi"}, {field: "Ac"}, {field: "TargetSuhu", title: "Target Suhu"}, {field: "Temp", title: "Suhu"}, {field: "Deviasi"},
+            {field: "Alamat", title: "Lokasi"}, {field: "Kabupaten", title: "Kab/Kota"}, {field: "Provinsi"}, {field: "Geofence", title: "Zone"}
+        ],
+    }).data("kendoGrid");//# End Region Grid
+    function createChart() {
+        $("#graphTemp").kendoChart({
+            legend: {position: "bottom"}, chartArea: {background: ""}, seriesDefaults: {type: "line", style: "smooth"},
+            series: [{data: [3.907, -2.943, 5.848, 7.284, -1.263, 2.801, 3.890, 5.238, -2.552, 3.855]}],
+            valueAxis: {labels: {format: "{0}"}, line: {visible: false}, axisCrossingValue: -10},
+            categoryAxis: {categories: [2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011], majorGridLines: {visible: false}, labels: {rotation: "auto"}},
+            tooltip: {visible: true, format: "{0}", template: "#= series.name #: #= value #"}
+        });
+    }
+
+    $(document).ready(grafikSuhu);
+    $(document).bind("kendo:skinChange", grafikSuhu);
+</script>
+    }

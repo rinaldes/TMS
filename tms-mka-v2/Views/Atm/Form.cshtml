@@ -1,0 +1,201 @@
+﻿@using tms_mka_v2.Models;
+
+@model tms_mka_v2.Models.Atm
+@{
+    ViewBag.Title = "Form";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    string currentController = (string)ViewContext.RouteData.Values["controller"];
+    string currentAction = (string)ViewContext.RouteData.Values["action"];
+    string backLink = Url.Action("Index");
+    if (currentAction == "Add")
+    {
+        ViewBag.Title = "Tambah ATM";
+    }
+    else
+    {
+        ViewBag.Title = ViewBag.name + " | Edit";
+    }
+}
+<div class="portlet light">
+    <div class="portlet-title">
+        <div class="caption">
+            <span class="caption-subject font-dark sbold uppercase">@ViewBag.Title</span>
+        </div>
+    </div>
+    <div class="portlet-body form">
+        @using (@Html.BeginForm(currentAction, currentController, FormMethod.Post, new { @class = "form-horizontal form-label-left input_mask", @id = "formsubmit" }))
+        {
+            @Html.ValidationSummary(true)
+            @Html.HiddenFor(model => model.Id)
+                                <div class="form-group">
+                        @Html.LabelFor(model => model.NoKartu, new { @class = "control-label col-md-2 col-sm-3 col-xs-12" })
+                        <div class="col-md-6 col-sm-9 col-xs-12">
+                            @Html.TextBoxFor(model => model.NoKartu, new { @class = "form-control input-sm focus" })
+                            @Html.ValidationMessageFor(model => model.NoKartu)
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.IdBank, new { @class = "control-label col-md-2 col-sm-3 col-xs-12" })
+                        <div class="col-md-6 col-sm-9 col-xs-12">
+                            @Html.TextBoxFor(model => model.IdBank)
+                            @Html.ValidationMessageFor(model => model.IdBank)
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.NoRekening, new { @class = "control-label col-md-2 col-sm-3 col-xs-12" })
+                        <div class="col-md-6 col-sm-9 col-xs-12">
+                            @Html.TextBoxFor(model => model.NoRekening, new { @class = "form-control input-sm" })
+                            @Html.ValidationMessageFor(model => model.NoRekening)
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.AtasNama, new { @class = "control-label col-md-2 col-sm-3 col-xs-12" })
+                        <div class="col-md-6 col-sm-9 col-xs-12">
+                            @Html.TextBoxFor(model => model.AtasNama, new { @class = "form-control input-sm" })
+                            @Html.ValidationMessageFor(model => model.AtasNama)
+                        </div>
+                    </div>
+                
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.IdDriver, new { @class = "control-label col-md-2 col-sm-3 col-xs-12" })
+                        <div class="col-md-6 col-sm-9 col-xs-12">
+                            <div class="input-group input-group-sm">
+                                @Html.HiddenFor(model => model.IdDriver)
+                                @Html.TextBoxFor(model => model.KodeDriver, new { @class = "form-control input-sm", @ReadOnly = "true" })
+                                <span class="input-group-btn">
+                                    <button type="button" class="btn btn-success" data-toggle="modal" data-target="#modalGridDriver">Browse</button>
+                                </span>
+                                @Html.ValidationMessageFor(model => model.IdDriver)
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.NamaDriver, new { @class = "control-label col-md-2 col-sm-3 col-xs-12" })
+                        <div class="col-md-6 col-sm-9 col-xs-12">
+                            @Html.TextBoxFor(model => model.NamaDriver, new { @class = "form-control input-sm", @ReadOnly = "true" })
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Panggilan, new { @class = "control-label col-md-2 col-sm-3 col-xs-12" })
+                        <div class="col-md-6 col-sm-9 col-xs-12">
+                            @Html.TextBoxFor(model => model.Panggilan, new { @class = "form-control input-sm", @ReadOnly = "true" })
+                        </div>
+                    </div>
+
+            <div class="ln_solid"></div>
+            <div class="form-group">
+                <div class="col-md-9 col-sm-9 col-xs-12 col-md-offset-2">
+                    <button type="submit" class="btn btn-success">Submit</button>
+                    <a href="@backLink" class="btn btn-link">Cancel</a>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<div id="modalGridDriver" class="modal fade bs-modal-lg" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div id="modalForm" class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                <h4 class="modal-title">List Driver</h4>
+            </div>
+            <div class="modal-body">
+                <div id="GridDriver"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts{
+    <script type="text/javascript">
+
+        function SelectDriver(e) {
+            e.preventDefault();
+            var data = this.dataItem(getDataRowGrid(e));
+            $('#IdDriver').val(data.Id);
+            $('#KodeDriver').val(data.KodeDriver);
+            $('#NamaDriver').val(data.NamaDriver);
+            $('#Panggilan').val(data.NamaPangilan);
+            $('#modalGridDriver').modal('hide');
+        }
+
+        $(document).ready(function () {
+            //bank
+            var dsBank = new kendo.data.DataSource({
+                transport: {
+                    read: {
+                        url: '@Url.Action("GetBank")',
+                        dataType: "json"
+                    },
+                },
+            });
+            InitLookUp($("#IdBank"), dsBank);
+
+            //Driver
+            var dsDriver = new kendo.data.DataSource({
+                transport: {
+                    read: {
+                        url: '@Url.Action("Binding", "Driver")',
+                        dataType: "json"
+                    },
+                },
+                schema: {
+                    total: "total",
+                    data: "data",
+                    model: {
+                        fields: {
+                            "Id": { type: "number" },
+                            "KodeDriver": { type: "string" },
+                            "NamaDriver": { type: "string" },
+                            "NamaPangilan": { type: "string" },
+                        }
+                    }
+                },
+                pageSize: 10,
+                pageable: true,
+                serverFiltering: true,
+                serverPaging: true,
+                serverSorting: true,
+                sortable: true,
+                //sort: { field: "SubmittedDate", dir: "desc" }
+            })
+
+            gridDriver = $("#GridDriver").kendoGrid({
+                dataSource: dsDriver,
+                filterable: kendoGridFilterable,
+                sortable: true,
+                reorderable: true,
+                resizable: true,
+                pageable: true,
+                columns: [
+                    {
+                        command: [
+                         {
+                             name: "select",
+                             text: "Select",
+                             click: SelectDriver,
+                             imageClass: "glyphicon glyphicon-ok",
+                             template: '<a class="k-button-icon #=className#" #=attr# href="\\#"><span class="#=iconClass# #=imageClass#"></span></a>'
+                         }
+                        ],
+                        width: "50px"
+                    },
+                    {
+                        field: "KodeDriver",
+                        title: "Kode Driver"
+                    },
+                    {
+                        field: "NamaDriver",
+                        title: "Nama Driver"
+                    },
+                    {
+                        field: "NamaPangilan",
+                        title: "Nama Pangilan"
+                    },
+
+                ],
+            }).data("kendoGrid");
+        });
+</script>
+}

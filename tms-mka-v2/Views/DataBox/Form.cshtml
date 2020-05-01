@@ -1,0 +1,330 @@
+﻿@using tms_mka_v2.Models;
+
+@model tms_mka_v2.Models.DataBox
+@{
+    ViewBag.Title = "Form";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    string currentController = (string)ViewContext.RouteData.Values["controller"];
+    string currentAction = (string)ViewContext.RouteData.Values["action"];
+    string backLink = Url.Action("Index");
+    if (currentAction == "Add")
+    {
+        ViewBag.Title = "Tambah Data Box";
+    }
+    else
+    {
+        ViewBag.Title = ViewBag.name + " | Edit";
+    }
+}
+<div class="portlet light">
+    <div class="portlet-title">
+        <div class="caption">
+            <span class="caption-subject font-dark sbold uppercase">@ViewBag.Title</span>
+        </div>
+    </div>
+    <div class="portlet-body form">
+        @using (@Html.BeginForm(currentAction, currentController, FormMethod.Post, new { @class = "form-horizontal", @id = "formsubmit" }))
+        {
+            @Html.ValidationSummary(true)
+            @Html.HiddenFor(model => model.Id)
+            <div class="portlet light">
+                <div class="portlet-body form">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.NoBox, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                                <div class="col-md-9 col-sm-9 col-xs-12">
+                                    @Html.TextBoxFor(model => model.NoBox, new { @class = "form-control input-sm", @readonly = "true" })
+                                    @Html.ValidationMessageFor(model => model.NoBox)
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.IdDataTruck, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                                <div class="col-md-9 col-sm-9 col-xs-12">
+                                    @Html.TextBoxFor(model => model.IdDataTruck, new { @class = "form-control input-sm" })
+                                    @Html.HiddenFor(model => model.VehicleNo)
+                                    @Html.ValidationMessageFor(model => model.IdDataTruck)
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.Karoseri, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                                <div class="col-md-9 col-sm-9 col-xs-12">
+                                    @Html.TextBoxFor(model => model.Karoseri, new { @class = "form-control input-sm focus"})
+                                    @Html.ValidationMessageFor(model => model.Karoseri)
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.tglPasang, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                                <div class="col-md-9 col-sm-9 col-xs-12">
+                                    @Html.TextBoxFor(model => model.tglPasang, new { @class = "form-control input-sm form-control-datepicker" })
+                                    @Html.ValidationMessageFor(model => model.tglPasang)
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.Tahun, new { @class = "control-label col-md-2 col-sm-3 col-xs-12" })
+                                <div class="col-md-9 col-sm-9 col-xs-12">
+                                    @Html.TextBoxFor(model => model.Tahun, new { @class = "form-control form-control-dateyear input-sm" })
+                                    @Html.ValidationMessageFor(model => model.Tahun)
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.IdType, new { @class = "control-label col-md-2 col-sm-3 col-xs-12" })
+                                <div class="col-md-9 col-sm-9 col-xs-12">
+                                    @Html.TextBoxFor(model => model.IdType, new { @class = "form-control input-sm" })
+                                    @Html.HiddenFor(model => model.StrType)
+                                    @Html.ValidationMessageFor(model => model.IdType)
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.IdKategori, new { @class = "control-label col-md-2 col-sm-3 col-xs-12" })
+                                <div class="col-md-9 col-sm-9 col-xs-12">
+                                    @Html.TextBoxFor(model => model.IdKategori, new { @class = "form-control input-sm" })
+                                    @Html.HiddenFor(model => model.StrKategori)
+                                    @Html.ValidationMessageFor(model => model.IdKategori)
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="portlet light">
+                <div class="portlet-body form">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.Lantai, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                                <div class="col-md-9 col-sm-9 col-xs-12">
+                                    <div class="col-md-3">
+                                        <div class="radio radio-list">
+                                            <label class="radio">@Html.RadioButtonFor(model => model.Lantai, "Flat")Flat</label>
+                                            <label class="radio">@Html.RadioButtonFor(model => model.Lantai, "Corugated")Corugated</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3" style="font-size:30px;line-height: 60px;">
+                                        &nbsp; &nbsp;
+                                        <i class="fa fa-plus"></i>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="checkbox checkbox-list">
+                                            @foreach (LantaiModel item in Model.ListLantai)
+                                            {
+                                                int idx = Model.ListLantai.LastIndexOf(item);
+                                            <div class="col-md-6">
+                                                @Html.HiddenFor(model => model.ListLantai[idx].IdLantai)
+                                                @Html.HiddenFor(model => model.ListLantai[idx].StrLantai)
+                                                @Html.CheckBoxFor(model => model.ListLantai[idx].IsSelect)
+                                                <label class="checkbox">@Model.ListLantai[idx].StrLantai</label>
+                                            </div>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.Dinding, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                                <div class="col-md-9 col-sm-9 col-xs-12">
+                                    <div class="col-md-3">
+                                        <div class="radio radio-list">
+                                            <label class="radio">@Html.RadioButtonFor(model => model.Dinding, "Flat")Flat</label>
+                                            <label class="radio">@Html.RadioButtonFor(model => model.Dinding, "Corugated")Corugated</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3" style="font-size:30px;line-height: 60px;">
+                                        &nbsp; &nbsp;
+                                        <i class="fa fa-plus"></i>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="checkbox checkbox-list">
+                                            @foreach (DindingModel item in Model.ListDinding)
+                                            {
+                                                int idx = Model.ListDinding.LastIndexOf(item);
+                                            <div class="col-md-6">
+                                                @Html.HiddenFor(model => model.ListDinding[idx].IdDinding)
+                                                @Html.HiddenFor(model => model.ListDinding[idx].StrDinding)
+                                                @Html.CheckBoxFor(model => model.ListDinding[idx].IsSelect)
+                                                <label class="checkbox">@Model.ListDinding[idx].StrDinding</label>
+                                            </div>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.PintuSamping, new { @class = "control-label col-md-2 col-sm-3 col-xs-12" })
+                                <div class="col-md-9 col-sm-9 col-xs-12">
+                                    <div class="checkbox checkbox-inline">
+                                        <label class="checkbox">@Html.RadioButtonFor(model => model.PintuSamping, true) Yes</label>
+                                    </div>
+                                    &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+                                    <div class="checkbox checkbox-inline">
+                                        <label class="checkbox">@Html.RadioButtonFor(model => model.PintuSamping, false) No</label>
+                                    </div>
+                                    @Html.ValidationMessageFor(model => model.PintuSamping)
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.Sekat, new { @class = "control-label col-md-2 col-sm-3 col-xs-12" })
+                                <div class="col-md-9 col-sm-9 col-xs-12">
+                                    <div class="checkbox checkbox-inline">
+                                        <label class="checkbox">@Html.RadioButtonFor(model => model.Sekat, true) Yes</label>
+                                    </div>
+                                    &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+                                    <div class="checkbox checkbox-inline">
+                                        <label class="checkbox">@Html.RadioButtonFor(model => model.Sekat, false) No</label>
+                                    </div>
+                                    @Html.ValidationMessageFor(model => model.Sekat)
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-2 col-sm-3 col-xs-12">Garansi</label>
+                                <div class="col-md-9 col-sm-9 col-xs-12">
+                                    @Html.LabelFor(model => model.garansiStr, new { @class = "control-label col-md-2" })
+                                    <div class="col-md-4">
+                                        @Html.TextBoxFor(model => model.garansiStr, new { @class = "form-control form-control-datepicker input-sm" })
+                                        @Html.ValidationMessageFor(model => model.garansiStr)
+                                    </div>
+                                    @Html.LabelFor(model => model.garansiEnd, new { @class = "control-label col-md-2" })
+                                    <div class="col-md-4">
+                                        @Html.TextBoxFor(model => model.garansiEnd, new { @class = "form-control form-control-datepicker input-sm" })
+                                        @Html.ValidationMessageFor(model => model.garansiEnd)
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-2 col-sm-3 col-xs-12">Asuransi</label>
+                                <div class="col-md-9 col-sm-9 col-xs-12">
+                                    @Html.LabelFor(model => model.asuransiStr, new { @class = "control-label col-md-2" })
+                                    <div class="col-md-4">
+                                        @Html.TextBoxFor(model => model.asuransiStr, new { @class = "form-control form-control-datepicker input-sm" })
+                                        @Html.ValidationMessageFor(model => model.asuransiStr)
+                                    </div>
+                                    @Html.LabelFor(model => model.asuransiEnd, new { @class = "control-label col-md-2"})
+                                    <div class="col-md-4">
+                                        @Html.TextBoxFor(model => model.asuransiEnd, new { @class = "form-control form-control-datepicker input-sm" })
+                                        @Html.ValidationMessageFor(model => model.asuransiEnd)
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            if (Model.Id != 0)
+            {
+                <div class="portlet light">
+                    <div class="portlet-title">
+                        <div class="caption font-green-sharp">
+                            <span class="caption-subject"> History</span>
+                        </div>
+                        <div class="tools">
+                            <a href="" class="collapse"> </a>
+                        </div>
+                    </div>
+                    <div class="portlet-body">
+                        <div id="gridHistory"></div>
+                    </div>
+                </div>
+            }
+            <div class="ln_solid"></div>
+
+            <div class="form-group">
+                <div class="col-md-8">
+                    <button type="submit" class="btn btn-success">Submit</button>
+                    <a href="@backLink" class="btn btn-link">Cancel</a>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+@section scripts{
+    <script type="text/javascript">
+        $(document).ready(function () {
+            var dsTruck = new kendo.data.DataSource({
+                transport: {
+                    read: {
+                        url: '@Url.Action("getTruck","DataTruck")?type=BOX&id=' + '@Model.IdDataTruck',
+                        dataType: "json"
+                    },
+                },
+            });
+            $("#IdDataTruck").kendoComboBox({
+                dataTextField: "VehicleNo",
+                dataValueField: "Id",
+                dataSource: dsTruck,
+                filter: "contains",
+                suggest: true,
+                change: function (e) {
+                    $("#VehicleNo").val(this.text());
+                },
+            });
+
+            var dsType = new kendo.data.DataSource({
+                transport: {
+                    read: {
+                        url: '@Url.Action("GetBoxType")',
+                        dataType: "json"
+                    },
+                },
+            });
+
+            var dsKategori = new kendo.data.DataSource({
+                transport: {
+                    read: {
+                        url: '@Url.Action("GetBoxKategori")',
+                        dataType: "json"
+                    },
+                },
+            });
+            InitLookUp($("#IdType"), dsType);
+            InitLookUp($("#IdKategori"), dsKategori);
+
+            var dsHistory = new kendo.data.DataSource({
+                transport: {
+                    read: {
+                        url: '@Url.Action("BindingHistory")?Id=' + '@Model.Id',
+                        dataType: "json"
+                    },
+                },
+                schema: {
+                    model: {
+                        fields: {
+                            Tanggal: { type: "string" },
+                            VehicleNo: { type: "string" },
+                            username: { type: "string" },
+                            tglPasang: { type: "string" },
+                        }
+                    }
+                },
+            });
+
+            $("#gridHistory").kendoGrid({
+                dataSource: dsHistory,
+                columns: [
+                    {
+                        field: "tglPasang",
+                        title: "Tanggal Pasang",
+                        template: "#= tglPasang != null ? kendo.toString(kendo.parseDate(tglPasang, 'yyyy-MM-dd'), 'MM/dd/yyyy') :''#"
+                    },
+                    {
+                        field: "VehicleNo",
+                        title: "Vehicle No",
+                    },
+                    {
+                        field: "username",
+                        title: "User",
+                    },
+                    {
+                        field: "Tanggal",
+                        title: "Tanggal",
+                        template: "#= kendo.toString(kendo.parseDate(Tanggal, 'yyyy-MM-dd'), 'MM/dd/yyyy HH:mm') #"
+                    }
+                ],
+            }).data("kendoGrid");
+        })
+    </script>
+}

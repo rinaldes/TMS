@@ -1,0 +1,22 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using tms_mka_v2.Context;
+using tms_mka_v2.Infrastructure;
+
+namespace tms_mka_v2.Business_Logic.Abstract
+{
+    public interface IUserRepo
+    {
+        void save(User dbitem, int id, string quer=null);
+        List<User> FindAll(int? skip = null, int? take = null, List<SortingInfo> sortings = null, FilterInfo filters = null);
+        List<User> FindAllName(int? skip = null, int? take = null, List<SortingInfo> sortings = null, FilterInfo filters = null);
+        int Count(FilterInfo filters = null);
+        User FindByPK(int id);
+        User FindByUsername(string username);
+        void delete(User dbitem, int id);
+        bool IsExist(string nama, int id = 0);
+
+    }
+}

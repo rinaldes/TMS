@@ -1,0 +1,111 @@
+﻿@model tms_mka_v2.Models.DaftarHargaKonsolidasi
+@using tms_mka_v2.Models
+@using System.Web.Script.Serialization
+@{
+    string currentController = (string)ViewContext.RouteData.Values["controller"];
+    string currentAction = (string)ViewContext.RouteData.Values["action"];
+    ViewBag.SubTitle = "Daftar Harga Konsolidasi (Dokumen)";
+}
+<style>
+    .k-grid-edit-row > td > .k-widget {
+        border-style: none !important;
+    }
+</style>
+
+@*@Html.HiddenFor(model => model.Id)*@
+@Html.Hidden("#listDataDokumen")
+<div class="row">
+    <div class="form-group">
+        <div id="GridDokumen"></div>
+    </div>
+</div>
+
+@section scripts{
+    <script type="text/javascript">
+        var gridDoc;
+        @foreach(DaftarHargaKonsolidasiAttachment item in Model.listAtt)
+        {
+        <text>
+    dsAttch.push({
+        Id : parseInt('@item.Id'),
+        FileName : '@item.FileName',
+        RFileName : '@item.RFileName',
+    })
+    </text>
+        }
+
+        gridAtt = $("#GridAtt").kendoGrid({
+            dataSource: {
+                data: dsAttch,
+                schema: {
+                    model: {
+                        id: "Id",
+                        fields: {
+                            Id : { type:"number" , defaultValue:0},
+                            FileName: { type:"string" , validation: {
+                                required: { message: "Nama harus diisi." },
+                            }},
+                            RFileName: { type:"string" , validation: {
+                                filereq: function (input) {
+                                    if (input.is("[name='files']")) {
+                                        if(!input.closest(".k-upload").find(".k-file").length)
+                                        {
+                                            input.attr("data-filereq-msg", "File harus diisi.");
+                                            return false;
+                                        }
+                                    }
+
+                                    return true;
+                                },
+                            }},
+                        }
+                    }
+                },
+            },
+            editable: { mode: "inline", confirmation: "Anda yakin menghapus data?" },
+            scrollable: false,
+            toolbar: [{ name: "create", text: "Tambah" }],
+            columns: [
+                {
+                    command: [
+                        {
+                            name: "edit",
+                            text: "Edit",
+                            //click: EditModalItem,
+                            imageClass: "glyphicon glyphicon-edit",
+                            template: '<a class="k-button-icon #=className#" #=attr# title="edit" href="\\#"><span class="#=imageClass#"></span></a>'
+                        },
+                        {
+                            name: "destroy",
+                            text: "Hapus",
+                            //click: deleteItem,
+                            imageClass: "glyphicon glyphicon-remove",
+                            template: '<a class="k-button-icon #=className#" #=attr# href="\\#" title="#=text#"><span class="#=imageClass#"></span></a>'
+                        }
+                    ],
+                    width: "70px"
+                },
+                {
+                    field: "FileName",
+                    title: "Nama File",
+                },
+                {
+                    field: "RFileName",
+                    title: "File",
+                    template: FileTemplate,
+                    editor: fileUploadEditor
+                }
+            ],
+            edit: function (e) {
+                var detailCell = e.container.find("td:first");
+                detailCell.html('');
+                var commandCell = e.container.find("td:nth-child(1)");
+                commandCell.html('<a class="k-button-icon k-grid-update form-inline" href="\\#" title="Simpan"><span class="glyphicon glyphicon-floppy-saved"></span></a> <a class="k-button-icon k-grid-cancel form-inline" href="\\#" title="Batal"><span class="glyphicon glyphicon-remove"></span></a>');
+                var commandGroupCell = e.container.find("td:nth-child(0)");
+                commandGroupCell.html('');
+            },
+        }).data("kendoGrid");
+    </script>
+}
+
+

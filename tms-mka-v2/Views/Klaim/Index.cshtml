@@ -1,0 +1,185 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "Klaim";
+    string currentController = "Klaim";
+    string currentAction = "Index";
+}
+@if (User.HasMenuAccess("Klaim"))
+{
+<div class="portlet light ">
+    <div class="portlet-title">
+        <div class="caption">
+            <span class="caption-subject font-dark sbold uppercase">@ViewBag.Title</span>
+        </div>
+        <div class="actions">
+            <a class="btn btn-sm green dropdown-toggle" href="@Url.Action("Add", "Klaim")">
+                <i class="fa fa-plus"></i>Add Klaim
+            </a>
+        </div>
+    </div>
+    <div class="portlet-body form">
+        <div class="portlet box blue ">
+            <div class="portlet-title">
+                <div class="caption">
+                    Hide Column :
+                </div>
+                <div class="tools">
+                    <a href="" class="expand"> </a>
+                </div>
+            </div>
+            <div class="portlet-body form" style="display: none;">
+                <form role="form">
+                    <div class="form-body">
+                        <div id="content-col" class="md-checkbox-inline" style="margin-left:10px"></div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div id="grid"></div>
+    </div>
+</div>
+
+@section scripts
+{
+    <script type="text/javascript">
+        var kendoUploadButtonExim;
+
+        function deleteItem(e) {
+            e.preventDefault();
+            var data = this.dataItem(getDataRowGrid(e));
+            goToDeletePage('@Url.Action("Delete")' + "?id=" + data.Id, this.dataSource);
+        }
+
+        function editItem(e) {
+            e.preventDefault();
+            var data = this.dataItem(getDataRowGrid(e));
+            window.location.href = "@Url.Action("Edit")" + "?id=" + data.Id;
+        }
+
+        $(document).ready(function () {
+            currController = '@currentController';
+            currAction = '@currentAction';
+
+            var ds = new kendo.data.DataSource({
+            transport: {
+                read: {
+                    url: '@Url.Action("Binding")',
+                    dataType: "json"
+                },
+            },
+            schema: {
+                total: "total",
+                data: "data",
+                model: {
+                    fields: {
+                        "Id": { type: "number" },
+                        "NoKlaim": { type: "string" },
+                        "SoNo": { type: "string" },
+                        "TanggalPengajuan": { type: "date" },
+                        "NamaCustomer": { type: "string" },
+                        "StrStatusClaim": { type: "string" },
+                        "Keterangan": { type: "string" },
+                    }
+                }
+            },
+            pageSize: 10,
+            pageable: true,
+            sortable: true,
+        });
+
+        gridIndex = $("#grid").kendoGrid({
+            dataSource: ds,
+            filterable: kendoGridFilterable,
+            sortable: true,
+            reorderable: true,
+            resizable: true,
+            pageable: true,
+            groupable: true,
+            columns: [
+                {
+                    command: [
+                        {
+                            name: "edit",
+                            text: "edit",
+                            click: editItem,
+                            imageClass: "glyphicon glyphicon-edit",
+                            template: '<a class="k-button-icon #=className#" #=attr# href="\\#"><span class="#=imageClass#"></span></a>'
+                        },
+                        {
+                            name: "delete",
+                            text: "delete",
+                            click: deleteItem,
+                            imageClass: "glyphicon glyphicon-remove",
+                            template: '<a class="k-button-icon #=className#" #=attr# href="\\#"><span class="#=iconClass# #=imageClass#"></span></a>'
+                        }
+                    ],
+                    width: "60px"
+                },
+                {
+                    field: "NoKlaim",
+                    title: "No Klaim",
+                    width: "200px"
+                },
+                {
+                    field: "NoSo",
+                    title: "No SO",
+                    width: "200px"
+                },
+                {
+                    field: "ClaimType",
+                    title: "Kategori Klaim",
+                    width: "200px"
+                },
+                {
+                    field: "TanggalPengajuan",
+                    title: "Tanggal Klaim",
+                    width: "180px",
+                    template: "#= kendo.toString(kendo.parseDate(TanggalPengajuan, 'yyyy-MM-dd'), 'dd/MM/yyyy') #"
+                },
+                {
+                    field: "NamaCustomer",
+                    title: "Customer",
+                    width: "200px"
+                },
+                {
+                    field: "StrStatusClaim",
+                    title: "Status",
+                    width: "200px"
+                },
+                {
+                    field: "Keterangan",
+                    title: "Keterangan",
+                    width: "400px"
+                },
+                {
+                    field: "NoPol", title: "Vehicle No",
+                    width: "100px"
+                },
+                {
+                    field: "JnsTruck", title: "Jenis Truk",
+                    width: "100px"
+                },
+                {
+                    field: "CreatedAt", width: "119px", title: "Tanggal Dibuatt", template: "#= kendo.toString(kendo.parseDate(CreatedAt, 'yyyy-MM-dd'), 'dd/MM/yyyy') #",
+                    groupHeaderTemplate: "Tanggal Masuk : #= CreatedAt != null ? kendo.toString(kendo.parseDate(CreatedAt, 'yyyy-MM-dd'), 'dd/MM/yyyy') : '' #"
+                },
+            ],
+            }).data("kendoGrid");
+
+            @foreach (tms_mka_v2.Context.UserReference item in (List<tms_mka_v2.Context.UserReference>)ViewBag.listKolom)
+            {
+                <text>
+            listKolom.push('@item.Coloumn');
+            </text>
+            }
+
+            GetColomnData(gridIndex);
+        })
+    </script>
+}
+}
+else{
+    ViewBag.Title = "AccessDenied";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    <h1>Maaf, anda tidak memiliki hak akses yang cukup untuk mengakses halaman ini</h1>
+}

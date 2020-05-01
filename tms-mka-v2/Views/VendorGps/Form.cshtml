@@ -1,0 +1,239 @@
+﻿@using tms_mka_v2.Models;
+
+@model tms_mka_v2.Models.VendorGps
+@{
+    ViewBag.Title = "Form";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    string currentController = (string)ViewContext.RouteData.Values["controller"];
+    string currentAction = (string)ViewContext.RouteData.Values["action"];
+    string backLink = Url.Action("Index");
+    if (currentAction == "Add")
+    {
+        ViewBag.Title = "Tambah Vendor Gps";
+    }
+    else
+    {
+        ViewBag.Title = ViewBag.name + " | Edit";
+    }
+}
+<div class="portlet light">
+    <div class="portlet-title">
+        <div class="caption">
+            <span class="caption-subject font-dark sbold uppercase">@ViewBag.Title</span>
+        </div>
+    </div>
+    <div class="portlet-body form">
+        @using (@Html.BeginForm(currentAction, currentController, FormMethod.Post, new { @class = "form-horizontal", @id = "formsubmit" }))
+        {
+            @Html.ValidationSummary(true)
+            @Html.HiddenFor(model => model.Id)
+            <div class="form-group">
+                @Html.LabelFor(model => model.Merk, new { @class = "control-label col-md-2 col-sm-3 col-xs-12" })
+                <div class="col-md-6 col-sm-9 col-xs-12">
+                    @Html.TextBoxFor(model => model.Merk, new { @class = "form-control input-sm focus" })
+                    @Html.ValidationMessageFor(model => model.Merk)
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.Nama, new { @class = "control-label col-md-2 col-sm-3 col-xs-12" })
+                <div class="col-md-6 col-sm-9 col-xs-12">
+                    @Html.TextBoxFor(model => model.Nama, new { @class = "form-control input-sm" })
+                    @Html.ValidationMessageFor(model => model.Nama)
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.Alamat, new { @class = "control-label col-md-2 col-sm-3 col-xs-12" })
+                <div class="col-md-6 col-sm-9 col-xs-12">
+                    @Html.TextBoxFor(model => model.Alamat, new { @class = "form-control input-sm" })
+                    @Html.ValidationMessageFor(model => model.Alamat)
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.Telp, new { @class = "control-label col-md-2 col-sm-3 col-xs-12" })
+                <div class="col-md-6 col-sm-9 col-xs-12">
+                    @Html.TextBoxFor(model => model.Telp, new { @class = "form-control input-sm form-control-hp" })
+                    @Html.ValidationMessageFor(model => model.Telp)
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.Email, new { @class = "control-label col-md-2 col-sm-3 col-xs-12" })
+                <div class="col-md-6 col-sm-9 col-xs-12">
+                    @Html.TextBoxFor(model => model.Email, new { @class = "form-control input-sm" })
+                    @Html.ValidationMessageFor(model => model.Email)
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.Web, new { @class = "control-label col-md-2 col-sm-3 col-xs-12" })
+                <div class="col-md-6 col-sm-9 col-xs-12">
+                    @Html.TextBoxFor(model => model.Web, new { @class = "form-control input-sm" })
+                    @Html.ValidationMessageFor(model => model.Web)
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-md-8">
+                    <div id="grid"></div>
+                    @Html.HiddenFor(model => model.strVendor)
+                </div>
+            </div>
+            <div class="ln_solid"></div>
+            <div class="form-group">
+                <div class="col-md-8">
+                    <button type="submit" class="btn btn-success">Submit</button>
+                    <a href="@backLink" class="btn btn-link">Cancel</a>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+@section scripts{
+    <script type="text/javascript">
+        var dsGrid = [];
+        @foreach(Kontak item in Model.ListKontak)
+       {
+        <text>
+        dsGrid.push({
+            Nama: '@item.Nama',
+            IdJabatan: parseInt('@item.IdJabatan'),
+            NamaJabatan: '@item.NamaJabatan',
+            Hp: '@item.Hp',
+            Email: '@item.Email',
+        })
+        </text>
+       }
+
+        var ds = new kendo.data.DataSource({
+            transport: {
+                read: {
+                    url: '@Url.Action("GetJabatan")',
+                    dataType: "json"
+                },
+            },
+        });
+
+        $(document).ready(function () {
+            $("#grid").kendoGrid({
+                scrollable: false,
+                dataSource: {
+                    data: dsGrid,
+                    schema: {
+                        model: {
+                            fields: {
+                                Nama: {
+                                    type: "string",
+                                    validation: {
+                                        required: { message: "Nama harus diisi." }
+                                    }
+                                },
+                                IdJabatan: { type: "number" },
+                                NamaJabatan: {
+                                    type: "string",
+                                    validation: {
+                                        required: { message: "Nama harus diisi." },
+                                        comboreq: function (input) {
+                                            if ($(input).data("kendoComboBox")) {
+                                                if ($(input).data("kendoComboBox").selectedIndex == -1) {
+                                                    return false;
+                                                }
+                                            }
+
+                                            return true;
+                                        },
+                                    }
+                                },
+                                Hp: {
+                                    type: "string",
+                                    validation: {
+                                        required: { message: "No hp harus diisi." }
+                                    }
+                                },
+                                Email: {
+                                    type: "string",
+                                    validation: {
+                                        required: { message: "Email harus diisi." }
+                                    }
+                                },
+                            }
+                        }
+                    },
+                },
+                editable: { mode: "inline", confirmation: "Anda yakin menghapus data?" },
+                toolbar: [{ name: "create", text: "Tambah" }],
+                columns: [
+                    {
+                        command: [
+                            {
+                                name: "edit",
+                                text: "Edit",
+                                imageClass: "glyphicon glyphicon-edit",
+                                template: '<a class="k-button-icon #=className#" #=attr# title="edit" href="\\#"><span class="#=imageClass#"></span></a>'
+                            },
+                            {
+                                name: "destroy",
+                                text: "Hapus",
+                                imageClass: "glyphicon glyphicon-remove",
+                                template: '<a class="k-button-icon #=className#" #=attr# href="\\#" title="#=text#"><span class="#=imageClass#"></span></a>'
+                            }
+                        ],
+                        width: 90
+                    },
+                    {
+                        field: "Nama",
+                        title: "Nama",
+                    },
+                    {
+                        field: "NamaJabatan",
+                        title: "Jabatan",
+                        editor: kodeEditor
+                    },
+                    {
+                        field: "Hp",
+                        title: "Handphone",
+                        editor: hpEditor
+                    },
+                    {
+                        field: "Email",
+                        title: "E-Mail",
+                        editor: emailEditor
+                    }
+                ],
+                edit: function (e) {
+                    var detailCell = e.container.find("td:first");
+                    detailCell.html('');
+                    var commandCell = e.container.find("td:nth-child(1)");
+                    commandCell.html('<a class="k-button-icon k-grid-update form-inline" href="\\#" title="Simpan"><span class="glyphicon glyphicon-floppy-saved"></span></a> <a class="k-button-icon k-grid-cancel form-inline" href="\\#" title="Batal"><span class="glyphicon glyphicon-remove"></span></a>');
+                    var commandGroupCell = e.container.find("td:nth-child(0)");
+                    commandGroupCell.html('');
+                },
+                save: function (e) {
+                    var jabatan = e.container.find("input[name=NamaJabatan]").data("kendoComboBox");
+                    e.model.set("NamaJabatan", jabatan.text());
+                }
+            }).data("kendoGrid");
+        });
+
+        function kodeEditor(container, options) {
+            $('<input required  data-comboreq-msg="Jabatan harus diisi." data-required-msg="Jabatan harus diisi." data-text-field="Nama" data-value-field="Id" data-bind="value:' + options.field + '" name="' + options.field + '"/>')
+                   .appendTo(container)
+                   .kendoComboBox({
+                       dataSource: ds,
+                       dataTextField: "Nama",
+                       dataValueField: "Id",
+                       filter: "contains",
+                       suggest: true,
+                       change: function () {
+                           var grid = $("#grid").data("kendoGrid"), model = grid.dataItem(this.element.closest("tr"));
+                           var val = model.NamaJabatan;
+                           model.set("IdJabatan", val);
+                       },
+                   });
+            $("<span class='k-invalid-msg' data-for='" + options.field + "'></span>").appendTo(container);
+        }
+
+        $('#formsubmit').submit(function (e) {
+            var grid = $('#grid').data('kendoGrid');
+            grid.saveRow();
+            var data = grid.dataSource.data();
+            $('#strVendor').val(JSON.stringify(data));
+        })
+    </script>
+}

@@ -1,0 +1,903 @@
+﻿@using tms_mka_v2.Models;
+@model tms_mka_v2.Models.SalesOrderKonsolidasi
+@{
+    ViewBag.Title = "Form";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    string currentController = (string)ViewContext.RouteData.Values["controller"];
+    string currentAction = (string)ViewContext.RouteData.Values["action"];
+    string backLink = Url.Action("Index");
+    if (currentAction == "Add")
+    {
+        ViewBag.Title = "Tambah Daftar Barang";
+    }
+    else
+    {
+        ViewBag.Title = ViewBag.name + " | Edit";
+    }
+}
+<div class="portlet light">
+    <div class="portlet-title">
+        <div class="caption">
+            <span class="caption-subject font-dark sbold uppercase">@ViewBag.Title</span>
+        </div>
+    </div>
+    <div class="portlet-body form">
+        @using (@Html.BeginForm(currentAction, currentController, FormMethod.Post, new { @class = "form-horizontal", @id = "formsubmit" }))
+        {
+            @Html.ValidationSummary(true)
+            @Html.HiddenFor(model => model.SalesOrderId)
+            @Html.HiddenFor(model => model.SalesOrderKonsolidasiId)
+            @Html.HiddenFor(model => model.Status)
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.SONumber, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                        <div class="col-md-9 col-sm-9 col-xs-12">
+                            @Html.TextBoxFor(model => model.SONumber, new { @class = "form-control input-sm", @readonly = "true" })
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.TanggalOrder, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                        <div class="col-md-5 col-sm-9 col-xs-12">
+                            @Html.TextBoxFor(model => model.TanggalOrder, new { @class = "form-control-datepicker" })
+                            @Html.ValidationMessageFor(model => model.TanggalOrder)
+                        </div>
+                        <div class="col-md-4 col-sm-9 col-xs-12">
+                            <div class="input-group input-group-sm">
+                                @Html.TextBoxFor(model => model.JamOrder, new { @class = "form-control input-sm timepicker timepicker-24" })
+                                <span class="input-group-btn">
+                                    <button class="btn btn-sm default" type="button">
+                                        <i class="fa fa-clock-o"></i>
+                                    </button>
+                                </span>
+                            </div>
+                            @Html.ValidationMessageFor(model => model.JamOrder)
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.TanggalMasuk, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                        <div class="col-md-5 col-sm-9 col-xs-12">
+                            @Html.TextBoxFor(model => model.TanggalMasuk, new { @class = "form-control-datepicker" })
+                            @Html.ValidationMessageFor(model => model.TanggalMasuk)
+                        </div>
+                        <div class="col-md-4 col-sm-9 col-xs-12">
+                            <div class="input-group input-group-sm">
+                                @Html.TextBoxFor(model => model.JamMasuk, new { @class = "form-control input-sm timepicker timepicker-24" })
+                                <span class="input-group-btn">
+                                    <button class="btn btn-sm default" type="button">
+                                        <i class="fa fa-clock-o"></i>
+                                    </button>
+                                </span>
+                            </div>
+                            @Html.ValidationMessageFor(model => model.JamMasuk)
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.SONumberCust, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                        <div class="col-md-9 col-sm-9 col-xs-12">
+                            @Html.TextAreaFor(model => model.SONumberCust, new { @class = "form-control input-sm" })
+                            @Html.ValidationMessageFor(model => model.SONumberCust)
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.CustomerId, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                        <div class="col-md-9 col-sm-9 col-xs-12">
+                            @Html.TextBoxFor(model => model.NamaCustomer, new { @class = "form-control", @readonly = "true" })
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.KodeNama, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                        <div class="col-md-9 col-sm-9 col-xs-12">
+                            @Html.TextBoxFor(model => model.KodeNama, new { @class = "form-control input-sm", @readonly = "true" })
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.SupplierId, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                        <div class="col-md-9 col-sm-9 col-xs-12">
+                            @Html.TextBoxFor(model => model.SupplierName, new { @class = "form-control", @readonly = "true" })
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.CustomerTagihanId, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                        <div class="col-md-9 col-sm-9 col-xs-12">
+                            @Html.TextBoxFor(model => model.NamaCustomerTagihan, new { @class = "form-control", @readonly = "true" })
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Keterangan, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                        <div class="col-md-9 col-sm-9 col-xs-12">
+                            @Html.TextAreaFor(model => model.Keterangan, new { @class = "form-control input-sm" })
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.ProductId, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                        <div class="col-md-9 col-sm-9 col-xs-12">
+                            @Html.TextBoxFor(model => model.ProductId, new { @class = "form-control input-sm" })
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Suhu, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                        <div class="col-md-9 col-sm-9 col-xs-12">
+                            @Html.TextBoxFor(model => model.Suhu, new { @class = "form-control-numeric-suhu", @readonly = "true" })
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.RuteId, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                        <div class="col-md-9 col-sm-9 col-xs-12">
+                            @Html.TextBoxFor(model => model.Rute, new { @class = "form-control", @readonly = "true" })
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.TypeKonsolidasi, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                        <div class="col-md-9 col-sm-9 col-xs-12">
+                            @Html.TextBoxFor(model => model.TypeKonsolidasi, new { @class = "form-control input-sm" })
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Tonase, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                        <div class="col-md-9 col-sm-9 col-xs-12 ">
+                            @Html.TextBoxFor(model => model.Tonase, new { @class = "form-control" })
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.karton, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                        <div class="col-md-9 col-sm-9 col-xs-12">
+                            @Html.TextBoxFor(model => model.karton, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.karton)
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Pallet, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                        <div class="col-md-9 col-sm-9 col-xs-12">
+                            @Html.TextBoxFor(model => model.Pallet, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.Pallet)
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Container, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                        <div class="col-md-9 col-sm-9 col-xs-12">
+                            @Html.TextBoxFor(model => model.Container, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.Container)
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.m3, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                        <div class="col-md-9 col-sm-9 col-xs-12">
+                            @Html.TextBoxFor(model => model.m3, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.m3)
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.PerhitunganDasar, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                        <div class="col-md-9 col-sm-9 col-xs-12">
+                            @Html.TextBoxFor(model => model.PerhitunganDasar, new { @class = "form-control input-sm" })
+                        </div>
+                    </div>
+                    <div class="form-group" hidden>
+                        @Html.LabelFor(model => model.isMinimumBerat, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                        @*<div class="col-md-4">
+                            @Html.TextBoxFor(model => model.MinimumId, new { @class = "form-control input-sm"})
+                        </div>*@
+                        <div class="col-md-4">
+                            <div class="mt-checkbox-inline">
+                                <label class="mt-checkbox mt-checkbox-outline">@Html.CheckBoxFor(model => model.isMinimumBerat) Ya <span></span></label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Harga, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                        <div class="col-md-9 col-sm-9 col-xs-12">
+                            @Html.TextBoxFor(model => model.Harga, new { @class = "form-control-numeric-idr" })
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.TotalHarga, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                        <div class="col-md-9 col-sm-9 col-xs-12">
+                            @Html.TextBoxFor(model => model.TotalHarga, new { @class = "form-control-numeric-idr", @readonly = true })
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.CaraBayar, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                        <div class="col-md-9 col-sm-9 col-xs-12">
+                            @Html.TextBoxFor(model => model.CaraBayar, new { @class = "form-control input-sm" })
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="form-group">
+                    <div class="col-md-12">
+                        <a href="@backLink" class="btn btn-link">Back</a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+<div id="modalGridCust" class="modal fade bs-modal-lg" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div id="modalForm" class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                <h4 class="modal-title">List Customer</h4>
+            </div>
+            <div class="modal-body">
+                <div id="GridCust"></div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="modalGridCustKons" class="modal fade bs-modal-lg" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div id="modalForm" class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                <h4 class="modal-title">List Customer</h4>
+            </div>
+            <div class="modal-body">
+                <div id="GridCustKons"></div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="modalGridRute" class="modal fade bs-modal-full" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-full">
+        <div id="modalForm" class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                <h4 class="modal-title">List Rute</h4>
+            </div>
+            <div class="modal-body">
+                <div id="GridRute"></div>
+            </div>
+        </div>
+    </div>
+</div>
+@section scripts{
+    <script type="text/javascript">
+        var dsCust, dsPickup, dsSupp, dsProduct, dsType, dsRute;
+        var gridCust, gridPickup, grodRute, gridCustKons;
+        var cboSupp, cboproduct, cboType, cboDasar, cboPembayaran, cboMinimum;
+        var checkedIds = {};
+        var ListIdPickup = {};
+        var callerGrid = "";
+        var DummyHarga = 0, DummySatuan = '';
+
+        function SetCallerGrid(caller)
+        {
+            callerGrid = caller;
+        }
+
+        function SelectCust(e) {
+            e.preventDefault();
+            var data = this.dataItem(getDataRowGrid(e));
+            if (callerGrid == 'customer') {
+                if ($('#CustomerId').val() != data.Id)
+                {
+                    DummyHarga = 0;
+                    DummySatuan = '';
+                    $('#RuteId').val('');
+                    $('#Rute').val('');
+                    $('#Harga').data("kendoNumericTextBox").value('');
+                    $('#TotalHarga').data("kendoNumericTextBox").value('');
+                    cboDasar.value("Manual");
+                }
+                $('#CustomerId').val(data.Id);
+                $('#NamaCustomer').val(data.Nama);
+                $('#modalGridCustKons').modal('hide');
+            }
+            else if (callerGrid == 'supplier') {
+                $('#SupplierId').val(data.Id);
+                $('#SupplierName').val(data.CustomerNama);
+                $('#modalGridCust').modal('hide');
+                setProductDatasource(data.Id);
+                cboproduct.text('');
+                cboproduct.value();
+                cboproduct.setDataSource(dsProduct);
+                callAjaxSupplier(data.Id, "false");
+                GeneratRute("false");
+            }
+            else {
+                $('#CustomerTagihanId').val(data.Id);
+                $('#KodeCustomerTagihan').val(data.CustomerCode);
+                $('#NamaCustomerTagihan').val(data.CustomerNama);
+                $('#modalGridCust').modal('hide');
+                GeneratRute("false");
+            }
+        };
+
+        function SelectRute(e) {
+            var data = this.dataItem(getDataRowGrid(e));
+
+            var datarute = data.ListIdRute.split(',');
+
+            DummyHarga = data.Harga;
+            DummySatuan = data.Satuan;
+            $('#ListNamaRute').val(data.ListNamaRute);
+            $('#RuteId').val(data.Id);
+            $('#Rute').val(data.NamaRuteDaftarHarga);
+            $('#Harga').data("kendoNumericTextBox").value(DummyHarga);
+            if (DummySatuan == "Ton" || DummySatuan == "Kg")
+                cboDasar.value("Tonase");
+            else if (DummySatuan != "")
+                cboDasar.value(DummySatuan);
+            else {
+                cboDasar.value("Manual");
+            }
+            calculateTotal();
+            $('#modalGridRute').modal('hide');
+        }
+
+        function callAjax(id, overide) {
+            $.ajax({
+                url: '@Url.Action("GetDataForSO", "Customer")',
+                type: 'POST',
+                dataType: 'Json',
+                data: {
+                    id: id,
+                },
+                cache: false,
+                success: function (res) {
+                    $('#NamaCustomer').val(res.Nama);
+                    $('#KodeNama').val(res.KodeNama);
+                    $('#Suhu').data("kendoNumericTextBox").value('');
+                }
+            })
+        };
+
+        function callAjaxSupplier(id, overide) {
+            $.ajax({
+                url: '@Url.Action("GetDataForSO", "Customer")',
+                type: 'POST',
+                dataType: 'Json',
+                data: {
+                    id: id,
+                },
+                cache: false,
+                success: function (res) {
+                    $('#Suhu').data("kendoNumericTextBox").value('');
+
+                    if (overide == true) {
+                        cboproduct.value(@Model.ProductId);
+                        $.ajax({
+                            url: '@Url.Action("getTreatmentProduct", "Customer")',
+                            type: 'POST',
+                            dataType: 'Json',
+                            data: {
+                                id: cboproduct.text(),
+                                idCust: $("#CustomerId").val()
+                            },
+                            cache: false,
+                            success: function (res) {
+                                $('#Suhu').data("kendoNumericTextBox").value(res.suhu);
+                            }
+                        })
+                    }
+                    GeneratRute(overide);
+                }
+            })
+        };
+
+        function GeneratRute(overide) {
+            if (overide == false) {
+                $("#Rute").val('');
+                $("#RuteId").val('');
+            }
+//DaftarHargaKonsolidasi/GetRuteByCustomer?idCust=164&TanggalMasuk=07/09/2017
+            $.ajax({
+                url: '@Url.Action("GetRuteByCustomer", "DaftarHargaKonsolidasi")',
+                type: 'GET',
+                dataType: 'Json',
+                data: {
+                    idCust: $('#CustomerTagihanId').val(),
+                    TanggalMasuk: $('#TanggalMasuk').val().toString().split('/')[1]+'/'+$('#TanggalMasuk').val().toString().split('/')[0]+'-'+$('#TanggalMasuk').val().toString().split('/')[2]
+                },
+                cache: false,
+                success: function (res) {
+                    dsRute = [];
+                    for (var i = 0 ; i < res.data.length ; i++) {
+                        if ($("#RuteId").val() == res.data[i].Id)
+                        {
+                            DummySatuan = res.data[i].SatuanHarga;
+                            DummyHarga = res.data[i].Harga;
+                        }
+                            
+                        dsRute.push({
+                            Id: res.data[i].Id,
+                            NamaRuteDaftarHarga: res.data[i].NamaRuteDaftarHarga,
+                            ListNamaRute: res.data[i].ListNamaRute,
+                            ListIdRute: res.data[i].ListIdRute,
+                            NamaJenisTruck: res.data[i].NamaJenisKendaraan,
+                            Keterangan: res.data[i].Keterangan,
+                            MinKg: res.data[i].MinKg,
+                            MaxKg: res.data[i].MaxKg,
+                            Harga: res.data[i].Harga,
+                            Satuan: res.data[i].SatuanHarga
+                        });
+                    }
+                    gridRute.dataSource.data(dsRute);
+                },
+                error: function () {
+                    dsRute = [];
+                    gridRute.dataSource.data(dsRute);
+                }
+            })
+        }
+
+        function onProductChange(e) {
+            if (this.text() != '') {
+                $.ajax({
+                    url: '@Url.Action("getTreatmentProduct", "Customer")',
+                    type: 'POST',
+                    dataType: 'Json',
+                    data: {
+                        id: this.value(),
+                        idCust: $("#SupplierId").val()
+                    },
+                    cache: false,
+                    success: function (res) {
+                        $('#Suhu').data("kendoNumericTextBox").value(res.suhu);
+                    }
+                })
+            }
+            else {
+                $('#Suhu').data("kendoNumericTextBox").value('');
+            }
+        }
+
+        function setProductDatasource(id) {
+            dsProduct = new kendo.data.DataSource({
+                transport: {
+                    read: {
+                        url: '@Url.Action("BindingProduct", "Customer")?idCust=' + id,
+                        dataType: "json"
+                    },
+                },
+                schema: {
+                    data: "data",
+                    model: {
+                        fields: {
+                            idProduk: { type: "number" },
+                            NamaProduct: { type: "string" },
+                        }
+                    }
+                },
+            });
+        }
+
+        function setCustSupplierDatasource(id) {
+            dsSupp = new kendo.data.DataSource({
+                transport: {
+                    read: {
+                        url: '@Url.Action("BindingSupplier", "Customer")?idCust=' + id,
+                        dataType: "json"
+                    },
+                },
+                schema: {
+                    data: "data",
+                    model: {
+                        fields: {
+                            idProduk: { type: "number" },
+                            NamaProduct: { type: "string" },
+                        }
+                    }
+                },
+            });
+        }
+
+        function calculateTotal() {
+            var harga;
+            var td;
+            var satuan;
+            var min_value = 0;
+            var min_price = 0;
+            var under_min_value = false;
+            for (i=0; i<$('#GridRute tbody tr').length; i++){
+                if (cboDasar.value() == "Tonase") {
+                    harga = parseFloat($("#Tonase").val().replace(',', '.'))
+                } else if (cboDasar.value() == "Karton") {
+                    harga = parseFloat($("#karton").val().replace(',', '.'))
+                } else if (cboDasar.value() == "Pallet") {
+                    harga = parseFloat($("#Pallet").val().replace(',', '.'))
+                } else if (cboDasar.value() == "Container") {
+                    harga = parseFloat($("#Container").val().replace(',', '.'))
+                } else if (cboDasar.value() == "m3") {
+                    harga = parseFloat($("#m3").val().replace(',', '.'))
+                } else if (cboDasar.value() == "Rit" || cboDasar.value() == "Manual") {
+                    harga = $('#Harga').data("kendoNumericTextBox").value();
+                } else {
+                    harga = $('#Harga').data("kendoNumericTextBox").value();
+                }
+
+                td = $($('#GridRute tbody tr')[i]).find('td')
+                satuan = td[5].innerHTML.split(" /")[1]
+                if (parseFloat(td[3].innerHTML) <= harga && parseFloat(td[4].innerHTML) >= harga && (cboDasar.value() == satuan || (cboDasar.value() == 'Tonase') && (satuan == 'Kg' || satuan == 'Ton'))
+                    && td[2].innerHTML == $('#ListNamaRute').val()) {
+                    $('#Harga').data("kendoNumericTextBox").value(td[5].innerHTML.split(" /")[0])
+                    under_min_value = false
+                    break
+                }
+                else if (cboDasar.value() != "Manual"){
+                    if ((min_value == 0 || min_value >= parseFloat(td[3].innerHTML)) && (cboDasar.value() == satuan || (cboDasar.value() == 'Tonase') && (satuan == 'Kg' || satuan == 'Ton'))
+                        && td[2].innerHTML == $('#ListNamaRute').val()){
+                        min_price = td[5].innerHTML.split(" /")[0]
+                        min_value = parseFloat(td[3].innerHTML)
+                        under_min_value = true
+                    }
+                    $('#Harga').data("kendoNumericTextBox").value(min_price)
+                }
+            }
+            if (under_min_value){
+                if (cboDasar.value() == "Tonase") {
+                    $('#TotalHarga').data("kendoNumericTextBox").value($('#Harga').data("kendoNumericTextBox").value() * min_value);
+                } else if (cboDasar.value() == "Karton") {
+                    $('#TotalHarga').data("kendoNumericTextBox").value($('#Harga').data("kendoNumericTextBox").value() * min_value);
+                } else if (cboDasar.value() == "Pallet") {
+                    $('#TotalHarga').data("kendoNumericTextBox").value($('#Harga').data("kendoNumericTextBox").value() * min_value);
+                } else if (cboDasar.value() == "Container") {
+                    $('#TotalHarga').data("kendoNumericTextBox").value($('#Harga').data("kendoNumericTextBox").value() * min_value);
+                } else if (cboDasar.value() == "m3") {
+                    $('#TotalHarga').data("kendoNumericTextBox").value($('#Harga').data("kendoNumericTextBox").value() * min_value);
+                } else if (cboDasar.value() == "Rit" || cboDasar.value() == "Manual") {
+                    $('#TotalHarga').data("kendoNumericTextBox").value($('#Harga').data("kendoNumericTextBox").value());
+                } else {
+                    $('#TotalHarga').data("kendoNumericTextBox").value($('#Harga').data("kendoNumericTextBox").value());
+                }
+            }
+            else{
+                if (cboDasar.value() == "Tonase") {
+                    $('#TotalHarga').data("kendoNumericTextBox").value($('#Harga').data("kendoNumericTextBox").value() * parseFloat($("#Tonase").val().replace(',', '.')));
+                } else if (cboDasar.value() == "Karton") {
+                    $('#TotalHarga').data("kendoNumericTextBox").value($('#Harga').data("kendoNumericTextBox").value() * parseFloat($("#karton").val().replace(',', '.')));
+                } else if (cboDasar.value() == "Pallet") {
+                    $('#TotalHarga').data("kendoNumericTextBox").value($('#Harga').data("kendoNumericTextBox").value() * parseFloat($("#Pallet").val().replace(',', '.')));
+                } else if (cboDasar.value() == "Container") {
+                    $('#TotalHarga').data("kendoNumericTextBox").value($('#Harga').data("kendoNumericTextBox").value() * parseFloat($("#Container").val().replace(',', '.')));
+                } else if (cboDasar.value() == "m3") {
+                    $('#TotalHarga').data("kendoNumericTextBox").value($('#Harga').data("kendoNumericTextBox").value() * parseFloat($("#m3").val().replace(',', '.')));
+                } else if (cboDasar.value() == "Rit" || cboDasar.value() == "Manual") {
+                    $('#TotalHarga').data("kendoNumericTextBox").value($('#Harga').data("kendoNumericTextBox").value());
+                } else {
+                    $('#TotalHarga').data("kendoNumericTextBox").value($('#Harga').data("kendoNumericTextBox").value());
+                }
+            }
+        }
+
+        function DasarChange(e) {
+            if (this.value() == DummySatuan) {
+                $('#Harga').data("kendoNumericTextBox").readonly(true);
+                $('#Harga').data("kendoNumericTextBox").value(DummyHarga);
+            } else if (this.value() == "Tonase" && (DummySatuan == "Ton" || DummySatuan == "Kg")) {
+                $('#Harga').data("kendoNumericTextBox").readonly(true);
+                $('#Harga').data("kendoNumericTextBox").value(DummyHarga);
+            } else {
+                $('#Harga').data("kendoNumericTextBox").readonly(false);
+                $('#Harga').data("kendoNumericTextBox").value('');
+            }
+            calculateTotal();
+        }
+
+        function tandaanAnuDipilih() {
+            var view = gridRute.dataSource.view();
+            for (var i = 0; i < view.length; i++) {
+                if (view[i].Id == $('#RuteId').val()) {
+                    gridRute.tbody.find("tr[data-uid='" + view[i].uid + "']").addClass("k-state-selected")
+                }
+                else {
+                    gridRute.tbody.find("tr[data-uid='" + view[i].uid + "']").removeClass("k-state-selected")
+                }
+            }
+        }
+
+        function validasiMinMax(idRute, val)
+        {
+            $.ajax({
+                url: '/DaftarHargaKonsolidasi/isValidMinMax?idSo=' + '',
+                type: "POST",
+                success: function (res) {
+
+                },
+                error:function(){
+
+                }
+            });
+        }
+
+        $(document).ready(function () {
+            $("#TanggalMasuk").data('kendoDatePicker').bind("change", function (e) {
+                GeneratRute(false);
+            });
+
+            GeneratRute(true);
+
+            @if (Model.CustomerId.HasValue)
+            {
+                <text>
+            setProductDatasource('@Model.CustomerId');
+            setCustSupplierDatasource('@Model.CustomerId');
+            </text>
+            }
+
+            @if (Model.PerhitunganDasar == "Manual" && Model.SalesOrderKonsolidasiId != 0)
+            {
+                <text>
+            $('#Harga').data("kendoNumericTextBox").readonly(false);
+            </text>
+            } else{
+                 <text>
+            $('#Harga').data("kendoNumericTextBox").readonly(true);
+            </text>
+            }
+
+            cboproduct = $("#ProductId").kendoComboBox({
+                dataTextField: "NamaProduct",
+                dataValueField: "idProduk",
+                filter: "contains",
+                suggest: true,
+                change: onProductChange,
+                dataSource: dsProduct
+            }).data("kendoComboBox");
+
+            dsCust = new kendo.data.DataSource({
+                transport: {
+                    read: {
+                        url: '/Customer/Binding/',
+                        dataType: "json"
+                    },
+                },
+                schema: {
+                    total: "total",
+                    data: "data",
+                    model: {
+                        fields: {
+                            "Id": { type: "number" },
+                            "CustomerCode": { type: "string" },
+                            "CustomerCodeOld": { type: "string" },
+                            "CustomerNama": { type: "string" },
+                            "WajibPO": { type: "boolean" },
+                            "WajibGPS": { type: "boolean" },
+                            "SpecialTreatment": { type: "string" }
+                        }
+                    }
+                },
+                pageSize: 10,
+                pageable: true,
+                serverFiltering: true,
+                serverPaging: true,
+                serverSorting: true,
+                sortable: true,
+            });
+
+            dsCustKons = new kendo.data.DataSource({
+                transport: {
+                    read: {
+                        url: '/LookUpCode/BindingKonsolidasi',
+                        dataType: "json"
+                    },
+                    parameterMap: function (options, operation) {
+                        if (operation !== "read" && options != '') {
+                            return kendo.stringify(options);
+                        }
+                        else if (operation == "read") {
+                            if (options.filter) {
+                                filter = options.filter.filters;
+                                for (var i in filter) {
+                                }
+                            }
+
+                            if (options.sort) {
+                                sort = options.sort;
+                                for (var i in sort) {
+                                }
+                            }
+                            return options;
+                        }
+                    }
+                },
+                schema: {
+                    total: "total",
+                    data: "data",
+                    model: {
+                        fields: {
+                            "Id": { type: "number" },
+                            "Kategori": { type: "string" },
+                            "Nama": { type: "string" },
+                            "Order": { type: "number" },
+                            "Deskripsi": { type: "string" }
+                        }
+                    }
+                },
+                pageSize: 10,
+                pageable: true,
+                serverFiltering: true,
+                serverPaging: true,
+                serverSorting: true,
+                sortable: true,
+                //sort: { field: "SubmittedDate", dir: "desc" }
+            });
+
+
+            gridCust = $("#GridCust").kendoGrid({
+                dataSource: dsCust,
+                filterable: kendoGridFilterable,
+                sortable: true,
+                reorderable: true,
+                resizable: true,
+                pageable: true,
+                columns: [
+                    {
+                        command: [
+                            {
+                                name: "select",
+                                text: "Select",
+                                click: SelectCust,
+                                imageClass: "glyphicon glyphicon-ok",
+                                template: '<a class="k-button-icon #=className#" #=attr# href="\\#"><span class="#=iconClass# #=imageClass#"></span></a>'
+                            }
+                        ],
+                        width: "50px"
+                    },
+                    { field: "CustomerCode", title: "Kode Customer" },
+                    { field: "CustomerCodeOld", title: "Kode Nama" },
+                    { field: "CustomerNama", title: "Nama Customer" },
+                    { field: "WajibPO", title: "Wajib PO", template: "#: WajibPO ? 'Ya' : 'Tidak' #" },
+                    { field: "WajibGPS", title: "Wajib GPS", template: "#: WajibGPS ? 'Ya' : 'Tidak' #" },
+                    { field: "SpecialTreatment", title: "Prioritas" },
+                ],
+            }).data("kendoGrid");
+
+            gridCustKons = $("#GridCustKons").kendoGrid({
+                dataSource: dsCustKons,
+                filterable: kendoGridFilterable,
+                sortable: true,
+                reorderable: true,
+                resizable: true,
+                pageable: true,
+                groupable: true,
+                //height: "615",
+                columns: [
+                    {
+                        command: [
+                            {
+                                name: "select",
+                                text: "Select",
+                                click: SelectCust,
+                                imageClass: "glyphicon glyphicon-ok",
+                                template: '<a class="k-button-icon #=className#" #=attr# href="\\#"><span class="#=iconClass# #=imageClass#"></span></a>'
+                            }
+                        ],
+                        width: "50px"
+                    },
+                    {
+                        field: "Nama",
+                        title: "Nama",
+                        width: "280px"
+                    },
+                ],
+            }).data("kendoGrid");
+
+            gridRute = $("#GridRute").kendoGrid({
+                dataSource: {
+                    data: dsRute,
+                    batch: true,
+                    schema: {
+                        model: {
+                            fields: {
+                                Id: { type: "number" },
+                                ListIdRute: { type: "number" },
+                                NamaRuteDaftarHarga: { type: "string" },
+                                ListNamaRute: { type: "string" },
+                                NamaJenisTruck: { type: "string" },
+                                Keterangan: { type: "string" },
+                                MinKg: { type: "number"},
+                                MaxKg: { type: "number" },
+                                Harga: { type: "string" },
+                                Satuan: { type: "string" },
+                            }
+                        },
+                    },
+                    pageSize: 10,
+                    pageable: true,
+                    sortable: true,
+                },
+                filterable: kendoGridFilterable,
+                sortable: true,
+                reorderable: true,
+                resizable: true,
+                pageable: true,
+                columns: [
+                    {
+                        command: [
+                            {
+                                name: "select",
+                                text: "Select",
+                                click: SelectRute,
+                                imageClass: "glyphicon glyphicon-ok",
+                                template: '<a class="k-button-icon #=className#" #=attr# href="\\#"><span class="#=iconClass# #=imageClass#"></span></a>'
+                            }
+                        ],
+                        width: "50px"
+                    },
+                    { field: "NamaRuteDaftarHarga", title: "Nama Rute Daftar Harga" },
+                    { field: "ListNamaRute", title: "List Nama Rute" },
+                    { field: "MinKg", title: "Min" },
+                    { field: "MaxKg", title: "Max" },
+                    { field: "Harga", title: "Harga" ,template: 'Rp. #: kendo.format("{0:n2}", Harga) + " /" +Satuan#',},
+                    { field: "Keterangan", title: "Keterangan" },
+                ],
+            }).data("kendoGrid");
+
+            cboType = $("#TypeKonsolidasi").kendoComboBox({
+                dataTextField: "text",
+                dataValueField: "value",
+                dataSource: [
+                    { text: "Tonase", value: "Tonase" },
+                    { text: "Karton", value: "Karton" },
+                    { text: "Pallet", value: "Pallet" },
+                    { text: "Container", value: "Container" },
+                    { text: "m3", value: "m3" },
+                ],
+                filter: "contains",
+                suggest: true,
+            }).data("kendoComboBox");
+
+            cboDasar = $("#PerhitunganDasar").kendoComboBox({
+                dataTextField: "text",
+                dataValueField: "value",
+                dataSource: [
+                    { text: "Tonase", value: "Tonase" },
+                    { text: "Karton", value: "Karton" },
+                    { text: "Pallet", value: "Pallet" },
+                    { text: "Container", value: "Container" },
+                    { text: "m3", value: "m3" },
+                    { text: "Rit", value: "Rit" },
+                    { text: "Manual", value: "Manual" },
+                ],
+                filter: "contains",
+                suggest: true,
+                change: DasarChange,
+            }).data("kendoComboBox");
+
+            cboPembayaran = $("#CaraBayar").kendoComboBox({
+                dataTextField: "text",
+                dataValueField: "value",
+                dataSource: [
+                    { text: "Non", value: "Non" },
+                    { text: "Cash", value: "Cash" },
+                    { text: "Transfer", value: "Transfer" },
+                    { text: "Tagihan", value: "Tagihan" }
+                ],
+                filter: "contains",
+                suggest: true,
+            });
+
+            $("#Harga").data("kendoNumericTextBox").bind("change", function (e) {
+                calculateTotal();
+            });
+
+            $("#Tonase").change(function (e) {
+                calculateTotal();
+            });
+
+            $("#karton").change(function (e) {
+                calculateTotal();
+            });
+            
+            $("#Pallet").change(function (e) {
+                calculateTotal();
+            });
+
+            $("#m3").change(function (e) {
+                calculateTotal();
+            });
+
+            $("#Container").change(function (e) {
+                calculateTotal();
+            });
+        });
+
+    </script>
+}

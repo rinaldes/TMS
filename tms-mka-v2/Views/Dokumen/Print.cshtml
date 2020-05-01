@@ -1,0 +1,131 @@
+﻿@using tms_mka_v2.Models;
+@model tms_mka_v2.Models.DokumenIndex
+<link rel="stylesheet" href="~/Content/metronic/bootstrap.min.css" />
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-6 col-md-6">
+                <div class="row">
+                    <label class="control-label col-xs-3 col-md-3" style="font-size: 10px !important; font-weight: 100">Vehicle No</label>
+                    <label class="control-label col-xs-9 col-md-9" style="font-size: 10px !important; font-weight: 100">: @Model.VehicleNo  |  @Model.JnsTruck</label>
+                </div>
+                <div class="row">
+                    <label class="control-label col-xs-3 col-md-3" style="font-size: 10px !important; font-weight: 100">No SO</label>
+                    <label class="control-label col-xs-9 col-md-9" style="font-size: 10px !important; font-weight: 100">: @Model.NoSo</label>
+                </div>
+                <div class="row">
+                    <label class="control-label col-xs-3 col-md-3" style="font-size: 10px !important; font-weight: 100">Kode Nama</label>
+                    <label class="control-label col-xs-9 col-md-9" style="font-size: 10px !important; font-weight: 100">: @Model.KodeNama</label>
+                </div>
+                <div class="row">
+                    <label class="control-label col-xs-3 col-md-3" style="font-size: 10px !important; font-weight: 100">Customer</label>
+                    <label class="control-label col-xs-9 col-md-9" style="font-size: 10px !important; font-weight: 100">: @Model.Customer</label>
+                </div>
+            </div>
+            <div class="col-xs-6 col-md-6">
+                <div class="row">
+                    <label class="control-label col-xs-4 col-md-4" style="font-size: 10px !important; font-weight: 100">Nama Driver</label>
+                    <label class="control-label col-xs-8 col-md-8" style="font-size: 10px !important; font-weight: 100">: @Model.NamaDriver</label>
+                </div>
+                <div class="row">
+                    <label class="control-label col-xs-4 col-md-4" style="font-size: 10px !important; font-weight: 100">Tanggal Jalan</label>
+                    <label class="control-label col-xs-8 col-md-8" style="font-size: 10px !important; font-weight: 100">: @Model.TanggalMuat</label>
+                </div>
+                <div class="row">
+                    <label class="control-label col-xs-4 col-md-4" style="font-size: 10px !important; font-weight: 100">Rute</label>
+                    <label class="control-label col-xs-8 col-md-8" style="font-size: 10px !important; font-weight: 100">: @Model.Rute</label>
+                </div>
+                <div class="row">
+                    <label class="control-label col-xs-4 col-md-4" style="font-size: 10px !important; font-weight: 100">Tanggal Pulang</label>
+                    <label class="control-label col-xs-8 col-md-8" style="font-size: 10px !important; font-weight: 100">: @ViewBag.TanggalPulang</label>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <table class="table table-bordered table-striped">
+                    <tr style="height: auto">
+                        <td style="font-size: 10px !important; font-weight: 100; padding: 0 !important">No</td>
+                        <td style="font-size: 10px !important; font-weight: 100; padding: 0 !important">Nama Dokumen</td>
+                        <td style="font-size: 10px !important; font-weight: 100; padding: 0 !important">Jumlah</td>
+                        <td style="font-size: 10px !important; font-weight: 100; padding: 0 !important">Warna</td>
+                        <td style="font-size: 10px !important; font-weight: 100; padding: 0 !important">Stempel & TTD</td>
+                        <td style="font-size: 10px !important; font-weight: 100; padding: 0 !important">Keterangan</td>
+                    </tr>
+                    @for (int i = 0; i < Model.ListDokumen.Count; i++)
+                    {
+                        <tr style="height: ">
+                            <td style="font-size: 10px !important; font-weight: 100; padding: 0 !important">@(i + 1)</td>
+                            <td style="font-size: 10px !important; font-weight: 100; padding: 0 !important">@Model.ListDokumen[i].Nama</td>
+                            <td style="font-size: 10px !important; font-weight: 100; padding: 0 !important">@Model.ListDokumen[i].Jml</td>
+                            <td style="font-size: 10px !important; font-weight: 100; padding: 0 !important">@Model.ListDokumen[i].Warna</td>
+                            <td style="font-size: 10px !important; font-weight: 100; padding: 0 !important">
+                                @if (Model.ListDokumen[i].Stempel == true)
+                                {
+                                    <text>WAJIB</text>
+                                }
+                                else
+                                {
+                                    <text>WAJIB</text>
+                                }
+                            </td>
+                            <td style="font-size: 10px !important; font-weight: 100">@Model.ListDokumen[i].KeteranganAdmin</td>
+                        </tr>
+                    }
+            </table>
+        </div>
+        <div class="row">
+            <div class="col-xs-2 col-md-4" style="font-size: 10px !important; font-weight: 100">
+                Berita Acara Klaim
+            </div>
+            <div class="col-xs-1 col-md-4">
+                <div class="input-group input-group-sm">
+                    <input class="form-control" type="text" value="&nbsp;&nbsp;&nbsp;" style="border: 1px solid black !important">
+                    <span class="input-group-btn" style="font-size: 10px !important; font-weight: 100">
+                        Ada
+                    </span>
+                </div>
+            </div>
+            <div class="col-xs-1 col-md-4">
+                <div class="input-group input-group-sm">
+                    <input class="form-control" type="text" value="&nbsp;&nbsp;&nbsp;" style="border: 1px solid black !important">
+                    <span class="input-group-btn" style="font-size: 10px !important; font-weight: 100">
+                        Tidak
+                    </span>
+                </div>
+            </div>
+        </div>
+        <br />
+        <div class="row">
+            <div class="col-xs-4 col-md-4" style="font-size: 10px !important; font-weight: 100">
+                SPV/ LEADER
+                <br />
+                <br />
+                <br />
+                <br />
+                <br />
+                (&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;)
+            </div>
+            <div class="col-xs-4 col-md-4" style="font-size: 10px !important; font-weight: 100">
+                Tanggal__________ <br />
+                Admin SJ
+                <br />
+                <br />
+                <br />
+                <br />
+                (&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;)
+            </div>
+            <div class="col-xs-4 col-md-4" style="font-size: 10px !important; font-weight: 100">
+                Tanggal__________ <br />
+                Admin Billing
+                <br />
+                <br />
+                <br />
+                <br />
+                (&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;)
+            </div>
+        </div>
+    </div>
+</body>
+<script>
+    window.print()
+</script>

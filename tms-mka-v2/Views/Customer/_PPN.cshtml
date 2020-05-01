@@ -1,0 +1,65 @@
+﻿@using tms_mka_v2.Models
+@model tms_mka_v2.Models.Customer
+@{
+    string currentController = (string)ViewContext.RouteData.Values["controller"];
+    string currentAction = (string)ViewContext.RouteData.Values["action"];
+    ViewBag.SubTitle = "Customer Basic Data";
+}
+
+<h2>Customer PPN</h2>
+
+@using (Html.BeginForm("UpdatePPN", currentController, FormMethod.Post, new { @id = "formPPN" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(model => model.Id)
+    @Html.HiddenFor(model => model.IdPPN)
+    <div class="form-horizontal">
+        @Html.ValidationSummary(true)
+        <div class="form-group">
+            @Html.LabelFor(model => model.IsPPn, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-5">
+                <label class="radio-inline">@Html.RadioButtonFor(model => model.IsPPn, true, new { @onclick = "getRekening('PPN')" }) Yes</label>
+                <label class="radio-inline">@Html.RadioButtonFor(model => model.IsPPn, false, new { @onclick = "getRekening('NON PPN')" }) No</label>
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.IdRekening, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-5">
+                @Html.TextBoxFor(model => model.IdRekening)
+                <span class="k-invalid-msg" data-for="IdRekening"></span>
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.NoNpwp, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-5">
+                @Html.TextBoxFor(model => model.NoNpwp, new { @class = "form-control input-sm"})
+                <span class="k-invalid-msg" data-for="NoNpwp"></span>
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.NamaNpwp, new { @class = "control-label col-md-2" })
+            <div class="col-md-5">
+                @Html.TextBoxFor(model => model.NamaNpwp, new { @class = "form-control input-sm"})
+                <span class="k-invalid-msg" data-for="NamaNpwp"></span>
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.AddressNpwp, new { @class = "control-label col-md-2" })
+            <div class="col-md-5">
+                @Html.TextBoxFor(model => model.AddressNpwp, new { @class = "form-control input-sm"})
+                <span class="k-invalid-msg" data-for="AddressNpwp"></span>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-5">
+                <input type="submit" name="submitPPN" value="Update" class="btn btn-default" />
+                <input type="submit" name="submitPPN" value="Update and Next" class="btn btn-default" />
+            </div>
+        </div>
+    </div>
+}

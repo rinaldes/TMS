@@ -1,0 +1,224 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "Master Training Setting";
+    string currentController = "TrainingSetting";
+    string currentAction = "Index";
+}
+<div class="portlet light ">
+    <div class="portlet-title">
+        <div class="caption">
+            <span class="caption-subject font-dark sbold uppercase">@ViewBag.Title</span>
+        </div>
+        <div class="actions">
+            <a class="btn btn-sm green dropdown-toggle" href="@Url.Action("Add", "TrainingSetting")">
+                <i class="fa fa-plus"></i>Add
+            </a>
+        </div>
+    </div>
+    <div class="portlet-body form">
+        <div class="portlet box blue ">
+            <div class="portlet-title">
+                <div class="caption">
+                    Hide Colomn :
+                </div>
+                <div class="tools">
+                    <a href="" class="expand"> </a>
+                </div>
+            </div>
+            <div class="portlet-body form" style="display: none;">
+                <form role="form">
+                    <div class="form-body">
+                        <div id="content-col" class="md-checkbox-inline" style="margin-left:10px"></div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div id="grid"></div>
+    </div>
+</div>
+
+<!-- /.modal -->
+<div class="modal fade bs-modal-sm" id="ModalTrainingSetting" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                <h4 class="modal-title">Import Data Training Setting</h4>
+            </div>
+            <div class="modal-body">
+                <input name="filesTrainingSetting" id="filesTrainingSetting" type="file" />
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn dark btn-outline" data-dismiss="modal" onclick="uploadTrainingSetting()">Import</button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<!-- /.modal -->
+
+
+@section scripts
+{
+<script type="text/javascript">
+    var kendoUploadButton;
+
+    function deleteItem(e) {
+        e.preventDefault();
+        var data = this.dataItem(getDataRowGrid(e));
+        goToDeletePage('@Url.Action("Delete")' + "?id=" + data.Id, this.dataSource);
+    }
+
+    function editItem(e) {
+        e.preventDefault();
+        var data = this.dataItem(getDataRowGrid(e));
+        window.location.href = "@Url.Action("Edit")" + "?id=" + data.Id;
+    }
+
+    function uploadTrainingSetting() {
+        if (kendoUploadButton)
+            kendoUploadButton.click();
+    }
+
+    function onSelectFile(e) {
+        var flagExtension = 0;
+        var allowedExtension = [".xlsx", ".xls"];
+        $.each(e.files, function (index, value) {
+            if ($.inArray((value.extension).toLowerCase(), allowedExtension) === -1) {
+                flagExtension = 1;
+            }
+        });
+        if (flagExtension == 1) {
+            alert("File yang diperbolehkan hanya berupa Excell");
+            e.preventDefault();
+        }
+
+        setTimeout(function () {
+            kendoUploadButton = $(".k-upload-selected");
+            kendoUploadButton.hide();
+        }, 1);
+    }
+
+    $(document).ready(function () {
+        $("#filesTrainingSetting").kendoUpload({
+            multiple: false,
+            async: {
+                saveUrl: "@Url.Action("UploadTrainingSetting")",
+            autoUpload: false
+        },
+            success: function (e, response) {
+                console.log(e.response.Response.Success)
+                if (e.response.Response.Success)
+                {
+                    var t = {
+                        theme: 'teal',
+                        life: '5000'
+                    }
+                    $.notific8("Upload Data Training Setting Success",t);
+                }
+                else
+                {
+                    var t = {
+                        theme: 'ruby',
+                        life: '5000'
+                    }
+                    $.notific8("Import gagal, " + e.response.Response.Message, t);
+                }
+                $("#grid").data("kendoGrid").dataSource.read();
+            },
+        select: onSelectFile,
+        });
+
+        currController = '@currentController';
+        currAction = '@currentAction';
+
+        var ds = new kendo.data.DataSource({
+            transport: {
+                read: {
+                    url: '@Url.Action("Binding")',
+                    dataType: "json"
+                },
+            },
+            schema: {
+                total: "total",
+                data: "data",
+                model: {
+                    fields: {
+                        "Id": { type: "number" },
+                        "Nama": { type: "string" },
+                        "DetailMateri": { type: "string" },
+                        "DetailNilaiMinimum": { type: "number" },
+                        "Interval": { type: "string" }
+                    }
+                }
+            },
+            pageSize: 10,
+            pageable: true,
+            serverFiltering: true,
+            serverPaging: true,
+            serverSorting: true,
+            sortable: true,
+            //sort: { field: "SubmittedDate", dir: "desc" }
+        });
+
+        gridIndex = $("#grid").kendoGrid({
+            dataSource: ds,
+            filterable: kendoGridFilterable,
+            sortable: true,
+            reorderable: true,
+            resizable: true,
+            pageable: true,
+            groupable: true,
+            //height: "615",
+            columns: [
+                {
+                    command: [
+                        {
+                            name: "edit",
+                            text: "edit",
+                            click: editItem,
+                            imageClass: "glyphicon glyphicon-edit",
+                            template: '<a class="k-button-icon #=className#" #=attr# href="\\#"><span class="#=imageClass#"></span></a>'
+                        },
+                        {
+                            name: "delete",
+                            text: "delete",
+                            click: deleteItem,
+                            imageClass: "glyphicon glyphicon-remove",
+                            template: '<a class="k-button-icon #=className#" #=attr# href="\\#"><span class="#=iconClass# #=imageClass#"></span></a>'
+                        }
+                    ],
+                    width: "90px"
+                },
+                {
+                    field: "Nama",
+                    title: "Nama"
+                },
+                {
+                    field: "DetailMateri",
+                    title: "Materi"
+                },
+                {
+                    field: "DetailNilaiMinimum",
+                    title: "Nilai Minimum"
+                },
+                {
+                    field: "Interval",
+                    title: "Interval",
+                    template: '#=Interval# Bulan'
+                }
+            ],
+        }).data("kendoGrid");
+
+        @foreach (tms_mka_v2.Context.UserReference item in (List<tms_mka_v2.Context.UserReference>)ViewBag.listKolom)
+            {
+                <text>
+        listKolom.push('@item.Coloumn');
+        </text>
+            }
+
+        GetColomnData(gridIndex);
+    })
+</script>
+}

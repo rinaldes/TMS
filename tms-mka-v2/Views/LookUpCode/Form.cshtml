@@ -1,0 +1,118 @@
+﻿@using tms_mka_v2.Models;
+
+@model tms_mka_v2.Models.LookupCode
+@{
+    ViewBag.Title = "Form";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    string currentController = (string)ViewContext.RouteData.Values["controller"];
+    string currentAction = (string)ViewContext.RouteData.Values["action"];
+    string backLink = Url.Action("Index");
+    if (currentAction == "Add")
+    {
+        ViewBag.Title = "Tambah Lookup Code";
+    }
+    else
+    {
+        ViewBag.Title = ViewBag.name + " | Edit";
+    }
+}
+<div class="portlet light">
+    <div class="portlet-title">
+        <div class="caption">
+            <span class="caption-subject font-dark sbold uppercase">@ViewBag.Title</span>
+        </div>
+    </div>
+    <div class="portlet-body form">
+        @using (@Html.BeginForm(currentAction, currentController, FormMethod.Post, new { @class = "form-horizontal form-label-left input_mask" }))
+        {
+            @Html.ValidationSummary(true)
+            @Html.HiddenFor(model => model.Id)
+            <div class="form-group">
+                @Html.LabelFor(model => model.IdKategori, new { @class = "control-label col-md-2 col-sm-3 col-xs-12" })
+                <div class="col-md-6 col-sm-9 col-xs-12">
+                    @Html.TextBoxFor(model => model.IdKategori, new { @class = "form-control input-sm" })
+                    @Html.ValidationMessageFor(model => model.IdKategori)
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.Nama, new { @class = "control-label col-md-2 col-sm-3 col-xs-12" })
+                <div class="col-md-6 col-sm-9 col-xs-12">
+                    @Html.TextBoxFor(model => model.Nama, new { @class = "form-control input-sm focus" })
+                    @Html.ValidationMessageFor(model => model.Nama)
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.Order, new { @class = "control-label col-md-2 col-sm-3 col-xs-12" })
+                <div class="col-md-6 col-sm-9 col-xs-12">
+                    @Html.TextBoxFor(model => model.Order, new { @class = "form-control input-sm", @type = "number" })
+                    @Html.ValidationMessageFor(model => model.Order)
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.Deskripsi, new { @class = "control-label col-md-2 col-sm-3 col-xs-12" })
+                <div class="col-md-6 col-sm-9 col-xs-12">
+                    @Html.TextBoxFor(model => model.Deskripsi, new { @class = "form-control input-sm" })
+                    @Html.ValidationMessageFor(model => model.Deskripsi)
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.VendorId, new { @class = "control-label col-md-2 col-sm-3 col-xs-12" })
+                <div class="col-md-6 col-sm-9 col-xs-12">
+                    @Html.TextBoxFor(model => model.VendorId, new { @class = "form-control input-sm" })
+                    @Html.ValidationMessageFor(model => model.VendorId)
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.DipakaidiAUJ, new { @class = "control-label col-md-2 col-sm-3 col-xs-12" })
+                <div class="col-md-6 col-sm-9 col-xs-12">
+                    <label class="mt-checkbox mt-checkbox-outline">@Html.CheckBoxFor(model => model.DipakaidiAUJ) Ya <span></span></label>
+                </div>
+            </div>
+            <div class="ln_solid"></div>
+            <div class="form-group">
+                <div class="col-md-9 col-sm-9 col-xs-12 col-md-offset-2">
+                    <button type="submit" class="btn btn-success">Submit</button>
+                    <a href="@backLink" class="btn btn-link">Cancel</a>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+@section scripts{
+    <script type="text/javascript">
+    $(document).ready(function () {
+        var ds = new kendo.data.DataSource({
+            transport: {
+                read: {
+                    url: '@Url.Action("GetKategori")',
+                        dataType: "json"
+                    },
+                },
+            });
+            $("#IdKategori").kendoComboBox({
+                dataTextField: "Category",
+                dataValueField: "Id",
+                dataSource: ds,
+                filter: "contains",
+                suggest: true,
+            });
+
+            var dsVend = new kendo.data.DataSource({
+                transport: {
+                    read: {
+                        url: '/Customer/GetVendor',
+                        dataType: "json"
+                    },
+                },
+            });
+            $("#VendorId").kendoComboBox({
+                dataTextField: "CustomerNama",
+                dataValueField: "Id",
+                dataSource: dsVend,
+                filter: "contains",
+                suggest: true,
+            });
+        })
+    </script>
+}

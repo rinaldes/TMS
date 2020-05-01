@@ -1,0 +1,35 @@
+﻿
+/*      override bootstrap */
+.table-no-bottom { margin-bottom: 0; }
+.panel { border-radius: 0; }
+.panel-heading-action .panel-title { padding-top: 7.5px; }
+.table thead th { text-align: center; }
+.table .has-feedback .form-control-feedback { top: 0; }
+.form-control .input-sm { font-size:10px; }
+
+/*      override kendo */
+.k-picker-wrap .k-input { padding: 0; }
+.k-grouping-header, .k-grid-toolbar { padding: .5em; }
+.panel-heading-with-button h3 { padding-top: 7.5px; }
+.k-grid, .k-scheduler, .k-menu, .k-editor { border-radius: 0; }
+.k-popup .k-calendar { font-size: 13px !important; } 
+.k-grid-header th.k-header > .k-link{ display: inline-block !important;}
+
+.k-ff { overflow: inherit !important; }
+.k-listview { border: none; }
+
+.tab-pane { padding-top: 15px; }
+.tab-content { border-bottom: solid 1px #DDDDDD; margin-bottom: 15px; }
+
+#grid .k-grid-content { min-height: 350px; }
+
+.no-gutter-left { padding-left: 0; }
+.no-gutter-bottom { padding-bottom: 0; }
+.gutter-left { padding-left: 15px; }
+.gutter-right { padding-right: 15px; }
+
+.col-border-right { padding-right: 14px; border-right: solid 1px #eeeeee; }
+
+.k-state-selected, .k-state-selected:link, .k-state-selected:visited, .k-list>.k-state-selected, .k-list>.k-state-highlight, .k-panel>.k-state-selected, .k-button:active, .k-ghost-splitbar-vertical, .k-ghost-splitbar-horizontal, .k-draghandle.k-state-selected:hover, .k-scheduler .k-scheduler-toolbar .k-state-selected, .k-marquee-color { color: #2e2e2e; }
+
+.field-validation-error { color: #ff0000; }

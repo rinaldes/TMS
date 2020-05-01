@@ -1,0 +1,795 @@
+﻿@using tms_mka_v2.Models;
+
+@model tms_mka_v2.Models.User
+@{
+    ViewBag.Title = "Form";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    string currentController = (string)ViewContext.RouteData.Values["controller"];
+    string currentAction = (string)ViewContext.RouteData.Values["action"];
+    string backLink = Url.Action("Index");
+    ViewBag.Title = ViewBag.name + " | Edit";
+}
+<div class="portlet light">
+    <div class="portlet-title">
+        <div class="caption">
+            <span class="caption-subject font-dark sbold uppercase">@ViewBag.Title</span>
+        </div>
+    </div>
+    <div class="portlet-body form">
+        @using (@Html.BeginForm(currentAction, currentController, FormMethod.Post, new { @class = "form-horizontal form-label-left input_mask", @id = "formsubmit" }))
+        {
+            @Html.ValidationSummary(true)
+            @Html.HiddenFor(model => model.Id)
+            <div class="form-group">
+                @Html.LabelFor(model => model.Username, new { @class = "control-label col-md-2 col-sm-3 col-xs-12" })
+                <div class="col-md-6 col-sm-9 col-xs-12">
+                    @Html.TextBoxFor(model => model.Username, new { @class = "form-control input-sm" , @readonly = true})
+                    @Html.ValidationMessageFor(model => model.Username)
+                </div>
+            </div>
+            <ul class="nav nav-tabs" id="wtab">
+                <li class="active"><a href="#tab_Master" data-toggle="tab">Master</a></li>
+                <li><a href="#tab_DM" data-toggle="tab">Driver Management</a></li>
+                <li><a href="#tab_Marketing" data-toggle="tab">Marketing</a></li>
+                <li><a href="#tab_Operasional" data-toggle="tab">Operasional</a></li>
+                <li><a href="#tab_HR" data-toggle="tab">HR</a></li>
+                <li><a href="#tab_GA" data-toggle="tab">GA</a></li>
+                <li><a href="#tab_Finance" data-toggle="tab">Finance</a></li>
+                <li><a href="#tab_Workshop" data-toggle="tab">Workshop</a></li>
+                <li><a href="#tab_CustomerService" data-toggle="tab">Customer Service</a></li>
+                <li><a href="#tab_Setting" data-toggle="tab">Setting</a></li>
+                <li><a href="#tab_SolarInap" data-toggle="tab">Solar Inap</a></li>
+                <li><a href="#tab_UserManagement" data-toggle="tab">User management</a></li>
+                <li><a href="#tab_Report" data-toggle="tab">Report</a></li>
+                <li><a href="#tab_Dashboard" data-toggle="tab">Dashboard</a></li>
+            </ul>
+            <div class="tab-content">
+                <div class="tab-pane  active in" id="tab_Master">
+                    <label> <input type="checkbox" onclick="DoCheck(this, $('#masterMenu'))" /> check all</label>
+                    <div class="form-group">
+                        <div class="col-md-8">
+                            <div id="masterMenu"></div>
+                            @Html.HiddenFor(model => model.StrMenu)
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-pane" id="tab_DM">
+                    <label> <input type="checkbox" onclick="DoCheck(this, $('#dmMenu'))" /> check all</label>
+                    <div class="form-group">
+                        <div class="col-md-8">
+                            <div id="dmMenu"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-pane" id="tab_Marketing">
+                    <label> <input type="checkbox" onclick="DoCheck(this, $('#marketingMenu'))" /> check all</label>
+                    <div class="form-group">
+                        <div class="col-md-8">
+                            <div id="marketingMenu"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-pane" id="tab_Operasional">
+                    <label> <input type="checkbox" onclick="DoCheck(this, $('#operasionalMenu'))" /> check all</label>
+                    <div class="form-group">
+                        <div class="col-md-8">
+                            <div id="operasionalMenu"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-pane" id="tab_HR">
+                    <label> <input type="checkbox" onclick="DoCheck(this, $('#HRMenu'))" /> check all</label>
+                    <div class="form-group">
+                        <div class="col-md-8">
+                            <div id="HRMenu"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-pane" id="tab_GA">
+                    <label> <input type="checkbox" onclick="DoCheck(this, $('#GAMenu'))" /> check all</label>
+                    <div class="form-group">
+                        <div class="col-md-8">
+                            <div id="GAMenu"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-pane" id="tab_Finance">
+                    <label> <input type="checkbox" onclick="DoCheck(this, $('#FinanceMenu'))" /> check all</label>
+                    <div class="form-group">
+                        <div class="col-md-8">
+                            <div id="FinanceMenu"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-pane" id="tab_Workshop">
+                    <label> <input type="checkbox" onclick="DoCheck(this, $('#WorkshopMenu'))" /> check all</label>
+                    <div class="form-group">
+                        <div class="col-md-8">
+                            <div id="WorkshopMenu"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-pane" id="tab_CustomerService">
+                    <label> <input type="checkbox" onclick="DoCheck(this, $('#CustomerServiceMenu'))" /> check all</label>
+                    <div class="form-group">
+                        <div class="col-md-8">
+                            <div id="CustomerServiceMenu"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-pane" id="tab_Setting">
+                    <label> <input type="checkbox" onclick="DoCheck(this, $('#SettingMenu'))" /> check all</label>
+                    <div class="form-group">
+                        <div class="col-md-8">
+                            <div id="SettingMenu"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-pane" id="tab_SolarInap">
+                    <label> <input type="checkbox" onclick="DoCheck(this, $('#SolarInapMenu'))" /> check all</label>
+                    <div class="form-group">
+                        <div class="col-md-8">
+                            <div id="SolarInapMenu"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-pane" id="tab_UserManagement">
+                    <label> <input type="checkbox" onclick="DoCheck(this, $('#UserManagementMenu'))" /> check all</label>
+                    <div class="form-group">
+                        <div class="col-md-8">
+                            <div id="UserManagementMenu"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-pane" id="tab_Report">
+                    <label> <input type="checkbox" onclick="DoCheck(this, $('#ReportMenu'))" /> check all</label>
+                    <div class="form-group">
+                        <div class="col-md-8">
+                            <div id="ReportMenu"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-pane" id="tab_Dashboard">
+                    <label> <input type="checkbox" onclick="DoCheck(this, $('#DashboardMenu'))" /> check all</label>
+                    <div class="form-group">
+                        <div class="col-md-8">
+                            <div id="DashboardMenu"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="ln_solid"></div>
+            <div class="form-group">
+                <div class="col-md-8">
+                    <button type="submit" class="btn btn-success">Submit</button>
+                    <a href="@backLink" class="btn btn-link">Cancel</a>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+@section scripts{
+    <script type="text/javascript">
+        var dsGrid;
+
+        masterGrid = new kendo.data.DataSource({
+            transport: {
+                read: {
+                    url: '/Menu/BindingByUser?modul=Master&user_id=' + $('#Id').val(),
+                    dataType: "json"
+                },
+            },
+            batch: true,
+            schema: {
+                total: "total", data: "data",
+                model: {
+                    fields: {
+                        "Id": {type: "number", editable: false}, "IdMenu": {type: "number"}, "StrMenu": {type: "string" , editable: false}, "IsCreate": {type: "boolean"}, "IsRead": { type: "boolean" },
+                        "IsUpdate": { type: "boolean" }, "IsDelete": { type: "boolean" }, "IsPrint": { type: "boolean" }, "IsProses": { type: "boolean" },
+                    }
+                }
+            },
+            sortable: true,
+        });
+
+        dmGrid = new kendo.data.DataSource({
+            transport: {
+                read: {
+                    url: '/Menu/BindingByUser?modul=DM&user_id=' + $('#Id').val(),
+                    dataType: "json"
+                },
+            },
+            batch: true,
+            schema: {
+                total: "total", data: "data",
+                model: {
+                    fields: {
+                        "Id": {type: "number", editable: false}, "IdMenu": {type: "number"}, "StrMenu": {type: "string" , editable: false}, "IsCreate": {type: "boolean"}, "IsRead": { type: "boolean" },
+                        "IsUpdate": { type: "boolean" }, "IsDelete": { type: "boolean" }, "IsPrint": { type: "boolean" }, "IsProses": { type: "boolean" },
+                    }
+                }
+            },
+            sortable: true,
+        });
+
+        marketingGrid = new kendo.data.DataSource({
+            transport: {
+                read: {
+                    url: '/Menu/BindingByUser?modul=Marketing&user_id=' + $('#Id').val(),
+                    dataType: "json"
+                },
+            },
+            batch: true,
+            schema: {
+                total: "total", data: "data",
+                model: {
+                    fields: {
+                        "Id": { type: "number", editable: false }, "IdMenu": {type: "number"}, "StrMenu": { type: "string" , editable: false }, "IsCreate": {type: "boolean"}, "IsRead": { type: "boolean" },
+                        "IsUpdate": { type: "boolean" }, "IsDelete": { type: "boolean" }, "IsPrint": { type: "boolean" }, "IsProses": { type: "boolean" },
+                    }
+                }
+            },
+            sortable: true,
+        });
+
+        operasionalGrid = new kendo.data.DataSource({
+            transport: {
+                read: {
+                    url: '/Menu/BindingByUser?modul=Operasional&user_id=' + $('#Id').val(),
+                    dataType: "json"
+                },
+            },
+            batch: true,
+            schema: {
+                total: "total",
+                data: "data",
+                model: {
+                    fields: {
+                        "Id": { type: "number", editable: false }, "IdMenu": {type: "number"}, "StrMenu": { type: "string" , editable: false }, "IsCreate": { type: "boolean" }, "IsRead": {type: "boolean"},
+                        "IsUpdate": { type: "boolean" }, "IsDelete": { type: "boolean" }, "IsPrint": { type: "boolean" }, "IsProses": { type: "boolean" },
+                    }
+                }
+            },
+            sortable: true,
+        });
+
+        HRGrid = new kendo.data.DataSource({
+            transport: {
+                read: {
+                    url: '/Menu/BindingByUser?modul=HR&user_id=' + $('#Id').val(),
+                    dataType: "json"
+                },
+            },
+            batch: true,
+            schema: {
+                total: "total", data: "data",
+                model: {
+                    fields: {
+                        "Id": { type: "number", editable: false }, "IdMenu": {type: "number"}, "StrMenu": { type: "string" , editable: false }, "IsCreate": { type: "boolean" }, "IsRead": {type: "boolean"},
+                        "IsUpdate": { type: "boolean" }, "IsDelete": { type: "boolean" }, "IsPrint": { type: "boolean" }, "IsProses": { type: "boolean" },
+                    }
+                }
+            },
+            sortable: true,
+        });
+
+        GAGrid = new kendo.data.DataSource({
+            transport: {
+                read: {
+                    url: '/Menu/BindingByUser?modul=GA&user_id=' + $('#Id').val(),
+                    dataType: "json"
+                },
+            },
+            batch: true,
+            schema: {
+                total: "total", data: "data",
+                model: {
+                    fields: {
+                        "Id": { type: "number", editable: false }, "IdMenu": {type: "number"}, "StrMenu": { type: "string" , editable: false }, "IsCreate": {type: "boolean"}, "IsRead": { type: "boolean" },
+                        "IsUpdate": { type: "boolean" }, "IsDelete": { type: "boolean" }, "IsPrint": { type: "boolean" }, "IsProses": { type: "boolean" },
+                    }
+                }
+            },
+            sortable: true,
+        });
+
+        FinanceGrid = new kendo.data.DataSource({
+            transport: {
+                read: {
+                    url: '/Menu/BindingByUser?modul=Finance&user_id=' + $('#Id').val(),
+                    dataType: "json"
+                },
+            },
+            batch: true,
+            schema: {
+                total: "total", data: "data",
+                model: {
+                    fields: {
+                        "Id": { type: "number", editable: false }, "IdMenu": {type: "number"}, "StrMenu": {type: "string" , editable: false}, "IsCreate": {type: "boolean"}, "IsRead": { type: "boolean" },
+                        "IsUpdate": { type: "boolean" }, "IsDelete": { type: "boolean" }, "IsPrint": { type: "boolean" }, "IsProses": { type: "boolean" },
+                    }
+                }
+            },
+            sortable: true,
+        });
+
+        WorkshopGrid = new kendo.data.DataSource({
+            transport: {
+                read: {
+                    url: '/Menu/BindingByUser?modul=Workshop&user_id=' + $('#Id').val(),
+                    dataType: "json"
+                },
+            },
+            batch: true,
+            schema: {
+                total: "total",
+                data: "data",
+                model: {
+                    fields: {
+                        "Id": { type: "number", editable: false }, "IdMenu": {type: "number"}, "StrMenu": { type: "string" , editable: false }, "IsCreate": {type: "boolean"}, "IsRead": { type: "boolean" },
+                        "IsUpdate": { type: "boolean" }, "IsDelete": { type: "boolean" }, "IsPrint": { type: "boolean" }, "IsProses": { type: "boolean" },
+                    }
+                }
+            },
+            sortable: true,
+        });
+
+        CustomerServiceGrid = new kendo.data.DataSource({
+            transport: {
+                read: {
+                    url: '/Menu/BindingByUser?modul=Customer Service&user_id=' + $('#Id').val(),
+                    dataType: "json"
+                },
+            },
+            batch: true,
+            schema: {
+                total: "total", data: "data",
+                model: {
+                    fields: {
+                        "Id": { type: "number", editable: false }, "IdMenu": {type: "number"}, "StrMenu": { type: "string" , editable: false }, "IsCreate": {type: "boolean"}, "IsRead": { type: "boolean" },
+                        "IsUpdate": { type: "boolean" }, "IsDelete": { type: "boolean" }, "IsPrint": { type: "boolean" }, "IsProses": { type: "boolean" },
+                    }
+                }
+            },
+            sortable: true,
+        });
+
+        SettingGrid = new kendo.data.DataSource({
+            transport: {
+                read: {
+                    url: '/Menu/BindingByUser?modul=Setting&user_id=' + $('#Id').val(),
+                    dataType: "json"
+                },
+            },
+            batch: true,
+            schema: {
+                total: "total", data: "data",
+                model: {
+                    fields: {
+                        "Id": { type: "number", editable: false }, "IdMenu": {type: "number"}, "StrMenu": { type: "string" , editable: false }, "IsCreate": {type: "boolean"}, "IsRead": { type: "boolean" },
+                        "IsUpdate": { type: "boolean" }, "IsDelete": { type: "boolean" }, "IsPrint": { type: "boolean" }, "IsProses": { type: "boolean" },
+                    }
+                }
+            },
+            sortable: true,
+        });
+
+        SolarInapGrid = new kendo.data.DataSource({
+            transport: {
+                read: {
+                    url: '/Menu/BindingByUser?modul=Solar Inap&user_id=' + $('#Id').val(),
+                    dataType: "json"
+                },
+            },
+            batch: true,
+            schema: {
+                total: "total", data: "data",
+                model: {
+                    fields: {
+                        "Id": { type: "number", editable: false }, "IdMenu": {type: "number"}, "StrMenu": { type: "string" , editable: false }, "IsCreate": {type: "boolean"}, "IsRead": { type: "boolean" },
+                        "IsUpdate": { type: "boolean" }, "IsDelete": { type: "boolean" }, "IsPrint": { type: "boolean" }, "IsProses": { type: "boolean" },
+                    }
+                }
+            },
+            sortable: true,
+        });
+
+        UserManagementGrid = new kendo.data.DataSource({
+            transport: {
+                read: {
+                    url: '/Menu/BindingByUser?modul=User Management&user_id=' + $('#Id').val(),
+                    dataType: "json"
+                },
+            },
+            batch: true,
+            schema: {
+                total: "total", data: "data",
+                model: {
+                    fields: {
+                        "Id": { type: "number", editable: false }, "IdMenu": {type: "number"}, "StrMenu": { type: "string" , editable: false }, "IsCreate": {type: "boolean"}, "IsRead": { type: "boolean" },
+                        "IsUpdate": { type: "boolean" }, "IsDelete": { type: "boolean" }, "IsPrint": { type: "boolean" }, "IsProses": { type: "boolean" },
+                    }
+                }
+            },
+            sortable: true,
+        });
+
+        ReportGrid = new kendo.data.DataSource({
+            transport: {
+                read: {
+                    url: '/Menu/BindingByUser?modul=Report&user_id=' + $('#Id').val(),
+                    dataType: "json"
+                },
+            },
+            batch: true,
+            schema: {
+                total: "total", data: "data",
+                model: {
+                    fields: {
+                        "Id": { type: "number", editable: false }, "IdMenu": {type: "number"}, "StrMenu": { type: "string" , editable: false }, "IsCreate": {type: "boolean"}, "IsRead": { type: "boolean" },
+                        "IsUpdate": { type: "boolean" }, "IsDelete": { type: "boolean" }, "IsPrint": { type: "boolean" }, "IsProses": { type: "boolean" },
+                    }
+                }
+            },
+            sortable: true,
+        });
+
+        DashboardGrid = new kendo.data.DataSource({
+            transport: {
+                read: {
+                    url: '/Menu/BindingByUser?modul=Dashboard&user_id=' + $('#Id').val(),
+                    dataType: "json"
+                },
+            },
+            batch: true,
+            schema: {
+                total: "total", data: "data",
+                model: {
+                    fields: {
+                        "Id": { type: "number", editable: false }, "IdMenu": {type: "number"}, "StrMenu": { type: "string" , editable: false }, "IsCreate": {type: "boolean"}, "IsRead": { type: "boolean" },
+                        "IsUpdate": { type: "boolean" }, "IsDelete": { type: "boolean" }, "IsPrint": { type: "boolean" }, "IsProses": { type: "boolean" },
+                    }
+                }
+            },
+            sortable: true,
+        });
+
+    $(document).ready(function () {
+        masterMenu = $("#masterMenu").kendoGrid({
+            dataSource: masterGrid,
+            filterable: kendoGridFilterable,
+            scrollable : false,
+            editable: true,
+            columns: [
+                { field: "StrMenu", title: "Menu", }, { field: "IsRead", title: "Read", template: '<span class="glyphicon glyphicon-#= IsRead ? "ok" : "remove" # "></span>',},
+                { field: "IsCreate", title: "Create", template: '<span class="glyphicon glyphicon-#= IsCreate ? "ok" : "remove" # "></span>', },
+                { field: "IsUpdate", title: "Update", template: '<span class="glyphicon glyphicon-#= IsUpdate ? "ok" : "remove" # "></span>',},
+                { field: "IsDelete", title: "Delete", template: '<span class="glyphicon glyphicon-#= IsDelete ? "ok" : "remove" # "></span>',},
+                { field: "IsPrint", title: "Print", template: '<span class="glyphicon glyphicon-#= IsPrint ? "ok" : "remove" # "></span>',},
+                { field: "IsProses", title: "Proses", template: '<span class="glyphicon glyphicon-#= IsProses ? "ok" : "remove" # "></span>',},
+            ],
+        }).data("kendoGrid");
+
+        dmMenu = $("#dmMenu").kendoGrid({
+            dataSource: dmGrid,
+            filterable: kendoGridFilterable,
+            scrollable : false,
+            editable: true,
+            columns: [
+                { field: "StrMenu", title: "Menu", }, { field: "IsRead", title: "Read", template: '<span class="glyphicon glyphicon-#= IsRead ? "ok" : "remove" # "></span>',},
+                { field: "IsCreate", title: "Create", template: '<span class="glyphicon glyphicon-#= IsCreate ? "ok" : "remove" # "></span>', },
+                { field: "IsUpdate", title: "Update", template: '<span class="glyphicon glyphicon-#= IsUpdate ? "ok" : "remove" # "></span>',},
+                { field: "IsDelete", title: "Delete", template: '<span class="glyphicon glyphicon-#= IsDelete ? "ok" : "remove" # "></span>',},
+                { field: "IsPrint", title: "Print", template: '<span class="glyphicon glyphicon-#= IsPrint ? "ok" : "remove" # "></span>',},
+                { field: "IsProses", title: "Proses", template: '<span class="glyphicon glyphicon-#= IsProses ? "ok" : "remove" # "></span>',},
+            ],
+        }).data("kendoGrid");
+
+        marketing = $("#marketingMenu").kendoGrid({
+            dataSource: marketingGrid,
+            filterable: kendoGridFilterable,
+            scrollable : false,
+            editable: true,
+            columns: [
+                { field: "StrMenu", title: "Menu", }, { field: "IsRead", title: "Read", template: '<span class="glyphicon glyphicon-#= IsRead ? "ok" : "remove" # "></span>',},
+                { field: "IsCreate", title: "Create", template: '<span class="glyphicon glyphicon-#= IsCreate ? "ok" : "remove" # "></span>', },
+                { field: "IsUpdate", title: "Update", template: '<span class="glyphicon glyphicon-#= IsUpdate ? "ok" : "remove" # "></span>',},
+                { field: "IsDelete", title: "Delete", template: '<span class="glyphicon glyphicon-#= IsDelete ? "ok" : "remove" # "></span>',},
+                { field: "IsPrint", title: "Print", template: '<span class="glyphicon glyphicon-#= IsPrint ? "ok" : "remove" # "></span>',},
+                { field: "IsProses", title: "Proses", template: '<span class="glyphicon glyphicon-#= IsProses ? "ok" : "remove" # "></span>',},
+            ],
+        }).data("kendoGrid");
+
+        operasionalMenu = $("#operasionalMenu").kendoGrid({
+            dataSource: operasionalGrid,
+            filterable: kendoGridFilterable,
+            scrollable : false,
+            editable: true,
+            columns: [
+                { field: "StrMenu", title: "Menu", }, { field: "IsRead", title: "Read", template: '<span class="glyphicon glyphicon-#= IsRead ? "ok" : "remove" # "></span>',},
+                { field: "IsCreate", title: "Create", template: '<span class="glyphicon glyphicon-#= IsCreate ? "ok" : "remove" # "></span>', },
+                { field: "IsUpdate", title: "Update", template: '<span class="glyphicon glyphicon-#= IsUpdate ? "ok" : "remove" # "></span>',},
+                { field: "IsDelete", title: "Delete", template: '<span class="glyphicon glyphicon-#= IsDelete ? "ok" : "remove" # "></span>',},
+                { field: "IsPrint", title: "Print", template: '<span class="glyphicon glyphicon-#= IsPrint ? "ok" : "remove" # "></span>',},
+                { field: "IsProses", title: "Proses", template: '<span class="glyphicon glyphicon-#= IsProses ? "ok" : "remove" # "></span>',},
+            ],
+        }).data("kendoGrid");
+
+        HRMenu = $("#HRMenu").kendoGrid({
+            dataSource: HRGrid,
+            filterable: kendoGridFilterable,
+            scrollable : false,
+            editable: true,
+            columns: [
+                { field: "StrMenu", title: "Menu", }, { field: "IsRead", title: "Read", template: '<span class="glyphicon glyphicon-#= IsRead ? "ok" : "remove" # "></span>',},
+                { field: "IsCreate", title: "Create", template: '<span class="glyphicon glyphicon-#= IsCreate ? "ok" : "remove" # "></span>', },
+                { field: "IsUpdate", title: "Update", template: '<span class="glyphicon glyphicon-#= IsUpdate ? "ok" : "remove" # "></span>',},
+                { field: "IsDelete", title: "Delete", template: '<span class="glyphicon glyphicon-#= IsDelete ? "ok" : "remove" # "></span>',},
+                { field: "IsPrint", title: "Print", template: '<span class="glyphicon glyphicon-#= IsPrint ? "ok" : "remove" # "></span>',},
+                { field: "IsProses", title: "Proses", template: '<span class="glyphicon glyphicon-#= IsProses ? "ok" : "remove" # "></span>',},
+            ],
+        }).data("kendoGrid");
+
+        GAMenu = $("#GAMenu").kendoGrid({
+            dataSource: GAGrid,
+            filterable: kendoGridFilterable,
+            scrollable : false,
+            editable: true,
+            columns: [
+                { field: "StrMenu", title: "Menu", }, { field: "IsRead", title: "Read", template: '<span class="glyphicon glyphicon-#= IsRead ? "ok" : "remove" # "></span>',},
+                { field: "IsCreate", title: "Create", template: '<span class="glyphicon glyphicon-#= IsCreate ? "ok" : "remove" # "></span>', },
+                { field: "IsUpdate", title: "Update", template: '<span class="glyphicon glyphicon-#= IsUpdate ? "ok" : "remove" # "></span>',},
+                { field: "IsDelete", title: "Delete", template: '<span class="glyphicon glyphicon-#= IsDelete ? "ok" : "remove" # "></span>',},
+                { field: "IsPrint", title: "Print", template: '<span class="glyphicon glyphicon-#= IsPrint ? "ok" : "remove" # "></span>',},
+                { field: "IsProses", title: "Proses", template: '<span class="glyphicon glyphicon-#= IsProses ? "ok" : "remove" # "></span>',},
+            ],
+        }).data("kendoGrid");
+
+        FinanceMenu = $("#FinanceMenu").kendoGrid({
+            dataSource: FinanceGrid,
+            filterable: kendoGridFilterable,
+            scrollable : false,
+            editable: true,
+            columns: [
+                { field: "StrMenu", title: "Menu", }, { field: "IsRead", title: "Read", template: '<span class="glyphicon glyphicon-#= IsRead ? "ok" : "remove" # "></span>',},
+                { field: "IsCreate", title: "Create", template: '<span class="glyphicon glyphicon-#= IsCreate ? "ok" : "remove" # "></span>', },
+                { field: "IsUpdate", title: "Update", template: '<span class="glyphicon glyphicon-#= IsUpdate ? "ok" : "remove" # "></span>',},
+                { field: "IsDelete", title: "Delete", template: '<span class="glyphicon glyphicon-#= IsDelete ? "ok" : "remove" # "></span>',},
+                { field: "IsPrint", title: "Print", template: '<span class="glyphicon glyphicon-#= IsPrint ? "ok" : "remove" # "></span>',},
+                { field: "IsProses", title: "Proses", template: '<span class="glyphicon glyphicon-#= IsProses ? "ok" : "remove" # "></span>',},
+            ],
+        }).data("kendoGrid");
+
+        WorkshopMenu = $("#WorkshopMenu").kendoGrid({
+            dataSource: WorkshopGrid,
+            filterable: kendoGridFilterable,
+            scrollable : false,
+            editable: true,
+            columns: [
+                { field: "StrMenu", title: "Menu", }, { field: "IsRead", title: "Read", template: '<span class="glyphicon glyphicon-#= IsRead ? "ok" : "remove" # "></span>',},
+                { field: "IsCreate", title: "Create", template: '<span class="glyphicon glyphicon-#= IsCreate ? "ok" : "remove" # "></span>', },
+                { field: "IsUpdate", title: "Update", template: '<span class="glyphicon glyphicon-#= IsUpdate ? "ok" : "remove" # "></span>',},
+                { field: "IsDelete", title: "Delete", template: '<span class="glyphicon glyphicon-#= IsDelete ? "ok" : "remove" # "></span>',},
+                { field: "IsPrint", title: "Print", template: '<span class="glyphicon glyphicon-#= IsPrint ? "ok" : "remove" # "></span>',},
+                { field: "IsProses", title: "Proses", template: '<span class="glyphicon glyphicon-#= IsProses ? "ok" : "remove" # "></span>',},
+            ],
+        }).data("kendoGrid");
+
+        SettingMenu = $("#SettingMenu").kendoGrid({
+            dataSource: SettingGrid,
+            filterable: kendoGridFilterable,
+            scrollable : false,
+            editable: true,
+            columns: [
+                { field: "StrMenu", title: "Menu", }, { field: "IsRead", title: "Read", template: '<span class="glyphicon glyphicon-#= IsRead ? "ok" : "remove" # "></span>',},
+                { field: "IsCreate", title: "Create", template: '<span class="glyphicon glyphicon-#= IsCreate ? "ok" : "remove" # "></span>', },
+                { field: "IsUpdate", title: "Update", template: '<span class="glyphicon glyphicon-#= IsUpdate ? "ok" : "remove" # "></span>',},
+                { field: "IsDelete", title: "Delete", template: '<span class="glyphicon glyphicon-#= IsDelete ? "ok" : "remove" # "></span>',},
+                { field: "IsPrint", title: "Print", template: '<span class="glyphicon glyphicon-#= IsPrint ? "ok" : "remove" # "></span>',},
+                { field: "IsProses", title: "Proses", template: '<span class="glyphicon glyphicon-#= IsProses ? "ok" : "remove" # "></span>',},
+            ],
+        }).data("kendoGrid");
+
+        SolarInapMenu = $("#SolarInapMenu").kendoGrid({
+            dataSource: SolarInapGrid,
+            filterable: kendoGridFilterable,
+            scrollable : false,
+            editable: true,
+            columns: [
+                { field: "StrMenu", title: "Menu", }, { field: "IsRead", title: "Read", template: '<span class="glyphicon glyphicon-#= IsRead ? "ok" : "remove" # "></span>',},
+                { field: "IsCreate", title: "Create", template: '<span class="glyphicon glyphicon-#= IsCreate ? "ok" : "remove" # "></span>', },
+                { field: "IsUpdate", title: "Update", template: '<span class="glyphicon glyphicon-#= IsUpdate ? "ok" : "remove" # "></span>',},
+                { field: "IsDelete", title: "Delete", template: '<span class="glyphicon glyphicon-#= IsDelete ? "ok" : "remove" # "></span>',},
+                { field: "IsPrint", title: "Print", template: '<span class="glyphicon glyphicon-#= IsPrint ? "ok" : "remove" # "></span>',},
+                { field: "IsProses", title: "Proses", template: '<span class="glyphicon glyphicon-#= IsProses ? "ok" : "remove" # "></span>',},
+            ],
+        }).data("kendoGrid");
+
+        umMenu = $("#UserManagementMenu").kendoGrid({
+            dataSource: UserManagementGrid,
+            filterable: kendoGridFilterable,
+            scrollable : false,
+            editable: true,
+            columns: [
+                { field: "StrMenu", title: "Menu", }, { field: "IsRead", title: "Read", template: '<span class="glyphicon glyphicon-#= IsRead ? "ok" : "remove" # "></span>',},
+                { field: "IsCreate", title: "Create", template: '<span class="glyphicon glyphicon-#= IsCreate ? "ok" : "remove" # "></span>', },
+                { field: "IsUpdate", title: "Update", template: '<span class="glyphicon glyphicon-#= IsUpdate ? "ok" : "remove" # "></span>',},
+                { field: "IsDelete", title: "Delete", template: '<span class="glyphicon glyphicon-#= IsDelete ? "ok" : "remove" # "></span>',},
+                { field: "IsPrint", title: "Print", template: '<span class="glyphicon glyphicon-#= IsPrint ? "ok" : "remove" # "></span>',},
+                { field: "IsProses", title: "Proses", template: '<span class="glyphicon glyphicon-#= IsProses ? "ok" : "remove" # "></span>',},
+            ],
+        }).data("kendoGrid");
+
+        csMenu = $("#CustomerServiceMenu").kendoGrid({
+            dataSource: CustomerServiceGrid,
+            filterable: kendoGridFilterable,
+            scrollable : false,
+            editable: true,
+            columns: [
+                { field: "StrMenu", title: "Menu", }, { field: "IsRead", title: "Read", template: '<span class="glyphicon glyphicon-#= IsRead ? "ok" : "remove" # "></span>',},
+                { field: "IsCreate", title: "Create", template: '<span class="glyphicon glyphicon-#= IsCreate ? "ok" : "remove" # "></span>', },
+                { field: "IsUpdate", title: "Update", template: '<span class="glyphicon glyphicon-#= IsUpdate ? "ok" : "remove" # "></span>',},
+                { field: "IsDelete", title: "Delete", template: '<span class="glyphicon glyphicon-#= IsDelete ? "ok" : "remove" # "></span>',},
+                { field: "IsPrint", title: "Print", template: '<span class="glyphicon glyphicon-#= IsPrint ? "ok" : "remove" # "></span>',},
+                { field: "IsProses", title: "Proses", template: '<span class="glyphicon glyphicon-#= IsProses ? "ok" : "remove" # "></span>',},
+            ],
+        }).data("kendoGrid");
+
+        reportMenu = $("#ReportMenu").kendoGrid({
+            dataSource: ReportGrid,
+            filterable: kendoGridFilterable,
+            scrollable : false,
+            editable: true,
+            columns: [
+                { field: "StrMenu", title: "Menu", }, { field: "IsRead", title: "Read", template: '<span class="glyphicon glyphicon-#= IsRead ? "ok" : "remove" # "></span>',},
+                { field: "IsCreate", title: "Create", template: '<span class="glyphicon glyphicon-#= IsCreate ? "ok" : "remove" # "></span>', },
+                { field: "IsUpdate", title: "Update", template: '<span class="glyphicon glyphicon-#= IsUpdate ? "ok" : "remove" # "></span>',},
+                { field: "IsDelete", title: "Delete", template: '<span class="glyphicon glyphicon-#= IsDelete ? "ok" : "remove" # "></span>',},
+                { field: "IsPrint", title: "Print", template: '<span class="glyphicon glyphicon-#= IsPrint ? "ok" : "remove" # "></span>',},
+                { field: "IsProses", title: "Proses", template: '<span class="glyphicon glyphicon-#= IsProses ? "ok" : "remove" # "></span>',},
+            ],
+        }).data("kendoGrid");
+
+        dashboardMenu = $("#DashboardMenu").kendoGrid({
+            dataSource: DashboardGrid,
+            filterable: kendoGridFilterable,
+            scrollable : false,
+            editable: true,
+            columns: [
+                { field: "StrMenu", title: "Menu", }, { field: "IsRead", title: "Read", template: '<span class="glyphicon glyphicon-#= IsRead ? "ok" : "remove" # "></span>',},
+                { field: "IsCreate", title: "Create", template: '<span class="glyphicon glyphicon-#= IsCreate ? "ok" : "remove" # "></span>', },
+                { field: "IsUpdate", title: "Update", template: '<span class="glyphicon glyphicon-#= IsUpdate ? "ok" : "remove" # "></span>',},
+                { field: "IsDelete", title: "Delete", template: '<span class="glyphicon glyphicon-#= IsDelete ? "ok" : "remove" # "></span>',},
+                { field: "IsPrint", title: "Print", template: '<span class="glyphicon glyphicon-#= IsPrint ? "ok" : "remove" # "></span>',},
+                { field: "IsProses", title: "Proses", template: '<span class="glyphicon glyphicon-#= IsProses ? "ok" : "remove" # "></span>',},
+            ],
+        }).data("kendoGrid");
+    })
+
+    function DoCheck(e, elGrid)
+    {
+        var _grid = elGrid.data('kendoGrid');
+        var datagrid = _grid.dataSource.data();
+        for (i = 0; i < datagrid.length; i++) {
+            if (e.checked) {
+                datagrid[i]['IsRead'] = true;
+                datagrid[i]['IsCreate'] = true;
+                datagrid[i]['IsUpdate'] = true;
+                datagrid[i]['IsDelete'] = true;
+                datagrid[i]['IsPrint'] = true;
+                datagrid[i]['IsProses'] = true;
+            }
+            else {
+                datagrid[i]['IsRead'] = false;
+                datagrid[i]['IsCreate'] = false;
+                datagrid[i]['IsUpdate'] = false;
+                datagrid[i]['IsDelete'] = false;
+                datagrid[i]['IsPrint'] = false;
+                datagrid[i]['IsProses'] = false;
+            }
+        }
+        _grid.refresh();
+    }
+
+    $('#formsubmit').submit(function (e) {
+        var grid = $('#FinanceMenu').data('kendoGrid');
+        grid.saveRow();
+        var data = grid.dataSource.data();
+
+        var sigrid = $('#SolarInapMenu').data('kendoGrid');
+        sigrid.saveRow();
+        var sidata = sigrid.dataSource.data();
+        for (i = 0; i < sidata.length; i++){
+            data.push(sidata[i])
+        }
+
+        var mgrid = $('#marketingMenu').data('kendoGrid');
+        mgrid.saveRow();
+        var mdata = mgrid.dataSource.data();
+        for (i = 0; i < mdata.length; i++){
+            data.push(mdata[i])
+        }
+
+        var ogrid = $('#operasionalMenu').data('kendoGrid');
+        ogrid.saveRow();
+        var odata = ogrid.dataSource.data();
+        for (i = 0; i < odata.length; i++){
+            data.push(odata[i])
+        }
+
+        var dgrid = $('#dmMenu').data('kendoGrid');
+        dgrid.saveRow();
+        var ddata = dgrid.dataSource.data();
+        for (i = 0; i < ddata.length; i++){
+            data.push(ddata[i])
+        }
+
+        var wgrid = $('#WorkshopMenu').data('kendoGrid');
+        wgrid.saveRow();
+        var wdata = wgrid.dataSource.data();
+        for (i = 0; i < wdata.length; i++){
+            data.push(wdata[i])
+        }
+
+        var ggrid = $('#GAMenu').data('kendoGrid');
+        ggrid.saveRow();
+        var gdata = ggrid.dataSource.data();
+        for (i = 0; i < gdata.length; i++){
+            data.push(gdata[i])
+        } 
+
+        var hgrid = $('#HRMenu').data('kendoGrid');
+        hgrid.saveRow();
+        var hdata = hgrid.dataSource.data();
+        for (i = 0; i < hdata.length; i++){
+            data.push(hdata[i])
+        } 
+
+        var sgrid = $('#SettingMenu').data('kendoGrid');
+        sgrid.saveRow();
+        var sdata = sgrid.dataSource.data();
+        for (i = 0; i < sdata.length; i++){
+            data.push(sdata[i])
+        }
+
+        var mastergrid = $('#masterMenu').data('kendoGrid');
+        mastergrid.saveRow();
+        var masterdata = mastergrid.dataSource.data();
+        for (i = 0; i < masterdata.length; i++){
+            data.push(masterdata[i])
+        } 
+
+        var umgrid = $('#UserManagementMenu').data('kendoGrid');
+        umgrid.saveRow();
+        var umdata = umgrid.dataSource.data();
+        for (i = 0; i < umdata.length; i++){
+            data.push(umdata[i])
+        } 
+
+        var csgrid = $('#CustomerServiceMenu').data('kendoGrid');
+        csgrid.saveRow();
+        var csdata = csgrid.dataSource.data();
+        for (i = 0; i < csdata.length; i++){
+            data.push(csdata[i])
+        } 
+
+        var rgrid = $('#ReportMenu').data('kendoGrid');
+        rgrid.saveRow();
+        var rdata = rgrid.dataSource.data();
+        for (i = 0; i < rdata.length; i++){
+            data.push(rdata[i])
+        }
+
+        var dgrid = $('#DashboardMenu').data('kendoGrid');
+        dgrid.saveRow();
+        var ddata = dgrid.dataSource.data();
+        for (i = 0; i < ddata.length; i++){
+            data.push(ddata[i])
+        }
+
+        $('#StrMenu').val(JSON.stringify(data));
+
+    })
+    </script>
+}

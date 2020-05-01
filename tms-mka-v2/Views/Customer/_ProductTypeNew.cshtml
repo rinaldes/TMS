@@ -1,0 +1,112 @@
+﻿@model tms_mka_v2.Models.Customer
+
+@{
+    string currentController = (string)ViewContext.RouteData.Values["controller"];
+    string currentAction = (string)ViewContext.RouteData.Values["action"];
+    ViewBag.SubTitle = "Customer Product Type";
+}
+<div class="row ">
+    <div class="col-md-6">
+        <div class="btn-group">
+            <div class="caption">
+                <h2>@ViewBag.SubTitle</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="btn-group pull-right">
+            <span class="btn green" id="btnprodtypes" title="Product Types" data-toggle="modal" data-target="#modalFormProductType" onclick="ShowFromPt()">Add New Product Types</span>
+        </div>
+    </div>
+</div>
+<br />
+@using (Html.BeginForm("UpdateCustProdType", currentController))
+{
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(model => model.Id)
+    <div id="GridCustProduct"></div>
+}
+
+<div id="modalFormProductType" class="modal fade bs-modal-lg" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                <h4 class="modal-title">Product Type</h4>
+            </div>
+            <div class="modal-body">
+                <form id="formprodtype" class="form-horizontal">
+                    @Html.Hidden("ProductTypeId")
+                    <div class="form-group">
+                        <label class="control-label col-md-3">Nama Produk<span style="color:red;">*</span></label>
+                        @*@Html.Label("Nama Produk", new { @class = "control-label col-md-3" })*@
+                        <div class="col-md-7">
+                            <input id="ProductId" name="ProductId" required validationmessage="Product harus diisi" />
+                            <span class="k-invalid-msg" data-for="ProductId"></span>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        @Html.Label("Kategori", htmlAttributes: new { @class = "control-label col-md-3" })
+                        <div class="col-md-7">
+                            <input id="CategoryPt" name="CategoryPt" class="form-control input-sm" disabled="disabled" />
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        @Html.Label("Target Suhu", htmlAttributes: new { @class = "control-label col-md-3" })
+                        <div class="col-md-7">
+                            <input id="TargetSuhuPt" name="TargetSuhuPt" class="form-control input-sm" disabled="disabled" />
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        @Html.Label("Suhu Max", htmlAttributes: new { @class = "control-label col-md-3" })
+                        <div class="col-md-7">
+                            <input id="SuhuMaxPt" name="SuhuMaxPt" class="form-control input-sm" disabled="disabled" />
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        @Html.Label("Suhu Min", htmlAttributes: new { @class = "control-label col-md-3" })
+                        <div class="col-md-7">
+                            <input id="SuhuMinPt" name="SuhuMinPt" class="form-control input-sm" disabled="disabled" />
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        @Html.Label("Interval Alert", htmlAttributes: new { @class = "control-label col-md-3" })
+                        <div class="col-md-7">
+                            <input id="TresholdPt" name="TresholdPt" class="form-control input-sm" disabled="disabled" />
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        @Html.Label("Keterangan", htmlAttributes: new { @class = "control-label col-md-3" })
+                        <div class="col-md-7">
+                            <input id="KeteranganPt" name="KeteranganPt" class="form-control input-sm" disabled="disabled" />
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        @Html.Label("Penanganan Khusus", htmlAttributes: new { @class = "control-label col-md-3" })
+                        <div class="col-md-7">
+                            <div class="checkbox-list">
+                                @foreach (tms_mka_v2.Context.LookupCode item in Model.ListTreatment)
+                                {
+                                    <input type="checkbox" name="SpecialTreatment" value="@item.Nama" />
+                                    @item.Nama
+                                    <br />
+                                    <br />
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn green" onclick="SavePt($('#Condition').val());">Submit</button>
+            </div>
+        </div>
+    </div>
+</div>

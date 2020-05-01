@@ -1,0 +1,199 @@
+﻿@using tms_mka_v2.Models;
+
+@model tms_mka_v2.Models.Driver
+@{
+    ViewBag.Title = "Form";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    string currentController = (string)ViewContext.RouteData.Values["controller"];
+    string currentAction = (string)ViewContext.RouteData.Values["action"];
+    string backLink = Url.Action("Index");
+    if (currentAction == "Add")
+    {
+        ViewBag.Title = "Tambah Driver";
+    }
+    else
+    {
+        ViewBag.Title = ViewBag.name + " | Edit";
+    }
+}
+<style>
+    span.k-widget.k-tooltip-validation {
+        display;
+        inline-block;
+        width: 160px;
+        text-align: left;
+        border: 0;
+        padding: 0;
+        margin: 0;
+        background: none;
+        box-shadow: none;
+        color: red;
+        font-size: smaller;
+    }
+
+    .k-tooltip-validation .k-warning {
+        display: none;
+    }
+</style>
+<script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?sensor=false&key=AIzaSyBfPWT55ybzPawdPYh58Y85LICkYHQe27U"></script>
+<div class="portlet light">
+    <div class="portlet-title">
+        <div class="caption">
+            <span class="caption-subject font-dark sbold uppercase">@ViewBag.Title</span>
+        </div>
+    </div>
+    <div class="portlet-body form">
+        @using (@Html.BeginForm(currentAction, currentController, FormMethod.Post, new { @class = "form-horizontal", @id = "formsubmit" }))
+        {
+            @Html.ValidationSummary(true)
+            @Html.HiddenFor(model => model.Id)
+            <div class="form-horizontal">
+                <div class="portlet-body">
+                    <ul class="nav nav-tabs" id="wtab">
+                        <li class="active">
+                            <a href="#tab_BasicInfo" data-toggle="tab"> Basic Data </a>
+                        </li>
+                        <li>
+                            <a href="#tab_Dokumen" data-toggle="tab"> Dokumen </a>
+                        </li>
+                        <li>
+                            <a href="#tab_Historical" data-toggle="tab"> Historical Delivery </a>
+                        </li>
+                        <li>
+                            <a href="#tab_Training" data-toggle="tab"> Training </a>
+                        </li>
+                        <li>
+                            <a href="#tab_BAP" data-toggle="tab"> BAP/Pengajuan </a>
+                        </li>
+                        <li>
+                            <a href="#tab_Inventaris" data-toggle="tab"> Inventaris </a>
+                        </li>
+                        <li>
+                            <a href="#tab_Jasa" data-toggle="tab"> Jasa </a>
+                        </li>
+                        <li>
+                            <a href="#tab_Status" data-toggle="tab"> Status </a>
+                        </li>
+                        <li>
+                            <a href="#tab_Piutang" data-toggle="tab"> Piutang </a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="tab-content">
+                    <div class="tab-pane fade active in" id="tab_BasicInfo">
+                        @Html.Partial("_BasicInfo", Model)
+                    </div>
+                    <div class="tab-pane fade" id="tab_Dokumen">
+                        @Html.Partial("_Dokumen", Model)
+                    </div>
+                    <div class="tab-pane fade" id="tab_Status">
+                        @Html.Partial("_Status", Model)
+                    </div>
+                    <div class="tab-pane fade" id="tab_Historical">
+                        @Html.Partial("_Historical", Model)
+                    </div>
+                    <div class="tab-pane fade" id="tab_Inventaris">
+                        @Html.Partial("_Inventaris", Model)
+                    </div>
+                    <div class="tab-pane fade" id="tab_Jasa">
+                        @Html.Partial("_Jasa", Model)
+                    </div>
+                    <div class="tab-pane fade" id="tab_Training">
+                        @Html.Partial("_Training", Model)
+                    </div>
+                    <div class="tab-pane fade" id="tab_Piutang">
+                        @Html.Partial("_Piutang", Model)
+                    </div>
+                    <div class="tab-pane fade" id="tab_BAP">
+                        @Html.Partial("_BAP", Model)
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <button type="submit" class="btn btn-success" onclick="submitSementara()">Submit</button>
+                <a href="@backLink" class="btn btn-link">Cancel</a>
+            </div>
+        }
+    </div>
+</div>
+@section scripts{
+    <script src="~/Content/Driver/BasicInfo.js"></script>
+    <script src="~/Content/Driver/Dokumen.js"></script>
+    <script src="~/Content/Driver/HistoryStatus.js"></script>
+    <script src="~/Content/Driver/Inventaris.js"></script>
+    <script src="~/Content/Driver/Jasa.js"></script>
+    <script src="~/Content/Driver/HistorycalAll.js"></script>
+    <script src="~/Content/Driver/HistorycalOntime.js"></script>
+    <script src="~/Content/Driver/HistorycalOntemp.js"></script>
+    <script src="~/Content/Driver/HistorycalKlaim.js"></script>
+    <script src="~/Content/Driver/HistorycalTrans.js"></script>
+    <script src="~/Content/Driver/HistorycalSrtJln.js"></script>
+    <script src="~/Content/Driver/Training.js"></script>
+    <script src="~/Content/Driver/Piutang.js"></script>
+    <script src="~/Content/Driver/BAP.js"></script>
+
+    <script type="text/javascript">
+
+        $('#formsubmit').submit(function (e) {
+            if (isNaN(cboKota.value()))
+                $('#IdKabKota').val('@Model.IdKabKota');
+            if (isNaN(cboKec.value()))
+                $('#IdKec').val('@Model.IdKec');
+            if (isNaN(cboKel.value()))
+                $('#IdKel').val('@Model.IdKel');
+
+            if (isNaN(cboKotaDomisili.value()))
+                $('#IdKabKotaDomisili').val('@Model.IdKabKotaDomisili');
+            if (isNaN(cboKecDomisili.value()))
+                $('#IdKecDomisili').val('@Model.IdKecDomisili');
+            if (isNaN(cboKelDomisili.value()))
+                $('#IdKelDomisili').val('@Model.IdKelDomisili');
+
+            $("#UrlKemitraan").val(listuploadMitra.map(function(a) {return a.name;}));
+            $("#UrlJaminanKel").val(listuploadJaminan.map(function (a) { return a.name; }));
+            $("#UrlIjazah").val(listuploadIjazah.map(function (a) { return a.name; }));
+            $("#UrlBukuNikah").val(listuploadBukuNikah.map(function (a) { return a.name; }));
+            $("#UrlSKCK").val(listuploadSKCK.map(function (a) { return a.name; }));
+            $("#UrlDomisili").val(listuploadDomisili.map(function (a) { return a.name; }));
+            $("#UrlKK").val(listuploadKK.map(function (a) { return a.name; }));
+            $("#UrlKTP").val(listuploadKTP.map(function (a) { return a.name; }));
+            $("#UrlSIM").val(listuploadSim.map(function (a) { return a.name; }));
+        })
+
+ 
+        setTimeout(function () {
+            callSrtJln()
+        }, 1000)
+        //#region action modal form
+
+        function submitSementara(){
+            if (isNaN(cboKota.value()))
+                $('#IdKabKota').val('@Model.IdKabKota');
+            if (isNaN(cboKec.value()))
+                $('#IdKec').val('@Model.IdKec');
+            if (isNaN(cboKel.value()))
+                $('#IdKel').val('@Model.IdKel');
+
+            if (isNaN(cboKotaDomisili.value()))
+                $('#IdKabKotaDomisili').val('@Model.IdKabKotaDomisili');
+            if (isNaN(cboKecDomisili.value()))
+                $('#IdKecDomisili').val('@Model.IdKecDomisili');
+            if (isNaN(cboKelDomisili.value()))
+                $('#IdKelDomisili').val('@Model.IdKelDomisili');
+
+            $("#UrlKemitraan").val(listuploadMitra.map(function(a) {return a.name;}));
+            $("#UrlJaminanKel").val(listuploadJaminan.map(function (a) { return a.name; }));
+            $("#UrlIjazah").val(listuploadIjazah.map(function (a) { return a.name; }));
+            $("#UrlBukuNikah").val(listuploadBukuNikah.map(function (a) { return a.name; }));
+            $("#UrlSKCK").val(listuploadSKCK.map(function (a) { return a.name; }));
+            $("#UrlDomisili").val(listuploadDomisili.map(function (a) { return a.name; }));
+            $("#UrlKK").val(listuploadKK.map(function (a) { return a.name; }));
+            $("#UrlKTP").val(listuploadKTP.map(function (a) { return a.name; }));
+            $("#UrlSIM").val(listuploadSim.map(function (a) { return a.name; }));
+            $('#formsubmit').submit()
+        }
+    </script>
+    <script id="jenisOrder-template" type="text/x-kendo-template">
+        <a href="\\#" onclick="window.open('/Klaim/Edit?id=#= Id #', '_blank')">#=Keterangan#</a>
+    </script>
+}

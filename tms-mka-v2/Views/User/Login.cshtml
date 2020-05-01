@@ -1,0 +1,75 @@
+﻿@using tms_mka_v2.Models;
+
+@model tms_mka_v2.Models.User
+@{
+    Layout = null;
+    string currentController = (string)ViewContext.RouteData.Values["controller"];
+    string currentAction = (string)ViewContext.RouteData.Values["action"];
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>TMS | MKA</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta content="width=device-width, initial-scale=1" name="viewport" />
+    <!-- BEGIN GLOBAL MANDATORY STYLES -->
+    <link href="http://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700&subset=all" rel="stylesheet" type="text/css" />
+    <link rel="shortcut icon" href="~/Content/img/logoMKA1.png" />
+
+    @System.Web.Optimization.Styles.Render("~/cssApp")
+    @System.Web.Optimization.Styles.Render("~/cssKendo")
+    @System.Web.Optimization.Styles.Render("~/cssLogin")
+</head>
+<body class="login">
+    <!-- BEGIN LOGO -->
+    <div class="logo">
+        <a href="index.html">
+            <img src="~/Content/img/logoMKA1.png" alt="" />
+        </a>
+    </div>
+    <!-- END LOGO -->
+    <!-- BEGIN LOGIN -->
+    <div class="content">
+        <!-- BEGIN LOGIN FORM -->
+        @using (@Html.BeginForm(currentAction, currentController, FormMethod.Post, new { @class = "login-form" }))
+        {
+            <h3 class="form-title font-green">Sign In</h3>
+            <div class="alert alert-danger display-hide">
+                <button class="close" data-close="alert"></button>
+                <span> Enter any username and password. </span>
+            </div>
+            <div class="form-group">
+                <!--ie8, ie9 does not support html5 placeholder, so we just show field title for that-->
+                @Html.LabelFor(model => model.Username, new { @class = "control-label visible-ie8 visible-ie9" })
+                @Html.TextBoxFor(model => model.Username, new { @class = "form-control form-control-solid placeholder-no-fix", @autocomplete = "off", @placeholder = "Username", @name = "username" })
+                @Html.ValidationMessageFor(model => model.Username)
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.Password, new { @class = "control-label visible-ie8 visible-ie9" })
+                @Html.PasswordFor(model => model.Password, new { @class = "form-control form-control-solid placeholder-no-fix", @autocomplete = "off", @placeholder = "Password", @name = "password" })
+                @Html.ValidationMessageFor(model => model.Password)
+            </div>
+            <div class="form-actions">
+                <button type="submit" class="btn green uppercase">Login</button>
+            </div>
+        }
+        <!-- END LOGIN FORM -->
+    </div>
+    <div class="copyright"> 2016 © TMS || MKA. </div>
+
+    @System.Web.Optimization.Scripts.Render("~/jsJquery")
+    @System.Web.Optimization.Scripts.Render("~/jsJqueryUI")
+    @System.Web.Optimization.Scripts.Render("~/jsKendo")
+    @System.Web.Optimization.Scripts.Render("~/jsApp")
+    @System.Web.Optimization.Scripts.Render("~/jsLogin")
+    <script type="text/javascript">
+    $("input").keypress(function (e) {
+        return 13 == e.which ? $(".login-form").submit() : void 0
+    })
+    </script>
+
+</body>
+</html>

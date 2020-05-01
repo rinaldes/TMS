@@ -1,0 +1,135 @@
+﻿@using tms_mka_v2.Models;
+@model tms_mka_v2.Models.AdminUangJalan
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    string currentController = (string)ViewContext.RouteData.Values["controller"];
+    string currentAction = ViewBag.postData == null ? (string)ViewContext.RouteData.Values["action"] : ViewBag.postData;
+    string backLink = Url.Action("Index", "ListOrder");
+    int idxBor = Model.ModelListBorongan.Count();
+}
+<div class="portlet light">
+    <div class="portlet-title">
+        <div class="caption">
+            <span class="caption-subject font-dark sbold uppercase">@ViewBag.Title</span>
+        </div>
+    </div>
+    <div class="portlet-body form">
+        @using (@Html.BeginForm(currentAction, currentController, FormMethod.Post, new { @class = "form-horizontal form-label-left input_mask", @id = "formsubmit" }))
+        {
+            @Html.ValidationSummary(true)
+            @Html.HiddenFor(model => model.Id)
+            @Html.HiddenFor(model => model.IdSalesOrder)
+            <div class="portlet light">
+                <div class="portlet-title">
+                    <div class="caption font-green-sharp">
+                        <span class="caption-subject"> Basic Info</span>
+                    </div>
+                    <div class="tools">
+                        <a href="" class="collapse"> </a>
+                    </div>
+                </div>
+                <div class="portlet-body">
+                    @if (Model.ModelOncall != null)
+                    {
+                        @Html.Partial("SalesOrderOncall/_PartialFormReadOnly", Model.ModelOncall)
+                    }
+                    else if (Model.ModelPickup != null)
+                    {
+                        @Html.Partial("SalesOrderPickup/_PartialFormReadOnly", Model.ModelPickup)
+                    }
+                    else if (Model.ModelKonsolidasi != null)
+                    {
+                        @Html.Partial("SalesOrderProsesKonsolidasi/_PartialFormReadOnly", Model.ModelKonsolidasi)
+                    }
+                </div>
+            </div>
+            <div class="portlet light">
+                <div class="portlet-title">
+                    <div class="caption font-green-sharp">
+                        <span class="caption-subject"> Batal Order</span>
+                    </div>
+                    <div class="tools">
+                        <a href="" class="collapse"> </a>
+                    </div>
+                </div>
+                <div class="portlet-body">
+                    <div class="col-md-6">
+                        <table class="table table-bordered table-striped">
+                            @foreach (var item in Model.ModelListTf.OrderBy(d => d.Nama))
+                            {
+                                <tr>
+                                    <td>
+                                        <label class="control-label">@item.Nama</label>
+                                    </td>
+                                    <td>
+                                        <label class="control-label">@string.Format("{0:n}", item.JumlahTransfer)</label>
+                                    </td>
+                                </tr>
+                            }
+                            <tfoot>
+                                <tr>
+                                    <td style="border:none">
+                                        Total
+                                    </td>
+                                    <td>
+                                        @string.Format("{0:n}", Model.ModelListTf.Sum(d => d.JumlahTransfer))
+                                    </td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="control-label col-md-2"> Lokasi</label>
+                            <label class="control-label col-md-4"> [lokasi] </label>
+                            <label class="control-label col-md-2"> Last Update</label>
+                            <label class="control-label col-md-4"> [Last Update] </label>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label col-md-2"> Status Flow</label>
+                            <label class="control-label col-md-10"> @Model.StatusSo </label>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label col-md-2"> Keterangan</label>
+                            <div class="col-md-10"> 
+                                <textarea name="Keterangan" class="form-control input-sm" rows="4"></textarea>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label col-md-2"> Keterangan Batal</label>
+                            <div class="col-md-3">
+                                <input type="text" name="KeteranganBatal" id="KeteranganBatal" class="form-control input-sm" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-md-8">
+                    <button type="submit" class="btn btn-success">Submit</button>
+                    <a href="@backLink" class="btn btn-link">Cancel</a>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+@section scripts{
+<script type="text/javascript">
+        $(document).ready(function () {
+            $("#KeteranganBatal").kendoComboBox({
+                dataSource: {
+                    transport: {
+                        read: {
+                            url: '@Url.Action("GetKeteranganBatal")',
+                            dataType: "json"
+                        },
+                    },
+                },
+                dataTextField: "Nama",
+                dataValueField: "Nama",
+                filter: "contains",
+                suggest: true,
+            });
+        })
+</script>
+}

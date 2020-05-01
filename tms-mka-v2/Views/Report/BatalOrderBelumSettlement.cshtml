@@ -1,0 +1,333 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "Batal Order Belum Settlement";
+    string currentController = (string)ViewContext.RouteData.Values["controller"];
+    string currentAction = "Index";
+}
+<div class="portlet light ">
+    <div class="portlet-title">
+        <div class="caption">
+            <span class="caption-subject font-dark sbold uppercase">Batal Order Belum Settlement</span>
+        </div>
+    </div>
+    <div class="portlet-body form">
+        <div class="portlet box blue ">
+            <div class="portlet-title">
+                <div class="caption">
+                    Hide Colomn :
+                </div>
+                <div class="tools">
+                    <a href="" class="expand"> </a>
+                </div>
+            </div>
+            <div class="portlet-body form" style="display: none;">
+                <form role="form">
+                    <div class="form-body">
+                        <div id="content-col" class="md-checkbox-inline" style="margin-left:10px"></div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div id="grid"></div>
+    </div>
+</div>
+@*Modal Detail Konsoldasi*@
+<div id="ModalDetailKonsoldasi" class="modal fade bs-modal-full" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-full">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+            </div>
+            <div class="modal-body">
+                <div id="GridDetailKonsoldasi"></div>
+            </div>
+        </div>
+    </div>
+</div>
+@section scripts
+{
+    <script id="command-template" type="text/x-kendo-template">
+        # if(Status == "Transfer") { #
+        <a class="k-button-icon k-grid-edit" href="\\#" title="View" onclick="editItem(#=IdSalesOrder#, #=Id#)"><img src="/Content/img/T-Merah.png" width="14px" height="14px" /></a>
+        # } else { #
+        <a class="k-button-icon k-grid-edit" href="\\#" title="View" onclick="editItem(#=IdSalesOrder#, #=Id#)"><img src="/Content/img/T-Biru.png" width="14px" height="14px" /></a>
+        # } #
+        # if(Status == "Tunai") { #
+        <a class="k-button-icon k-grid-edit" href="\\#" title="View" onclick="editKasItem(#=IdSalesOrder#, #=Id#)"><img src="/Content/img/C-Merah.png" width="14px" height="14px" /></a>
+        # } else { #
+        <a class="k-button-icon k-grid-edit" href="\\#" title="View" onclick="editKasItem(#=IdSalesOrder#, #=Id#)"><img src="/Content/img/C-Biru.png" width="14px" height="14px" /></a>
+        # } #
+    </script>
+    <script id="typeso-template" type="text/x-kendo-template">
+        # if(JenisOrder == "Konsolidasi") { #
+        <a class="k-button-icon k-grid-edit" href="\\#" data-toggle="modal" data-target="\\#ModalDetailKonsoldasi" onclick="RefreshDetail(#:IdChild#)">Konsolidasi</a>
+        # } else { #
+        #: JenisOrder #
+        # } #
+    </script>
+    <script id="so-template" type="text/x-kendo-template">
+        # if(Status == "Removal") { #
+        <label style="color:red">#=NoSo#</label>
+        # } else { #
+        <label>#=NoSo#</label>
+        # } #
+    </script>
+    <script id="rute" type="text/x-kendo-template">
+        # if(RuteRevised) { #
+        <label style="color:red">#=Rute#</label>
+        # } else { #
+        <label>#=Rute#</label>
+        # } #
+    </script>
+    <script type="text/javascript">
+        function editItem(id, AdminUangJalanId) {
+            window.location.href = "/Kasir/EditTfBatal?id=" + id + "&AdminUangJalanId=" + AdminUangJalanId;
+        }
+        function editKasItem(id, AdminUangJalanId) {
+            window.location.href = "/Kasir/EditKasBatal?id=" + id + "&AdminUangJalanId=" + AdminUangJalanId;
+        }
+        function editItemKontrak(id, listso) {
+            window.location.href = "@Url.Action("EditKontrak")" + "?id=" + id + "&listSo=" + listso;
+        }
+        function printItem(id, listso) {
+            window.open("/AdminUangJalan/ShowPrint" + "?idSo=" + id + "&listSo=" + listso, '_blank', 'location=yes,scrollbars=yes,status=yes');
+        }
+        function printSJ(id, listso) {
+            window.open("/AdminUangJalan/ShowPrintSuratJalan?idSo=" + id + "&listSo=" + listso, '_blank', 'location=yes,scrollbars=yes,status=yes');
+        }
+        function printVoucher(id) {
+            window.open("/AdminUangJalan/ShowPrintVoucher" + "?idSo=" + id, '_blank', 'location=yes,scrollbars=yes,status=yes');
+        }
+        function viewItem(id, AdminUangJalanId) {
+            window.location.href = "@Url.Action("ViewBOBS")" + "?id=" + id + "&AdminUangJalanId=" + AdminUangJalanId;
+        }
+        function viewItemKontrak(id, listso) {
+            window.location.href = "@Url.Action("ViewKontrak")" + "?id=" + id + "&listSo=" + listso;
+        }
+
+        function RefreshDetail(Id)
+        {
+            event.preventDefault();
+            var dsDetail = new kendo.data.DataSource({
+                transport: {
+                    read: {
+                        url: '@Url.Action("FindDetailSo", "SalesOrderProsesKonsolidasi")?id=' + Id,
+                        dataType: "json"
+                    },
+                    parameterMap: function (options, operation) {
+                        if (operation !== "read" && options != '') {
+                            return kendo.stringify(options);
+                        }
+                        else if (operation == "read") {
+                            if (options.filter) {
+                                filter = options.filter.filters;
+                                for (var i in filter) {
+                                    if (filter[i].field == "TanggalMuat") {
+                                        filter[i].field = "SalesOrderOncall.TanggalMuat";
+                                        filter[i].value = filter[i].value.toJSON().split('T')[0]
+                                    }
+                                    if (filter[i].field == "NamaCustomer") {
+                                        filter[i].field = "SalesOrderOncall.Customer.CustomerNama";
+                                    }
+                                    if (filter[i].field == "Rute") {
+                                        filter[i].field = "SalesOrderOncall.StrDaftarHargaItem";
+                                    }
+                                    if (filter[i].field == "VehicleNo") {
+                                        filter[i].field = "SalesOrderOncall.DataTruck.VehicleNo";
+                                    }
+                                    if (filter[i].field == "Driver1") {
+                                        filter[i].field = "SalesOrderOncall.Driver1.NamaDriver";
+                                    }
+                                    if (filter[i].field == "Keterangan") {
+                                        filter[i].field = "SalesOrderOncall.Keterangan";
+                                    }
+                                    if (filter[i].field == "StrJenisTruck") {
+                                        filter[i].field = "SalesOrderOncall.JenisTrucks.StrJenisTruck";
+                                    }
+                                    if (filter[i].field == "StrJenisTruck") {
+                                        filter[i].field = "SalesOrderOncall.JenisTrucks.StrJenisTruck";
+                                    }
+                                    if (filter[i].value == "transfer" && filter[i].field == "StatusFlow"){
+                                        filter[i].field = "Status";
+                                        filter[i].value = "dispatched";
+                                    }
+                                }
+                            }
+
+                            if (options.sort) {
+                                sort = options.sort;
+                                for (var i in sort) {
+                                    if (sort[i].field == "TanggalMuat") {
+                                        sort[i].field = "SalesOrderOncall.TanggalMuat";
+                                        sort[i].value = sort[i].value.toJSON().split('T')[0]
+                                    }
+                                    if (sort[i].field == "NamaCustomer") {
+                                        sort[i].field = "SalesOrderOncall.Customer.CustomerNama";
+                                    }
+                                    if (sort[i].field == "Rute") {
+                                        sort[i].field = "SalesOrderOncall.StrDaftarHargaItem";
+                                    }
+                                    if (sort[i].field == "VehicleNo") {
+                                        sort[i].field = "SalesOrderOncall.DataTruck.VehicleNo";
+                                    }
+                                    if (sort[i].field == "Driver1") {
+                                        sort[i].field = "SalesOrderOncall.Driver1.NamaDriver";
+                                    }
+                                    if (sort[i].field == "Keterangan") {
+                                        sort[i].field = "SalesOrderOncall.Keterangan";
+                                    }
+                                    if (sort[i].field == "StrJenisTruck") {
+                                        sort[i].field = "SalesOrderOncall.JenisTrucks.StrJenisTruck";
+                                    }
+                                }
+                            }
+                            return options;
+                        }
+                    }
+                },
+                schema: {
+                    total: "total",
+                    data: "data",
+                    model: {
+                        fields: {
+                            "KodeNama": { type: "string" },
+                            "NamaCustomer": { type: "string" },
+                            "StrProduct": { type: "string" },
+                            "Rute": { type: "string" },
+                            "Tonase": { type: "number" , defaultValue: 0},
+                            "karton": { type: "number" , defaultValue: 0},
+                            "Pallet": { type: "number" , defaultValue: 0},
+                            "Container": { type: "number" , defaultValue: 0},
+                            "m3": { type: "number" , defaultValue: 0},
+                        }
+                    }
+                },
+                aggregate: [
+                    { field: "Tonase", aggregate: "sum" },
+                    { field: "karton", aggregate: "sum" },
+                    { field: "Pallet", aggregate: "sum" },
+                    { field: "Container", aggregate: "sum" },
+                    { field: "m3", aggregate: "sum" }],
+                pageSize: 10,
+                pageable: true,
+                sortable: true,
+            });
+
+            $("#GridDetailKonsoldasi").kendoGrid({
+                dataSource: dsDetail,
+                filterable: kendoGridFilterable,
+                sortable: true,
+                reorderable: true,
+                resizable: true,
+                pageable: true,
+                columns: [
+                { field: "KodeNama", title: "Kode Nama" },
+                { field: "NamaCustomer", title: "Customer" },
+                { field: "StrProduct", title: "Jenis Barang" }, { field: "Rute", title: "Tujuan" },
+                { field: "Tonase", title: "Tonase", template: "#= Tonase != null ? Tonase : 0 #", footerTemplate: "Total : #=sum#" },
+                { field: "karton", title: "Karton", template: "#= karton != null ? karton    : 0 #", footerTemplate: "Total : #=sum#" },
+                { field: "Pallet", title: "Pallet", template: "#= Pallet != null ? Pallet : 0 #", footerTemplate: "Total : #=sum#" },
+                { field: "Container", title: "Container", template: "#= Container != null ? Container : 0 #", footerTemplate: "Total : #=sum#" },
+                { field: "m3", title: "m3", template: "#= m3 != null ? m3 : 0 #", footerTemplate: "Total : #=sum#" }
+                ],
+            });
+        }
+        $(document).ready(function () {
+            currController = '@currentController';
+            currAction = '@currentAction';
+
+            var ds = new kendo.data.DataSource({
+                transport: {
+                    read: {
+                        url: '@Url.Action("BindingBOBS")', dataType: "json"
+                    },
+                    parameterMap: function (options, operation) {
+                        if (operation !== "read" && options != '') {
+                            return kendo.stringify(options);
+                        }
+                        else if (operation == "read") {
+                            if (options.filter) {
+                                filter = options.filter.filters;
+                                for (var i in filter) {
+                                    if (filter[i].field == "NoSo")
+                                        filter[i].field = "SONumber";
+                                    if (filter[i].field == "KodeNama")
+                                        filter[i].field = "Customer.CustomerCodeOld";
+                                    if (filter[i].field == "Customer")
+                                        filter[i].field = "Customer.CustomerNama";
+                                    if (filter[i].field == "VehicleNo")
+                                        filter[i].field = "DataTruck.VehicleNo";
+                                    if (filter[i].field == "JenisTruk")
+                                        filter[i].field = "DataTruck.JenisTrucks.StrJenisTruck";
+                                    if (filter[i].field == "IDDriver")
+                                        filter[i].field = "Driver1.KodeDriverOld";
+                                    if (filter[i].field == "Driver")
+                                        filter[i].field = "Driver1.NamaDriver";
+                                    if (filter[i].field == "TanggalMuat") {
+                                        filter[i].field = "AUJTanggalMuat";
+                                        Date.prototype.yyyymmdd = function() {
+                                            var mm = this.getMonth() + 1; // getMonth() is zero-based
+                                            var dd = this.getDate();
+
+                                            return [this.getFullYear(),
+                                                    (mm>9 ? '' : '0') + mm,
+                                                    (dd>9 ? '' : '0') + dd
+                                            ].join('-');
+                                        };
+                                        filter[i].value = filter[i].value.yyyymmdd()
+                                    }
+                                }
+                            }
+                            if (options.sort) {
+                                sort = options.sort;
+                                for (var i in sort) {
+                                    if (sort[i].field == "NoSo") {
+                                        sort[i].field = "SONumber";
+                                    }
+                                }
+                            }
+                            return options;
+                        }
+                    }
+                },
+                schema: {
+                    total: "total",
+                    data: "data",
+                    model: {
+                        fields: {
+                            "Id": {type: "number"}, "IdSalesOrder": {type: "number"}, "Status": {type: "string"}, "JenisOrder": {type: "string"}, "NoSo": {type: "string"},
+                            "KodeNama": {type: "string"}, "Customer": {type: "string"}, "VehicleNo": {type: "string"}, "JenisTruk": {type: "string"},
+                            "IDDriver": {type: "string"}, "TanggalMuat": {type: "date"}, "Driver": { type: "string" }, "Rute": { type: "string" },
+                            "JumlahRit": { type: "number" }, "KeteranganPenggatian": { type: "string" }, "ModifiedDate": { type: "string" }, "ListIdSo":{ type: "string" },
+                        }
+                    }
+                },
+                pageSize: 10, pageable: true, sortable: true, serverFiltering: true, serverPaging: true, serverSorting: true, sort: { field: "SONumber", dir: "desc" }
+            });
+            gridIndex = $("#grid").kendoGrid({
+                dataSource: ds, filterable: kendoGridFilterable, sortable: true, reorderable: true, resizable: true, pageable: true, groupable: true, serverFiltering: true,
+                serverPaging: true, serverSorting: true, columns: [
+                    {template: kendo.template($("#command-template").html()), width: 60},
+                    {field: "Status", filterable: {operators: {string: {eq: "Sama Dengan"}}, extra: false}},
+                    {field: "JenisOrder", title: "Jenis Order", template: kendo.template($("#typeso-template").html())},
+                    {field: "NoSo", title: "SO Number", template: kendo.template($("#so-template").html())}, {field: "KodeNama", title: "Kode Nama"}, {field: "Customer"},
+                    {field: "VehicleNo", title: "Vehicle No"}, {field: "JenisTruk", title: "Jenis Truk"}, {field: "IDDriver", title: "ID Driver"}, {field: "Driver"},
+                    {field: "Rute", template: kendo.template($("#rute").html())}, {
+                        field: "TanggalMuat", title: "Tanggal Muat",
+                        template: "#= TanggalMuat != null ? kendo.toString(kendo.parseDate(TanggalMuat, 'yyyy-MM-dd'), 'dd/MM/yyyy') : ''#"
+                    }, {
+                        field: "JamMuat", title: "Jam Muat", template: "#= JamMuat != null ? kendo.toString(new Date(1, 1, 1, JamMuat.Hours, JamMuat.Minutes), 'HH : mm') : ''#",
+                    }, {field: "JumlahRit", title: "Jumlah Rit"}, {field: "KeteranganPenggatian", title: "Keterangan Penggantian"},
+                ],
+            }).data("kendoGrid");
+            @foreach (tms_mka_v2.Context.UserReference item in (List<tms_mka_v2.Context.UserReference>)ViewBag.listKolom)
+            {
+                <text>
+            listKolom.push('@item.Coloumn');
+            </text>
+            }
+
+            GetColomnData(gridIndex);
+        })
+    </script>
+}

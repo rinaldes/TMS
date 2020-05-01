@@ -1,0 +1,564 @@
+﻿@using tms_mka_v2.Models;
+@model tms_mka_v2.Models.AdminUangJalan
+@{
+    int idxRute = Model.ModelListTambahanRute.Count();
+    int idxLain = Model.ModelListTambahanLain.Count();
+    int idxPotongan = Model.ModelListPotonganLain.Count();
+}
+<div class="row">
+    <div class="col-md-4">
+        <div class="form-group">
+            @Html.HiddenFor(model => model.ModelListBorongan[0].IsDelete)
+            @Html.HiddenFor(model => model.ModelListBorongan[0].IdDataBorongan)
+            <div class="col-md-12">
+                @Html.TextBoxFor(model => model.ModelListBorongan[0].NamaDataBorongan, new { @class = "form-control", @readonly = true })
+            </div>
+        </div>
+
+        <div id="CountainerBorongan">
+            @for (int i = 0; i <= Model.ModelListBorongan.Count() - 1; i++)
+            {
+                if (i == 0)
+                {
+
+                }
+                else
+                {
+                    var _idbor = "Borongan" + i.ToString();
+                    <div id="@_idbor" class="form-group">
+                        @Html.HiddenFor(model => model.ModelListBorongan[0].IsDelete)
+                        @Html.HiddenFor(model => model.ModelListBorongan[0].IdDataBorongan)
+                        <div class="col-md-12">
+                            @Html.TextBoxFor(model => model.ModelListBorongan[0].NamaDataBorongan, new { @class = "form-control", @readonly = true })
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+        <div class="form-group">
+            <label class="control-label col-md-5"> Harga Borongan</label>
+            <div class="col-md-7">
+                @Html.TextBoxFor(model => model.NilaiBorongan, new { @class = "form-control-numeric-idr", @readonly = true })
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="control-label col-md-5"> Kawalan</label>
+            <div class="col-md-7">
+                @Html.TextBoxFor(model => model.Kawalan, new { @class = "form-control-numeric-idr", @readonly = true })
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="control-label col-md-5"> Timbangan</label>
+            <div class="col-md-7">
+                @Html.TextBoxFor(model => model.Timbangan, new { @class = "form-control-numeric-idr", @readonly = true })
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="control-label col-md-5"> Karantina</label>
+            <div class="col-md-7">
+                @Html.TextBoxFor(model => model.Karantina, new { @class = "form-control-numeric-idr", @readonly = true })
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="control-label col-md-5"> SPSI</label>
+            <div class="col-md-7">
+                @Html.TextBoxFor(model => model.SPSI, new { @class = "form-control-numeric-idr", @readonly = true })
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="control-label col-md-5"> Multidrop</label>
+            <div class="col-md-7">
+                @Html.TextBoxFor(model => model.Multidrop, new { @class = "form-control-numeric-idr", @readonly = true })
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="control-label col-md-5"> Tambahan Rute muat</label>
+            <div class="col-md-7">
+                <button type="button" class="btn btn-sm" onclick="AddTambahanRute()">Add</button>
+            </div>
+        </div>
+        <div id="tambahanRute" class="form-group">
+            @for (int i = 0; i <= Model.ModelListTambahanRute.Count() - 1; i++)
+            {
+                var cls = "tambahanRute" + i;
+                <div id="@cls" class="form-group">
+                    <div class="col-md-5">
+                        @Html.HiddenFor(model => model.ModelListTambahanRute[i].IsDelete)
+                        @Html.TextBoxFor(model => model.ModelListTambahanRute[i].IdDataBorongan, new { @class = "IdDataBorongan" + i, @readonly = true })
+                        @Html.ValidationMessageFor(model => model.ModelListTambahanRute[i].IdDataBorongan)
+                    </div>
+                    <div class="col-md-5">
+                        @Html.TextBoxFor(model => model.ModelListTambahanRute[i].value, new { @class = "valRute" + i, @readonly = true })
+                    </div>
+                </div>
+            }
+        </div>
+        <div class="form-group">
+            <label class="control-label col-md-5"> Tambahan Rute lain</label>
+        </div>
+        <div id="tambahanLain" class="form-group">
+            @for (int i = 0; i <= Model.ModelListTambahanLain.Count() - 1; i++)
+            {
+                var cls = "tambahanLain" + i;
+                <div id="@cls" class="form-group">
+                    <div class="col-md-5">
+                        @Html.HiddenFor(model => model.ModelListTambahanLain[i].IsDelete)
+                        @Html.TextBoxFor(model => model.ModelListTambahanLain[i].Keterangan, new { @class = "form-control input-sm", @readonly = true })
+                        @Html.ValidationMessageFor(model => model.ModelListTambahanLain[i].Keterangan)
+                    </div>
+                    <div class="col-md-5">
+                        @Html.TextBoxFor(model => model.ModelListTambahanLain[i].Value, new { @class = "valLain" + i, @readonly = true })
+                        @Html.ValidationMessageFor(model => model.ModelListTambahanLain[i].Value)
+                    </div>
+                </div>
+            }
+        </div>
+        <hr />
+        <div class="form-group">
+            <label class="control-label col-md-5"> Total Borongan</label>
+            <div class="col-md-7">
+                @Html.TextBoxFor(model => model.TotalBorongan, new { @class = "form-control-numeric-idr", @readonly = true })
+            </div>
+        </div>
+        <br />
+        <div class="form-group">
+            <div class="col-md-12">
+                <label class="control-label"> Keterangan Admin</label>
+                @Html.TextAreaFor(model => model.KeteranganAdmin, new { @class = "form-control input-sm", @readonly = true })
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="form-group">
+            <label class="control-label col-md-4"> Driver 1</label>
+            <div class="col-md-6">
+                @Html.HiddenFor(model => model.IdDriver1)
+                @Html.TextBoxFor(model => model.NamaDriver1, new { @class = "form-control input-sm", @readonly = true })
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="control-label col-md-4"> Sebelumnya</label>
+            <div class="col-md-6">
+                @Html.HiddenFor(model => model.IdDriverOld1)
+                @Html.TextBoxFor(model => model.NamaDriverOld1, new { @class = "form-control input-sm", @readonly = true })
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-md-12">
+                <label class="control-label"> Keterangan Penggantian</label>
+                @Html.TextAreaFor(model => model.KeteranganGanti1, new { @class = "form-control input-sm", @readonly = true })
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="control-label col-md-4"> Driver 2</label>
+            <div class="col-md-6">
+                @Html.HiddenFor(model => model.IdDriver2)
+                @Html.TextBoxFor(model => model.NamaDriver2, new { @class = "form-control input-sm", @readonly = true })
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="control-label col-md-4"> Sebelumnya</label>
+            <div class="col-md-6">
+                @Html.HiddenFor(model => model.IdDriverOld2)
+                @Html.TextBoxFor(model => model.NamaDriverOld2, new { @class = "form-control input-sm", @readonly = true })
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-md-12">
+                <label class="control-label"> Keterangan Penggantian</label>
+                @Html.TextAreaFor(model => model.KeteranganGanti2, new { @class = "form-control input-sm", @readonly = true })
+            </div>
+        </div>
+        <br />
+        <div class="form-group">
+            <label class="control-label col-md-4"> Total Kasbon</label>
+            <div class="col-md-6">
+                @Html.TextBoxFor(model => model.TotalKasbon, new { @class = "form-control-numeric-idr", @readonly = true })
+            </div>
+            <div class="col-md-1">
+                <button type="button" class="btn btn-sm">Detail</button>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="control-label col-md-4"> &nbsp;&nbsp;&nbsp;&nbsp; Kasbon Driver 1</label>
+            <div class="col-md-6">
+                @Html.TextBoxFor(model => model.KasbonDriver1, new { @class = "form-control-numeric-idr", @readonly = true })
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="control-label col-md-4"> &nbsp;&nbsp;&nbsp;&nbsp; Kasbon Driver 2</label>
+            <div class="col-md-6">
+                @Html.TextBoxFor(model => model.KasbonDriver2, new { @class = "form-control-numeric-idr", @readonly = true })
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="control-label col-md-4"> Total Klaim</label>
+            <div class="col-md-6">
+                @Html.TextBoxFor(model => model.TotalKlaim, new { @class = "form-control-numeric-idr", @readonly = true })
+            </div>
+            <div class="col-md-1">
+                <button type="button" class="btn btn-sm">Detail</button>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="control-label col-md-4"> &nbsp;&nbsp;&nbsp;&nbsp; Klaim Driver 1</label>
+            <div class="col-md-6">
+                @Html.TextBoxFor(model => model.KlaimDriver1, new { @class = "form-control-numeric-idr", @readonly = true })
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="control-label col-md-4"> &nbsp;&nbsp;&nbsp;&nbsp; Klaim Driver 2</label>
+            <div class="col-md-6">
+                @Html.TextBoxFor(model => model.KlaimDriver2, new { @class = "form-control-numeric-idr", @readonly = true })
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="control-label col-md-4"> Potongan Lain Driver 1</label>
+        </div>
+        <div id="potonganDriver1" class="form-group">
+            @for (int i = 0; i <= Model.ModelListPotonganLain.Count() - 1; i++)
+            {
+                if (Model.ModelListPotonganLain[i].TypeDriver == 1)
+                {
+                    var cls = "potonganLain1" + i;
+                    <div id="@cls" class="form-group">
+                        <div class="col-md-4">
+                            @Html.HiddenFor(model => model.ModelListPotonganLain[i].IsDelete)
+                            @Html.HiddenFor(model => model.ModelListPotonganLain[i].TypeDriver)
+                            @Html.TextBoxFor(model => model.ModelListPotonganLain[i].Keterangan, new { @class = "form-control input-sm", @readonly = true })
+                            @Html.ValidationMessageFor(model => model.ModelListPotonganLain[i].Keterangan)
+                        </div>
+                        <div class="col-md-6">
+                            @Html.TextBoxFor(model => model.ModelListPotonganLain[i].Value, new { @class = "valPotonganDriver1" + i, @readonly = true })
+                            @Html.ValidationMessageFor(model => model.ModelListPotonganLain[i].Value)
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+        <div class="form-group">
+            <label class="control-label col-md-4"> Potongan Lain Driver 2</label>
+        </div>
+        <div id="potonganDriver2" class="form-group">
+            @for (int i = 0; i <= Model.ModelListPotonganLain.Count() - 1; i++)
+            {
+                if (Model.ModelListPotonganLain[i].TypeDriver == 2)
+                {
+                    var cls = "potonganLain2" + i;
+                    <div id="@cls" class="form-group">
+                        <div class="col-md-4">
+                            @Html.HiddenFor(model => model.ModelListPotonganLain[i].IsDelete)
+                            @Html.HiddenFor(model => model.ModelListPotonganLain[i].TypeDriver)
+                            @Html.TextBoxFor(model => model.ModelListPotonganLain[i].Keterangan, new { @class = "form-control input-sm" })
+                            @Html.ValidationMessageFor(model => model.ModelListPotonganLain[i].Keterangan)
+                        </div>
+                        <div class="col-md-6">
+                            @Html.TextBoxFor(model => model.ModelListPotonganLain[i].Value, new { @class = "valPotonganDriver2" + i })
+                            @Html.ValidationMessageFor(model => model.ModelListPotonganLain[i].Value)
+                        </div>
+                        <div class="col-md-2">
+                            <a class="btn btn-sm btn-circle btn-icon-only red" href="javascript:;" onclick="deletePotonganLain2(@i)"><i class="fa fa-minus"></i></a>
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+        <hr />
+        <div class="form-group">
+            <label class="control-label col-md-4"> Total</label>
+            <div class="col-md-6">
+                @Html.TextBoxFor(model => model.TotalPotonganDriver, new { @class = "form-control-numeric-idr", @readonly = true })
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="form-group">
+            <div class="col-md-12">
+                <label>Voucher Solar</label>
+                @Html.HiddenFor(model => model.StrSolar)
+                <div id="gridSolar"></div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-md-12">
+                <label>Voucher Kapal</label>
+                @Html.HiddenFor(model => model.StrKapal)
+                <div id="gridKapal"></div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-md-12">
+                <label>Uang</label>
+                @Html.HiddenFor(model => model.StrUang)
+                <div id="gridUang"></div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-md-12">
+                <label class="control-label col-md-4"> Total Alokasi</label>
+                <div class="col-md-8">
+                    @Html.TextBoxFor(model => model.TotalAlokasi, new { @class = "form-control-numeric-idr", @readonly = true })
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@*Modal Driver*@
+<div id="ModalMasterDriver" class="modal fade bs-modal-full" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-full">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+            </div>
+            <div class="modal-body">
+                <div id="GridMasterDriver"></div>
+            </div>
+        </div>
+    </div>
+</div>
+@*Modal data borongan*@
+<div id="ModalBorongan" class="modal fade bs-modal-full" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-full">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+            </div>
+            <div class="modal-body">
+                <div id="GridModalBorongan"></div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+
+    function AddBorongan() {
+        @{
+            Model.ModelListBorongan.Add(new AdminUangBorongan());
+        }
+
+        var markup = '<div id="Borongan' + idxBor + '" class="form-group">' +
+            '<input data-val="true" data-val-required="The IsDelete field is required." id="ModelListBorongan_' + idxBor + '__IsDelete" name="ModelListBorongan[' + idxBor + '].IsDelete" type="hidden" value="False" />' +
+            '<input data-val="true" data-val-number="Nilai IdDataBorongan harus berupa angka." id="ModelListBorongan_' + idxBor + '__IdDataBorongan" name="ModelListBorongan[' + idxBor + '].IdDataBorongan" type="hidden" value="" />' +
+            '<div class="col-md-10">' +
+                '<div class="input-group input-group-sm">' +
+                    '<input class="form-control" id="ModelListBorongan_' + idxBor + '__NamaDataBorongan" name="ModelListBorongan[' + idxBor + '].NamaDataBorongan" readonly="True" type="text" value="" />' +
+                    '<span class="input-group-btn">' +
+                        '<button type="button" class="btn red" onclick="deleteBorongan('+ idxBor +')"><span class="glyphicon glyphicon-remove"></span></button>' +
+                        '<button type="button" class="btn btn-success" data-toggle="modal" data-target="#ModalBorongan" onclick="selectedBor = ' + idxBor + ';">Browse</button>' +
+                    '</span>' +
+                '</div>' +
+            '</div>' +
+        '</div>'
+        $("#CountainerBorongan").append(markup);
+
+        idxBor++;
+    }
+    function deleteBorongan(idx) {
+        $('#Borongan' + idx).hide();
+        $('#ModelListBorongan_' + idx + '__IsDelete').val(true);
+        CalculateBoronganDef();
+    }
+
+    var idxRute = @idxRute;
+    function AddTambahanRute() {
+        @{
+            Model.ModelListTambahanRute.Add(new AdminUangJalanTambahanRute());
+        }
+        var markup = '<div id="tambahanRute' + idxRute + '" class="form-group">' +
+            '<div class="col-md-5">' +
+            '<input type="hidden" id="ModelListTambahanRute_' + idxRute + '__IsDelete" name="ModelListTambahanRute[' + idxRute + '].IsDelete" value="false" />' +
+            '<input class="IdDataBorongan' + idxRute + '" data-val="true" data-val-required="Data borongan harus diisi." id="ModelListTambahanRute_' + idxRute + '__IdDataBorongan" name="ModelListTambahanRute[' + idxRute + '].IdDataBorongan" />' +
+            '<span class="field-validation-valid" data-valmsg-for="ModelListTambahanRute_' + idxRute + 'IdDataBorongan" data-valmsg-replace="true"></span>' +
+            '</div>' +
+            '<div class="col-md-5">' +
+            '<input class="valRute'+ idxRute +'" id="ModelListTambahanRute_' + idxRute + '__value" name="ModelListTambahanRute[' + idxRute + '].value" readonly />' +
+            '</div>' +
+            '<div class="col-md-2">' +
+            '<a class="btn btn-sm btn-circle btn-icon-only red" href="javascript:;" onclick="deleteTambahanRute(' + idxRute + ')"><i class="fa fa-minus"></i></a>' +
+            '</div>' +
+            '</div>'
+        $("#tambahanRute").append(markup);
+        var txtval = $('.valRute' + idxRute).kendoNumericTextBox({
+            min: 0,
+            max: 1000000000000000000,
+            decimals: 2,
+            format: "Rp ###,###.00 ",
+            spinners: false,
+        }).data("kendoNumericTextBox");
+        CreateCboRute(idxRute, txtval);
+
+        idxRute++;
+    }
+    function deleteTambahanRute(idx) {
+        $('#tambahanRute' + idx).hide();
+        $('#ModelListTambahanRute_' + idx + '__IsDelete').val(true);
+        CalculateBoronganDef();
+    }
+
+    var idxLain = @idxLain;
+    function AddTambahanLain() {
+        @{
+            Model.ModelListTambahanLain.Add(new AdminUangJalanTambahanLain());
+        }
+        var markup = '<div id="tambahanLain' + idxLain + '" class="form-group">' +
+            '<div class="col-md-5">' +
+            '<input type="hidden" id="ModelListTambahanLain_' + idxLain + '__IsDelete" name="ModelListTambahanLain[' + idxLain + '].IsDelete" value="false" />' +
+            '<input class="form-control input-sm" data-val="true" data-val-required="Keterangan harus diisi." id="ModelListTambahanLain_' + idxLain + '__Keterangan" name="ModelListTambahanLain[' + idxLain + '].Keterangan" />' +
+            '<span class="field-validation-valid" data-valmsg-for="ModelListTambahanLain_' + idxLain + 'Keterangan" data-valmsg-replace="true"></span>' +
+            '</div>' +
+            '<div class="col-md-5">' +
+            '<input class="valLain'+ idxLain +'" data-val="true" data-val-required="Nilai harus diisi." id="ModelListTambahanLain_' + idxLain + '__Value" name="ModelListTambahanLain[' + idxLain + '].Value" />' +
+            '<span class="field-validation-valid" data-valmsg-for="ModelListTambahanLain_' + idxLain + 'Value" data-valmsg-replace="true"></span>' +
+            '</div>' +
+            '<div class="col-md-2">' +
+            '<a class="btn btn-sm btn-circle btn-icon-only red" href="javascript:;" onclick="deleteTambahanLain(' + idxLain + ')"><i class="fa fa-minus"></i></a>' +
+            '</div>' +
+            '</div>'
+        $("#tambahanLain").append(markup);
+        $('.valLain' + idxLain).kendoNumericTextBox({
+            min: 0,
+            max: 1000000000000000000,
+            decimals: 2,
+            format: "Rp ###,###.00 ",
+            spinners: false,
+            change: function(e){
+                CalculateBoronganDef();
+            }
+        });
+        idxLain++;
+    }
+    function deleteTambahanLain(idx) {
+        $('#tambahanLain' + idx).hide();
+        $('#ModelListTambahanLain_' + idx + '__IsDelete').val(true);
+        CalculateBoronganDef();
+    }
+
+    var idxPotongan = @idxPotongan;
+    function AddPotonganLain1() {
+        @{
+            Model.ModelListPotonganLain.Add(new AdminUangJalanPotonganLain());
+        }
+        var markup = '<div id="potonganLain1' + idxPotongan + '" class="form-group">' +
+            '<div class="col-md-4">' +
+            '<input type="hidden" id="ModelListPotonganLain_' + idxPotongan + '__IsDelete" name="ModelListPotonganLain[' + idxPotongan + '].IsDelete" value="false" />' +
+            '<input type="hidden" id="ModelListPotonganLain_' + idxPotongan + '__TypeDriver" name="ModelListPotonganLain[' + idxPotongan + '].TypeDriver" value="1" />' +
+            '<input class="form-control input-sm" data-val="true" data-val-required="Keterangan harus diisi." id="ModelListPotonganLain_' + idxPotongan + '__Keterangan" name="ModelListPotonganLain[' + idxPotongan + '].Keterangan" />' +
+            '<span class="field-validation-valid" data-valmsg-for="ModelListPotonganLain_' + idxPotongan + 'Keterangan" data-valmsg-replace="true"></span>' +
+            '</div>' +
+            '<div class="col-md-6">' +
+            '<input class="valPotonganDriver1'+ idxPotongan +'" data-val="true" data-val-required="Nilai harus diisi." id="ModelListPotonganLain_' + idxPotongan + '__Value" name="ModelListPotonganLain[' + idxPotongan + '].Value" />' +
+            '<span class="field-validation-valid" data-valmsg-for="ModelListPotonganLain_' + idxPotongan + 'Value" data-valmsg-replace="true"></span>' +
+            '</div>' +
+            '<div class="col-md-2">' +
+            '<a class="btn btn-sm btn-circle btn-icon-only red" href="javascript:;" onclick="deletePotonganLain1(' + idxPotongan + ')"><i class="fa fa-minus"></i></a>' +
+            '</div>' +
+            '</div>'
+        $("#potonganDriver1").append(markup);
+        $('.valPotonganDriver1' + idxPotongan).kendoNumericTextBox({
+            min: 0,
+            max: 1000000000000000000,
+            decimals: 2,
+            format: "Rp ###,###.00 ",
+            spinners: false,
+            change: function(e)
+            {
+                CalculateBoronganDef();
+            }
+        });
+        idxPotongan++;
+    }
+    function deletePotonganLain1(idx) {
+        $('#potonganLain1' + idx).hide();
+        $('#ModelListPotonganLain_' + idx + '__IsDelete').val(true);
+        CalculateBoronganDef();
+    }
+    function AddPotonganLain2() {
+        @{
+            Model.ModelListPotonganLain.Add(new AdminUangJalanPotonganLain());
+        }
+        var markup = '<div id="potonganLain2' + idxPotongan + '" class="form-group">' +
+            '<div class="col-md-4">' +
+            '<input type="hidden" id="ModelListPotonganLain_' + idxPotongan + '__IsDelete" name="ModelListPotonganLain[' + idxPotongan + '].IsDelete" value="false" />' +
+            '<input type="hidden" id="ModelListPotonganLain_' + idxPotongan + '__TypeDriver" name="ModelListPotonganLain[' + idxPotongan + '].TypeDriver" value="2" />' +
+            '<input class="form-control input-sm" data-val="true" data-val-required="Keterangan harus diisi." id="ModelListPotonganLain_' + idxPotongan + '__Keterangan" name="ModelListPotonganLain[' + idxPotongan + '].Keterangan" />' +
+            '<span class="field-validation-valid" data-valmsg-for="ModelListPotonganLain_' + idxPotongan + 'Keterangan" data-valmsg-replace="true"></span>' +
+            '</div>' +
+            '<div class="col-md-6">' +
+            '<input class="valPotonganDriver2'+ idxPotongan +'" data-val="true" data-val-required="Nilai harus diisi." id="ModelListPotonganLain_' + idxPotongan + '__Value" name="ModelListPotonganLain[' + idxPotongan + '].Value" />' +
+            '<span class="field-validation-valid" data-valmsg-for="ModelListPotonganLain_' + idxPotongan + 'Value" data-valmsg-replace="true"></span>' +
+            '</div>' +
+            '<div class="col-md-2">' +
+            '<a class="btn btn-sm btn-circle btn-icon-only red" href="javascript:;" onclick="deletePotonganLain2(' + idxPotongan + ')"><i class="fa fa-minus"></i></a>' +
+            '</div>' +
+            '</div>'
+        $("#potonganDriver2").append(markup);
+        $('.valPotonganDriver2' + idxPotongan).kendoNumericTextBox({
+            min: 0,
+            max: 1000000000000000000,
+            decimals: 2,
+            format: "Rp ###,###.00 ",
+            spinners: false,
+            change: function(e)
+            {
+                CalculatePotongan();
+            }
+        });
+        idxPotongan++;
+    }
+    function deletePotonganLain2(idx) {
+        $('#potonganLain2' + idx).hide();
+        $('#ModelListPotonganLain_' + idx + '__IsDelete').val(true);
+        CalculatePotongan();
+    }
+
+    function CreateCboRute(_idx, _txtval) {
+        $('.IdDataBorongan' + _idx).kendoComboBox({
+            dataSource: dsBoronganTambahan,
+            dataTextField: "NamaBorongan",
+            dataValueField: "Id",
+            filter: "contains",
+            suggest: true,
+            change: function(e){
+                var id = this.value();
+
+                $.ajax({
+                    url: '/DataBorongan/FindById?id=' + id,
+                    type: "POST",
+                    success: function (res) {
+                        var data = jQuery.parseJSON(res);
+                        _txtval.value(data.Pembulatan);
+                        CalculateBoronganDef();
+                    },
+                });
+            }
+        });
+    }
+
+    function SelectDriver(e) {
+        e.preventDefault();
+        var data = this.dataItem(getDataRowGrid(e));
+        if (caller == 1) {
+            if (data.Id == $('#IdDriver2').val()) {
+                swal(' ', 'Driver ' + data.NamaDriver + ' sudah dipilih.', 'warning');
+            }
+            else {
+                $('#IdDriverOld1 ').val($('#IdDriver1').val());
+                $('#NamaDriverOld1').val($('#NamaDriver1').val());
+                $('#IdDriver1').val(data.Id);
+                $('#NamaDriver1').val(data.KodeDriver + ' - ' + data.NamaDriver);
+            }
+        }
+        else if (caller == 2) {
+            if (data.Id == $('#IdDriver1').val()) {
+                swal(' ', 'Driver ' + data.NamaDriver + ' sudah dipilih.', 'warning');
+            }
+            else {
+                $('#IdDriverOld2 ').val($('#IdDriver2').val());
+                $('#NamaDriverOld2').val($('#NamaDriver2').val());
+                $('#IdDriver2').val(data.Id);
+                $('#NamaDriver2').val(data.KodeDriver + ' - ' + data.NamaDriver);
+            }
+        }
+        $('#ModalMasterDriver').modal('hide');
+    }
+</script>

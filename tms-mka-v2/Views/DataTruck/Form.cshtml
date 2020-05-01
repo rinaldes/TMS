@@ -1,0 +1,914 @@
+﻿@using tms_mka_v2.Models;
+@model tms_mka_v2.Models.DataTruck
+@{
+    ViewBag.Title = "Form";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    string currentController = (string)ViewContext.RouteData.Values["controller"];
+    string currentAction = (string)ViewContext.RouteData.Values["action"];
+    string backLink = Url.Action("Index");
+    if (currentAction == "Add")
+    {
+        ViewBag.Title = "Tambah Data Truck";
+    }
+    else
+    {
+        ViewBag.Title = ViewBag.name + " | Edit";
+    }
+}
+<div class="portlet light">
+    <div class="portlet-title">
+        <div class="caption">
+            <span class="caption-subject font-dark sbold uppercase">@ViewBag.Title</span>
+        </div>
+    </div>
+    <div class="portlet-body form">
+        @using (@Html.BeginForm(currentAction, currentController, FormMethod.Post, new { @class = "form-horizontal", @id = "formsubmit" }))
+        {
+            @Html.ValidationSummary(true)
+            @Html.HiddenFor(model => model.Id)
+            @Html.HiddenFor(model => Model.urlBPKB)
+            @Html.HiddenFor(model => Model.urlSTNK)
+            @Html.HiddenFor(model => Model.urlKIR)
+            @Html.HiddenFor(model => Model.urlKIU)
+            @Html.HiddenFor(model => Model.urlIBM)
+            @Html.HiddenFor(model => Model.urlAsuransi)
+            @Html.HiddenFor(model => Model.urlReklame)
+            @Html.HiddenFor(model => Model.urlNoPolis)
+            @Html.HiddenFor(model => Model.urlPeminjam)
+            @Html.HiddenFor(model => Model.urlLeasing)
+            <ul class="nav nav-tabs" id="wtab">
+                <li class="active">
+                    <a href="#tab_basic" data-toggle="tab"> Basic Information </a>
+                </li>
+                <li>
+                    <a href="#tab_dokumen" data-toggle="tab"> Dokumen </a>
+                </li>
+            </ul>
+            <div class="tab-content">
+                <div class="tab-pane fade active in" id="tab_basic">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.NoTruck, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                                <div class="col-md-9 col-sm-9 col-xs-12">
+                                    @Html.TextBoxFor(model => model.NoTruck, new { @class = "form-control input-sm", @readonly = "true" })
+                                    @Html.ValidationMessageFor(model => model.NoTruck)
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.VehicleNo, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                                <div class="col-md-9 col-sm-9 col-xs-12">
+                                    @Html.TextBoxFor(model => model.VehicleNo, new { @class = "form-control input-sm focus" })
+                                    @Html.ValidationMessageFor(model => model.VehicleNo)
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.IdMerk, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                                <div class="col-md-9 col-sm-9 col-xs-12">
+                                    @Html.TextBoxFor(model => model.IdMerk, new { @class = "form-control input-sm" })
+                                    @Html.ValidationMessageFor(model => model.IdMerk)
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.IdJenisTruck, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                                <div class="col-md-9 col-sm-9 col-xs-12">
+                                    @Html.TextBoxFor(model => model.IdJenisTruck, new { @class = "form-control input-sm" })
+                                    @Html.ValidationMessageFor(model => model.IdJenisTruck)
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.TahunBuat, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                                <div class="col-md-9 col-sm-9 col-xs-12">
+                                    @Html.TextBoxFor(model => model.TahunBuat, new { @class = "form-control input-sm form-control-dateyear" })
+                                    @Html.ValidationMessageFor(model => model.TahunBuat)
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.TahunBeli, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                                <div class="col-md-9 col-sm-9 col-xs-12">
+                                    @Html.TextBoxFor(model => model.TahunBeli, new { @class = "form-control input-sm form-control-dateyear" })
+                                    @Html.ValidationMessageFor(model => model.TahunBeli)
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.IdPool, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                                <div class="col-md-9 col-sm-9 col-xs-12">
+                                    @Html.TextBoxFor(model => model.IdPool, new { @class = "form-control input-sm" })
+                                    @Html.ValidationMessageFor(model => model.IdPool)
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.IdUnit, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                                <div class="col-md-9 col-sm-9 col-xs-12">
+                                    @Html.TextBoxFor(model => model.IdUnit, new { @class = "form-control input-sm" })
+                                    @Html.ValidationMessageFor(model => model.IdUnit)
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.Keterangan, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                                <div class="col-md-9 col-sm-9 col-xs-12">
+                                    @Html.TextAreaFor(model => model.Keterangan, new { @class = "form-control input-sm" })
+                                    @Html.ValidationMessageFor(model => model.Keterangan)
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.Kondisi, new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                                <div class="col-md-9 col-sm-9 col-xs-12">
+                                    @Html.TextAreaFor(model => model.Kondisi, new { @class = "form-control input-sm" })
+                                    @Html.ValidationMessageFor(model => model.Kondisi)
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.SpecModel, new { @class = "control-label col-md-2 col-sm-3 col-xs-12" })
+                                <div class="col-md-9 col-sm-9 col-xs-12">
+                                    @Html.TextBoxFor(model => model.SpecModel, new { @class = "form-control input-sm" })
+                                    @Html.ValidationMessageFor(model => model.SpecModel)
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.KmLimit, new { @class = "control-label col-md-2 col-sm-3 col-xs-12" })
+                                <div class="col-md-9 col-sm-9 col-xs-12">
+                                    @Html.TextBoxFor(model => model.KmLimit, new { @class = "form-control-numeric-ns" })
+                                    @Html.ValidationMessageFor(model => model.KmLimit)
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.NoMesin, new { @class = "control-label col-md-2 col-sm-3 col-xs-12" })
+                                <div class="col-md-9 col-sm-9 col-xs-12">
+                                    @Html.TextBoxFor(model => model.NoMesin, new { @class = "form-control input-sm" })
+                                    @Html.ValidationMessageFor(model => model.NoMesin)
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.NoRangka, new { @class = "control-label col-md-2 col-sm-3 col-xs-12" })
+                                <div class="col-md-9 col-sm-9 col-xs-12">
+                                    @Html.TextBoxFor(model => model.NoRangka, new { @class = "form-control input-sm" })
+                                    @Html.ValidationMessageFor(model => model.NoRangka)
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-2 col-sm-3 col-xs-12">Garansi</label>
+                                <div class="col-md-4" style="padding:0px">
+                                    @Html.LabelFor(model => model.GaransiStr, new { @class = "control-label col-md-5" })
+                                    <div class="col-md-7" style="padding:0px">
+                                        @Html.TextBoxFor(model => model.GaransiStr, new { @class = "form-control-datepicker" })
+                                        @Html.ValidationMessageFor(model => model.GaransiStr)
+                                    </div>
+                                </div>
+                                <div class="col-md-4" style="padding:0px">
+                                    @Html.LabelFor(model => model.GaransiEnd, new { @class = "control-label col-md-5" })
+                                    <div class="col-md-7" style="padding:0px">
+                                        @Html.TextBoxFor(model => model.GaransiEnd, new { @class = "form-control-datepicker" })
+                                        @Html.ValidationMessageFor(model => model.GaransiEnd)
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.SpecKeterangan, new { @class = "control-label col-md-2 col-sm-3 col-xs-12" })
+                                <div class="col-md-9 col-sm-9 col-xs-12">
+                                    @Html.TextAreaFor(model => model.SpecKeterangan, new { @class = "form-control input-sm" })
+                                    @Html.ValidationMessageFor(model => model.SpecKeterangan)
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.MaxSpeed, new { @class = "control-label col-md-2 col-sm-3 col-xs-12" })
+                                <div class="col-md-9 col-sm-9 col-xs-12">
+                                    @Html.TextAreaFor(model => model.MaxSpeed, new { @class = "form-control-numeric-km-jam" })
+                                    @Html.ValidationMessageFor(model => model.MaxSpeed)
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-pane fade" id="tab_dokumen">
+                    <div class="row">
+                        <div class="col-md-5">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.AtasNama, new { @class = "control-label col-md-4 col-sm-3 col-xs-12" })
+                                <div class="col-md-8 col-sm-9 col-xs-12">
+                                    @Html.TextBoxFor(model => model.AtasNama, new { @class = "form-control input-sm" })
+                                    @Html.ValidationMessageFor(model => model.AtasNama)
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-5">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.BPKB, new { @class = "control-label col-md-4 col-sm-3 col-xs-12" })
+                                <div class="col-md-8 col-sm-9 col-xs-12">
+                                    @Html.TextBoxFor(model => model.BPKB, new { @class = "form-control input-sm" })
+                                    @Html.ValidationMessageFor(model => model.BPKB)
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-1">
+                            <div class="form-group">
+                                <div class="col-md-8 col-sm-9 col-xs-12">
+                                    <a data-toggle="modal" href="#ModalUploadBPKB" class="btn btn-sm default"> File</a>
+                                    @Html.HiddenFor(model => model.urlBPKB)
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.keteranganBPKB, new { @class = "control-label col-md-2 col-sm-3 col-xs-12" })
+                                <div class="col-md-10 col-sm-9 col-xs-12">
+                                    @Html.TextBoxFor(model => model.keteranganBPKB, new { @class = "form-control input-sm" })
+                                    @Html.ValidationMessageFor(model => model.keteranganBPKB)
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-5">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.STNK, new { @class = "control-label col-md-4 col-sm-3 col-xs-12" })
+                                <div class="col-md-8 col-sm-9 col-xs-12">
+                                    @Html.TextBoxFor(model => model.STNK, new { @class = "form-control-datepicker" })
+                                    @Html.ValidationMessageFor(model => model.STNK)
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-1">
+                            <div class="form-group">
+                                <div class="col-md-8 col-sm-9 col-xs-12">
+                                    <a data-toggle="modal" href="#ModalUploadSTNK" class="btn btn-sm default"> File</a>
+                                    @Html.HiddenFor(model => model.urlSTNK)
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.keteranganSTNK, new { @class = "control-label col-md-2 col-sm-3 col-xs-12" })
+                                <div class="col-md-10 col-sm-9 col-xs-12">
+                                    @Html.TextBoxFor(model => model.keteranganSTNK, new { @class = "form-control input-sm" })
+                                    @Html.ValidationMessageFor(model => model.keteranganSTNK)
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-5">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.KIR, new { @class = "control-label col-md-4 col-sm-3 col-xs-12" })
+                                <div class="col-md-8 col-sm-9 col-xs-12">
+                                    @Html.TextBoxFor(model => model.KIR, new { @class = "form-control input-sm form-control-datepicker" })
+                                    @Html.ValidationMessageFor(model => model.KIR)
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-1">
+                            <div class="form-group">
+                                <div class="col-md-8 col-sm-9 col-xs-12">
+                                    <a data-toggle="modal" href="#ModalUploadKIR" class="btn btn-sm default"> File</a>
+                                    @Html.HiddenFor(model => model.urlKIR)
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.keteranganKIR, new { @class = "control-label col-md-2 col-sm-3 col-xs-12" })
+                                <div class="col-md-10 col-sm-9 col-xs-12">
+                                    @Html.TextBoxFor(model => model.keteranganKIR, new { @class = "form-control input-sm" })
+                                    @Html.ValidationMessageFor(model => model.keteranganKIR)
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-5">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.KIU, new { @class = "control-label col-md-4 col-sm-3 col-xs-12" })
+                                <div class="col-md-8 col-sm-9 col-xs-12">
+                                    @Html.TextBoxFor(model => model.KIU, new { @class = "form-control input-sm form-control-datepicker" })
+                                    @Html.ValidationMessageFor(model => model.KIU)
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-1">
+                            <div class="form-group">
+                                <div class="col-md-8 col-sm-9 col-xs-12">
+                                    <a data-toggle="modal" href="#ModalUploadKIU" class="btn btn-sm default"> File</a>
+                                    @Html.HiddenFor(model => model.urlKIU)
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.keteranganKIU, new { @class = "control-label col-md-2 col-sm-3 col-xs-12" })
+                                <div class="col-md-10 col-sm-9 col-xs-12">
+                                    @Html.TextBoxFor(model => model.keteranganKIU, new { @class = "form-control input-sm" })
+                                    @Html.ValidationMessageFor(model => model.keteranganKIU)
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-5">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.IBM, new { @class = "control-label col-md-4 col-sm-3 col-xs-12" })
+                                <div class="col-md-8 col-sm-9 col-xs-12">
+                                    @Html.TextBoxFor(model => model.IBM, new { @class = "form-control input-sm form-control-datepicker" })
+                                    @Html.ValidationMessageFor(model => model.IBM)
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-1">
+                            <div class="form-group">
+                                <div class="col-md-8 col-sm-9 col-xs-12">
+                                    <a data-toggle="modal" href="#ModalUploadIBM" class="btn btn-sm default"> File</a>
+                                    @Html.HiddenFor(model => model.urlIBM)
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.keteranganIBM, new { @class = "control-label col-md-2 col-sm-3 col-xs-12" })
+                                <div class="col-md-10 col-sm-9 col-xs-12">
+                                    @Html.TextBoxFor(model => model.keteranganIBM, new { @class = "form-control input-sm" })
+                                    @Html.ValidationMessageFor(model => model.keteranganIBM)
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-5">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.Asuransi, new { @class = "control-label col-md-4 col-sm-3 col-xs-12" })
+                                <div class="col-md-8 col-sm-9 col-xs-12">
+                                    @Html.TextBoxFor(model => model.Asuransi, new { @class = "form-control input-sm form-control-datepicker" })
+                                    @Html.ValidationMessageFor(model => model.Asuransi)
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-1">
+                            <div class="form-group">
+                                <div class="col-md-8 col-sm-9 col-xs-12">
+                                    <a data-toggle="modal" href="#ModalUploadAsuransi" class="btn btn-sm default"> File</a>
+                                    @Html.HiddenFor(model => model.urlAsuransi)
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.keteranganAsuransi, new { @class = "control-label col-md-2 col-sm-3 col-xs-12" })
+                                <div class="col-md-10 col-sm-9 col-xs-12">
+                                    @Html.TextBoxFor(model => model.keteranganAsuransi, new { @class = "form-control input-sm" })
+                                    @Html.ValidationMessageFor(model => model.keteranganAsuransi)
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-5">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.Reklame, new { @class = "control-label col-md-4 col-sm-3 col-xs-12" })
+                                <div class="col-md-8 col-sm-9 col-xs-12">
+                                    @Html.TextBoxFor(model => model.Reklame, new { @class = "form-control input-sm form-control-datepicker" })
+                                    @Html.ValidationMessageFor(model => model.Reklame)
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-1">
+                            <div class="form-group">
+                                <div class="col-md-8 col-sm-9 col-xs-12">
+                                    <a data-toggle="modal" href="#ModalUploadReklame" class="btn btn-sm default"> File</a>
+                                    @Html.HiddenFor(model => model.urlReklame)
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.keteranganReklame, new { @class = "control-label col-md-2 col-sm-3 col-xs-12" })
+                                <div class="col-md-10 col-sm-9 col-xs-12">
+                                    @Html.TextBoxFor(model => model.keteranganReklame, new { @class = "form-control input-sm" })
+                                    @Html.ValidationMessageFor(model => model.keteranganReklame)
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-5">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.NoPolis, new { @class = "control-label col-md-4 col-sm-3 col-xs-12" })
+                                <div class="col-md-8 col-sm-9 col-xs-12">
+                                    @Html.TextBoxFor(model => model.NoPolis, new { @class = "form-control input-sm" })
+                                    @Html.ValidationMessageFor(model => model.NoPolis)
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-1">
+                            <div class="form-group">
+                                <div class="col-md-8 col-sm-9 col-xs-12">
+                                    <a data-toggle="modal" href="#ModalUploadPeminjam" class="btn btn-sm default"> File</a>
+                                    @Html.HiddenFor(model => model.urlPeminjam)
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.keteranganNoPolis, new { @class = "control-label col-md-2 col-sm-3 col-xs-12" })
+                                <div class="col-md-10 col-sm-9 col-xs-12">
+                                    @Html.TextBoxFor(model => model.keteranganNoPolis, new { @class = "form-control input-sm" })
+                                    @Html.ValidationMessageFor(model => model.keteranganNoPolis)
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-5">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.Peminjam, new { @class = "control-label col-md-4 col-sm-3 col-xs-12" })
+                                <div class="col-md-8 col-sm-9 col-xs-12">
+                                    @Html.TextBoxFor(model => model.Peminjam, new { @class = "form-control input-sm" })
+                                    @Html.ValidationMessageFor(model => model.Peminjam)
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-1">
+                            <div class="form-group">
+                                <div class="col-md-8 col-sm-9 col-xs-12">
+                                    <a data-toggle="modal" href="#ModalUploadPeminjam" class="btn btn-sm default"> File</a>
+                                    @Html.HiddenFor(model => model.urlPeminjam)
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.keteranganPeminjam, new { @class = "control-label col-md-2 col-sm-3 col-xs-12" })
+                                <div class="col-md-10 col-sm-9 col-xs-12">
+                                    @Html.TextBoxFor(model => model.keteranganPeminjam, new { @class = "form-control input-sm" })
+                                    @Html.ValidationMessageFor(model => model.keteranganPeminjam)
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-5">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.Leasing, new { @class = "control-label col-md-4 col-sm-3 col-xs-12" })
+                                <div class="col-md-8 col-sm-9 col-xs-12">
+                                    @Html.TextBoxFor(model => model.Leasing, new { @class = "form-control input-sm" })
+                                    @Html.ValidationMessageFor(model => model.Leasing)
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-1">
+                            <div class="form-group">
+                                <div class="col-md-8 col-sm-9 col-xs-12">
+                                    <a data-toggle="modal" href="#ModalUploadLeasing" class="btn btn-sm default"> File</a>
+                                    @Html.HiddenFor(model => model.urlLeasing)
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.keteranganLeasing, new { @class = "control-label col-md-2 col-sm-3 col-xs-12" })
+                                <div class="col-md-10 col-sm-9 col-xs-12">
+                                    @Html.TextBoxFor(model => model.keteranganLeasing, new { @class = "form-control input-sm" })
+                                    @Html.ValidationMessageFor(model => model.keteranganLeasing)
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="ln_solid"></div>
+            <div class="form-group">
+                <div class="col-md-8">
+                    <button type="submit" class="btn btn-success">Submit</button>
+                    <a href="@backLink" class="btn btn-link">Cancel</a>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+<div class="modal fade " id="ModalUploadBPKB" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog ">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                <h4 class="modal-title">Upload BPKB</h4>
+            </div>
+            <div class="modal-body">
+                <input name="files" id="filesBPKB" class="upload" type="file" />
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade " id="ModalUploadSTNK" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog ">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                <h4 class="modal-title">Upload STNK</h4>
+            </div>
+            <div class="modal-body">
+                <input name="files" id="filesSTNK" type="file" class="upload" />
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade " id="ModalUploadKIR" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog ">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                <h4 class="modal-title">Upload KIR</h4>
+            </div>
+            <div class="modal-body">
+                <input name="files" id="filesKIR" type="file" class="upload" />
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade " id="ModalUploadKIU" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog ">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                <h4 class="modal-title">Upload KIU / SIPA</h4>
+            </div>
+            <div class="modal-body">
+                <input name="files" id="filesKIU" type="file" class="upload" />
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade " id="ModalUploadIBM" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog ">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                <h4 class="modal-title">Upload IBM</h4>
+            </div>
+            <div class="modal-body">
+                <input name="files" id="filesIBM" type="file" class="upload" />
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade " id="ModalUploadAsuransi" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog ">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                <h4 class="modal-title">Upload Asuransi</h4>
+            </div>
+            <div class="modal-body">
+                <input name="files" id="filesAsuransi" type="file" class="upload" />
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade " id="ModalUploadReklame" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog ">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                <h4 class="modal-title">Upload Reklame</h4>
+            </div>
+            <div class="modal-body">
+                <input name="files" id="filesReklame" type="file" class="upload" />
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade " id="ModalUploadPolis" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog ">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                <h4 class="modal-title">Upload No Polis</h4>
+            </div>
+            <div class="modal-body">
+                <input name="files" id="filesPolis" type="file" class="upload" />
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade " id="ModalUploadPeminjam" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog ">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                <h4 class="modal-title">Upload Peminjam</h4>
+            </div>
+            <div class="modal-body">
+                <input name="files" id="filesPeminjam" type="file" class="upload" />
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade " id="ModalUploadLeasing" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog ">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                <h4 class="modal-title">Upload No Leasing</h4>
+            </div>
+            <div class="modal-body">
+                <input name="files" id="filesLeasing" type="file" class="upload" />
+            </div>
+        </div>
+    </div>
+</div>
+@section scripts{
+    <script type="text/javascript">
+        var uploadel;
+        var listFileBPKB = [];
+        @if (Model.urlBPKB != null)
+        {
+            foreach(string item in Model.urlBPKB.Split(','))
+            {
+                <text>
+        listFileBPKB.push({ name: '@item' });
+        </text>
+            }
+        }
+        var listFileSTNK = [];
+        @if (Model.urlSTNK != null)
+            {
+                foreach (string item in Model.urlSTNK.Split(','))
+                {
+                <text>
+        listFileSTNK.push({ name: '@item' });
+        </text>
+            }
+        }
+        var listFileKIR = [];
+        @if (Model.urlKIR != null)
+        {
+            foreach (string item in Model.urlKIR.Split(','))
+            {
+            <text>
+        listFileKIR.push({ name: '@item' });
+        </text>
+            }
+        }
+        var listFileKIU = [];
+        @if (Model.urlKIU != null)
+        {
+            foreach (string item in Model.urlKIU.Split(','))
+            {
+            <text>
+        listFileKIU.push({ name: '@item' });
+        </text>
+            }
+        }
+        var listFileIBM = [];
+        @if (Model.urlIBM != null)
+        {
+            foreach (string item in Model.urlIBM.Split(','))
+            {
+            <text>
+        listFileIBM.push({ name: '@item' });
+        </text>
+            }
+        }
+        var listFileAsuransi = [];
+        @if (Model.urlAsuransi != null)
+        {
+            foreach (string item in Model.urlAsuransi.Split(','))
+            {
+            <text>
+        listFileAsuransi.push({ name: '@item' });
+        </text>
+            }
+        }
+        var listFileReklame = [];
+        @if (Model.urlReklame != null)
+        {
+            foreach (string item in Model.urlReklame.Split(','))
+            {
+            <text>
+        listFileReklame.push({ name: '@item' });
+        </text>
+            }
+        }
+        var listFileNoPolis = [];
+        @if (Model.urlNoPolis != null)
+        {
+            foreach (string item in Model.urlNoPolis.Split(','))
+            {
+            <text>
+        listFileNoPolis.push({ name: '@item' });
+        </text>
+            }
+        }
+        var listFilePeminjam = [];
+        @if (Model.urlPeminjam != null)
+        {
+            foreach (string item in Model.urlPeminjam.Split(','))
+            {
+            <text>
+        listFilePeminjam.push({ name: '@item' });
+        </text>
+            }
+        }
+        var listFilePolis = [];
+        @if (Model.urlNoPolis != null)
+        {
+            foreach (string item in Model.urlNoPolis.Split(','))
+            {
+            <text>
+        listFilePolis.push({ name: '@item' });
+        </text>
+            }
+        }
+        var listFilePeminjam = [];
+        @if (Model.urlPeminjam != null)
+        {
+            foreach (string item in Model.urlPeminjam.Split(','))
+            {
+            <text>
+        listFilePeminjam.push({ name: '@item' });
+        </text>
+            }
+        }
+        var listFileLeasing = [];
+        @if (Model.urlLeasing != null)
+        {
+            foreach (string item in Model.urlLeasing.Split(','))
+            {
+            <text>
+        listFileLeasing.push({ name: '@item' });
+        </text>
+            }
+        }
+
+
+        $(document).ready(function () {
+
+            var dsMerk = new kendo.data.DataSource({
+                transport: {
+                    read: {
+                        url: '@Url.Action("GetMerk")',
+                        dataType: "json"
+                    },
+                },
+            });
+            var dsUnit = new kendo.data.DataSource({
+                transport: {
+                    read: {
+                        url: '@Url.Action("GetUnit")',
+                        dataType: "json"
+                    },
+                },
+            });
+            InitLookUp($("#IdMerk"), dsMerk);
+            InitLookUp($("#IdUnit"), dsUnit);
+
+            var dsJnsTruck = new kendo.data.DataSource({
+                transport: {
+                    read: {
+                        url: '@Url.Action("GetJnsTruck","JenisTruck")',
+                        dataType: "json"
+                    },
+                },
+            });
+
+            var dsPool = new kendo.data.DataSource({
+                transport: {
+                    read: {
+                        url: '@Url.Action("GetPool","MasterPool")',
+                        dataType: "json"
+                    },
+                },
+            });
+
+            $("#IdJenisTruck").kendoComboBox({
+                dataTextField: "StrJenisTruck",
+                dataValueField: "Id",
+                dataSource: dsJnsTruck,
+                filter: "contains",
+                suggest: true,
+            });
+
+            $("#IdPool").kendoComboBox({
+                dataTextField: "NamePool",
+                dataValueField: "Id",
+                dataSource: dsPool,
+                filter: "contains",
+                suggest: true,
+            });
+
+            CreateUploader($("#filesBPKB"), listFileBPKB);
+            CreateLink($("#filesBPKB"), listFileBPKB);
+
+            CreateUploader($("#filesSTNK"), listFileSTNK);
+            CreateLink($("#filesSTNK"), listFileSTNK);
+
+            CreateUploader($("#filesKIR"), listFileKIR);
+            CreateLink($("#filesKIR"), listFileKIR);
+
+            CreateUploader($("#filesKIU"), listFileKIU);
+            CreateLink($("#filesKIU"), listFileKIU);
+
+            CreateUploader($("#filesIBM"), listFileIBM);
+            CreateLink($("#filesIBM"), listFileIBM);
+
+            CreateUploader($("#filesAsuransi"), listFileAsuransi);
+            CreateLink($("#filesAsuransi"), listFileAsuransi);
+
+            CreateUploader($("#filesReklame"), listFileReklame);
+            CreateLink($("#filesReklame"), listFileReklame);
+
+            CreateUploader($("#filesPolis"), listFilePolis);
+            CreateLink($("#filesPolis"), listFilePolis);
+
+            CreateUploader($("#filesPeminjam"), listFilePeminjam);
+            CreateLink($("#filesPeminjam"), listFilePeminjam);
+
+            CreateUploader($("#filesLeasing"), listFileLeasing);
+            CreateLink($("#filesLeasing"), listFileLeasing);
+        })
+
+        function CreateUploader(el, dataSouce) {
+            el.kendoUpload({
+                multiple: true,
+                files: dataSouce,
+                async: {
+                    saveUrl: '@Url.Action("Upload", "FileManagement", new { Dir = "~/Uploads/DataTruck" })',
+                    removeUrl: '@Url.Action("Delete", "FileManagement", new { Dir = "~/Uploads/DataTruck" })',
+                    autoUpload: true
+                },
+                success: function (e, options) {
+                    if (e.operation == "upload") {
+                        $(".k-filename:contains('" + e.files[0].name + "')").text('').append('<a href="' + e.response.imagelink + '" target="_blank">' + e.response.fileName.replace(e.response.fileName.substr(0, 36), '') + '</a>');
+                        e.files[0].name = e.response.fileName;
+                        dataSouce.push({ name: e.response.fileName });
+                    } else if (e.operation == "remove") {
+                        dataSouce = jQuery.grep(dataSouce, function (a) {
+                            return a !== e.response.fileName;
+                        });
+                    }
+                },
+                select: onSelectImage,
+            }).data("kendoUpload");
+        }
+
+        function CreateLink(el, dataSouce) {
+            var filename = el.data("kendoUpload").wrapper.find(".k-filename")
+            for (var i = 0; i < filename.length; i++) {
+                $(filename[i]).html("<a href='/Uploads/DataTruck/" + dataSouce[i].name + "' target='_blank'>" + dataSouce[i].name.replace(dataSouce[i].name.substr(0, 36), '') + "</a>")
+            }
+        }
+
+        $('#formsubmit').submit(function (e) {
+            var ListVal;
+            ListVal = jQuery.map(listFileBPKB, function (n, i) {
+                return n.name;
+            });
+            $("#urlBPKB").val(ListVal);
+
+            ListVal = jQuery.map(listFileSTNK, function (n, i) {
+                return n.name;
+            });
+            $("#urlSTNK").val(ListVal);
+
+            ListVal = jQuery.map(listFileKIR, function (n, i) {
+                return n.name;
+            });
+            $("#urlKIR").val(ListVal);
+
+            ListVal = jQuery.map(listFileKIU, function (n, i) {
+                return n.name;
+            });
+            $("#urlKIU").val(ListVal);
+
+            ListVal = jQuery.map(listFileIBM, function (n, i) {
+                return n.name;
+            });
+            $("#urlIBM").val(ListVal);
+
+            ListVal = jQuery.map(listFileAsuransi, function (n, i) {
+                return n.name;
+            });
+            $("#urlAsuransi").val(ListVal);
+
+            ListVal = jQuery.map(listFileReklame, function (n, i) {
+                return n.name;
+            });
+            $("#urlReklame").val(ListVal);
+
+            ListVal = jQuery.map(listFilePolis, function (n, i) {
+                return n.name;
+            });
+            $("#urlNoPolis").val(ListVal);
+
+            ListVal = jQuery.map(listFilePeminjam, function (n, i) {
+                return n.name;
+            });
+            $("#urlPeminjam").val(ListVal);
+
+            ListVal = jQuery.map(listFileLeasing, function (n, i) {
+                return n.name;
+            });
+            $("#urlLeasing").val(ListVal);
+        })
+    </script>
+}

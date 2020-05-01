@@ -1,0 +1,215 @@
+﻿@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "Unit List";
+    string currentController = (string)ViewContext.RouteData.Values["controller"];
+    string currentAction = "Index";
+}
+<div class="portlet light ">
+    <div class="portlet-title">
+        <div class="caption">
+            <span class="caption-subject font-dark sbold uppercase">@ViewBag.Title</span>
+        </div>
+    </div>
+    <div class="portlet-body form">
+        <div class="portlet box blue ">
+            <div class="portlet-title">
+                <div class="caption">
+                    Hide Column :
+                </div>
+                <div class="tools">
+                    <a href="" class="expand"> </a>
+                </div>
+            </div>
+            <div class="portlet-body form" style="display: none;">
+                <form role="form">
+                    <div class="form-body">
+                        <div id="content-col" class="md-checkbox-inline" style="margin-left:10px"></div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div id="grid"></div>
+    </div>
+</div>
+@section scripts
+{
+    <script type="text/javascript">
+        function editItem(e) {
+            e.preventDefault();
+            var data = this.dataItem(getDataRowGrid(e));
+            window.location.href = "@Url.Action("Detail")" + "?id=" + data.Id;
+        }
+
+        $(document).ready(function () {
+            currController = '@currentController';
+            currAction = '@currentAction';
+
+            var ds = new kendo.data.DataSource({
+                transport: {
+                    read: {
+                        url: '@Url.Action("Binding")',
+                        dataType: "json"
+                    },
+                    //parameterMap: function (options, operation) {
+                    //    if (operation !== "read" && options != '') {
+                    //        return kendo.stringify(options);
+                    //    }
+                    //    else if (operation == "read") {
+                    //        if (options.filter) {
+                    //            filter = options.filter.filters;
+                    //            for (var i in filter) {                                    
+                    //                if (filter[i].field == "JenisTruck") {
+                    //                    filter[i].field = "JenisTrucks.StrJenisTruck";
+                    //                }
+                    //                if (filter[i].field == "MerkTruck") {
+                    //                    filter[i].field = "LookupCodeMerk.Nama";
+                    //                }
+                    //                if (filter[i].field == "ModelTruck") {
+                    //                    filter[i].field = "SpecModel";
+                    //                }
+
+                    //                if (filter[i].field == "MerkPendingin") {
+                    //                    filter[i].field = "Object.Model.MerkPendingin";
+                    //                }
+                    //                if (filter[i].field == "ModelPendingin") {
+                    //                    filter[i].field = "DataPendingin.Model";
+                    //                }
+                    //                if (filter[i].field == "KaroseriBox") {
+                    //                    filter[i].field = "DataBox.Karoseri";
+                    //                }
+                    //                if (filter[i].field == "TypeBox") {
+                    //                    filter[i].field = "DataBox.LookupCodeKategori.Nama";
+                    //                }
+                    //                if (filter[i].field == "VendorGps") {
+                    //                    filter[i].field = "DataGPS.VendorGps.Nama";
+                    //                }
+                    //            }
+                    //        }
+
+                    //        if (options.sort) {
+                    //            sort = options.sort;
+                    //            for (var i in sort) {
+                    //                if (sort[i].field == "JenisTruck") {
+                    //                    sort[i].field = "JenisTrucks.StrJenisTruck";
+                    //                }
+                    //                if (sort[i].field == "MerkTruck") {
+                    //                    sort[i].field = "LookupCodeMerk.Nama";
+                    //                }
+                    //                if (sort[i].field == "ModelTruck") {
+                    //                    sort[i].field = "SpecModel";
+                    //                }
+                    //            }
+                    //        }
+                    //        return options;
+                    //    }
+                    //}
+                },
+                schema: {
+                    total: "total",
+                    data: "data",
+                    model: {
+                        fields: {
+                            "Id": { type: "number" },
+                            "VehicleNo": { type: "string" },
+                            "JenisTruck": { type: "string" },
+                            "MerkTruck": { type: "string" },
+                            "ModelTruck": { type: "string" },
+                            "MerkPendingin": { type: "string" },
+                            "ModelPendingin": { type: "string" },
+                            "KaroseriBox": { type: "string" },
+                            "TypeBox": { type: "string" },
+                            "VendorGps": { type: "string" },
+                        }
+                    }
+                },
+                pageSize: 10,
+                pageable: true,
+                //serverFiltering: true,
+                //serverPaging: true,
+                //serverSorting: true,
+                sortable: true,
+            });
+
+            gridIndex = $("#grid").kendoGrid({
+                dataSource: ds,
+                filterable: kendoGridFilterable,
+                sortable: true,
+                reorderable: true,
+                resizable: true,
+                pageable: true,
+                groupable: true,
+                columns: [
+                    {
+                        command: [
+                            {
+                                name: "edit",
+                                text: "edit",
+                                click: editItem,
+                                imageClass: "glyphicon glyphicon-edit",
+                                template: '<a class="k-button-icon #=className#" #=attr# href="\\#"><span class="#=imageClass#"></span></a>'
+                            }
+                        ],
+                        width: "40px"
+                    },
+                    {
+                        field: "VehicleNo",
+                        title: "Vehicle No",
+                        width: "140px"
+                    },
+                    {
+                        field: "JenisTruck",
+                        title: "Jenis Truck",
+                        width: "140px"
+                    },
+                    {
+                        field: "MerkTruck",
+                        title: "Merk Truck",
+                        width: "150px"
+                    },
+                    {
+                        field: "ModelTruck",
+                        title: "Model Truck",
+                        width: "150px"
+                    },
+                    {
+                        field: "MerkPendingin",
+                        title: "Merk Pendingin",
+                        width: "150px"
+                    },
+                    {
+                        field: "ModelPendingin",
+                        title: "Model Pendingin",
+                        width: "150px"
+                    },
+                    {
+                        field: "KaroseriBox",
+                        title: "Karoseri Box",
+                        width: "150px"
+                    },
+                    {
+                        field: "TypeBox",
+                        title: "Type Box",
+                        width: "140px"
+                    },
+                    {
+                        field: "VendorGps",
+                        title: "Vendor Gps",
+                        width: "150px"
+                    }
+                ],
+            }).data("kendoGrid");
+
+            @foreach (tms_mka_v2.Context.UserReference item in (List<tms_mka_v2.Context.UserReference>)ViewBag.listKolom)
+            {
+                <text>
+            listKolom.push('@item.Coloumn');
+            </text>
+            }
+
+            GetColomnData(gridIndex);
+        })
+    </script>
+}
+
+

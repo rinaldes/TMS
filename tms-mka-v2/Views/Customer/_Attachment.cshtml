@@ -1,0 +1,63 @@
+﻿@using tms_mka_v2.Models
+@model tms_mka_v2.Models.Customer
+@{
+    string currentController = (string)ViewContext.RouteData.Values["controller"];
+    string currentAction = (string)ViewContext.RouteData.Values["action"];
+    ViewBag.SubTitle = "Customer Attachment";
+}
+<style>
+    .k-grid-edit-row > td > .k-widget{
+        border-style:none !important;
+    }
+</style>
+<h2>Customer Attachment</h2>
+
+@using (Html.BeginForm("UpdateAtt", currentController, FormMethod.Post, new { @id = "formAttc" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(model => model.Id)
+    @Html.Hidden("#listdataattc")
+    <div class="form-horizontal">
+        <div class="form-group">
+            <div id="GridAttachment"></div>
+        </div>
+        @*<div class="form-group">
+            <a href="@Url.Action("Edit")?activeTab=TypeTrucks" class="btn btn-default"> Next </a>
+        </div>*@
+    </div>
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

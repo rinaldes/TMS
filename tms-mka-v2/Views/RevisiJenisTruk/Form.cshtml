@@ -1,0 +1,126 @@
+﻿@using tms_mka_v2.Models;
+
+@model tms_mka_v2.Models.RevisiJenisTruk
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    string currentController = (string)ViewContext.RouteData.Values["controller"];
+    string currentAction = ViewBag.postData == null ? (string)ViewContext.RouteData.Values["action"] : ViewBag.postData;
+    string backLink = Url.Action("Index","ListOrder");
+    ViewBag.Title = "Revisi Tanggal";
+}
+<div class="portlet light">
+    <div class="portlet-title">
+        <div class="caption">
+            <span class="caption-subject font-dark sbold uppercase">@ViewBag.Title</span>
+        </div>
+    </div>
+    <div class="portlet-body form">
+        @using (@Html.BeginForm(currentAction, currentController, FormMethod.Post, new { @class = "form-horizontal form-label-left input_mask", @id = "formsubmit" }))
+        {
+            @Html.ValidationSummary(true)
+            @Html.HiddenFor(model => model.Id)
+            @Html.HiddenFor(model => model.IdSalesOrder)
+            <div class="portlet light">
+                <div class="portlet-title">
+                    <div class="caption font-green-sharp">
+                        <span class="caption-subject"> Basic Info</span>
+                    </div>
+                    <div class="tools">
+                        <a href="" class="collapse"> </a>
+                    </div>
+                </div>
+                <div class="portlet-body">
+                    @if (Model.ModelOncall != null)
+                    {
+                        @Html.Partial("SalesOrderOncall/_PartialFormReadOnly", Model.ModelOncall)
+                    }
+                    else if (Model.ModelKonsolidasi != null)
+                    {
+                        @Html.Partial("SalesOrderProsesKonsolidasi/_PartialFormReadOnly", Model.ModelKonsolidasi)
+                    }
+                    else
+                    {
+                        @Html.Partial("SalesOrderPickup/_PartialFormReadOnly", Model.ModelPickup)
+                    }
+                </div>
+            </div>
+            <div class="portlet light">
+                <div class="portlet-title">
+                    <div class="caption font-green-sharp">
+                        <span class="caption-subject"> Revisi Jenis Truk</span>
+                    </div>
+                    <div class="tools">
+                        <a href="" class="collapse"> </a>
+                    </div>
+                </div>
+                <div class="portlet-body">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.JenisTruckIdLama, new { @class = "control-label col-md-3" })
+                            <div class="col-md-3">
+                                @Html.TextBoxFor(model => model.JenisTruckIdLama, new { @class = "form-control input-sm", @readonly = "true" })
+                                @Html.ValidationMessageFor(model => model.JenisTruckIdLama)
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.JenisTruckIdBaru, new { @class = "control-label col-md-3" })
+                            <div class="col-md-3">
+                                @Html.TextBoxFor(model => model.JenisTruckIdBaru, new { @class = "form-control input-sm" })
+                                @Html.ValidationMessageFor(model => model.JenisTruckIdBaru)
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.KeteranganRevisi, new { @class = "control-label col-md-3" })
+                            <div class="col-md-9">
+                                @Html.TextAreaFor(model => model.KeteranganRevisi, new { @class = "form-control input-sm" })
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-md-8">
+                    <button type="submit" class="btn btn-success">Submit</button>
+                    <a href="@backLink" class="btn btn-link">Cancel</a>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+@section scripts{
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("#JenisTruckIdLama").kendoComboBox({
+                dataSource: {
+                    transport: {
+                        read: {
+                            url: '@Url.Action("GetJnsTruck","JenisTruck")',
+                            dataType: "json"
+                        },
+                    },
+                },
+                dataTextField: "StrJenisTruck",
+                dataValueField: "Id",
+                filter: "contains",
+                suggest: true,
+            });
+            $("#JenisTruckIdBaru").kendoComboBox({
+                dataSource: {
+                    transport: {
+                        read: {
+                            url: '@Url.Action("GetJnsTruck","JenisTruck")',
+                            dataType: "json"
+                        },
+                    },
+                },
+                dataTextField: "StrJenisTruck",
+                dataValueField: "Id",
+                filter: "contains",
+                suggest: true,
+            });
+        })
+        //$('#formsubmit').submit(function (e) {
+
+        //})
+    </script>
+}

@@ -1,0 +1,307 @@
+﻿@{ 
+    ViewBag.Title = "Index"; 
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "Customer";
+    string currentController = (string)ViewContext.RouteData.Values["controller"];
+    string currentAction = "Index"; 
+}
+<style>
+      input[type=radio] {
+        margin-left: 10px;
+        margin-right: 5px;
+        margin-top: 1px\9;
+        line-height: normal;
+      }
+</style>
+<div class="portlet light ">
+    <div class="portlet-title">
+        <div class="caption">
+            <span class="caption-subject font-dark sbold uppercase">@ViewBag.Title</span>
+        </div>
+        <div class="actions">
+            <a class="btn btn-sm green dropdown-toggle" href="@Url.Action("Add", "Customer")">
+                <i class="fa fa-plus"></i>Add
+            </a>
+            <div class="btn-group">
+                <a class="btn btn-sm green dropdown-toggle" href="javascript:;" data-toggle="dropdown" data-hover="dropdown" data-close-others="true">
+                    Download Template
+                    <i class="fa fa-angle-down"></i>
+                </a>
+                <ul class="dropdown-menu pull-right">
+                    <li>
+                        <a href="~/Content/Template/TemplateCustomer.xlsx" target="_blank"> Basic Data </a>
+                    </li>
+                    <li>
+                        <a href="~/Content/Template/TemplateCustomerDetail.xlsx"> Detail </a>
+                    </li>
+                </ul>
+            </div>
+            <div class="btn-group">
+                <a class="btn btn-sm green dropdown-toggle" href="javascript:;" data-toggle="dropdown" data-hover="dropdown" data-close-others="true">
+                    Import
+                    <i class="fa fa-angle-down"></i>
+                </a>
+                <ul class="dropdown-menu pull-right">
+                    <li>
+                        <a data-toggle="modal" href="#ModalDataCustomer"> Basic Data </a>
+                    </li>
+                    <li>
+                        <a data-toggle="modal" href="#ModalDataCustomerDetail"> Detail </a>
+                    </li>
+                </ul>
+            </div>
+            <div class="btn-group">
+                <a class="btn btn-sm green dropdown-toggle" href="javascript:;" data-toggle="dropdown" data-hover="dropdown" data-close-others="true">
+                    Export
+                    <i class="fa fa-angle-down"></i>
+                </a>
+                <ul class="dropdown-menu pull-right">
+                    <li>
+                        <a data-toggle="modal" href="@Url.Action("ExportBasicData")"> Basic Data </a>
+                    </li>
+                    <li>
+                        <a data-toggle="modal" href="@Url.Action("ExportDetail")"> Detail </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="portlet-body form">
+        <div class="portlet box blue ">
+            <div class="portlet-title">
+                <div class="caption">
+                    Hide Column :
+                </div>
+                <div class="tools">
+                    <a href="" class="expand"> </a>
+                </div>
+            </div>
+            <div class="portlet-body form" style="display: none;">
+                <form role="form">
+                    <div class="form-body">
+                        <div id="content-col" class="md-checkbox-inline" style="margin-left:10px"></div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div id="grid"></div>
+    </div>
+</div>
+
+<!-- /.modal -->
+<div class="modal fade bs-modal-sm" id="ModalDataCustomer" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                <h4 class="modal-title">Import Master Data Customer</h4>
+            </div>
+            <div class="modal-body">
+                <input name="filesDataCustomer" id="filesDataCustomer" type="file" />
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn dark btn-outline" data-dismiss="modal" onclick="uploadDataCustomer()">Import</button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<!-- /.modal -->
+<!-- /.modal -->
+<div class="modal fade bs-modal-sm" id="ModalDataCustomerDetail" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                <h4 class="modal-title">Import Master Data Customer</h4>
+            </div>
+            <div class="modal-body">
+                <input name="filesDataCustomerDetail" id="filesDataCustomerDetail" type="file" />
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn dark btn-outline" data-dismiss="modal" onclick="uploadDataCustomerDetail()">Import</button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<!-- /.modal -->
+@section scripts {
+    <script type="text/javascript">
+        var kendoUploadButtonExim;
+
+        function deleteItem(e) {
+            e.preventDefault();
+            var data = this.dataItem(getDataRowGrid(e));
+            goToDeletePage('@Url.Action("Delete")' + "?id=" + data.Id, this.dataSource);
+        }
+
+        function editItem(e) {
+            e.preventDefault();
+            var data = this.dataItem(getDataRowGrid(e));
+            window.location.href = "@Url.Action("Edit")" + "?id=" + data.Id + "&activeTab=BasicData";
+        }
+        function uploadDataCustomer() {
+            if (kendoUploadButtonExim)
+                totalFile = 0;
+            kendoUploadButtonExim.click();
+        }
+
+        function uploadDataCustomerDetail() {
+            if (kendoUploadButtonExim)
+                totalFile = 0;
+            kendoUploadButtonExim.click();
+        }
+
+        function onSelectFile(e) {
+            var flagExtension = 0;
+            var allowedExtension = [".xlsx", ".xls"];
+            $.each(e.files, function (index, value) {
+                if ($.inArray((value.extension).toLowerCase(), allowedExtension) === -1) {
+                    flagExtension = 1;
+                }
+            });
+            if (flagExtension == 1) {
+                alert("File yang diperbolehkan hanya berupa Excell");
+                e.preventDefault();
+            }
+
+            setTimeout(function () {
+                kendoUploadButtonExim = $(".k-upload-selected");
+                kendoUploadButtonExim.hide();
+            }, 1);
+        }
+
+        $(document).ready(function () {
+            CreateUploaderExim($("#filesDataCustomer"), "@Url.Action("UploadBasicData")", $("#grid"));
+            CreateUploaderExim($("#filesDataCustomerDetail"), "@Url.Action("UploadDetail")", $("#grid"));
+
+            currController = '@currentController';
+            currAction = '@currentAction';
+
+            var ds = new kendo.data.DataSource({
+                transport: {
+                    read: {
+                        url: '@Url.Action("Binding")',
+                        dataType: "json"
+                    },
+                },
+                schema: {
+                    total: "total",
+                    data: "data",
+                    model: {
+                        fields: {
+                            "Id": { type: "number" },
+                            "CustomerCode": { type: "string" },
+                            "CustomerCodeOld": { type: "string" },
+                            "CustomerNama": { type: "string" },
+                            "StrPrioritas": { type: "string" },
+                            "WajibPO": { type: "boolean" },
+                            "WajibGPS": { type: "boolean" },
+                            "SpecialTreatment": { type: "string" },
+                            "Keterangan": { type: "string",}
+                        }
+                    }
+                },
+                pageSize: 10,
+                pageable: true,
+                serverFiltering: true,
+                serverPaging: true,
+                serverSorting: true,
+                sortable: true,
+            });
+
+            gridIndex = $("#grid").kendoGrid({
+                dataSource: ds,
+                filterable: kendoGridFilterable,
+                sortable: true,
+                reorderable: true,
+                resizable: true,
+                pageable: true,
+                groupable: true,
+                columns: [
+
+                    {
+                        command: [
+                            {
+                                name: "edit",
+                                text: "edit",
+                                click: editItem,
+                                imageClass: "glyphicon glyphicon-edit",
+                                template: '<a class="k-button-icon #=className#" #=attr# href="\\#"><span class="#=imageClass#"></span></a>'
+                            },
+                            {
+                                name: "delete",
+                                text: "delete",
+                                click: deleteItem,
+                                imageClass: "glyphicon glyphicon-remove",
+                                template: '<a class="k-button-icon #=className#" #=attr# href="\\#"><span class="#=iconClass# #=imageClass#"></span></a>'
+                            }
+                        ],
+                        width: "60px"
+                    },
+                    {
+                        field: "CustomerCode",
+                        title: "Kode Customer",
+                        width: "150px"
+                    },
+                    {
+                        field: "CustomerCodeOld",
+                        title: "Kode Nama",
+                        width: "150px"
+                    },
+                    {
+                        field: "CustomerNama",
+                        title: "Nama Customer",
+                        width: "220px"
+                    },
+                    {
+                        field: "StrPrioritas",
+                        title: "Prioritas",
+                        width: "140px"
+                    },
+                    {
+                        field: "WajibPO",
+                        title: "Wajib PO",
+                        template: "#: WajibPO ? 'Ya' : 'Tidak' #",
+                        width: "110px"
+                    },
+                    {
+                        field: "WajibGPS",
+                        title: "Wajib GPS",
+                        template: "#: WajibGPS ? 'Ya' : 'Tidak' #",
+                        width: "110px"
+                    },
+                    {
+                        field: "SpecialTreatment",
+                        title: "Penanganan Khusus",
+                        attributes: {
+                            style: "width: 300px"
+                        },
+
+                        width: "350px"
+                    },
+                    {
+                        field: "Keterangan",
+                        title: "Keterangan",
+                        width: "350px"
+                    },
+                ],
+            }).data("kendoGrid");
+
+            @foreach (tms_mka_v2.Context.UserReference item in (List<tms_mka_v2.Context.UserReference>)ViewBag.listKolom)
+            {
+                <text>
+            listKolom.push('@item.Coloumn');
+            </text>
+            }
+
+            GetColomnData(gridIndex);
+        })
+    </script>
+    <script id="bool-template" type="text/x-kendo-template">
+        <label class="checkbox-inline"><input type="checkbox" value="">Option 1</label>
+        <label class="checkbox-inline"><input type="checkbox" value="">Option 2</label>
+    </script> }

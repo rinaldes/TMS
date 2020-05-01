@@ -1,0 +1,489 @@
+﻿@using tms_mka_v2.Models;
+
+@model tms_mka_v2.Models.SettlementBatal
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    string currentController = (string)ViewContext.RouteData.Values["controller"];
+    string currentAction = (string)ViewContext.RouteData.Values["action"];
+    string backLink = Url.Action("Index");
+    if (currentAction == "Add")
+    {
+        ViewBag.Title = "Tambah Settlement Regular";
+    }
+    else
+    {
+        ViewBag.Title = ViewBag.name + " | Edit";
+    }
+}
+<div class="portlet light">
+    <div class="portlet-title">
+        <div class="caption">
+            <span class="caption-subject font-dark sbold uppercase">@ViewBag.Title</span>
+        </div>
+    </div>
+    <div class="portlet-body form">
+        @using (@Html.BeginForm(currentAction, currentController, FormMethod.Post, new { @class = "form-horizontal form-label-left input_mask", @id = "formsubmit" }))
+        {
+            @Html.ValidationSummary(true)
+            @Html.HiddenFor(model => model.Id)
+            @Html.HiddenFor(model => model.IdSalesOrder)
+            
+            <div class="portlet light">
+                <div class="portlet-title">
+                    <div class="caption font-green-sharp">
+                        <span class="caption-subject"> Basic Info</span>
+                    </div>
+                    <div class="tools">
+                        <a href="" class="collapse"> </a>
+                    </div>
+                </div>
+                <div class="portlet-body">
+                    @if (Model.ModelOncall != null)
+                    {
+                        @Html.Partial("SalesOrderOncall/_PartialFormReadOnly", Model.ModelOncall)
+                    }
+                    else if (Model.ModelPickup != null)
+                    {
+                        @Html.Partial("SalesOrderPickup/_PartialFormReadOnly", Model.ModelPickup)
+                    }
+                    else if (Model.ModelKonsolidasi != null)
+                    {
+                        @Html.Partial("SalesOrderProsesKonsolidasi/_PartialFormReadOnly", Model.ModelKonsolidasi)
+                    }
+                    else
+                    {
+                        <div id="PartialSo" class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="control-label col-md-3"> NO SO</label>
+                                    <label class="control-label col-md-9">: @ViewBag.sokls.NoSo</label>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-md-3"> Kode Customer</label>
+                                    <label class="control-label col-md-9">: @ViewBag.sokls.SalesOrderKontrak.Customer.CustomerCode</label>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-md-3"> Kode Nama</label>
+                                    <label class="control-label col-md-9">: @ViewBag.sokls.SalesOrderKontrak.Customer.CustomerCodeOld</label>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-md-3"> Nama Customer</label>
+                                    <label class="control-label col-md-9">: @ViewBag.sokls.SalesOrderKontrak.Customer.CustomerNama</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="control-label col-md-3">Tanggal Muat</label>
+                                    <div class="col-md-9 col-sm-9 col-xs-12">
+                                        <label class="control-label col-md-9">: @ViewBag.sokls.MuatDate.ToString()</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+            <div class="portlet light">
+                <div class="portlet-title">
+                    <div class="caption font-green-sharp">
+                        <span class="caption-subject"> Perhitungan Uang Batal</span>
+                    </div>
+                    <div class="tools">
+                        <a href="" class="collapse"> </a>
+                    </div>
+                </div>
+                <div class="portlet-body">
+                    <div class="form-group">
+                        <label class="control-label col-md-1"></label>
+                        <label class="control-label col-md-2">Kas</label>
+                        <label class="control-label col-md-3">Transfer</label>
+                        <label class="control-label col-md-2">Voucher Solar</label>
+                        <label class="control-label col-md-2">Voucher Kapal</label>
+                        <label class="control-label col-md-2">Keterangan</label>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-md-1">Yang Diterima</label>
+                        <div class="col-md-2">@Html.TextBoxFor(model => model.KasDiterima, new { @class = "form-control-numeric-idr", @readonly = true })</div>
+                        <div class="col-md-3">@Html.TextBoxFor(model => model.TransferDiterima, new { @class = "form-control-numeric-idr", @readonly = true })</div>
+                        <div class="col-md-2">@Html.TextBoxFor(model => model.SolarDiterima, new { @class = "form-control-numeric-idr", @readonly = true })</div>
+                        <div class="col-md-2">@Html.TextBoxFor(model => model.KapalDiterima, new { @class = "form-control-numeric-idr", @readonly = true })</div>
+                        <div class="col-md-2">@Html.TextBoxFor(model => model.KeteranganDiterima, new { @class = "form-control input-sm" })</div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-md-1">Diakui Biaya</label>
+                        <div class="col-md-2">@Html.TextBoxFor(model => model.KasDiakui, new { @class = "form-control-numeric-idr" })</div>
+                        <div class="col-md-3">@Html.TextBoxFor(model => model.TransferDiakui, new { @class = "form-control-numeric-idr" })</div>
+                        <div class="col-md-2">@Html.TextBoxFor(model => model.SolarDiakui, new { @class = "form-control-numeric-idr" })</div>
+                        <div class="col-md-2">@Html.TextBoxFor(model => model.KapalDiakui, new { @class = "form-control-numeric-idr" })</div>
+                        <div class="col-md-2">@Html.TextBoxFor(model => model.KeteranganDiakui, new { @class = "form-control input-sm" })</div>
+                    </div>
+                    <hr />
+                    <div class="form-group">
+                        <label class="control-label col-md-1">Harus Kembali</label>
+                        <div class="col-md-2">@Html.TextBoxFor(model => model.KasKembali, new { @class = "form-control-numeric-idr", @readonly = true })</div>
+                        <div class="col-md-3">@Html.TextBoxFor(model => model.TransferKembali, new { @class = "form-control-numeric-idr", @readonly = true })</div>
+                        <div class="col-md-2">@Html.TextBoxFor(model => model.SolarKembali, new { @class = "form-control-numeric-idr", @readonly = true })</div>
+                        <div class="col-md-2">@Html.TextBoxFor(model => model.KapalKembali, new { @class = "form-control-numeric-idr", @readonly = true })</div>
+                        <div class="col-md-2">@Html.TextBoxFor(model => model.KeteranganKembali, new { @class = "form-control input-sm" })</div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-md-1">Aktual Kembali</label>
+                        <div class="col-md-2">@Html.TextBoxFor(model => model.KasAktual, new { @class = "form-control-numeric-idr" })</div>
+                        <div class="col-md-1">@Html.TextBoxFor(model => model.TransferAktual, new { @class = "form-control-numeric-idr" })</div>
+                        <div class="col-md-2">
+                            <div class="col-md-12 col-sm-12 col-xs-12">
+                                <div class="input-group input-group-sm">
+                                    <input data-val="true" data-val-number="Nilai IdCreditCash harus berupa angka." id="IdCreditTf" name="IdCreditTf" type="hidden">
+                                    <input class="form-control" id="_CodeCreditTf" name="_CodeCreditTf" readonly="readonly" type="text">
+                                    <span class="input-group-btn">
+                                        <button type="button" class="btn btn-success" data-toggle="modal" data-target="#modalGridBk" onclick="caller = 'credittf';">Browse</button>
+                                    </span>
+                                </div>
+                                <span class="k-invalid-msg" data-for="_BankAccount" id="val-bankAccount" style='color: red'>Bank Account Harus Diisi</span>
+                            </div>
+                        </div>
+                        <div class="col-md-1">@Html.TextBoxFor(model => model.SolarAktual, new { @class = "form-control-numeric-idr", @readonly = true })</div>
+                        <div class="col-md-1">
+                            <span class="input-group-btn">
+                                <button type="button" class="btn btn-success" data-toggle="modal" data-target="#modalGridSPBU">Browse</button>
+                            </span>
+                        </div>
+                        <div class="col-md-2">@Html.TextBoxFor(model => model.KapalAktual, new { @class = "form-control-numeric-idr" })</div>
+                        <div class="col-md-2">@Html.TextBoxFor(model => model.KeteranganAktual, new { @class = "form-control input-sm" })</div>
+                    </div>
+                    <hr />
+                    <div class="form-group">
+                        <label class="control-label col-md-1">Selisih kembali</label>
+                        <div class="col-md-2">@Html.TextBoxFor(model => model.KasSelisih, new { @class = "form-control-numeric-idr", @readonly = true })</div>
+                        <div class="col-md-3">@Html.TextBoxFor(model => model.TransferSelisih, new { @class = "form-control-numeric-idr", @readonly = true })</div>
+                        <div class="col-md-2">
+                            @Html.TextBoxFor(model => model.SolarSelisih, new { @class = "form-control-numeric-idr", @readonly = true })
+                        </div>
+                        <div class="col-md-2">@Html.TextBoxFor(model => model.KapalSelisih, new { @class = "form-control-numeric-idr", @readonly = true })</div>
+                        <div class="col-md-2">@Html.TextBoxFor(model => model.KeteranganSelisih, new { @class = "form-control input-sm" })</div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-md-1">Keterangan</label>
+                        <div class="control-label col-md-11">
+                            @Html.TextAreaFor(model => model.Keterangan, new { @class = "form-control input-sm", @readonly = true })
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-md-1">Keterangan Batal</label>
+                        <div class="control-label col-md-11">
+                        <textarea class='form-control input-sm' readonly>@ViewBag.KeteranganBatal</textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @Html.HiddenFor(model => model.SPBUKembali, new { @class = "form-control input-sm", @readonly = true })
+            
+            <br />
+            <div class="form-group">
+                <div class="col-md-8">
+                    <button type="submit" class="btn btn-success">Submit</button>
+                    <a href="@backLink" class="btn btn-link">Cancel</a>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+<div id="modalGridSPBU" class="modal fade" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+            </div>
+            <div class="modal-body">
+                <div id="gridSolar"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn green" onclick="SelectSPBU();">Submit</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="modalGridBk" class="modal fade bs-modal-full" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-full">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+            </div>
+            <div class="modal-body">
+                <div id="GridBk"></div>
+            </div>
+        </div>
+    </div>
+</div>
+@section scripts{
+    <script type="text/javascript">
+    var checkedNominal = {};
+    var checkedNama = {};
+    var checkedIds = {};
+    var gridSPBU;
+    dsSolar = []
+    var aktual_kembali = 0
+    @if (ViewBag.SPBU != null)
+        {
+        foreach (var item in ViewBag.SPBU)
+        {
+            <text>
+    dsSolar.push({
+        Id: '@item.Id',
+        NamaSpbu: '@item.Keterangan',
+        value: @(item.Value > 0 ? item.Value : 0),
+    })
+    checkedNama['@item.Id'] = '@item.Keterangan'
+    checkedIds['@item.Id'] = '@item.Id'
+    checkedNominal['@item.Id'] = @item.Value
+    </text>
+        }
+        }
+gridSPBU = $("#gridSolar").kendoGrid({
+    dataSource: {
+        data: dsSolar,
+        batch: true,
+        schema: {
+            model: {
+                fields: {
+                    Id: { type: "string" },
+                    NamaSpbu: { type: "string" },
+                    value: { type: "number" },
+                }
+            }
+        },
+        aggregate: [{ field: "value", aggregate: "sum" }],
+    },
+    resizable: true,
+    columns: [
+        { field: "NamaSpbu", title: "SPBU" },
+        { field: "value", title: "Rp", footerTemplate: "Total : Rp #= sum == null ? 0 : kendo.format('{0:n}', sum) #", template: 'Rp #: value == null ? 0 : kendo.format("{0:n}", value)#', },
+        { template: "<input type='checkbox' class='checkbox' id='d#= Id #' name='alokasi #= NamaSpbu #' checked/>", title: "Voucher Kembali" }
+    ],
+}).data("kendoGrid");
+    gridSPBU.table.on("click", ".checkbox", selectRow);
+
+    var dsBk = new kendo.data.DataSource({
+        transport: {
+            read: {
+                url: '/ERPConfig/BindingBk',
+                dataType: "json"
+            },
+        },
+        schema: {
+            total: "total",
+            data: "data",
+            model: {
+                fields: {
+                    "id": { type: "number" },
+                    "bk_ac_id": { type: "number" },
+                    "bk_code": { type: "string" },
+                    "bk_name": { type: "string" },
+                }
+            }
+        },
+        pageSize: 10,
+        pageable: true,
+        sortable: true,
+    });
+
+    gridBk = $("#GridBk").kendoGrid({
+        dataSource: dsBk,
+        filterable: kendoGridFilterable,
+        sortable: true,
+        resizable: true,
+        pageable: true,
+        columns: [
+            {
+                command: [
+                 {
+                     name: "select",
+                     text: "Select",
+                     click: SelectBk,
+                     imageClass: "glyphicon glyphicon-ok",
+                     template: '<a class="k-button-icon #=className#" #=attr# href="\\#"><span class="#=iconClass# #=imageClass#"></span></a>'
+                 }
+                ],
+                width: "50px"
+            },
+            { field: "bk_code", title: "Code Account" },
+            { field: "bk_name", title: "Nama Account" },
+        ]
+    });
+
+    function SelectSPBU() {
+        var checked = [];
+        var checked2 = [];
+        var aktualKembali = 0;
+        for (var i in checkedIds) {
+            if (checkedIds[i]) {
+                checked.push(i);
+                aktualKembali += checkedNominal[i];
+                if (checkedNama[i] != null)
+                    checked2.push(checkedNama[i])
+            }
+        }
+
+        $('#SPBUKembali').val(checked2.join(', '));
+        $('#SolarAktual').data("kendoNumericTextBox").value(aktualKembali)
+        $('#modalGridSPBU').modal('hide');
+        var SolarKembali = $("#SolarDiterima").data("kendoNumericTextBox").value() - $("#SolarDiakui").data("kendoNumericTextBox").value();
+        SolarKembali = SolarKembali > 0 ? SolarKembali : 0;
+        $("#SolarKembali").data("kendoNumericTextBox").value(SolarKembali);
+        if (SolarKembali > 0)
+            $("#SolarKembali").data("kendoNumericTextBox").wrapper.find("input").css("color", "red");
+        else
+            $("#SolarKembali").data("kendoNumericTextBox").wrapper.find("input").css("color", "black");
+        var SolarSelisih = SolarKembali - $("#SolarAktual").data("kendoNumericTextBox").value();
+        SolarSelisih = SolarSelisih > 0 ? SolarSelisih : 0;
+        $("#SolarSelisih").data("kendoNumericTextBox").value(SolarSelisih);
+        if (SolarSelisih > 0)
+            $("#SolarSelisih").data("kendoNumericTextBox").wrapper.find("input").css("color", "red");
+        else
+            $("#SolarSelisih").data("kendoNumericTextBox").wrapper.find("input").css("color", "black");
+    };
+
+    function SelectBk(e) {
+        e.preventDefault();
+        var data = this.dataItem(getDataRowGrid(e));
+        $('#IdCreditTf').val(data.bk_ac_id);
+        $('#_CodeCreditTf').val(data.bk_code + " - " + data.bk_name);
+        $('#_NamaCreditTf').val(data.bk_name);
+        $('#modalGridBk').modal('hide');
+        $('#val-bankAccount').hide()
+    }
+
+    function selectRow() {
+        var checked = this.checked,
+        row = $(this).closest("tr"),
+        dataItem = gridSPBU.dataItem(row);
+        if (checked) {
+            //-select the row
+            row.addClass("k-state-selected");
+            checkedNominal[dataItem.Id] = dataItem.value;
+            checkedNama[dataItem.Id] = dataItem.Keterangan;
+        } else {
+            //-remove selection
+            row.removeClass("k-state-selected");
+            checkedNominal[dataItem.Id] = 0;
+            checkedNama[dataItem.Id] = null;
+        }
+    };
+
+    $(document).ready(function () {
+        SelectSPBU()
+        var TransferKasSelisih = 0;
+        $("#KasDiakui").data("kendoNumericTextBox").bind("change", function (e) {
+            var kasKembali = $("#KasDiterima").data("kendoNumericTextBox").value() - this.value();
+            kasKembali = kasKembali > 0 ? kasKembali : 0;
+            $("#KasKembali").data("kendoNumericTextBox").value(kasKembali);
+            if (kasKembali > 0)
+                $("#KasKembali").data("kendoNumericTextBox").wrapper.find("input").css("color", "red");
+            else
+                $("#KasKembali").data("kendoNumericTextBox").wrapper.find("input").css("color", "black");
+            var KasSelisih = kasKembali - $("#KasAktual").data("kendoNumericTextBox").value();
+            KasSelisih = KasSelisih > 0 ? KasSelisih : 0;
+            $("#KasSelisih").data("kendoNumericTextBox").value(KasSelisih);
+            if (KasSelisih > 0)
+                $("#KasSelisih").data("kendoNumericTextBox").wrapper.find("input").css("color", "red");
+            else
+                $("#KasSelisih").data("kendoNumericTextBox").wrapper.find("input").css("color", "black");
+        });
+        $("#TransferDiakui").data("kendoNumericTextBox").bind("change", function (e) {
+            var TransferKembali = $("#TransferDiterima").data("kendoNumericTextBox").value() - this.value();
+            TransferKembali = TransferKembali > 0 ? TransferKembali : 0;
+            $("#TransferKembali").data("kendoNumericTextBox").value(TransferKembali);
+            if (TransferKembali > 0)
+                $("#TransferKembali").data("kendoNumericTextBox").wrapper.find("input").css("color", "red");
+            else
+                $("#TransferKembali").data("kendoNumericTextBox").wrapper.find("input").css("color", "black");
+            var TransferSelisih = TransferKembali - $("#TransferAktual").data("kendoNumericTextBox").value();
+            TransferSelisih = TransferSelisih > 0 ? TransferSelisih : 0;
+            $("#TransferSelisih").data("kendoNumericTextBox").value(TransferSelisih);
+            if (TransferSelisih > 0)
+                $("#TransferSelisih").data("kendoNumericTextBox").wrapper.find("input").css("color", "red");
+            else
+                $("#TransferSelisih").data("kendoNumericTextBox").wrapper.find("input").css("color", "black");
+        });
+        $("#SolarDiakui").data("kendoNumericTextBox").bind("change", function (e) {
+            var SolarKembali = $("#SolarDiterima").data("kendoNumericTextBox").value() - this.value();
+            SolarKembali = SolarKembali > 0 ? SolarKembali : 0;
+            $("#SolarKembali").data("kendoNumericTextBox").value(SolarKembali);
+            if (SolarKembali > 0)
+                $("#SolarKembali").data("kendoNumericTextBox").wrapper.find("input").css("color", "red");
+            else
+                $("#SolarKembali").data("kendoNumericTextBox").wrapper.find("input").css("color", "black");
+            var SolarSelisih = SolarKembali - $("#SolarAktual").data("kendoNumericTextBox").value();
+            SolarSelisih = SolarSelisih > 0 ? SolarSelisih : 0;
+            $("#SolarSelisih").data("kendoNumericTextBox").value(SolarSelisih);
+            if (SolarSelisih > 0)
+                $("#SolarSelisih").data("kendoNumericTextBox").wrapper.find("input").css("color", "red");
+            else
+                $("#SolarSelisih").data("kendoNumericTextBox").wrapper.find("input").css("color", "black");
+        });
+        $("#KapalDiakui").data("kendoNumericTextBox").bind("change", function (e) {
+            var KapalKembali = $("#KapalDiterima").data("kendoNumericTextBox").value() - this.value();
+            KapalKembali = KapalKembali > 0 ? KapalKembali : 0;
+            $("#KapalKembali").data("kendoNumericTextBox").value(KapalKembali);
+            if (KapalKembali > 0)
+                $("#KapalKembali").data("kendoNumericTextBox").wrapper.find("input").css("color", "red");
+            else
+                $("#KapalKembali").data("kendoNumericTextBox").wrapper.find("input").css("color", "black");
+            var KapalSelisih = KapalKembali - $("#KapalAktual").data("kendoNumericTextBox").value();
+            KapalSelisih = KapalSelisih > 0 ? KapalSelisih : 0;
+            $("#KapalSelisih").data("kendoNumericTextBox").value(KapalSelisih);
+            if (KapalSelisih > 0)
+                $("#KapalSelisih").data("kendoNumericTextBox").wrapper.find("input").css("color", "red");
+            else
+                $("#KapalSelisih").data("kendoNumericTextBox").wrapper.find("input").css("color", "black");
+        });
+
+        $("#KasAktual").data("kendoNumericTextBox").bind("change", function (e) {
+            var KasSelisih = $("#KasKembali").data("kendoNumericTextBox").value() - this.value();
+            TransferKasSelisih = KasSelisih
+            KasSelisih = KasSelisih > 0 ? KasSelisih : 0;
+            $("#KasSelisih").data("kendoNumericTextBox").value(KasSelisih);
+            if (KasSelisih > 0)
+                $("#KasSelisih").data("kendoNumericTextBox").wrapper.find("input").css("color", "red");
+            else {
+                $("#KasSelisih").data("kendoNumericTextBox").wrapper.find("input").css("color", "black");
+                var TransferSelisih = $("#TransferKembali").data("kendoNumericTextBox").value() - ($("#KasAktual").data("kendoNumericTextBox").value() - $("#KasKembali").data("kendoNumericTextBox").value() > 0 ? $("#KasAktual").data("kendoNumericTextBox").value() - $("#KasKembali").data("kendoNumericTextBox").value() : 0) - $("#TransferAktual").data("kendoNumericTextBox").value();
+                TransferSelisih = TransferSelisih > 0 ? TransferSelisih : 0;
+                $("#TransferSelisih").data("kendoNumericTextBox").value(TransferSelisih);
+                if (TransferSelisih > 0)
+                    $("#TransferSelisih").data("kendoNumericTextBox").wrapper.find("input").css("color", "red");
+                else
+                    $("#TransferSelisih").data("kendoNumericTextBox").wrapper.find("input").css("color", "black");
+            }
+        });
+
+        $("#TransferAktual").data("kendoNumericTextBox").bind("change", function (e) {
+            var TransferSelisih = $("#TransferKembali").data("kendoNumericTextBox").value() - ($("#KasAktual").data("kendoNumericTextBox").value() - $("#KasKembali").data("kendoNumericTextBox").value() > 0 ? $("#KasAktual").data("kendoNumericTextBox").value() - $("#KasKembali").data("kendoNumericTextBox").value() : 0) - this.value();
+            TransferSelisih = TransferSelisih > 0 ? TransferSelisih : 0;
+            $("#TransferSelisih").data("kendoNumericTextBox").value(TransferSelisih);
+            if (TransferSelisih > 0)
+                $("#TransferSelisih").data("kendoNumericTextBox").wrapper.find("input").css("color", "red");
+            else
+                $("#TransferSelisih").data("kendoNumericTextBox").wrapper.find("input").css("color", "black");
+        });
+        $("#SolarAktual").data("kendoNumericTextBox").bind("change", function (e) {
+            var SolarSelisih = $("#SolarKembali").data("kendoNumericTextBox").value() - this.value();
+            SolarSelisih = SolarSelisih > 0 ? SolarSelisih : 0;
+            $("#SolarSelisih").data("kendoNumericTextBox").value(SolarSelisih);
+            if (SolarSelisih > 0)
+                $("#SolarSelisih").data("kendoNumericTextBox").wrapper.find("input").css("color", "red");
+            else
+                $("#SolarSelisih").data("kendoNumericTextBox").wrapper.find("input").css("color", "black");
+        });
+        $("#KapalAktual").data("kendoNumericTextBox").bind("change", function (e) {
+            var KapalSelisih = $("#KapalKembali").data("kendoNumericTextBox").value() - this.value();
+            KapalSelisih = KapalSelisih > 0 ? KapalSelisih : 0;
+            $("#KapalSelisih").data("kendoNumericTextBox").value(KapalSelisih);
+            if (KapalSelisih > 0)
+                $("#KapalSelisih").data("kendoNumericTextBox").wrapper.find("input").css("color", "red");
+            else
+                $("#KapalSelisih").data("kendoNumericTextBox").wrapper.find("input").css("color", "black");
+        });
+    })
+    </script>
+}

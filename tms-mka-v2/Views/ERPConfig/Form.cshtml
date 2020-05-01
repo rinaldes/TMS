@@ -1,0 +1,994 @@
+﻿@using tms_mka_v2.Models;
+@model tms_mka_v2.Models.ERPConfig
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    string currentController = (string)ViewContext.RouteData.Values["controller"];
+    string currentAction = ViewBag.postData == null ? (string)ViewContext.RouteData.Values["action"] : ViewBag.postData;
+    string backLink = Url.Action("Index");
+}
+<div class="portlet light">
+    <div class="portlet-title">
+        <div class="caption">
+            <span class="caption-subject font-dark sbold uppercase">Setting Akun</span>
+        </div>
+    </div>
+    <div class="portlet-body form">
+        @using (@Html.BeginForm(currentAction, currentController, FormMethod.Post, new { @class = "form-horizontal form-label-left input_mask", @id = "formsubmit" }))
+        {
+            @Html.ValidationSummary(true)
+            @Html.HiddenFor(model => model.Id)
+            <h4>Konfigurasi Sales Order</h4>
+            <div class="col-md-12 col-sm-12 col-xs-12">
+                <div class="col-md-6 col-sm-12 col-xs-12">
+                    <div class="form-group"><label class="control-label col-md-4"><strong>Debit Account</strong></label></div>
+                    <div class="form-group">
+                        <label class="control-label col-md-3">Piutang Belum Invoice</label>
+                        <div class="col-md-3 col-sm-2 col-xs-12">
+                            <div class="input-group input-group-sm">
+                                @Html.HiddenFor(model => model.IdPiutangBlmInv)
+                                @Html.TextBoxFor(model => model.CodePiutangBlmInv, new { @class = "form-control", @readonly = true })
+                                <span class="input-group-btn">
+                                    <button type="button" class="btn btn-success" data-toggle="modal" data-target="#modalGridAcc" onclick="caller='piutblminv';">Browse</button>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">@Html.TextBoxFor(model => model.NamaPiutangBlmInv, new { @class = "form-control", @readonly = true })</div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-sm-12 col-xs-12">
+                    <div class="form-group"><label class="control-label col-md-4"><strong>Credit Account</strong></label></div>
+                    <div class="form-group">
+                        <label class="control-label col-md-3">Penjualan Belum Invoice</label>
+                        <div class="col-md-3 col-sm-2 col-xs-12">
+                            <div class="input-group input-group-sm">
+                                @Html.HiddenFor(model => model.IdPenjualanBlmInv)
+                                @Html.TextBoxFor(model => model.CodePenjualanBlmInv, new { @class = "form-control", @readonly = true })
+                                <span class="input-group-btn">
+                                    <button type="button" class="btn btn-success" data-toggle="modal" data-target="#modalGridAcc" onclick="caller='penjblminv';">Browse</button>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            @Html.TextBoxFor(model => model.NamaPenjualanBlmInv, new { @class = "form-control", @readonly = true })
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <hr/>
+            <h4>Konfigurasi Admin Uang Jalan</h4>
+            <div class="col-md-12 col-sm-12 col-xs-12">
+                <div class="col-md-6 col-sm-12 col-xs-12">
+                    <div class="form-group">
+                        <label class="control-label col-md-4"><strong>Debit Account</strong></label>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-md-3">Borongan Dasar</label>
+                        <div class="col-md-3 col-sm-2 col-xs-12">
+                            <div class="input-group input-group-sm">
+                                @Html.HiddenFor(model => model.IdBoronganDasar)
+                                @Html.TextBoxFor(model => model.CodeBoronganDasar, new { @class = "form-control", @readonly = true })
+                                <span class="input-group-btn">
+                                    <button type="button" class="btn btn-success" data-toggle="modal" data-target="#modalGridAcc" onclick="caller = 'boronganDasar';">Browse</button>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            @Html.TextBoxFor(model => model.NamaBoronganDasar, new { @class = "form-control", @readonly = true })
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-md-3">Kawalan</label>
+                        <div class="col-md-3 col-sm-2 col-xs-12">
+                            <div class="input-group input-group-sm">
+                                @Html.HiddenFor(model => model.IdKawalan)
+                                @Html.TextBoxFor(model => model.CodeKawalan, new { @class = "form-control", @readonly = true })
+                                <span class="input-group-btn">
+                                    <button type="button" class="btn btn-success" data-toggle="modal" data-target="#modalGridAcc" onclick="caller = 'kawalan';">Browse</button>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            @Html.TextBoxFor(model => model.NamaKawalan, new { @class = "form-control", @readonly = true })
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-md-3">Timbangan</label>
+                        <div class="col-md-3 col-sm-2 col-xs-12">
+                            <div class="input-group input-group-sm">
+                                @Html.HiddenFor(model => model.IdTimbangan)
+                                @Html.TextBoxFor(model => model.CodeTimbangan, new { @class = "form-control", @readonly = true })
+                                <span class="input-group-btn">
+                                    <button type="button" class="btn btn-success" data-toggle="modal" data-target="#modalGridAcc" onclick="caller = 'timbangan';">Browse</button>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">@Html.TextBoxFor(model => model.NamaTimbangan, new { @class = "form-control", @readonly = true })</div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-md-3">Karantina</label>
+                        <div class="col-md-3 col-sm-2 col-xs-12">
+                            <div class="input-group input-group-sm">
+                                @Html.HiddenFor(model => model.IdKaarantina)
+                                @Html.TextBoxFor(model => model.CodeKaarantina, new { @class = "form-control", @readonly = true })
+                                <span class="input-group-btn">
+                                    <button type="button" class="btn btn-success" data-toggle="modal" data-target="#modalGridAcc" onclick="caller = 'karantina';">Browse</button>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">@Html.TextBoxFor(model => model.NamaKaarantina, new { @class = "form-control", @readonly = true })</div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-md-3">SPSI</label>
+                        <div class="col-md-3 col-sm-2 col-xs-12">
+                            <div class="input-group input-group-sm">
+                                @Html.HiddenFor(model => model.IdSPSI)
+                                @Html.TextBoxFor(model => model.CodeSPSI, new { @class = "form-control", @readonly = true })
+                                <span class="input-group-btn">
+                                    <button type="button" class="btn btn-success" data-toggle="modal" data-target="#modalGridAcc" onclick="caller = 'SPSI';">Browse</button>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">@Html.TextBoxFor(model => model.NamaSPSI, new { @class = "form-control", @readonly = true })</div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-md-3">Multidrop</label>
+                        <div class="col-md-3 col-sm-2 col-xs-12">
+                            <div class="input-group input-group-sm">
+                                @Html.HiddenFor(model => model.IdMultidrop)
+                                @Html.TextBoxFor(model => model.CodeMultidrop, new { @class = "form-control", @readonly = true })
+                                <span class="input-group-btn">
+                                    <button type="button" class="btn btn-success" data-toggle="modal" data-target="#modalGridAcc" onclick="caller = 'multidrop';">Browse</button>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            @Html.TextBoxFor(model => model.NamaMultidrop, new { @class = "form-control", @readonly = true })
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-md-3">Tambahan Rute Muat</label>
+                        <div class="col-md-3 col-sm-2 col-xs-12">
+                            <div class="input-group input-group-sm">
+                                @Html.HiddenFor(model => model.IdRutemuat)
+                                @Html.TextBoxFor(model => model.CodeRutemuat, new { @class = "form-control", @readonly = true })
+                                <span class="input-group-btn">
+                                    <button type="button" class="btn btn-success" data-toggle="modal" data-target="#modalGridAcc" onclick="caller = 'ruteMuat';">Browse</button>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            @Html.TextBoxFor(model => model.NamaRutemuat, new { @class = "form-control", @readonly = true })
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-md-3">Tambahan Rute Lain</label>
+                        <div class="col-md-3 col-sm-2 col-xs-12">
+                            <div class="input-group input-group-sm">
+                                @Html.HiddenFor(model => model.IdRuteLain)
+                                @Html.TextBoxFor(model => model.CodeRuteLain, new { @class = "form-control", @readonly = true })
+                                <span class="input-group-btn">
+                                    <button type="button" class="btn btn-success" data-toggle="modal" data-target="#modalGridAcc" onclick="caller = 'ruteLain';">Browse</button>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            @Html.TextBoxFor(model => model.NamaRuteLain, new { @class = "form-control", @readonly = true })
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-sm-12 col-xs-12">
+                    <div class="form-group">
+                        <label class="control-label col-md-4"><strong>Credit Account</strong></label>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-md-3">Kasbon Driver (Piutang)</label>
+                        <div class="col-md-3 col-sm-2 col-xs-12">
+                            <div class="input-group input-group-sm">
+                                @Html.HiddenFor(model => model.IdKasbonAuj)
+                                @Html.TextBoxFor(model => model.CodeKasbonAuj, new { @class = "form-control", @readonly = true })
+                                <span class="input-group-btn">
+                                    <button type="button" class="btn btn-success" data-toggle="modal" data-target="#modalGridAcc" onclick="caller = 'kasbonAuj';">Browse</button>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">@Html.TextBoxFor(model => model.NamaKasbonAuj, new { @class = "form-control", @readonly = true })</div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-md-3">Klaim</label>
+                        <div class="col-md-3 col-sm-2 col-xs-12">
+                            <div class="input-group input-group-sm">
+                                @Html.HiddenFor(model => model.IdKlaimAuj)
+                                @Html.TextBoxFor(model => model.CodeKlaimAuj, new { @class = "form-control", @readonly = true })
+                                <span class="input-group-btn">
+                                    <button type="button" class="btn btn-success" data-toggle="modal" data-target="#modalGridAcc" onclick="caller = 'klaim';">Browse</button>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">@Html.TextBoxFor(model => model.NamaKlaimAuj, new { @class = "form-control", @readonly = true })</div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-md-3">Potongan Lain</label>
+                        <div class="col-md-3 col-sm-2 col-xs-12">
+                            <div class="input-group input-group-sm">
+                                @Html.HiddenFor(model => model.IdPotonganLainAuj)
+                                @Html.TextBoxFor(model => model.CodePotonganLainAuj, new { @class = "form-control", @readonly = true })
+                                <span class="input-group-btn">
+                                    <button type="button" class="btn btn-success" data-toggle="modal" data-target="#modalGridAcc" onclick="caller = 'potonganlain';">Browse</button>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">@Html.TextBoxFor(model => model.NamaPotonganLainAuj, new { @class = "form-control", @readonly = true })</div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-md-3">Voucher Solar</label>
+                        <div class="col-md-3 col-sm-2 col-xs-12">
+                            <div class="input-group input-group-sm">
+                                @Html.HiddenFor(model => model.IdVoucherSolar)
+                                @Html.TextBoxFor(model => model.CodeVoucherSolar, new { @class = "form-control", @readonly = true })
+                                <span class="input-group-btn">
+                                    <button type="button" class="btn btn-success" data-toggle="modal" data-target="#modalGridAcc" onclick="caller = 'voucherSolar';">Browse</button>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">@Html.TextBoxFor(model => model.NamaVoucherSolar, new { @class = "form-control", @readonly = true })</div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-md-3">Voucher Kapal</label>
+                        <div class="col-md-3 col-sm-2 col-xs-12">
+                            <div class="input-group input-group-sm">
+                                @Html.HiddenFor(model => model.IdVoucherKapal)
+                                @Html.TextBoxFor(model => model.CodeVoucherKapal, new { @class = "form-control", @readonly = true })
+                                <span class="input-group-btn">
+                                    <button type="button" class="btn btn-success" data-toggle="modal" data-target="#modalGridAcc" onclick="caller = 'voucherKapal';">Browse</button>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">@Html.TextBoxFor(model => model.NamaVoucherKapal, new { @class = "form-control", @readonly = true })</div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-md-3">Uang Jalan</label>
+                        <div class="col-md-3 col-sm-2 col-xs-12">
+                            <div class="input-group input-group-sm">
+                                @Html.HiddenFor(model => model.IdCreditAuj)
+                                @Html.TextBoxFor(model => model.CodeCreditAuj, new { @class = "form-control", @readonly = true })
+                                <span class="input-group-btn">
+                                    <button type="button" class="btn btn-success" data-toggle="modal" data-target="#modalGridAcc" onclick="caller = 'creditauj';">Browse</button>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">@Html.TextBoxFor(model => model.NamaCreditAuj, new { @class = "form-control", @readonly = true })</div>
+                    </div>
+                </div>
+            </div>
+            <hr />
+            <h4>Konfigurasi Kasir</h4>
+            <div class="col-md-12 col-sm-12 col-xs-12">
+                <div class="col-md-6 col-sm-12 col-xs-12">
+                    <div class="form-group"><label class="control-label col-md-4"><strong>Debit Account</strong></label></div>
+                    <div class="form-group">
+                        <label class="control-label col-md-3">Uang Jalan</label>
+                        <div class="col-md-3 col-sm-2 col-xs-12">
+                            <div class="input-group input-group-sm">
+                                @Html.HiddenFor(model => model.IdCreditAuj)
+                                @Html.TextBoxFor(model => model.CodeCreditAuj, new { @class = "form-control", @readonly = true })
+                            </div>
+                        </div>
+                        <div class="col-md-6">@Html.TextBoxFor(model => model.NamaCreditAuj, new { @class = "form-control", @readonly = true })</div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-sm-12 col-xs-12">
+                    <div class="form-group"><label class="control-label col-md-4"><strong>Credit Account</strong></label></div>
+                    <div class="form-group">
+                        <label class="control-label col-md-3">Piutang daily supir</label>
+                        <div class="col-md-3 col-sm-2 col-xs-12">
+                            <div class="input-group input-group-sm">
+                                @Html.HiddenFor(model => model.IdPiutangDailySupir)
+                                @Html.TextBoxFor(model => model.CodePiutangDailySupir, new { @class = "form-control", @readonly = true })
+                                <span class="input-group-btn">
+                                    <button type="button" class="btn btn-success" data-toggle="modal" data-target="#modalGridAcc" onclick="caller = 'PiutangDailySupir';">Browse</button>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">@Html.TextBoxFor(model => model.NamaPiutangDailySupir, new { @class = "form-control", @readonly = true })</div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-md-3">claim supir</label>
+                        <div class="col-md-3 col-sm-2 col-xs-12">
+                            <div class="input-group input-group-sm">
+                                @Html.HiddenFor(model => model.IdKlaimSupir)
+                                @Html.TextBoxFor(model => model.CodeKlaimSupir, new { @class = "form-control", @readonly = true })
+                                <span class="input-group-btn">
+                                    <button type="button" class="btn btn-success" data-toggle="modal" data-target="#modalGridAcc" onclick="caller = 'KlaimSupir';">Browse</button>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">@Html.TextBoxFor(model => model.NamaKlaimSupir, new { @class = "form-control", @readonly = true })</div>
+                    </div>
+                </div>
+            </div>
+            <hr />
+            <h4>Konfigurasi Settlement Batal</h4>
+            <div class="col-md-12 col-sm-12 col-xs-12">
+                <div class="col-md-6 col-sm-12 col-xs-12">
+                    <div class="form-group"><label class="control-label col-md-4"><strong>Debit Account</strong></label></div>
+                    <div class="form-group">
+                        <label class="control-label col-md-3">Kasbon Driver (Piutang)</label>
+                        <div class="col-md-3 col-sm-2 col-xs-12">
+                            <div class="input-group input-group-sm">
+                                @Html.HiddenFor(model => model.IdKasbonDriver)
+                                @Html.TextBoxFor(model => model.CodeKasbonDriver, new { @class = "form-control", @readonly = true })
+                                <span class="input-group-btn">
+                                    <button type="button" class="btn btn-success" data-toggle="modal" data-target="#modalGridAcc" onclick="caller = 'kasbonDriver';">Browse</button>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">@Html.TextBoxFor(model => model.NamaKasbonDriver, new { @class = "form-control", @readonly = true })</div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-md-3">Cash Account</label>
+                        <div class="col-md-3 col-sm-2 col-xs-12">
+                            <div class="input-group input-group-sm">
+                                @Html.HiddenFor(model => model.IdCreditTf)
+                                @Html.TextBoxFor(model => model.CodeCreditTf, new { @class = "form-control", @readonly = true })
+                            </div>
+                        </div>
+                        <div class="col-md-6">@Html.TextBoxFor(model => model.NamaCreditTf, new { @class = "form-control", @readonly = true })</div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-md-3">Biaya Perjalanan</label>
+                        <div class="col-md-3 col-sm-2 col-xs-12">
+                            <div class="input-group input-group-sm">
+                                @Html.HiddenFor(model => model.IdBiayaPerjalanan)
+                                @Html.TextBoxFor(model => model.CodeBiayaPerjalanan, new { @class = "form-control", @readonly = true })
+                                <span class="input-group-btn">
+                                    <button type="button" class="btn btn-success" data-toggle="modal" data-target="#modalGridAcc" onclick="caller = 'biayaPerjalanan';">Browse</button>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">@Html.TextBoxFor(model => model.NamaBiayaPerjalanan, new { @class = "form-control", @readonly = true })</div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-sm-12 col-xs-12">
+                    <div class="form-group">
+                        <label class="control-label col-md-4"><strong>Credit Account</strong></label>
+                    </div>
+                     <div class="form-group">
+                        <label class="control-label col-md-3">Borongan Dasar</label>
+                        <div class="col-md-3 col-sm-2 col-xs-12">
+                            <div class="input-group input-group-sm">
+                                @Html.HiddenFor(model => model.IdBoronganDasar)
+                                @Html.TextBoxFor(model => model.CodeBoronganDasar, new { @class = "form-control", @readonly = true })
+                            </div>
+                        </div>
+                        <div class="col-md-6">@Html.TextBoxFor(model => model.NamaBoronganDasar, new { @class = "form-control", @readonly = true })</div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-md-3">Kawalan</label>
+                        <div class="col-md-3 col-sm-2 col-xs-12">
+                            <div class="input-group input-group-sm">
+                                @Html.HiddenFor(model => model.IdKawalan)
+                                @Html.TextBoxFor(model => model.CodeKawalan, new { @class = "form-control", @readonly = true })
+                            </div>
+                        </div>
+                        <div class="col-md-6">@Html.TextBoxFor(model => model.NamaKawalan, new { @class = "form-control", @readonly = true })</div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-md-3">Timbangan</label>
+                        <div class="col-md-3 col-sm-2 col-xs-12">
+                            <div class="input-group input-group-sm">
+                                @Html.HiddenFor(model => model.IdTimbangan)
+                                @Html.TextBoxFor(model => model.CodeTimbangan, new { @class = "form-control", @readonly = true })
+                            </div>
+                        </div>
+                        <div class="col-md-6">@Html.TextBoxFor(model => model.NamaTimbangan, new { @class = "form-control", @readonly = true })</div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-md-3">Karantina</label>
+                        <div class="col-md-3 col-sm-2 col-xs-12">
+                            <div class="input-group input-group-sm">
+                                @Html.HiddenFor(model => model.IdKaarantina)
+                                @Html.TextBoxFor(model => model.CodeKaarantina, new { @class = "form-control", @readonly = true })
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            @Html.TextBoxFor(model => model.NamaKaarantina, new { @class = "form-control", @readonly = true })
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-md-3">SPSI</label>
+                        <div class="col-md-3 col-sm-2 col-xs-12">
+                            <div class="input-group input-group-sm">
+                                @Html.HiddenFor(model => model.IdSPSI)
+                                @Html.TextBoxFor(model => model.CodeSPSI, new { @class = "form-control", @readonly = true })
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            @Html.TextBoxFor(model => model.NamaSPSI, new { @class = "form-control", @readonly = true })
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-md-3">Multidrop</label>
+                        <div class="col-md-3 col-sm-2 col-xs-12">
+                            <div class="input-group input-group-sm">
+                                @Html.HiddenFor(model => model.IdMultidrop)
+                                @Html.TextBoxFor(model => model.CodeMultidrop, new { @class = "form-control", @readonly = true })
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            @Html.TextBoxFor(model => model.NamaMultidrop, new { @class = "form-control", @readonly = true })
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-md-3">Tambahan Rute Muat</label>
+                        <div class="col-md-3 col-sm-2 col-xs-12">
+                            <div class="input-group input-group-sm">
+                                @Html.HiddenFor(model => model.IdRutemuat)
+                                @Html.TextBoxFor(model => model.CodeRutemuat, new { @class = "form-control", @readonly = true })
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            @Html.TextBoxFor(model => model.NamaRutemuat, new { @class = "form-control", @readonly = true })
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-md-3">Tambahan Rute Lain</label>
+                        <div class="col-md-3 col-sm-2 col-xs-12">
+                            <div class="input-group input-group-sm">
+                                @Html.HiddenFor(model => model.IdRuteLain)
+                                @Html.TextBoxFor(model => model.CodeRuteLain, new { @class = "form-control", @readonly = true })
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            @Html.TextBoxFor(model => model.NamaRuteLain, new { @class = "form-control", @readonly = true })
+                        </div>
+                    </div>
+               </div>
+            </div>
+            <hr />
+            <h4>Konfigurasi Settlement Reguler</h4>
+            <div class="col-md-12 col-sm-12 col-xs-12">
+                <div class="col-md-6 col-sm-12 col-xs-12">
+                    <div class="form-group">
+                        <label class="control-label col-md-4"><strong>Debit Account</strong></label>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-md-3">Biaya Tambahan</label>
+                        <div class="col-md-3 col-sm-2 col-xs-12">
+                            <div class="input-group input-group-sm">
+                                @Html.HiddenFor(model => model.IdBiayaPerjalanan)
+                                @Html.TextBoxFor(model => model.CodeBiayaPerjalanan, new { @class = "form-control", @readonly = true })
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            @Html.TextBoxFor(model => model.NamaBiayaPerjalanan, new { @class = "form-control", @readonly = true })
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-sm-12 col-xs-12">
+                    <div class="form-group">
+                        <label class="control-label col-md-4"><strong>Credit Account</strong></label>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-md-3">Cash Account</label>
+                        <div class="col-md-3 col-sm-2 col-xs-12">
+                            <div class="input-group input-group-sm">
+                                @Html.HiddenFor(model => model.IdCreditCash)
+                                @Html.TextBoxFor(model => model.CodeCreditCash, new { @class = "form-control", @readonly = true })
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            @Html.TextBoxFor(model => model.NamaCreditCash, new { @class = "form-control", @readonly = true })
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-md-3">Bank Account</label>
+                        <div class="col-md-3 col-sm-2 col-xs-12">
+                            <div class="input-group input-group-sm">
+                                @Html.HiddenFor(model => model.IdCreditTf)
+                                @Html.TextBoxFor(model => model.CodeCreditTf, new { @class = "form-control", @readonly = true })
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            @Html.TextBoxFor(model => model.NamaCreditTf, new { @class = "form-control", @readonly = true })
+                        </div>
+                    </div>
+               </div>
+            </div>
+            <hr />
+            <h4>Konfigurasi Klaim</h4>
+            <div class="col-md-12 col-sm-12 col-xs-12">
+                <div class="col-md-6 col-sm-12 col-xs-12">
+                    <div class="form-group">
+                        <label class="control-label col-md-4"><strong>Debit Account</strong></label>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-md-3">Biaya</label>
+                        <div class="col-md-3 col-sm-2 col-xs-12">
+                            <div class="input-group input-group-sm">
+                                @Html.HiddenFor(model => model.IdBiayaKlaim)
+                                @Html.TextBoxFor(model => model.CodeBiayaKlaim, new { @class = "form-control", @readonly = true })
+                                <span class="input-group-btn">
+                                    <button type="button" class="btn btn-success" data-toggle="modal" data-target="#modalGridAcc" onclick="caller = 'biayaKlaim';">Browse</button>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            @Html.TextBoxFor(model => model.NamaBiayaKlaim, new { @class = "form-control", @readonly = true })
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-sm-12 col-xs-12">
+                    <div class="form-group">
+                        <label class="control-label col-md-4"><strong>Credit Account</strong></label>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-md-3">Kredit</label>
+                        <div class="col-md-3 col-sm-2 col-xs-12">
+                            <div class="input-group input-group-sm">
+                                @Html.HiddenFor(model => model.IdKreditKlaim)
+                                @Html.TextBoxFor(model => model.CodeKreditKlaim, new { @class = "form-control", @readonly = true })
+                                <span class="input-group-btn">
+                                    <button type="button" class="btn btn-success" data-toggle="modal" data-target="#modalGridAcc" onclick="caller = 'kreditKlaim';">Browse</button>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            @Html.TextBoxFor(model => model.NamaKreditKlaim, new { @class = "form-control", @readonly = true })
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <hr />
+            <h4>Konfigurasi Solar Inap</h4>
+            <h5>#Marketing, Status Ditagih</h5>
+            <div class="col-md-12 col-sm-12 col-xs-12">
+                <div class="col-md-6 col-sm-12 col-xs-12">
+                    <div class="form-group">
+                        <label class="control-label col-md-4"><strong>Debit Account</strong></label>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-md-3">Piutang Customer</label>
+                        <div class="col-md-3 col-sm-2 col-xs-12">
+                            <div class="input-group input-group-sm">
+                                @Html.HiddenFor(model => model.IdPiutangCustomer)
+                                @Html.TextBoxFor(model => model.CodePiutangCustomer, new { @class = "form-control", @readonly = true })
+                                <span class="input-group-btn">
+                                    <button type="button" class="btn btn-success" data-toggle="modal" data-target="#modalGridAcc" onclick="caller = 'piutangcustomer';">Browse</button>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            @Html.TextBoxFor(model => model.NamaPiutangCustomer, new { @class = "form-control", @readonly = true })
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-sm-12 col-xs-12">
+                    <div class="form-group">
+                        <label class="control-label col-md-4"><strong>Credit Account</strong></label>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-md-3">Biaya Inap</label>
+                        <div class="col-md-3 col-sm-2 col-xs-12">
+                            <div class="input-group input-group-sm">
+                                @Html.HiddenFor(model => model.IdBiayaInap)
+                                @Html.TextBoxFor(model => model.CodeBiayaInap, new { @class = "form-control", @readonly = true })
+                                <span class="input-group-btn">
+                                    <button type="button" class="btn btn-success" data-toggle="modal" data-target="#modalGridAcc" onclick="caller = 'biayaInap';">Browse</button>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            @Html.TextBoxFor(model => model.NamaBiayaInap, new { @class = "form-control", @readonly = true })
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <h5>#Kasir</h5>
+            <div class="col-md-12 col-sm-12 col-xs-12">
+                <div class="col-md-6 col-sm-12 col-xs-12">
+                    <div class="form-group">
+                        <label class="control-label col-md-4"><strong>Debit Account</strong></label>
+                    </div>
+                     <div class="form-group">
+                        <label class="control-label col-md-3">Biaya Inap</label>
+                        <div class="col-md-3 col-sm-2 col-xs-12">
+                            <div class="input-group input-group-sm">
+                                @Html.HiddenFor(model => model.IdBiayaInap)
+                                @Html.TextBoxFor(model => model.CodeBiayaInap, new { @class = "form-control", @readonly = true })
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            @Html.TextBoxFor(model => model.NamaBiayaInap, new { @class = "form-control", @readonly = true })
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-sm-12 col-xs-12">
+                    <div class="form-group">
+                        <label class="control-label col-md-4"><strong>Credit Account</strong></label>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-md-3">Cash Account</label>
+                        <div class="col-md-3 col-sm-2 col-xs-12">
+                            <div class="input-group input-group-sm">
+                                @Html.HiddenFor(model => model.IdCreditCash)
+                                @Html.TextBoxFor(model => model.CodeCreditCash, new { @class = "form-control", @readonly = true })
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            @Html.TextBoxFor(model => model.NamaCreditCash, new { @class = "form-control", @readonly = true })
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-md-3">Bank Account</label>
+                        <div class="col-md-3 col-sm-2 col-xs-12">
+                            <div class="input-group input-group-sm">
+                                @Html.HiddenFor(model => model.IdCreditTf)
+                                @Html.TextBoxFor(model => model.CodeCreditTf, new { @class = "form-control", @readonly = true })
+                            </div>
+                        </div>
+                        <div class="col-md-6">@Html.TextBoxFor(model => model.NamaCreditTf, new { @class = "form-control", @readonly = true })</div>
+                    </div>
+               </div>
+            </div>
+            <h5>#Batal Inap</h5>
+            <div class="col-md-12 col-sm-12 col-xs-12">
+                <div class="col-md-6 col-sm-12 col-xs-12">
+                    <div class="form-group">
+                        <label class="control-label col-md-4"><strong>Debit Account</strong></label>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-md-3">Kasbon Driver</label>
+                        <div class="col-md-3 col-sm-2 col-xs-12">
+                            <div class="input-group input-group-sm">
+                                @Html.HiddenFor(model => model.IdKasbonDriver)
+                                @Html.TextBoxFor(model => model.CodeKasbonDriver, new { @class = "form-control", @readonly = true })
+                            </div>
+                        </div>
+                        <div class="col-md-6">@Html.TextBoxFor(model => model.NamaKasbonDriver, new { @class = "form-control", @readonly = true })</div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-sm-12 col-xs-12">
+                    <div class="form-group"><label class="control-label col-md-4"><strong>Credit Account</strong></label></div>
+                     <div class="form-group">
+                        <label class="control-label col-md-3">Biaya Inap</label>
+                        <div class="col-md-3 col-sm-2 col-xs-12">
+                            <div class="input-group input-group-sm">
+                                @Html.HiddenFor(model => model.IdBiayaInap)
+                                @Html.TextBoxFor(model => model.CodeBiayaInap, new { @class = "form-control", @readonly = true })
+                            </div>
+                        </div>
+                        <div class="col-md-6">@Html.TextBoxFor(model => model.NamaBiayaInap, new { @class = "form-control", @readonly = true })</div>
+                    </div>
+               </div>
+            </div>
+            <h5>#Pengembalian Uang Inap</h5>
+            <div class="col-md-12 col-sm-12 col-xs-12" style="display: none">
+                <div class="col-md-6 col-sm-12 col-xs-12">
+                    <div class="form-group">
+                        <label class="control-label col-md-4"><strong>Debit Account</strong></label>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-md-3">Cash Account</label>
+                        <div class="col-md-3 col-sm-2 col-xs-12">
+                            <div class="input-group input-group-sm">
+                                @Html.HiddenFor(model => model.IdCreditCash)
+                                @Html.TextBoxFor(model => model.CodeCreditCash, new { @class = "form-control", @readonly = true })
+                            </div>
+                        </div>
+                        <div class="col-md-6">@Html.TextBoxFor(model => model.NamaCreditCash, new { @class = "form-control", @readonly = true })</div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-sm-12 col-xs-12">
+                    <div class="form-group">
+                        <label class="control-label col-md-4"><strong>Credit Account</strong></label>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-md-3">Kasbon Driver</label>
+                        <div class="col-md-3 col-sm-2 col-xs-12">
+                            <div class="input-group input-group-sm">
+                                @Html.HiddenFor(model => model.IdKasbonDriver)
+                                @Html.TextBoxFor(model => model.CodeKasbonDriver, new { @class = "form-control", @readonly = true })
+                            </div>
+                        </div>
+                        <div class="col-md-6">@Html.TextBoxFor(model => model.NamaKasbonDriver, new { @class = "form-control", @readonly = true })</div>
+                    </div>
+               </div>
+            </div>
+            <h4>Konfigurasi Input DP</h4>
+            <div class="col-md-12 col-sm-12 col-xs-12">
+                <div class="col-md-6 col-sm-12 col-xs-12">
+                    <div class="form-group"><label class="control-label col-md-4"><strong>Debit Account</strong></label></div>
+                    <div class="form-group">
+                        <label class="control-label col-md-3">Cash</label>
+                        <div class="col-md-3 col-sm-2 col-xs-12">
+                            <div class="input-group input-group-sm">
+                                @Html.HiddenFor(model => model.IdCreditCash)
+                                @Html.TextBoxFor(model => model.CodeCreditCash, new { @class = "form-control", @readonly = true })
+                            </div>
+                        </div>
+                        <div class="col-md-6">@Html.TextBoxFor(model => model.NamaCreditCash, new { @class = "form-control", @readonly = true })</div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-sm-12 col-xs-12">
+                    <div class="form-group">
+                        <label class="control-label col-md-4"><strong>Credit Account</strong></label>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-md-3">Uang Muka Penjualan</label>
+                        <div class="col-md-3 col-sm-2 col-xs-12">
+                            <div class="input-group input-group-sm">
+                                @Html.HiddenFor(model => model.IdDP)
+                                @Html.TextBoxFor(model => model.CodeDP, new { @class = "form-control", @readonly = true })
+                                <span class="input-group-btn">
+                                    <button type="button" class="btn btn-success" data-toggle="modal" data-target="#modalGridAcc" onclick="caller = 'dp';">Browse</button>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            @Html.TextBoxFor(model => model.NamaDP, new { @class = "form-control", @readonly = true })
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <hr />
+           <hr />
+            <div class="form-group">
+                <div class="col-md-8">
+                    <button type="submit" class="btn btn-success">Submit</button>
+                    <a href="@backLink" class="btn btn-link">Cancel</a>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+<div class="modal fade " id="modalGridAcc" role="dialog" aria-hidden="true">
+    <div class="modal-dialog ">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                <h4 class="modal-title">List Account</h4>
+            </div>
+            <div class="modal-body">
+                <div id="GridAcc"></div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade " id="modalGridBk" role="dialog" aria-hidden="true">
+    <div class="modal-dialog ">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                <h4 class="modal-title">List Account</h4>
+            </div>
+            <div class="modal-body">
+                <div id="GridBk"></div>
+            </div>
+        </div>
+    </div>
+</div>
+@section scripts{
+    <script type="text/javascript">
+        var caller = '';
+        var dsAcc = new kendo.data.DataSource({
+            transport: {
+                read: {
+                    url: '@Url.Action("BindingAcc")',
+                    dataType: "json"
+                },
+            },
+            schema: {
+                total: "total",
+                data: "data",
+                model: {
+                    fields: {
+                        "id": { type: "number" },
+                        "ac_code": { type: "string" },
+                        "ac_name": { type: "string" },
+                    }
+                }
+            },
+            pageSize: 10,
+            pageable: true,
+            sortable: true,
+        });
+
+        var dsBk = new kendo.data.DataSource({
+            transport: {
+                read: {
+                    url: '@Url.Action("BindingBk")',
+                    dataType: "json"
+                },
+            },
+            schema: {
+                total: "total",
+                data: "data",
+                model: {
+                    fields: {
+                        "id": { type: "number" },
+                        "bk_code": { type: "string" },
+                        "bk_name": { type: "string" },
+                    }
+                }
+            },
+            pageSize: 10,
+            pageable: true,
+            sortable: true,
+        });
+
+        function SelectAcc(e) {
+            e.preventDefault();
+            var data = this.dataItem(getDataRowGrid(e));
+            if (caller == 'kawalan') {
+                $('#IdKawalan').val(data.id);
+                $('#CodeKawalan').val(data.ac_code);
+                $('#NamaKawalan').val(data.ac_name);
+            } else if (caller == 'creditauj') {
+                $('#IdCreditAuj').val(data.id);
+                $('#CodeCreditAuj').val(data.ac_code);
+                $('#NamaCreditAuj').val(data.ac_name);
+            } else if (caller == 'timbangan') {
+                $('#IdTimbangan').val(data.id);
+                $('#CodeTimbangan').val(data.ac_code);
+                $('#NamaTimbangan').val(data.ac_name);
+            } else if (caller == 'karantina') {
+                $('#IdKaarantina').val(data.id);
+                $('#CodeKaarantina').val(data.ac_code);
+                $('#NamaKaarantina').val(data.ac_name);
+            } else if (caller == 'SPSI') {
+                $('#IdSPSI').val(data.id);
+                $('#CodeSPSI').val(data.ac_code);
+                $('#NamaSPSI').val(data.ac_name);
+            } else if (caller == 'multidrop') {
+                $('#IdMultidrop').val(data.id);
+                $('#CodeMultidrop').val(data.ac_code);
+                $('#NamaMultidrop').val(data.ac_name);
+            } else if (caller == 'ruteMuat') {
+                $('#IdRutemuat').val(data.id);
+                $('#CodeRutemuat').val(data.ac_code);
+                $('#NamaRutemuat').val(data.ac_name);
+            } else if (caller == 'ruteLain') {
+                $('#IdRuteLain').val(data.id);
+                $('#CodeRuteLain').val(data.ac_code);
+                $('#NamaRuteLain').val(data.ac_name);
+            } else if (caller == 'oprcash') {
+                $('#IdOprCash').val(data.id);
+                $('#CodeOprCash').val(data.ac_code);
+                $('#NamaOprCash').val(data.ac_name);
+            } else if (caller == 'oprtf') {
+                $('#IdOprTf').val(data.id);
+                $('#CodeOprTf').val(data.ac_code);
+                $('#NamaOprTf').val(data.ac_name);
+            } else if (caller == 'kasbon') {
+                $('#IdKasbonAuj').val(data.id);
+                $('#CodeKasbonAuj').val(data.ac_code);
+                $('#NamaKasbonAuj').val(data.ac_name);
+            } else if (caller == 'kasbonAuj') {
+                $('#IdKasbonAuj').val(data.id);
+                $('#CodeKasbonAuj').val(data.ac_code);
+                $('#NamaKasbonAuj').val(data.ac_name);
+            } else if (caller == 'klaim') {
+                $('#IdKlaimAuj').val(data.id);
+                $('#CodeKlaimAuj').val(data.ac_code);
+                $('#NamaKlaimAuj').val(data.ac_name);
+            } else if (caller == 'potonganlain') {
+                $('#IdPotonganLainAuj').val(data.id);
+                $('#CodePotonganLainAuj').val(data.ac_code);
+                $('#NamaPotonganLainAuj').val(data.ac_name);
+            } else if (caller == 'boronganDasar') {
+                $('#IdBoronganDasar').val(data.id);
+                $('#CodeBoronganDasar').val(data.ac_code);
+                $('#NamaBoronganDasar').val(data.ac_name);
+            } else if (caller == 'voucherSolar') {
+                $('#IdVoucherSolar').val(data.id);
+                $('#CodeVoucherSolar').val(data.ac_code);
+                $('#NamaVoucherSolar').val(data.ac_name);
+            } else if (caller == 'voucherKapal') {
+                $('#IdVoucherKapal').val(data.id);
+                $('#CodeVoucherKapal').val(data.ac_code);
+                $('#NamaVoucherKapal').val(data.ac_name);
+            } else if (caller == 'pembulatan') {
+                $('#IdPembulatan').val(data.id);
+                $('#CodePembulatan').val(data.ac_code);
+                $('#NamaPembulatan').val(data.ac_name);
+            } else if (caller == 'kasbonDriver') {
+                $('#IdKasbonDriver').val(data.id);
+                $('#CodeKasbonDriver').val(data.ac_code);
+                $('#NamaKasbonDriver').val(data.ac_name);
+            } else if (caller == 'biayaPerjalanan') {
+                $('#IdBiayaPerjalanan').val(data.id);
+                $('#CodeBiayaPerjalanan').val(data.ac_code);
+                $('#NamaBiayaPerjalanan').val(data.ac_name);
+            } else if (caller == 'piutangcustomer') {
+                $('#IdPiutangCustomer').val(data.id);
+                $('#CodePiutangCustomer').val(data.ac_code);
+                $('#NamaPiutangCustomer').val(data.ac_name);
+            } else if (caller == 'biayaInap') {
+                $('#IdBiayaInap').val(data.id);
+                $('#CodeBiayaInap').val(data.ac_code);
+                $('#NamaBiayaInap').val(data.ac_name);
+            } else if (caller == 'dp') {
+                $('#IdDP').val(data.id);
+                $('#CodeDP').val(data.ac_code);
+                $('#NamaDP').val(data.ac_name);
+            } else if (caller == 'biayaKlaim') {
+                $('#IdBiayaKlaim').val(data.id);
+                $('#CodeBiayaKlaim').val(data.ac_code);
+                $('#NamaBiayaKlaim').val(data.ac_name);
+            } else if (caller == 'kreditKlaim') {
+                $('#IdKreditKlaim').val(data.id);
+                $('#CodeKreditKlaim').val(data.ac_code);
+                $('#NamaKreditKlaim').val(data.ac_name);
+            } else if (caller == 'piutblminv') {
+                $('#IdPiutangBlmInv').val(data.id);
+                $('#CodePiutangBlmInv').val(data.ac_code);
+                $('#NamaPiutangBlmInv').val(data.ac_name);
+            } else if (caller == 'piutblminv') {
+                $('#IdPiutangBlmInv').val(data.id);
+                $('#CodePiutangBlmInv').val(data.ac_code);
+                $('#NamaPiutangBlmInv').val(data.ac_name);
+            } else if (caller == 'penjblminv') {
+                $('#IdPenjualanBlmInv').val(data.id);
+                $('#CodePenjualanBlmInv').val(data.ac_code);
+                $('#NamaPenjualanBlmInv').val(data.ac_name);
+            } else if (caller == 'PiutangDailySupir') {
+                $('#IdPiutangDailySupir').val(data.id);
+                $('#CodePiutangDailySupir').val(data.ac_code);
+                $('#NamaPiutangDailySupir').val(data.ac_name);
+            } else if (caller == 'KlaimSupir') {
+                $('#IdKlaimSupir').val(data.id);
+                $('#CodeKlaimSupir').val(data.ac_code);
+                $('#NamaKlaimSupir').val(data.ac_name);
+            }
+            $('#modalGridAcc').modal('hide');
+        }
+
+        function SelectBk(e) {
+            e.preventDefault();
+            var data = this.dataItem(getDataRowGrid(e));
+            if (caller == 'creditauj') {
+                $('#IdCreditAuj').val(data.id);
+                $('#CodeCreditAuj').val(data.bk_code);
+                $('#NamaCreditAuj').val(data.bk_name);
+            } else if (caller == 'creditcash') {
+                $('#IdCreditCash').val(data.bk_ac_id);
+                $('#CodeCreditCash').val(data.bk_code);
+                $('#NamaCreditCash').val(data.bk_name);
+            } else if (caller == 'credittf') {
+                $('#IdCreditTf').val(data.bk_ac_id);
+                $('#CodeCreditTf').val(data.bk_code);
+                $('#NamaCreditTf').val(data.bk_name);
+            }
+            $('#modalGridBk').modal('hide');
+        }
+        $(document).ready(function () {
+            gridAcc = $("#GridAcc").kendoGrid({
+                dataSource: dsAcc, filterable: kendoGridFilterable, sortable: true, resizable: true, pageable: true,
+                columns: [
+                    {
+                        command: [
+                         {
+                             name: "select", text: "Select", click: SelectAcc, imageClass: "glyphicon glyphicon-ok",
+                             template: '<a class="k-button-icon #=className#" #=attr# href="\\#"><span class="#=iconClass# #=imageClass#"></span></a>'
+                         }
+                        ], width: "50px"
+                    }, { field: "ac_code", title: "Code Account" }, { field: "ac_name", title: "Nama Account" },
+                ]
+            });
+
+            gridBk = $("#GridBk").kendoGrid({
+                dataSource: dsBk, filterable: kendoGridFilterable, sortable: true, resizable: true, pageable: true,
+                columns: [
+                    {
+                        command: [
+                         {
+                             name: "select", text: "Select", click: SelectBk, imageClass: "glyphicon glyphicon-ok",
+                             template: '<a class="k-button-icon #=className#" #=attr# href="\\#"><span class="#=iconClass# #=imageClass#"></span></a>'
+                         }
+                        ], width: "50px"
+                    }, { field: "bk_code", title: "Code Account" }, { field: "bk_name", title: "Nama Account" },
+                ]
+            });
+        });
+    </script>
+}
